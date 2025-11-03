@@ -1,5 +1,3 @@
-local file = require("@self/file")
-
 local dirlib = require("@self/dir")
 local pathlib = require("@self/path")
 local filelib = require("@self/file")
