@@ -176,11 +176,15 @@ while (os.clock() - start_time) < 25 do
             -- some tests need user input
             for _, p in tests_with_stdin do
                 if test_path:match(p) then
-                    if str.endswith(test_path, "simple_prompts.luau") then
-                        child.stdin:write("y\n")
-                    else
-                        child.stdin:write(`{math.random(1, 223)}\n`)
-                    end
+                    -- pcall to avoid throwing ci/cd on write to closed stdin
+                    local success, result = pcall(function()
+                        if str.endswith(test_path, "simple_prompts.luau") then
+                            child.stdin:write("y\n")
+                        else
+                            child.stdin:write(`{math.random(1, 223)}\n`)
+                        end
+                        return true
+                    end)
                 end
             end
         end
