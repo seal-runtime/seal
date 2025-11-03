@@ -180,6 +180,52 @@ pub fn fs_removefile(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
     }
 }
 
+pub fn fs_is(luau: &Lua, path: String) -> LuaValueResult {
+    let function_name = "fs.is(path: string)";
+    let response = match fs::symlink_metadata(&path) {
+        Ok(metadata) if metadata.is_file() => "File",
+        Ok(metadata) if metadata.is_dir() => "Directory",
+        Ok(metadata) if metadata.is_symlink() => "Symlink",
+        Ok(metadata) => {
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::FileTypeExt;
+                if metadata.file_type().is_socket() {
+                    "UnixSocket"
+                } else if metadata.file_type().is_fifo() {
+                    "UnixFifo"
+                } else if metadata.file_type().is_char_device() {
+                    "UnixCharDevice"
+                } else if metadata.file_type().is_block_device() {
+                    "UnixBlockDevice"
+                } else {
+                    // return wrap_err!("{}: '{}' is not a File, Directory, Symlink, Socket, UnixFifo, UnixCharDevice, UnixBlockDevice... What is it?? (got {:?})", function_name, path, metadata);
+                    "Other"
+                }
+            }
+            #[cfg(windows)]
+            {
+                use std::os::windows::fs::MetadataExt;
+                let attrs = metadata.file_attributes();
+                if attrs & 0x400 != 0 {
+                    "WindowsReparsePoint"
+                } else {
+                    // return wrap_err!("{}: '{}' is not a File, Directory, or Symlink... What is it?? (got {:?})", function_name, path, metadata);
+                    "Other"
+                }
+            }
+        },
+        Err(err) => match err.kind() {
+            io::ErrorKind::NotFound => "NotFound",
+            io::ErrorKind::PermissionDenied => "PermissionDenied",
+            _ => {
+                return wrap_err!("{}: unexpected error checking path '{}'; err: {}", function_name, path, err);
+            }
+        }
+    };
+    ok_string(response, luau)
+}
+
 pub fn fs_move(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
     let from_path = match multivalue.pop_front() {
         Some(LuaValue::String(from)) => {
@@ -455,7 +501,6 @@ fn write_tree_rec(current_path: PathBuf, tree: LuaTable, depth: Option<i32>, fun
     }
     Ok(())
 }
-
 
 fn fs_treebuilder_with_file(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "TreeBuilder:with_file(name: string, content: string)";
@@ -1000,6 +1045,10 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("find", fs_find)?
         .with_function("exists", fs_exists)?
         .with_function("watch", fs_watch)?
+        .with_function("is", fs_is)?
+        .with_function("symlink", fs_symlink)?
+        .with_function("unsymlink", fs_unsymlink)?
+        .with_function("readlink", fs_readlink)?
         .with_value("path", pathlib::create(luau)?)?
         .with_value("file", filelib::create(luau)?)?
         .with_value("dir", dirlib::create(luau)?)?
