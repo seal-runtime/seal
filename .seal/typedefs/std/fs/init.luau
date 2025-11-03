@@ -104,6 +104,31 @@ export type fs = {
 	]=]
 	removefile: (path: string) -> (),
 
+	--> fs.symlink(target: string, link: string) -> success
+	--[=[
+		Creates a symlink from `link` to `target`, possibly overwriting any already-existing symlink at `link`.
+
+		If you're on Windows, you need to run this program with Administrator permissions to create a symlink.
+
+		## Errors
+		- if `link` already exists on the filesystem and isn't a symlink,
+		- there's nothing to link to at `target`
+		- you don't have access to `link`
+	]=]
+	symlink: (target: string, link: string) -> boolean,
+
+	--[=[
+		Removes the symlink at `link`.
+
+		## Returns
+		- `true` if the symlink was successfully removed
+
+		## Errors
+		- If `link` points to something that isn't a symlink.
+		- If the symlink at `link` is not found or permission denied.
+	]=]
+	unsymlink: (link: string) -> boolean,
+
 	--> fs.watch(paths: string | { string }, options: WatchOptions)
 	--[=[
 		Watch for filesystem changes on one or more `paths`.
