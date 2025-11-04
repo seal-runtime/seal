@@ -315,7 +315,24 @@ type ChildProcessStdin = {
 	--[=[
 		Attempts to write to the child process' stdin; if an error occurs (usually a broken pipe), returns a seal `error` userdata.
 	]=]
-	write: (self: ChildProcessStdin, data: string) -> error?
+	write: (self: ChildProcessStdin, data: string) -> error?,
+	--[=[
+		Explicitly closes the child process stdin; this signals EOF for some programs that read multiple lines from stdin.
+
+		Errors if it can't flush the child process' stdin before closing.
+
+		## Usage
+
+		```luau
+		local child = process.spawn {
+			program = "python3",
+			args = { "-" },
+		}
+		child.stdin:write(PYTHON_SRC)
+		child.stdin:close()
+		```
+	]=]
+	close: (self: ChildProcessStdin) -> (),
 }
 
 export type ChildProcess = {

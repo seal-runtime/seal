@@ -470,7 +470,7 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
     let child_id = child.id();
     let stdout = child.stdout.take().unwrap();
     let stderr = child.stderr.take().unwrap();
-    let mut stdin = child.stdin.take().unwrap();
+    let stdin = child.stdin.take().unwrap();
 
     let child_cell = Rc::new(RefCell::new(child));
 
@@ -495,6 +495,9 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
         let stderr_cell = Rc::new(RefCell::new(stderr_stream));
         let stderr_handle = Stream::create_handle(stderr_cell, luau)?;
 
+        let stdin_cell_write = Rc::new(RefCell::new(Some(stdin)));
+        let stdin_cell_close = Rc::clone(&stdin_cell_write);
+
         let stdin_handle = TableBuilder::create(luau)?
             .with_function_mut("write", {
                 move |luau: &Lua, mut multivalue: LuaMultiValue| -> LuaValueResult {
@@ -511,12 +514,49 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
                         }
                     };
 
+                    let mut stdin = match stdin_cell_write.try_borrow_mut() {
+                        Ok(mut cell) => match cell.take() {
+                            Some(stdin) => stdin,
+                            None => {
+                                return wrap_err!("{}: attempt to write to closed stdin", function_name);
+                            }
+                        },
+                        Err(_) => {
+                            unreachable!("{}: stdin already borrowed; this shouldn't happen as Luau VM is single threaded and multithreaded code should never touch this???", function_name);
+                        }
+                    };
+
                     match stdin.write_all(&data_to_write) {
                         Ok(_) => Ok(LuaNil),
                         Err(err) => {
                             std_err::WrappedError::from_message(format!("{} can't write to stdin due to err: {}", function_name, err)).get_userdata(luau)
                         }
                     }
+                }
+            })?
+            .with_function_mut("close", {
+                move |_luau: &Lua, mut multivalue: LuaMultiValue| -> LuaEmptyResult {
+                    let function_name = "child.stdin:close()";
+                    pop_self(&mut multivalue, function_name)?;
+
+                    let mut stdin = match stdin_cell_close.try_borrow_mut() {
+                        Ok(mut cell) => match cell.take() {
+                            Some(stdin) => stdin,
+                            None => {
+                                return Ok(())
+                            }
+                        },
+                        Err(_) => {
+                            unreachable!("{}: stdin already borrowed; this shouldn't happen as Luau VM is single threaded and multithreaded code should never touch this???", function_name);
+                        }
+                    };
+
+                    if stdin.flush().is_err() {
+                        return wrap_err!("{}: unable to flush stdin", function_name);
+                    }
+
+                    drop(stdin);
+                    Ok(())
                 }
             })?
             .build_readonly()?;

@@ -1,8 +1,20 @@
-
 local dirlib = require("@self/dir")
 local pathlib = require("@self/path")
 local filelib = require("@self/file")
 local common_types = require("@self/_types")
+
+export type PathIs =
+	| "File"
+	| "Directory"
+	| "Symlink"
+	| "UnixSocket"
+	| "UnixFifo"
+	| "UnixCharDevice"
+	| "UnixBlockDevice"
+	| "WindowsReparsePoint"
+	| "Other"
+	| "NotFound"
+	| "PermissionDenied"
 
 export type fs = {
 	-- fs.readfile(path: string) -> string
@@ -104,6 +116,76 @@ export type fs = {
 	]=]
 	removefile: (path: string) -> (),
 
+	--> fs.is(path: string) -> PathIs
+	--[=[
+		Check what's at `path`.
+
+		## Usage
+
+		Check if something's a file:
+		```luau
+		if fs.is(path) == "File" then
+			print(fs.readfile(path)) -- not TOCTOU safe
+		end
+		```
+
+		A more exhaustive check:
+		```luau
+		for _, path in fs.listdir(directory) do
+			local path_is = fs.is(path)
+
+			if path_is == "File" then
+				print(`{path} is a file!`)
+			elseif path_is == "Directory" then
+				print(`{path} is a directory!`)
+			elseif path_is == "Symlink" then
+				print(`{path} is a symlink!`)
+			elseif path_is == "NotFound" then
+				print(`{path} not found!`)
+			elseif path_is == "PermissionDenied" then
+				print(`We don't have permission to access {path} (try sudo)`)
+			else
+				print(`{path} is weird one! got {path_is}`)
+			end
+		end
+		```
+	]=]
+	is: (path: string) -> PathIs,
+
+	--> fs.symlink(target: string, link: string) -> success
+	--[=[
+		Creates a symlink from `link` to `target`, possibly overwriting any already-existing symlink at `link`.
+
+		If you're on Windows, you need to run this program with Administrator permissions to create a symlink.
+
+		## Errors
+		- if `link` already exists on the filesystem and isn't a symlink,
+		- there's nothing to link to at `target`
+		- you don't have access to `link`
+	]=]
+	symlink: (target: string, link: string) -> boolean,
+
+	--[=[
+		Removes the symlink at `link`.
+
+		## Returns
+		- `true` if the symlink was successfully removed
+
+		## Errors
+		- If `link` points to something that isn't a symlink.
+		- If the symlink at `link` is not found or permission denied.
+	]=]
+	unsymlink: (link: string) -> boolean,
+
+	--[=[
+		Follows `symlink` and returns the *path* targeted by the symlink.
+
+		## Errors
+
+		- if `symlink` is not a symlink, does not exist on the filesystem, or is permission denied
+	]=]
+	readlink: (symlink: string) -> string,
+
 	--> fs.watch(paths: string | { string }, options: WatchOptions)
 	--[=[
 		Watch for filesystem changes on one or more `paths`.
@@ -164,7 +246,7 @@ export type fs = {
 		}
 		
 		local files = fs.listdir(
-			"./src", , event i
+			"./src",
 			true, -- recursive
 			function(path: string) -- filter
 				return if string.match(path, "%.json$") or string.match(path, "%.luaurc") 
