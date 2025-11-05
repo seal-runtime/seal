@@ -21,4 +21,4 @@ export type standalone = {
     extract: (path: string) -> buffer
 }
 
-return {} :: standalone
+return _LOAD_EXTERN("@seal/interop/standalone") :: standalone

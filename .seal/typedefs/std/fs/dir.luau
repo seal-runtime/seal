@@ -97,4 +97,4 @@ export type DirLib = setmetatable<{
 	__call: (self: any, path: string) -> DirectoryEntry?,
 }>
 
-return {} :: DirLib
+return _LOAD_EXTERN("@seal/std/fs/dir") :: DirLib

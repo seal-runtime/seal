@@ -71,4 +71,4 @@ function server.serve(config: ServeConfig)
 	
 end
 
-return server
+return _LOAD_EXTERN("@seal/std/net/http/server") :: typeof(server)

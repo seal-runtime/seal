@@ -424,4 +424,4 @@ type process = {
 	exit: (code: number?) -> never,
 }
 
-return {} :: process
+return _LOAD_EXTERN("@seal/std/process") :: process

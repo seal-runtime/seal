@@ -48,4 +48,5 @@ export type output = {
     --- clears stdout akin to `cls` or `clear`.
     clear: () -> (),
 }
-return {} :: output
+
+return _LOAD_EXTERN("@seal/std/io/output") :: output

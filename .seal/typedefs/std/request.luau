@@ -1,1 +1,1 @@
-return require("@std/net/http").request
+return require("./net/http").request

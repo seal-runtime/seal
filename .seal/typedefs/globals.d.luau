@@ -12,6 +12,8 @@ declare function warn<T...>(...: T...): ()
 
 declare _SEAL_VERSION: string
 
+declare function _LOAD_EXTERN(path: string): any
+
 declare script: {
 	entry_path: string,
 	context: string?,

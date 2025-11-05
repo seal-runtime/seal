@@ -388,4 +388,4 @@ end
 ]=]
 str.graphemes = internal.graphemes :: (s: string) -> (...any) -> (number, string)
 
-return str
+return _LOAD_EXTERN("@seal/std/str") :: typeof(str)

@@ -214,4 +214,4 @@ export type TerminalEvent =
 
 type input = typeof(input)
 
-return input :: input
+return _LOAD_EXTERN("@seal/std/io/input") :: input

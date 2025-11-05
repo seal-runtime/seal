@@ -81,4 +81,4 @@ export type LuaurcAliases = {
 	}
 }
 
-return {} :: luau
+return _LOAD_EXTERN("@seal/std/luau") :: luau

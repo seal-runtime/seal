@@ -4,4 +4,4 @@ export type Aes = {
 	decrypt: (ciphertext: string, key: string) -> string,
 }
 
-return {} :: Aes
+return _LOAD_EXTERN("@seal/std/crypt/aes") :: Aes

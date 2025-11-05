@@ -1,4 +1,4 @@
-return {
+return _LOAD_EXTERN("@seal/std/serde/toml") :: typeof({
 	encode = function(t: any): string
 		return nil :: any
 	end,
@@ -11,4 +11,4 @@ return {
 	writefile = function(config: {path: string, content: any}): ()
 		return nil :: any
 	end
-}
+})

@@ -22,4 +22,4 @@ export type format = setmetatable<{
     __call: (self: any, item: unknown) -> string,
 }>
 
-return {} :: format
+return _LOAD_EXTERN("@seal/std/io/format") :: format

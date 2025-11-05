@@ -92,4 +92,4 @@ export type PathLib = {
 	project: (n: number?, script_path: string?) -> string?
 }
 
-return {} :: PathLib
+return _LOAD_EXTERN("@seal/std/fs/path") :: PathLib

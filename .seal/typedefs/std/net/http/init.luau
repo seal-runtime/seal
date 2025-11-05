@@ -139,6 +139,6 @@ function http.request(config: RequestConfig): HttpResponse
 	return nil :: any
 end
 
-http.server = require("@std/net/http/server")
+http.server = require("@self/server")
 
-return http
+return _LOAD_EXTERN("@seal/std/net/http") :: typeof(http)

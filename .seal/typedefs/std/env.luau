@@ -1,4 +1,3 @@
-local env = {}
 --[=[
 A stdlib to interact with the script's running environment.
 ]=]
@@ -34,4 +33,4 @@ type env = {
 	removevar: (key: string) -> nil,
 }
 
-return env :: env
+return _LOAD_EXTERN("@seal/std/env") :: env
