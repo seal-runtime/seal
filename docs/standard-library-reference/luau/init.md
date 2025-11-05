@@ -68,20 +68,8 @@ and *coredump*.
 
 `function luau.bytecode(src: string): buffer | error`
 
-<details>
-
-<summary> See the docs </summary
-
 Compiles `src` to Luau bytecode.
-
-</details>
 
 `function luau.require_resolver(): {`
 
-<details>
-
-<summary> See the docs </summary
-
 Returns *seal*'s require resolver implementation used internally.
-
-</details>

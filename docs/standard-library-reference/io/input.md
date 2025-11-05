@@ -77,13 +77,7 @@ Falls back to `io.input.rawline` if called in a non-TTY (like a piped child proc
 
 `function input.interrupt(key: "CtrlC" | "CtrlD"): interrupt`
 
-<details>
-
-<summary> See the docs </summary
-
 Returns an `interrupt` userdata object. For reasons. Maybe control flow.
-
-</details>
 
 `function input.rawmode(enabled: boolean)`
 

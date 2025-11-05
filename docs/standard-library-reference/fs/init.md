@@ -116,10 +116,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 `function fs.removefile(path: string): ()`
 
-<details>
-
-<summary> See the docs </summary
-
 Removes a regular file at `path` without following symlinks.
 
 ## Usage
@@ -129,8 +125,6 @@ Removes a regular file at `path` without following symlinks.
 ```
 
 This function blocks the current Luau VM. To use it in parallel, call it within a child thread from `@std/thread`.
-
-</details>
 
 `function fs.is(path: string): PathIs`
 
@@ -194,10 +188,6 @@ If you're on Windows, you need to run this program with Administrator permission
 
 `function fs.unsymlink(link: string): boolean`
 
-<details>
-
-<summary> See the docs </summary
-
 Removes the symlink at `link`.
 
 ## Returns
@@ -209,21 +199,13 @@ Removes the symlink at `link`.
 - If `link` points to something that isn't a symlink.
 - If the symlink at `link` is not found or permission denied.
 
-</details>
-
 `function fs.readlink(symlink: string): string`
-
-<details>
-
-<summary> See the docs </summary
 
 Follows `symlink` and returns the *path* targeted by the symlink.
 
 ## Errors
 
 - if `symlink` is not a symlink, does not exist on the filesystem, or is permission denied
-
-</details>
 
 `function fs.watch(paths: string | { string }, options: WatchOptions?): (): (WatchEventCategory, WatchEventInfo)`
 
@@ -349,13 +331,7 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 
 `function fs.readtree(path: string): DirectoryTree`
 
-<details>
-
-<summary> See the docs </summary
-
 Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
-
-</details>
 
 `function fs.writetree(path: string, tree: TreeBuilder | DirectoryTree): ()`
 
@@ -510,15 +486,9 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 `function fs.copy(source: string, destination: string): ()`
 
-<details>
-
-<summary> See the docs </summary
-
 Copy a regular file or directory from `source` to `destination`.
 
 TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
-
-</details>
 
 `function fs.find(path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?): FindResult`
 
@@ -592,51 +562,27 @@ Returns a table mapping the paths of the directory at `path` with their `fs.Entr
 
 ` file: filelib.FileLib`
 
-<details>
-
-<summary> See the docs </summary
-
 A sublib for handling operations with files and `fs.FileEntry`s.
 
 Contains (relatively) TOCTOU-safe apis such as `fs.file.try_read`, etc.
 
 This library can be called as a function as a convenience alternative for `fs.find(f):try_file()`.
 
-</details>
-
 ` dir: dirlib.DirLib`
-
-<details>
-
-<summary> See the docs </summary
 
 A sublib for handling operations with directories and `fs.DirectoryEntry`s.
 
 This library can be called as a function as a convenience alternative to `fs.find(d):try_dir()`
 
-</details>
-
 ` path:  pathlib.PathLib`
-
-<details>
-
-<summary> See the docs </summary
 
 A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
 
 Commonly used `fs.path` functions include: `fs.path.join` for combining paths and `fs.path.cwd` and `fs.path.home`.
 
-</details>
-
 `function fs.tree(): TreeBuilder`
 
-<details>
-
-<summary> See the docs </summary
-
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
-
-</details>
 
 `export type WatchEventCategory`
 

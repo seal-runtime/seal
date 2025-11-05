@@ -8,7 +8,6 @@ Usage:
 local colors = require("@std/io/colors")
 ```
 ]=]
-
 export type colors = {
     black: (text: string) -> string,
     red: (text: string) -> string,

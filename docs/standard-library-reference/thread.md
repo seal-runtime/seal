@@ -64,15 +64,9 @@ although this is configurable with `thread.spawn`'s `ThreadSpawnOptions`. Readin
 
 `function ThreadHandle.join(self: ThreadHandle): ()`
 
-<details>
-
-<summary> See the docs </summary
-
 Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
 Errors if the thread has already been joined or somehow disappeared.
-
-</details>
 
 `function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | string): ()`
 
@@ -109,15 +103,9 @@ This is usually caused by trying to send a message to a thread that's already be
 
 `function ThreadHandle.sendbytes(self: ThreadHandle, data: buffer): ()`
 
-<details>
-
-<summary> See the docs </summary
-
 Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
 
 Errors if the channel has somehow become disconnected.
-
-</details>
 
 `function ThreadHandle.try_sendbytes(self: ThreadHandle, data: buffer): (boolean, "Sent" | "Disconnected" | "Full")`
 
@@ -138,51 +126,27 @@ This is usually caused by trying to send a message to a thread that's already be
 
 `function ThreadHandle.read(self: ThreadHandle): JsonSerializableTable? | string?`
 
-<details>
-
-<summary> See the docs </summary
-
 Read a message from the regular channel without blocking the current thread.
 
 Errors if the channel has somehow become disconnected.
 
-</details>
-
 `function ThreadHandle.read_await(self: ThreadHandle): JsonSerializableTable | string`
-
-<details>
-
-<summary> See the docs </summary
 
 Read a message from the regular channel, blocking until the next message is available.
 
 Errors if the channel has somehow become disconnected.
 
-</details>
-
 `function ThreadHandle.readbytes(self: ThreadHandle): buffer?`
-
-<details>
-
-<summary> See the docs </summary
 
 Read a message from the bytes channel without blocking the current thread.
 
 Errors if the channel has somehow become disconnected.
 
-</details>
-
 `function ThreadHandle.readbytes_await(self: ThreadHandle): buffer`
-
-<details>
-
-<summary> See the docs </summary
 
 Read a message from the bytes channel, blocking until the next message is available.
 
 Errors if the channel has somehow become disconnected.
-
-</details>
 
 `function thread.spawn(spawn_options: ThreadSpawnOptions): ThreadHandle`
 
@@ -237,10 +201,4 @@ Spawns a new Rust Thread running Luau code in a new Luau VM.
 
 `function thread.sleep(milliseconds: number): true`
 
-<details>
-
-<summary> See the docs </summary
-
 Literally the same as `time.wait`, except in milliseconds.
-
-</details>

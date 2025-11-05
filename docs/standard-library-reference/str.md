@@ -207,15 +207,9 @@ Otherwise has the same semantics as `str.split`.
 
 `function str.chars(s: string): (...any) -> (number, string)`
 
-<details>
-
-<summary> See the docs </summary
-
 Iterate over the human-readable characters (graphemes) of a string
 
 This function counts by 'characters', whereas `str.graphemes` provides byte indices for `string.sub`/`str.slice`
-
-</details>
 
 `str.graphemes = internal.graphemes :: (s: string) -> (...any) -> (number, string)`
 

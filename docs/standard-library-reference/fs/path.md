@@ -43,27 +43,15 @@ handle cases like `NotFound` and `PermissionDenied` without wrapping error-throw
 
 `function PathLib.canonicalize(path: string): string`
 
-<details>
-
-<summary> See the docs </summary
-
 Returns the canonical (absolute) form of `path` using Rust's `std::fs::canonicalize`, resolving symlinks and intermediate components.
 
 Errors if the requested path doesn't exist on the filesystem or is invalid.
 
-</details>
-
 `function PathLib.absolutize(path: string): string`
-
-<details>
-
-<summary> See the docs </summary
 
 Returns the absolute path of `path` without checking the filesystem.
 
 Use this function if your path may or may not exist (yet).
-
-</details>
 
 `function PathLib.normalize(path: string): string`
 

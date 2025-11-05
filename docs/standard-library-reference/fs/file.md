@@ -4,13 +4,7 @@
 
 `function FileLib.from(path: string): FileEntry`
 
-<details>
-
-<summary> See the docs </summary
-
 Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if a file is not found or permission was denied, etc.
-
-</details>
 
 `function FileLib.try_read(path: string): (string?, "Ok" | "NotFound" | "PermissionDenied")`
 
@@ -109,10 +103,6 @@ Doesn't follow symlinks.
 
 `function FileLib.__call(self: any, path: string): FileEntry?`
 
-<details>
-
-<summary> See the docs </summary
-
 Convenient and slightly more efficient alternative to `fs.find(path):try_file()`
 
 ## Usage
@@ -123,5 +113,3 @@ Convenient and slightly more efficient alternative to `fs.find(path):try_file()`
   print(myfile:metadata())
  end
 ```
-
-</details>

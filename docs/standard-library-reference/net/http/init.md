@@ -65,10 +65,6 @@ local response = http.post {
 
 `function http.request(config: RequestConfig): HttpResponse`
 
-<details>
-
-<summary> See the docs </summary
-
 Sends an HTTP request:
 
 ## Usage
@@ -83,5 +79,3 @@ if response.ok then
  print(response:decode())
 end
 ```
-
-</details>

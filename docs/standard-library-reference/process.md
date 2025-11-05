@@ -315,13 +315,7 @@ Basically equivalent to `ChildProcessStream:lines()` except with generalized ite
 
 `function ChildProcessStream.write(self: ChildProcessStdin, data: string): error?`
 
-<details>
-
-<summary> See the docs </summary
-
 Attempts to write to the child process' stdin; if an error occurs (usually a broken pipe), returns a seal `error` userdata.
-
-</details>
 
 `function ChildProcessStream.close(self: ChildProcessStdin): ()`
 
