@@ -12,16 +12,11 @@
 
 `function RunResult.unwrap_or(self: RunResult, default: string | (result: RunResult): string): string`
 
-<details>
-
-<summary> See the docs </summary
-
+--[=[
 Returns the `RunResult`'s `stdout` if it was successful, otherwise returns a default value.
 
 The `default` can be either a string or a function that takes in the `RunResult` and returns a string.
 If you provide a `default` function, `:unwrap_or` will return what it returns.
-
-</details>
 
 ` args: { string }?`
 
@@ -39,6 +34,7 @@ If you provide a `default` function, `:unwrap_or` will return what it returns.
 
 <summary> See the docs </summary
 
+--[=[
 A `ChildProcessStream` captures incoming bytes from your `ChildProcess`' output streams (either stdout or stderr),
 and caches them in its `inner` buffer. Each stream is spawned in a separate Rust thread to facilitate
 consistently nonblocking, dependable reads, allowing most `ChildProcess.stream:read` methods to be fully nonblocking unless
@@ -83,6 +79,7 @@ By default, seal truncates bytes from the front of inner, causing old data to be
 
 <summary> See the docs </summary
 
+--[=[
 Reads up to `count` bytes from the stream for up to `timeout` seconds, retrying while the stream remains empty.
 
 - If `count` is unspecified or nil, reads the entire stream instead of stopping at `count` bytes.
@@ -131,6 +128,7 @@ Get everything currently in the stream without blocking:
 
 <summary> See the docs </summary
 
+--[=[
 Reads exactly `count` bytes from the stream, retrying until `count` bytes are available or `timeout` seconds elapse.
 
 Bytes are not consumed from the stream until exactly `count` bytes are available.
@@ -181,6 +179,7 @@ Read from both streams every 0.5 seconds, byte by byte, without otherwise blocki
 
 <summary> See the docs </summary
 
+--[=[
 Keep reading from the stream until search `term` is encountered. This is especially useful if you're trying to read line-by-line,
 or until a specific delimiter is encountered.
 
@@ -208,6 +207,7 @@ Blocks the current VM until `term` is found, `timeout` seconds elapse, or the re
 
 <summary> See the docs </summary
 
+--[=[
 Fill the `target` buffer with as many bytes as possible from the stream. Retries until the stream is nonempty or `timeout` seconds elapse.
 
 - `target_offset` defaults to `0` if unspecified or nil.
@@ -244,6 +244,7 @@ This function should not overfill the target buffer! A maximum of `buffer.len(ta
 
 <summary> See the docs </summary
 
+--[=[
 Read exactly `count` bytes into the `target` buffer at `target_offset`, retrying until `count` bytes are available or `timeout` seconds elapse.
 
 - `target_offset` defaults to `0` if unspecified or nil.
@@ -274,6 +275,7 @@ Pass a `timeout` of `0` seconds to prevent this function from blocking!
 
 <summary> See the docs </summary
 
+--[=[
 Iterate over the lines in the stream, blocking the current VM (Rust Thread) until all lines are read or the timeout has been reached.
 
 If a `timeout` is specified, `:lines()` will stop iterating once a line hasn't been seen for `timeout` seconds, allowing you to
@@ -320,6 +322,7 @@ Unlike `:iter`, this method cleans up `\r` prefixes and trailing `\n`s.
 
 <summary> See the docs </summary
 
+--[=[
 Iterate over the stream with more granular options:
 
 To prevent nonterminating iteration without an explicit `break`, you can provide a `timeout`, which stops iteration
@@ -335,18 +338,14 @@ This function does *not* strip preceding '\r's and trailing '\n's (unlike `:line
 
 `function ChildProcessStream.__iter(self: ChildProcessStream): (): string`
 
-<details>
-
-<summary> See the docs </summary
-
+--[=[
 Iterate over the lines of the `ChildProcessStream` with generalized iteration, blocking until `break` or the reader thread exits.
 
 Basically equivalent to `ChildProcessStream:lines()` except with generalized iteration you can't specify a `timeout`.
 
-</details>
-
 `function ChildProcessStream.write(self: ChildProcessStdin, data: string): error?`
 
+--[=[
 Attempts to write to the child process' stdin; if an error occurs (usually a broken pipe), returns a seal `error` userdata.
 
 `function ChildProcessStream.close(self: ChildProcessStdin): ()`
@@ -355,6 +354,7 @@ Attempts to write to the child process' stdin; if an error occurs (usually a bro
 
 <summary> See the docs </summary
 
+--[=[
 Explicitly closes the child process stdin; this signals EOF for some programs that read multiple lines from stdin.
 
 Errors if it can't flush the child process' stdin before closing.
@@ -378,6 +378,7 @@ Errors if it can't flush the child process' stdin before closing.
 
 <summary> See the docs </summary
 
+--[=[
 Runs a program, yields until it completes, and returns its results.
 
 Takes a RunOptions table:
@@ -416,6 +417,7 @@ Until the process exits.
 
 <summary> See the docs </summary
 
+--[=[
 Launches a shell command in a child process.
 
 Uses the same shell you're using to run `seal` (so your aliases should available, except on Windows,
@@ -447,6 +449,7 @@ so I recommend sticking to `process.run` with `args` unless you need shell behav
 
 <summary> See the docs </summary
 
+--[=[
 Spawns a long-running process in a non-blocking manner, returns a `ChildProcess` that contains handles to the spawned process' stdout, stderr, and stdin.
 
 ## Usage

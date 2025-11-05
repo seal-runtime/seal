@@ -12,6 +12,7 @@
 
 <summary> See the docs </summary
 
+[=[
 Constructs a `DateTime` from a strtime string or `common_format`.
 
 All seal `DateTime`s are timezone aware, which prevents annoying and complex bugs down the line.
@@ -36,6 +37,7 @@ All seal `DateTime`s are timezone aware, which prevents annoying and complex bug
 
 <summary> See the docs </summary
 
+[=[
 Constructs a `TimeSpan` from years. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
 
 ## how relatives work
@@ -65,6 +67,7 @@ Constructs a `TimeSpan` from years. Months and years *must* be relative to a `Da
 
 <summary> See the docs </summary
 
+[=[
 Constructs a `TimeSpan` from months. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
 
 ## how relatives work

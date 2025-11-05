@@ -2,6 +2,7 @@
 
 # Io
 
+[=[
 Standard library for handling **terminal** input/output.
 
 You can require the whole `@std/io` lib at once but it's recommended you require individual

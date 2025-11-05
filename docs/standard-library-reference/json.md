@@ -8,10 +8,7 @@
 
 `type json = {`
 
-<details>
-
-<summary> See the docs </summary
-
+[=[
 Easily manipulate JSON (JavaScript Object Notation) data.
 
 ## Usage
@@ -22,8 +19,6 @@ local data = json.readfile("./animals.json") :: { cats: number, dogs: number }
 data.cats += 1
 json.writefile("./animals.json", data)
 ```
-
-</details>
 
 `function JsonData.encode(t: JsonData, options: EncodeOptions?): string`
 

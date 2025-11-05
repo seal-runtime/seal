@@ -8,6 +8,7 @@
 
 <summary> See the docs </summary
 
+--[=[
 Joins path components together in a cross-platform-safe manner.
 
 The default separator is `/`, except when dealing with absolute paths on Windows.
@@ -32,6 +33,7 @@ On Windows, pass `.\` as the first component to `path.join` to use `\` in relati
 
 <summary> See the docs </summary
 
+--[=[
 Checks if `path` exists on the filesystem using Rust's `std::fs::exists`.
 
 Note this function is ***not* TOCTOU (Time Of Check to Time Of Use)-safe**!
@@ -43,12 +45,14 @@ handle cases like `NotFound` and `PermissionDenied` without wrapping error-throw
 
 `function PathLib.canonicalize(path: string): string`
 
+--[=[
 Returns the canonical (absolute) form of `path` using Rust's `std::fs::canonicalize`, resolving symlinks and intermediate components.
 
 Errors if the requested path doesn't exist on the filesystem or is invalid.
 
 `function PathLib.absolutize(path: string): string`
 
+--[=[
 Returns the absolute path of `path` without checking the filesystem.
 
 Use this function if your path may or may not exist (yet).
@@ -59,6 +63,7 @@ Use this function if your path may or may not exist (yet).
 
 <summary> See the docs </summary
 
+--[=[
 Returns a normalized (cleaned) version of `path` with a consistent path separator and with duplicate separators and unneeded relative path symbol removed.
 
 By default, uses '/' as the path separator unless `path` is a Windows-style absolute path, in which case it'll use a backslash instead.
@@ -83,10 +88,7 @@ as well as UNC paths like `"\\network\share\text.txt"` or `"\\?\wsl\mnt\..."`.
 
 `function PathLib.parent(path: string, n: number?): string?`
 
-<details>
-
-<summary> See the docs </summary
-
+--[=[
 Returns the path of the parent directory `n` (default = 1) parents to the left of `path`
 
 ## Usage
@@ -100,8 +102,6 @@ Returns the path of the parent directory `n` (default = 1) parents to the left o
   local parent_dir = path.parent(cwd)
 ```
 
-</details>
-
 `function PathLib.child(path: string): string?`
 
 `function PathLib.home(): string`
@@ -110,14 +110,9 @@ Returns the path of the parent directory `n` (default = 1) parents to the left o
 
 `function PathLib.project(n: number?, script_path: string?): string?`
 
-<details>
-
-<summary> See the docs </summary
-
+--[=[
 Returns the *seal* project directory `n` projects up, relative to `script_path` or the current `script:path()` if unspecified.
 
 To get the closest project directory to the current file, use `fs.path.project()`.
 
 Returns the project directory if found, or `nil` if no project directory was found exactly `n` projects up.
-
-</details>

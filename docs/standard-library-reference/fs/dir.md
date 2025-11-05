@@ -14,6 +14,7 @@
 
 <summary> See the docs </summary
 
+--[=[
 Ensures that a directory exists at `path` by trying to create it, catching any AlreadyExists error, and returning a `DirectoryEntry` at that path.
 
 Similar to `fs.makedir(path, { error_if_exists = false }); fs.dir.from(path)`
@@ -34,6 +35,7 @@ Similar to `fs.makedir(path, { error_if_exists = false }); fs.dir.from(path)`
 
 <summary> See the docs </summary
 
+--[=[
 Try to remove directory at `path` using Rust's `fs::remove_dir_all` without erroring in common cases.
 
 If this function partially fails (removes some but not all subtrees/files in `path`), `try_remove` will return false
@@ -47,10 +49,7 @@ with result "Other", as well as an error kind string that describes what went wr
 
 `function DirLib.home(): DirectoryEntry`
 
-<details>
-
-<summary> See the docs </summary
-
+--[=[
 Returns a `DirectoryEntry` corresponding to the user's home directory, erroring if not found.
 
 ## Usage
@@ -63,20 +62,13 @@ Returns a `DirectoryEntry` corresponding to the user's home directory, erroring 
    end)
 ```
 
-</details>
-
 `function DirLib.cwd(): DirectoryEntry`
 
-<details>
-
-<summary> See the docs </summary
-
+--[=[
 Constructs a `DirectoryEntry` from the user's current working directory (cwd)
 
 If you're looking for project-relative pathing, I recommend using `fs.dir.project()` instead, as those will work no matter
 where the user is when they execute your code.
-
-</details>
 
 `function DirLib.project(n: number?): DirectoryEntry`
 
@@ -84,6 +76,7 @@ where the user is when they execute your code.
 
 <summary> See the docs </summary
 
+--[=[
 Constructs a `DirectoryEntry` from the script's current *seal* project.
 
 Use this for most project-relative paths instead of `fs.path.cwd` or `fs.dir.cwd` usages.
@@ -110,10 +103,7 @@ Use this for most project-relative paths instead of `fs.path.cwd` or `fs.dir.cwd
 
 `function DirLib.__call(self: any, path: string): DirectoryEntry?`
 
-<details>
-
-<summary> See the docs </summary
-
+--[=[
  Convenient and slightly more efficient alternative to `fs.find(path):try_dir()`
 
  ## Usage
@@ -124,5 +114,3 @@ Use this for most project-relative paths instead of `fs.path.cwd` or `fs.dir.cwd
   main_luau:append('print("meow")')
  end
 ```
-
-</details>

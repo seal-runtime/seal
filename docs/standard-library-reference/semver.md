@@ -2,6 +2,8 @@
 
 # Semver
 
+[=[
+
 ### semver = semantic versioning
 
 This implementation roughly follows the described spec at <https://semver.org>.
@@ -50,6 +52,7 @@ assert(first_version < second_version)
 
 <summary> See the docs </summary
 
+[=[
 Returns true if the `self` is compatible with (within the range of) semver_range.
 
 `semver_range` supports the following syntaxes:

@@ -14,6 +14,7 @@
 
 <summary> See the docs </summary
 
+[=[
 Makes an HTTP `GET` request.
 
 ## Usage
@@ -44,10 +45,7 @@ local cats = http.get {
 
 `function http.post(config: PostConfig): HttpResponse`
 
-<details>
-
-<summary> See the docs </summary
-
+[=[
 Makes an HTTP `POST` request.
 
 ## Usage
@@ -66,11 +64,9 @@ local response = http.post {
 
 ```#
 
-</details>
-
-
 `function http.request(config: RequestConfig): HttpResponse`
 
+[=[
 Sends an HTTP request:
 
 ## Usage

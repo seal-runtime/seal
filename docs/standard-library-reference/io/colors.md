@@ -2,6 +2,7 @@
 
 # Colors
 
+[=[
 The `@std/io/colors` lib, because if your terminal output isn't colorized, is it even output?
 
 Usage:
@@ -12,6 +13,7 @@ local colors = require("@std/io/colors")
 
 `function colors.magenta(text: string): string`
 
+[=[
 Turns the provided text magenta
 
 Usage:
@@ -23,6 +25,7 @@ print(colors.magenta("this text is hereby colored magenta"))
 
 `function colors.blue(text: string): string`
 
+[=[
 Turns the provided text blue
 
 Usage:
@@ -34,6 +37,7 @@ print(colors.blue("this text is hereby colored blue"))
 
 `function colors.cyan(text: string): string`
 
+[=[
 Turns the provided text cyan
 
 Usage:
@@ -45,6 +49,7 @@ print(colors.cyan("this text is hereby colored cyan"))
 
 `function colors.black(text: string): string`
 
+[=[
 Turns the provided text black
 
 Usage:
@@ -56,6 +61,7 @@ print(colors.black("this text is hereby colored black"))
 
 `function colors.green(text: string): string`
 
+[=[
 Turns the provided text green
 
 Usage:
@@ -67,6 +73,7 @@ print(colors.green("this text is hereby colored green"))
 
 `function colors.yellow(text: string): string`
 
+[=[
 Turns the provided text yellow
 
 Usage:
@@ -78,6 +85,7 @@ print(colors.yellow("this text is hereby colored yellow"))
 
 `function colors.white(text: string): string`
 
+[=[
 Turns the provided text white
 
 Usage:
@@ -89,6 +97,7 @@ print(colors.white("this text is hereby colored white"))
 
 `function colors.red(text: string): string`
 
+[=[
 Turns the provided text red
 
 Usage:
@@ -100,6 +109,7 @@ print(colors.red("this text is hereby colored red"))
 
 `function colors.bold.white(text: string): string`
 
+[=[
 Turns the provided text bold white
 
 Usage:
@@ -111,6 +121,7 @@ print(colors.bold.white("this is now bold white"))
 
 `function colors.bold.magenta(text: string): string`
 
+[=[
 Turns the provided text bold magenta
 
 Usage:
@@ -122,6 +133,7 @@ print(colors.bold.magenta("this is now bold magenta"))
 
 `function colors.bold.black(text: string): string`
 
+[=[
 Turns the provided text bold black
 
 Usage:
@@ -133,6 +145,7 @@ print(colors.bold.black("this is now bold black"))
 
 `function colors.bold.green(text: string): string`
 
+[=[
 Turns the provided text bold green
 
 Usage:
@@ -144,6 +157,7 @@ print(colors.bold.green("this is now bold green"))
 
 `function colors.bold.cyan(text: string): string`
 
+[=[
 Turns the provided text bold cyan
 
 Usage:
@@ -155,6 +169,7 @@ print(colors.bold.cyan("this is now bold cyan"))
 
 `function colors.bold.yellow(text: string): string`
 
+[=[
 Turns the provided text bold yellow
 
 Usage:
@@ -166,6 +181,7 @@ print(colors.bold.yellow("this is now bold yellow"))
 
 `function colors.bold.blue(text: string): string`
 
+[=[
 Turns the provided text bold blue
 
 Usage:
@@ -177,6 +193,7 @@ print(colors.bold.blue("this is now bold blue"))
 
 `function colors.bold.red(text: string): string`
 
+[=[
 Turns the provided text bold red
 
 Usage:
@@ -196,10 +213,7 @@ print(colors.bold.red("this is now bold red"))
 
 `colors.codes = {`
 
-<details>
-
-<summary> See the docs </summary
-
+[=[
 An assorted collection of ANSI color codes to help you colorize your text however you want!!
 
 Don't forget to finish off your colorized strings with a `RESET` :p
@@ -210,5 +224,3 @@ Usage:
 local colors = require("@std/io/colors")
 print(colors.bold.red("this is now bold red"))
 ```
-
-</details>
