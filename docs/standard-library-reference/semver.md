@@ -41,37 +41,9 @@ second_version:satisfies("^0.0.1") --> true
 assert(first_version < second_version)
 ```
 
-`major: number`
-
-`minor: number`
-
-`patch: number`
-
-`metadata: {`
-
-`release_candidate: {`
-
-`release_candidate.tag: string`
-
-`release_candidate.ver: number`
-
-`release_candidate.build: string?`
-
 `function semver.default(): Semver`
 
-`local fields: SemverFields = {`
-
 `function semver.from(s: string): Semver`
-
-`Semver.error("Invalid semver string: " .. s)`
-
-`Semver.error(`Invalid semver string: {s}`)`
-
-`Semver.ver = tonumber(rc_version) :: number`
-
-`local fields: SemverFields = {`
-
-`Semver.metadata = metadata :: any, -- LUAU FIXME: not optional fields not qualifying as optionals`
 
 `function semver.satisfies(self: Semver, semver_range: string): boolean`
 
@@ -107,14 +79,6 @@ Note that release candidates (rc.<number>) are ordered before full releases, the
 ```
 
 </details>
-
-`local function get_specific_range(part: string): (SemverVals, string)`
-
-`Semver.for k, _ in semver_ranges :: { [string]: string } do`
-
-`local op = (semver_ranges :: any)[k] :: SemverVals`
-
-`Semver.satisfies = (self :: any) == other -- LUAU FIXME`
 
 `function semver.__eq(self: Semver, other: Semver): boolean`
 

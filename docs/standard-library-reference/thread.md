@@ -161,15 +161,11 @@ This is usually caused by trying to send a message to a thread that's already be
 
 </details>
 
-`-- ThreadHandle:sendbytes(data: buffer)`
-
 `function ThreadHandle.sendbytes(self: ThreadHandle, data: buffer): ()`
 
 Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
 
 Errors if the channel has somehow become disconnected.
-
-`-- ThreadHandle:try_sendbytes(data: buffer)`
 
 `function ThreadHandle.try_sendbytes(self: ThreadHandle, data: buffer): (boolean, "Sent" | "Disconnected" | "Full")`
 

@@ -3,8 +3,6 @@
 
 # Fs
 
-`fs.-- fs.readfile(path: string) -> string`
-
 `function fs.readfile(path: string): string`
 
 <details>
@@ -62,8 +60,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 </details>
 
-`fs.-- fs.readlines(path: string) -> () -> (number, string)`
-
 `function fs.readlines(path: string): (): (number, string)`
 
 <details>
@@ -92,8 +88,6 @@ This function returns a normal iterator function, so if you save the return of `
 
 </details>
 
-`fs.-- fs.writefile(path: string, content: string | buffer) -> ()`
-
 `function fs.writefile(path: string, content: string | buffer): ()`
 
 <details>
@@ -121,8 +115,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 </details>
 
-`fs.-- fs.removefile(path: string) -> ()`
-
 `function fs.removefile(path: string): ()`
 
 Removes a regular file at `path` without following symlinks.
@@ -134,8 +126,6 @@ Removes a regular file at `path` without following symlinks.
 ```
 
 This function blocks the current Luau VM. To use it in parallel, call it within a child thread from `@std/thread`.
-
-`fs.--> fs.is(path: string) -> PathIs`
 
 `function fs.is(path: string): PathIs`
 
@@ -179,8 +169,6 @@ A more exhaustive check:
 
 </details>
 
-`fs.--> fs.symlink(target: string, link: string) -> success`
-
 `function fs.symlink(target: string, link: string): boolean`
 
 <details>
@@ -219,8 +207,6 @@ Follows `symlink` and returns the *path* targeted by the symlink.
 ## Errors
 
 - if `symlink` is not a symlink, does not exist on the filesystem, or is permission denied
-
-`fs.--> fs.watch(paths: string | { string }, options: WatchOptions)`
 
 `function fs.watch(paths: string | { string }, options: WatchOptions?): (): (WatchEventCategory, WatchEventInfo)`
 
@@ -344,13 +330,9 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 
 </details>
 
-`fs.-- fs.readtree(path: string) -> DirectoryTree`
-
 `function fs.readtree(path: string): DirectoryTree`
 
 Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
-
-`fs.-- fs.writetree(path: string, tree: TreeBuilder | DirectoryTree) -> ()`
 
 `function fs.writetree(path: string, tree: TreeBuilder | DirectoryTree): ()`
 
@@ -395,8 +377,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 </details>
 
-`fs.-- fs.removetree(path: string) -> ()`
-
 `function fs.removetree(path: string): ()`
 
 <details>
@@ -420,8 +400,6 @@ Please use this function carefully.
 - `fs.removetree` fails to remove some (or all) files and directories within `path`
 
 </details>
-
-`fs.-- fs.makedir(path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?) -> boolean`
 
 `function fs.makedir(path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?): boolean`
 
@@ -457,8 +435,6 @@ If you want to ensure that a directory exists (like `fs.makedir(d, { error_if_ex
 
 </details>
 
-`fs.-- fs.listdir(path: string, recursive: boolean?, filter: FilterFn?) -> { string }`
-
 `function fs.listdir(path: string, recursive: boolean?, filter: ((path: string): boolean)?): { string }`
 
 <details>
@@ -492,8 +468,6 @@ If a filter function is passed, only paths that pass the filter are included.
 
 </details>
 
-`fs.-- fs.move(from: string, to: string) -> ()`
-
 `function fs.move(from: string, to: string): ()`
 
 Move a regular file or directory `from` a path `to` a new path.
@@ -505,15 +479,11 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 - if `from` or `to` are not valid utf-8 encoded paths
 - `from` does not exist on the filesystem
 
-`fs.-- fs.copy(source: string, destination: string) -> ()`
-
 `function fs.copy(source: string, destination: string): ()`
 
 Copy a regular file or directory from `source` to `destination`.
 
 TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
-
-`fs.-- fs.find(path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult`
 
 `function fs.find(path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?): FindResult`
 
@@ -563,8 +533,6 @@ Check if we have access to `path`
 
 </details>
 
-`fs.-- fs.entries(path: string) -> { [string]: Entry }`
-
 `function fs.entries(path: string): { [string]: Entry }`
 
 <details>
@@ -611,10 +579,6 @@ Commonly used `fs.path` functions include: `fs.path.join` for combining paths an
 
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
-`WatchOptions.recursive: boolean?`
-
-`WatchOptions.timeout_ms: number?`
-
 `export type WatchEventCategory`
 
 <details>
@@ -630,10 +594,6 @@ Some usage notes:
 - `"None"` indicates a timeout was reached; use it to early exit or `break` without blocking the VM.
 
 </details>
-
-`WatchEventInfo.paths: { string }`
-
-`WatchEventInfo.kind: WatchKind`
 
 `WatchEventInfo.is_write: boolean`
 

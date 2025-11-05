@@ -3,8 +3,6 @@
 
 # Luau
 
-`luau.--> luau.eval(src: string, options: EvalOptions?)`
-
 `function luau.eval(src: string, options: EvalOptions?): unknown | error`
 
 <details>
@@ -51,8 +49,6 @@ an error that occurred when evaluating the code, such as a syntax error or runti
 
 </details>
 
-`luau.--> luau.eval_unsafe(src: string | buffer, options: EvalOptions?)`
-
 `function luau.eval_unsafe(src: string | buffer, options: EvalOptions?): unknown | error`
 
 <details>
@@ -71,8 +67,6 @@ and *coredump*.
 
 </details>
 
-`luau.--> luau.bytecode(src: string)`
-
 `function luau.bytecode(src: string): buffer | error`
 
 Compiles `src` to Luau bytecode.
@@ -84,11 +78,3 @@ Returns *seal*'s require resolver implementation used internally.
 `function luau.resolve(requested_path: string, requiring_file_path: string): { err: string, path: nil } | { path: string, err: nil }`
 
  Resolve a Luau require alias (`requested_path`) relative to `requiring_file_path` to find its location on the filesystem.
-
-`function luau.get_aliases(requiring_file_path: string): ({ LuaurcAliases }?, string?)`
-
-`function luau.expand_aliases(requested_path: string, aliases_by_luaurc: { LuaurcAliases }): (string?, string?)`
-
-`EvalOptions.name: string?`
-
-`EvalOptions.stdlib: ("seal" | "safe" | "none")?`

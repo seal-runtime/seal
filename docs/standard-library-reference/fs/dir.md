@@ -35,8 +35,6 @@ Similar to `fs.makedir(path, { error_if_exists = false }); fs.dir.from(path)`
 
 </details>
 
-`DirLib.-- fs.dir.try_remove(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?)`
-
 `function DirLib.try_remove(path: string): (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?)`
 
 <details>

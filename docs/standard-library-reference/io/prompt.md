@@ -21,8 +21,6 @@ Prompt users for personal information :)
     -- displays "What's your name?: "
 ```
 
-`prompt.--> prompt.text(message: string): string`
-
 `function prompt.text(message: string): string`
 
 <details>
@@ -54,8 +52,6 @@ If you want to apply *custom validation*, use `prompt.validate` instead!
 
 </details>
 
-`prompt.--> prompt.confirm(message: string, default: boolean? (default true)): boolean`
-
 `function prompt.confirm(message: string, default: boolean?): boolean`
 
 <details>
@@ -80,15 +76,7 @@ To confirm, the user may send any of `Y`, `y`, `n`, or `N` to explicitly signify
 
 </details>
 
-`prompt.-- --> prompt.danger(message: string, risk: string, cheese: boolean? (default true)): boolean`
-
-`prompt.--         For example, OTP: a-b-c means you type c-b-a and press enter to confirm.`
-
-`prompt.--         OTP: stinky-strinky-octopi`
-
 `prompt.-- danger: (message: string, risk: string, cheese: boolean?) -> boolean`
-
-`prompt.--> prompt.validate(message: string, v: (response: string) -> true | string) -> string`
 
 `function prompt.validate(message: string, v: (response: string): true | string): string`
 
@@ -118,8 +106,6 @@ Like `prompt.text`, but validates the response with a custom validation function
 
 </details>
 
-`prompt.--> prompt.password(message: string, style: "Hidden" | "*" | nil; defaults to "Hidden"): string`
-
 `function prompt.password(message: string, style: "Hidden" | "*"?): string`
 
 <details>
@@ -147,8 +133,6 @@ seal makes a best-effort attempt to clean up/erase passwords in astrick mode
 but it may not be perfectly safe from introspection.
 
 </details>
-
-`prompt.--> prompt.pick(message: string, options: { string }, default: number?): number (index in options)`
 
 `function prompt.pick(message: string, options: { string }, default: number?): number`
 

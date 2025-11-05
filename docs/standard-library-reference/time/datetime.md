@@ -3,32 +3,6 @@
 
 # Datetime
 
-`ISO_8601 = "%Y-%m-%d %H:%M" :: "%Y-%m-%d %H:%M"`
-
-`RFC_2822 = "%a, %d %b %Y %H:%M:%S %z" :: "%a, %d %b %Y %H:%M:%S %z"`
-
-`RFC_3339 = "%Y-%m-%dT%H:%M:%S%:z" :: "%Y-%m-%dT%H:%M:%S%:z"`
-
-`SHORT_DATE = "%Y-%m-%d" :: "%Y-%m-%d"`
-
-`SHORT_TIME = "%H:%M" :: "%H:%M"`
-
-`FULL_DATE_TIME = "%A, %B %d, %Y %H:%M:%S" :: "%A, %B %d, %Y %H:%M:%S"`
-
-`LOGGING_24_HR = "%a %b %e %H:%M:%S %Z %Y" :: "%a %b %e %H:%M:%S %Z %Y"`
-
-`LOGGING_12_HR = "%a %b %e %I:%M:%S %p %Z %Y" :: "%a %b %e %I:%M:%S %p %Z %Y"`
-
-`["MM/DD/YYYY"] = "%m/%d/%Y" :: "%m/%d/%Y"`
-
-`["MM/DD/YYYY HH:MM (AM/PM)"] = "%m/%d/%Y %I:%M %p" :: "%m/%d/%Y %I:%M %p"`
-
-`["MM/DD/YY"] = "%m/%d/%y" :: "%m/%d/%y"`
-
-`["HH:MM (AM/PM)"] = "%I:%M %p" :: "%I:%M %p"`
-
-`AMERICAN_FULL_DATE_TIME = "%A, %B %d, %Y %I:%M:%S %p" :: "%A, %B %d, %Y %I:%M:%S %p"`
-
 `function datetime.now(): DateTime`
 
  Constructs a `DateTime` from right now (based on system time) in your local timezone.

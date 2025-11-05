@@ -94,8 +94,6 @@ Use this if `PermissionDenied` is an expected result for your usecase.
 
 </details>
 
-`FileLib.-- fs.file.try_remove(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "IsADirectory")`
-
 `function FileLib.try_remove(path: string): (boolean, "Ok" | "PermissionDenied" | "NotFound" | "IsADirectory")`
 
 Try to remove a file at `path` without erroring if the file doesn't exist or if the user doesn't have access to it.
