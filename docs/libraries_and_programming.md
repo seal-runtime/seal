@@ -112,7 +112,7 @@ local post_response = http.post {
 </details>
 
 <details>
-<summary> Spawning processes </summary>
+<summary> Running other programs and shell commands </summary>
 
 #### Spawning processes ~~(ffi at home)~~
 
@@ -143,9 +143,38 @@ end
 
 </details>
 
+<details>
+
+<summary> Prompting user input </summary>
+
+### Confirm an action
+
+```luau
+local prompt = require("@std/io/prompt")
+
+if prompt.confirm("are roses red") then
+    print("violets are blue")
+end
+```
+
+### Ask a question
+
+```luau
+local prompt = require("@std/io/prompt")
+
+local response = prompt.text("What's your name?")
+print(`Hello {response}!`)
+```
+
+</details>
+
+<details>
+
+<summary> Concurrency and Parallelism </summary>
+
 ### Simple Structured Parallelism
 
-seal is sans-tokio for performance and simplicity, but provides access to Real Rust Threads with a relatively simple, low-level API. Each thread has its own Luau VM, which allows you to execute code in parallel. To send messages between threads, you can use the `:send()` and `:read()` methods located on both `channel`s (child threads) and `JoinHandle`s (parent threads), which seamlessly serialize, transmit, and deserialize Luau data tables between threads (VMs) for you! For better performance, you can use their `bytes` APIs to exchange buffers without the serialization overhead.
+seal is sans-tokio and sans-async for performance and simplicity, but provides access to Real Rust Threads with a relatively simple API. Each thread has its own Luau VM, which allows you to execute code in parallel. To send messages between threads, you can use the `:send()` and `:read()` methods located on both `channel`s (child threads) and `JoinHandle`s (parent threads), which seamlessly serialize, transmit, and deserialize Luau data tables between threads (VMs) for you! For better performance, you can use their `bytes` APIs to exchange buffers without the serialization overhead.
 
 Although this style of thread management can be less ergonomic than a `task` library or implicit futures everywhere, I hope this makes it more reliable and less prone to yields and UB, and is all-around a stable experience.
 
@@ -176,3 +205,5 @@ if channel then
     channel:send(response)
 end
 ```
+
+</details>
