@@ -1,15 +1,8 @@
 <!-- markdownlint-disable MD033 -->
-<!-- 
-flowery version
-- An extensive, expressive, easy to use, and well documented standard library, covering many usecases from simple filesystem operations (`@std/fs`) to password hashing (`@std/crypt/password`).
-- A filesystem library API with support for partial reads, reading files line-by-line, granular error handling, filesystem watching, with an integrated path library that handles cross-platform edgecases, etc.
-- A process library (`@std/process`) for spawning platform-aware shell commands, executing programs, and running long-running, nonblocking `ChildProcesses` with nonblocking access to their stdout, stderr, and stdin.
-- User-defined parallelism with `@std/thread` featuring communication via message passing and automatic table serialization, backed by Rust threads and crossbeam-channel.
-- A UTF-8 and grapheme-aware string library (`@std/str`) with extremely fast grapheme-aware string splitting, and many other convenience functions.
-- Many other standard libraries! -->
+
 # Programming and Standard Library
 
-Luau is a simple, dependable, and extremely fast scripting language with strict typechecking and tooling support.
+If you're new to Luau, check out seal's [Luau Book](/docs/luau-book/index.md) and Luau's [official documentation](https://luau.org).
 
 Although seal provides some builtin globals (such as `p`, `pp`, `channel` (in a child thread), and `script`), most features are in the standard library. You can import stdlibs like so:
 
