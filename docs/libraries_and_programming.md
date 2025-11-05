@@ -19,6 +19,7 @@ Using Luau Language Server, you should be able to see documentation, usage examp
 ## Common tasks
 
 <details>
+
 <summary> Read and write files/directories </summary>
 
 ### Read and write files/directories
@@ -81,6 +82,11 @@ end
 -- because you just want to make sure it exists
 if fs.path.exists(mypath) then
     print("yes it exists")
+end
+
+-- because you want to make sure it's not a directory
+if fs.is(mypath) == "File" then
+    print("yes it's a file")
 end
 ```
 
@@ -176,8 +182,6 @@ print(`Hello {response}!`)
 
 seal is sans-tokio and sans-async for performance and simplicity, but provides access to Real Rust Threads with a relatively simple API. Each thread has its own Luau VM, which allows you to execute code in parallel. To send messages between threads, you can use the `:send()` and `:read()` methods located on both `channel`s (child threads) and `JoinHandle`s (parent threads), which seamlessly serialize, transmit, and deserialize Luau data tables between threads (VMs) for you! For better performance, you can use their `bytes` APIs to exchange buffers without the serialization overhead.
 
-Although this style of thread management can be less ergonomic than a `task` library or implicit futures everywhere, I hope this makes it more reliable and less prone to yields and UB, and is all-around a stable experience.
-
 ```luau
 -- parent.luau
 local thread = require("@std/thread")
@@ -205,5 +209,9 @@ if channel then
     channel:send(response)
 end
 ```
+
+### Concurrency
+
+Although *seal* doesn't have a `task` library to make coroutine scheduling more ergonomic, you can absolutely use Luau's `coroutine` library for concurrency. Just keep in mind that standard library functions, including `fs.readfile`, `time.wait`, and `http.get` can completely block the VM. This means you can use coroutines to interleave operations, but you can't use them as an alternative to `thread.spawn` in terms of making an inherently blocking operation non-blocking.
 
 </details>
