@@ -2,7 +2,6 @@
 
 # Thread
 
---[=[
 Run Luau code in parallel in a new VM and communicate between threads via message passing.
 
 This allows for structured parallelism that you can use for both multiprocessing and as
@@ -65,12 +64,13 @@ although this is configurable with `thread.spawn`'s `ThreadSpawnOptions`. Readin
 
 ` read name: string`
 
+> --- the name of your thread (defaults to a petname if not provided)
+
 `function ThreadHandle.join(self: ThreadHandle): ()`
 
---[=[
-Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
+> Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
-Errors if the thread has already been joined or somehow disappeared.
+> Errors if the thread has already been joined or somehow disappeared.
 
 `function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | string): ()`
 
@@ -78,7 +78,6 @@ Errors if the thread has already been joined or somehow disappeared.
 
 <summary> See the docs </summary
 
---[=[
 Serializes and sends data to the child thread on the regular channel. Data can either be a string or a JsonSerializableTable; table data is serialized to json for transport
 and automatically deserialized when received by :read methods.
 
@@ -95,7 +94,6 @@ Errors if the channel has somehow become disconnected or provided data isn't jso
 
 <summary> See the docs </summary
 
---[=[
 Try to send data to the child thread on the regular channel with the same semantics as `ThreadHandle:send`,
 except doesn't block if the channel is already full, and doesn't throw an error if the channel is disconnected.
 
@@ -109,10 +107,9 @@ This is usually caused by trying to send a message to a thread that's already be
 
 `function ThreadHandle.sendbytes(self: ThreadHandle, data: buffer): ()`
 
---[=[
-Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
+> Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
 
-Errors if the channel has somehow become disconnected.
+> Errors if the channel has somehow become disconnected.
 
 `function ThreadHandle.try_sendbytes(self: ThreadHandle, data: buffer): (boolean, "Sent" | "Disconnected" | "Full")`
 
@@ -120,7 +117,6 @@ Errors if the channel has somehow become disconnected.
 
 <summary> See the docs </summary
 
---[=[
 Try to send data on the bytes channel with the same semantics as `ThreadHandle:sendbytes`,
 except doesn't block if the channel is already full, and doesn't throw an error if the channel is disconnected.
 
@@ -134,45 +130,55 @@ This is usually caused by trying to send a message to a thread that's already be
 
 `function ThreadHandle.read(self: ThreadHandle): JsonSerializableTable? | string?`
 
---[=[
-Read a message from the regular channel without blocking the current thread.
+> Read a message from the regular channel without blocking the current thread.
 
-Errors if the channel has somehow become disconnected.
+> Errors if the channel has somehow become disconnected.
 
 `function ThreadHandle.read_await(self: ThreadHandle): JsonSerializableTable | string`
 
---[=[
-Read a message from the regular channel, blocking until the next message is available.
+> Read a message from the regular channel, blocking until the next message is available.
 
-Errors if the channel has somehow become disconnected.
+> Errors if the channel has somehow become disconnected.
 
 `function ThreadHandle.readbytes(self: ThreadHandle): buffer?`
 
---[=[
-Read a message from the bytes channel without blocking the current thread.
+> Read a message from the bytes channel without blocking the current thread.
 
-Errors if the channel has somehow become disconnected.
+> Errors if the channel has somehow become disconnected.
 
 `function ThreadHandle.readbytes_await(self: ThreadHandle): buffer`
 
---[=[
-Read a message from the bytes channel, blocking until the next message is available.
+> Read a message from the bytes channel, blocking until the next message is available.
 
-Errors if the channel has somehow become disconnected.
+> Errors if the channel has somehow become disconnected.
 
 ` name: string?`
 
+> --- Name your thread to quickly identify which one it is; if not provided a default alliterative petname will be provided instead.
+
 ` path: string?`
+
+> --- Path to your source file you want to run in the separate thread, relative to the current file (not cwd).
 
 ` src: string?`
 
+> --- Source code to evaluate; recommend passing a path instead.
+
 ` data: JsonSerializableTable?`
+
+> --- Optional data you want to provide to your thread at startup; accessible with `channel.data` in the child thread.
 
 ` capacity: {`
 
+> --- Override the queue capacity of your thread's regular and bytes channels.
+
 `  regular: number?`
 
+> --- default is 12
+
 `  bytes: number?`
+
+> --- default is 24
 
 `function thread.spawn(spawn_options: ThreadSpawnOptions): ThreadHandle`
 
@@ -180,7 +186,6 @@ Errors if the channel has somehow become disconnected.
 
 <summary> See the docs </summary
 
---[=[
 Spawns a new Rust Thread running Luau code in a new Luau VM.
 
 ## Usage
@@ -228,5 +233,4 @@ Spawns a new Rust Thread running Luau code in a new Luau VM.
 
 `function thread.sleep(milliseconds: number): true`
 
-[=[
-Literally the same as `time.wait`, except in milliseconds.
+> Literally the same as `time.wait`, except in milliseconds.

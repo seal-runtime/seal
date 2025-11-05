@@ -2,8 +2,6 @@
 
 # Password
 
-[=[
-
 ## This is the password handling lib
 
 Please use with caution.
@@ -14,7 +12,6 @@ Please use with caution.
 
 <summary> See the docs </summary
 
---[=[
 Hash a password with the `PBKDF2_HMAC_SHA256` algorithm, returns a `HashedPassword`
 which you can later use to verify the password against a future
 passwording attempt.
@@ -50,7 +47,6 @@ passwording attempt.
 
 <summary> See the docs </summary
 
---[=[
 Takes in a table of type:
 
 ```luau

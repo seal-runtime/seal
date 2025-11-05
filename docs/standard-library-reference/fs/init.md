@@ -8,7 +8,6 @@
 
 <summary> See the docs </summary
 
---[=[
 Reads the file at `path` to string, without performing utf-8 validation on the file's contents.
 
 ## Errors
@@ -29,7 +28,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 <summary> See the docs </summary
 
---[=[
 Reads the file at `path` into a buffer.
 
 This function has 3 common variants:
@@ -67,7 +65,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 <summary> See the docs </summary
 
---[=[
 Iterate over the lines of a file without reading the whole file into memory.
 
 This function returns a normal iterator function, so if you save the return of `fs.readlines` to a variable, you can keep calling it for the next line!
@@ -96,7 +93,6 @@ This function returns a normal iterator function, so if you save the return of `
 
 <summary> See the docs </summary
 
---[=[
 Writes `content` to the file at `path`, overwriting any file that already exists there.
 
 Note that `content` may be either a string or a buffer; in either case, `content` does not need to be utf-8 encoded.
@@ -120,16 +116,17 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 `function fs.removefile(path: string): ()`
 
---[=[
-Removes a regular file at `path` without following symlinks.
+> Removes a regular file at `path` without following symlinks.
 
-## Usage
+> ## Usage
 
-```luau
-  fs.removefile("./bad.exe")
-```
+> ```luau
 
-This function blocks the current Luau VM. To use it in parallel, call it within a child thread from `@std/thread`.
+>   fs.removefile("./bad.exe")
+
+> ```
+
+> This function blocks the current Luau VM. To use it in parallel, call it within a child thread from `@std/thread`.
 
 `function fs.is(path: string): PathIs`
 
@@ -137,7 +134,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 <summary> See the docs </summary
 
---[=[
 Check what's at `path`.
 
 ## Usage
@@ -180,7 +176,6 @@ A more exhaustive check:
 
 <summary> See the docs </summary
 
---[=[
 Creates a symlink from `link` to `target`, possibly overwriting any already-existing symlink at `link`.
 
 If you're on Windows, you need to run this program with Administrator permissions to create a symlink.
@@ -195,26 +190,25 @@ If you're on Windows, you need to run this program with Administrator permission
 
 `function fs.unsymlink(link: string): boolean`
 
---[=[
-Removes the symlink at `link`.
+> Removes the symlink at `link`.
 
-## Returns
+> ## Returns
 
-- `true` if the symlink was successfully removed
+> - `true` if the symlink was successfully removed
 
-## Errors
+> ## Errors
 
-- If `link` points to something that isn't a symlink.
-- If the symlink at `link` is not found or permission denied.
+> - If `link` points to something that isn't a symlink.
+
+> - If the symlink at `link` is not found or permission denied.
 
 `function fs.readlink(symlink: string): string`
 
---[=[
-Follows `symlink` and returns the *path* targeted by the symlink.
+> Follows `symlink` and returns the *path* targeted by the symlink.
 
-## Errors
+> ## Errors
 
-- if `symlink` is not a symlink, does not exist on the filesystem, or is permission denied
+> - if `symlink` is not a symlink, does not exist on the filesystem, or is permission denied
 
 `function fs.watch(paths: string | { string }, options: WatchOptions?): (): (WatchEventCategory, WatchEventInfo)`
 
@@ -222,7 +216,6 @@ Follows `symlink` and returns the *path* targeted by the symlink.
 
 <summary> See the docs </summary
 
---[=[
 Watch for filesystem changes on one or more `paths`.
 
 - `WatchOptions.recursive`: defaults `true`; may produce duplicate events if any `paths` overlap,
@@ -341,8 +334,7 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 
 `function fs.readtree(path: string): DirectoryTree`
 
---[=[
-Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
+> Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
 
 `function fs.writetree(path: string, tree: TreeBuilder | DirectoryTree): ()`
 
@@ -350,7 +342,6 @@ Recursively read contents of directory at `path` into a `fs.DirectoryTree` that 
 
 <summary> See the docs </summary
 
---[=[
 Writes a new directory tree at `path` (which includes the directory's name) from `tree`:
 
 ## Usage
@@ -394,7 +385,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 <summary> See the docs </summary
 
---[=[
 Removes a directory tree or an empty directory at `path` by calling Rust's `fs::remove_dir_all`, without following symlinks.
 
 ```luau
@@ -419,7 +409,6 @@ Please use this function carefully.
 
 <summary> See the docs </summary
 
---[=[
 Create an empty directory at `path` according to (an optional) `options` table.
 
 By default, `create_missing` is set to `false` and `error_if_exists` is set to `true`.
@@ -454,7 +443,6 @@ If you want to ensure that a directory exists (like `fs.makedir(d, { error_if_ex
 
 <summary> See the docs </summary
 
---[=[
 Returns an array of all child paths of directory `path`, relative to the passed path.
 
 This means paths from `fs.listdir` can be directly passed into other `fs` library functions.
@@ -484,22 +472,21 @@ If a filter function is passed, only paths that pass the filter are included.
 
 `function fs.move(from: string, to: string): ()`
 
---[=[
-Move a regular file or directory `from` a path `to` a new path.
+> Move a regular file or directory `from` a path `to` a new path.
 
-TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
+> TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
-## Errors
+> ## Errors
 
-- if `from` or `to` are not valid utf-8 encoded paths
-- `from` does not exist on the filesystem
+> - if `from` or `to` are not valid utf-8 encoded paths
+
+> - `from` does not exist on the filesystem
 
 `function fs.copy(source: string, destination: string): ()`
 
---[=[
-Copy a regular file or directory from `source` to `destination`.
+> Copy a regular file or directory from `source` to `destination`.
 
-TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
+> TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 `function fs.find(path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?): FindResult`
 
@@ -507,7 +494,6 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 <summary> See the docs </summary
 
---[=[
 Check the filesystem for `path`, returning a `fs.FindResult` that's useful for finding `fs.FileEntry` or `fs.DirectoryEntry` to work with.
 
 This is a multifunctional api, which is usually used to find and unwrap `fs.Entry`-like tables, but is also used for general "finding stuff on the filesystem" usecases.
@@ -552,48 +538,51 @@ Check if we have access to `path`
 
 `function fs.entries(path: string): { [string]: Entry }`
 
---[=[
-Returns a table mapping the paths of the directory at `path` with their `fs.Entry`s.
+> Returns a table mapping the paths of the directory at `path` with their `fs.Entry`s.
 
-## Usage
+> ## Usage
 
-```luau
-  for path, entry in fs.entries("./src") do
-   if entry.type == "File" then
-    print(`{entry.name} is a file`)
-   elseif entry.type == "Directory" then
-    print(`{entry.name} is a directory`)
-   end
-  end
-```
+> ```luau
+
+>   for path, entry in fs.entries("./src") do
+
+>    if entry.type == "File" then
+
+>     print(`{entry.name} is a file`)
+
+>    elseif entry.type == "Directory" then
+
+>     print(`{entry.name} is a directory`)
+
+>    end
+
+>   end
+
+> ```
 
 ` file: filelib.FileLib`
 
---[=[
-A sublib for handling operations with files and `fs.FileEntry`s.
+> A sublib for handling operations with files and `fs.FileEntry`s.
 
-Contains (relatively) TOCTOU-safe apis such as `fs.file.try_read`, etc.
+> Contains (relatively) TOCTOU-safe apis such as `fs.file.try_read`, etc.
 
-This library can be called as a function as a convenience alternative for `fs.find(f):try_file()`.
+> This library can be called as a function as a convenience alternative for `fs.find(f):try_file()`.
 
 ` dir: dirlib.DirLib`
 
---[=[
-A sublib for handling operations with directories and `fs.DirectoryEntry`s.
+> A sublib for handling operations with directories and `fs.DirectoryEntry`s.
 
-This library can be called as a function as a convenience alternative to `fs.find(d):try_dir()`
+> This library can be called as a function as a convenience alternative to `fs.find(d):try_dir()`
 
 ` path:  pathlib.PathLib`
 
---[=[
-A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
+> A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
 
-Commonly used `fs.path` functions include: `fs.path.join` for combining paths and `fs.path.cwd` and `fs.path.home`.
+> Commonly used `fs.path` functions include: `fs.path.join` for combining paths and `fs.path.cwd` and `fs.path.home`.
 
 `function fs.tree(): TreeBuilder`
 
---[=[
-Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
+> Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
 `export type WatchEventCategory`
 
@@ -601,7 +590,6 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 <summary> See the docs </summary
 
-[=[
 Top level categories to filter events by.
 
 Some usage notes:
@@ -614,4 +602,23 @@ Some usage notes:
 
 ` is_write: boolean`
 
+> --- if the event is *most likely* a write event (`Create::File` or `Modify::Data` or `Close::Write`)
+
 `export type WatchKind`
+
+<details>
+
+<summary> See the docs </summary
+
+Represents the specific Event.WatchKind from notify.
+
+Note that relying on these is inherently unreliable as notify tends to combine related events.
+Especially if they're received within a short interval of each other.
+
+Note that the `Kind::Any` options tend to be generated in place of `Kind::File` or
+`Kind::Directory` on Windows!
+
+`None::Timeout` is fired if no events have been seen when `WatchOptions.timeout_ms` elapses
+for an iteration of `fs.watch`. This allows you to break early without indefinitely blocking the Luau VM.
+
+</details>

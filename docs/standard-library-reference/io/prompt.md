@@ -2,7 +2,6 @@
 
 # Prompt
 
-[=[
 Prompt users for personal information :)
 
 ## Usage
@@ -27,7 +26,6 @@ Prompt users for personal information :)
 
 <summary> See the docs </summary
 
---[=[
 Ask the user to provide one line of text, trimming the resulting text on both ends and supporting normal text buffer operations.
 
 - A colon and a space `": "` will be appended to the passed `message` if it isn't an empty string and doesn't already contain `": "`
@@ -59,7 +57,6 @@ If you want to apply *custom validation*, use `prompt.validate` instead!
 
 <summary> See the docs </summary
 
---[=[
 Ask the user to confirm an action, defaulting to `true`, and displaying a y/n after the `message` prompt according to the usual CLI application conventions.
 
 - If `default` is unspecified or `true`, displays `[Y/n]:` after the message, demonstrating that pressing <kbd>Enter</kbd> signifies Yes.
@@ -86,7 +83,6 @@ To confirm, the user may send any of `Y`, `y`, `n`, or `N` to explicitly signify
 
 <summary> See the docs </summary
 
---[=[
 Like `prompt.text`, but validates the response with a custom validation function.
 
 - Return a `string` to tell users why validation failed.
@@ -115,7 +111,6 @@ Like `prompt.text`, but validates the response with a custom validation function
 
 <summary> See the docs </summary
 
---[=[
 Prompts a hidden password prompt.
 
 By default, any characters typed in the password prompt will be fully hidden according to unix conventions.
@@ -144,7 +139,6 @@ but it may not be perfectly safe from introspection.
 
 <summary> See the docs </summary
 
---[=[
 Prompts users to pick one of a list of options by index.
 
 - If `default` is unspecified, assumes no default and retries until the user picks something.

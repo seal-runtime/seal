@@ -8,7 +8,6 @@
 
 <summary> See the docs </summary
 
---[=[
 Evaluate Luau source code from a string in the current Luau VM.
 
 By default, this function evaluates in `"safe"` mode with only Luau's standard library (minus some deprecated environment breaking functions).
@@ -55,7 +54,6 @@ an error that occurred when evaluating the code, such as a syntax error or runti
 
 <summary> See the docs </summary
 
---[=[
 Same as `luau.eval`, except can also accept bytecode as a string or buffer.
 
 ## ⚠️ Safety
@@ -70,12 +68,12 @@ and *coredump*.
 
 `function luau.bytecode(src: string): buffer | error`
 
---[=[
-Compiles `src` to Luau bytecode.
+> Compiles `src` to Luau bytecode.
 
 `function luau.require_resolver(): {`
 
---[=[
-Returns *seal*'s require resolver implementation used internally.
+> Returns *seal*'s require resolver implementation used internally.
 
 `function luau.resolve(requested_path: string, requiring_file_path: string): { err: string, path: nil } | { path: string, err: nil }`
+
+> --- Resolve a Luau require alias (`requested_path`) relative to `requiring_file_path` to find its location on the filesystem.

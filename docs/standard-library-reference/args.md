@@ -2,8 +2,6 @@
 
 # Args
 
-[=[
-
 # CLI Argument Parsing
 
 This implementation supports
@@ -137,36 +135,76 @@ For programs with multiple commands, use `args.parse(program_name, desc):command
 
 `function args.simple(self: any, ...Arg): Parsed`
 
+> --- Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
+
 `function args.commands(self: any, ...Command): Parsed`
+
+> --- Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
+
+> --- generate commands.
 
 `function args.positional(name: string, help: string): Positional`
 
+> --- Add a positional argument
+
 `function args.named(name: string, help: string): Named`
+
+> --- Add a named argument `--name=value` (or when aliased to -n, `-n value`). Named arguments must start with `--`
 
 `function args.command(name: string, help: string): Command`
 
+> --- Add a new top-level command, must be used with `args.parse(program, desc, info):commands(...)`
+
 `function args.flag(name: string, help: string): Flag`
+
+> --- Add a new flag argument like `--verbose` or `--override`. Flags must start with `--` and cannot be `--help` or `--commands`.
 
 `function args.list(name: string, help: string): ArgList`
 
+> --- Add a new list (tail) argument that collects all remaining positional arguments into a `{ string }`
+
 `function args.default(...Arg): Command`
+
+> --- Add a default command.
 
 `description: string?`
 
+> --- if provided, goes below program name/tagline in `--help`
+
 `examples: { string }?`
+
+> --- examples of arguments *following* program and path (already pre-filled)
 
 `footer: string?`
 
+> --- put authors and/or repository link here
+
 `function Command.aliases(self: Command, ...string): Command`
+
+> --- Aliases for your command, like `seal r -> seal run`
 
 `function Positional.optional(self: Positional): Positional`
 
+> --- call this to turn the positional argument into an optional positional argument
+
 `function Positional.validate(self: Positional, validator: Validator): Positional`
 
+> --- validate the argument's input by passing a function that returns either the transformed
+
+> --- validated input (such as converting input strings from p -> project) or an error object.
+
 `name: string`
+
+> --- Must start with `--` and cannot be `--help` or `--commands`
 
 `function Flag.aliases(self: Flag, ...string): Flag`
 
+> --- flag aliases must start with `-` and cannot be `-h` (reserved for help)
+
 `name: string`
 
+> --- Must start with `--` and cannot be `--help` or `--commands`
+
 `function Named.aliases(self: Named, ...string): Named`
+
+> --- aliases must start with `-` and cannot be `-h` (reserved for help)

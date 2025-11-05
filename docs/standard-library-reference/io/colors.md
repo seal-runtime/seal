@@ -2,7 +2,6 @@
 
 # Colors
 
-[=[
 The `@std/io/colors` lib, because if your terminal output isn't colorized, is it even output?
 
 Usage:
@@ -13,214 +12,256 @@ local colors = require("@std/io/colors")
 
 `function colors.magenta(text: string): string`
 
-[=[
-Turns the provided text magenta
+> Turns the provided text magenta
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.magenta("this text is hereby colored magenta"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.magenta("this text is hereby colored magenta"))
+
+> ```
 
 `function colors.blue(text: string): string`
 
-[=[
-Turns the provided text blue
+> Turns the provided text blue
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.blue("this text is hereby colored blue"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.blue("this text is hereby colored blue"))
+
+> ```
 
 `function colors.cyan(text: string): string`
 
-[=[
-Turns the provided text cyan
+> Turns the provided text cyan
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.cyan("this text is hereby colored cyan"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.cyan("this text is hereby colored cyan"))
+
+> ```
 
 `function colors.black(text: string): string`
 
-[=[
-Turns the provided text black
+> Turns the provided text black
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.black("this text is hereby colored black"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.black("this text is hereby colored black"))
+
+> ```
 
 `function colors.green(text: string): string`
 
-[=[
-Turns the provided text green
+> Turns the provided text green
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.green("this text is hereby colored green"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.green("this text is hereby colored green"))
+
+> ```
 
 `function colors.yellow(text: string): string`
 
-[=[
-Turns the provided text yellow
+> Turns the provided text yellow
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.yellow("this text is hereby colored yellow"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.yellow("this text is hereby colored yellow"))
+
+> ```
 
 `function colors.white(text: string): string`
 
-[=[
-Turns the provided text white
+> Turns the provided text white
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.white("this text is hereby colored white"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.white("this text is hereby colored white"))
+
+> ```
 
 `function colors.red(text: string): string`
 
-[=[
-Turns the provided text red
+> Turns the provided text red
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.red("this text is hereby colored red"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.red("this text is hereby colored red"))
+
+> ```
 
 `function colors.bold.white(text: string): string`
 
-[=[
-Turns the provided text bold white
+> Turns the provided text bold white
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.bold.white("this is now bold white"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.bold.white("this is now bold white"))
+
+> ```
 
 `function colors.bold.magenta(text: string): string`
 
-[=[
-Turns the provided text bold magenta
+> Turns the provided text bold magenta
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.bold.magenta("this is now bold magenta"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.bold.magenta("this is now bold magenta"))
+
+> ```
 
 `function colors.bold.black(text: string): string`
 
-[=[
-Turns the provided text bold black
+> Turns the provided text bold black
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.bold.black("this is now bold black"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.bold.black("this is now bold black"))
+
+> ```
 
 `function colors.bold.green(text: string): string`
 
-[=[
-Turns the provided text bold green
+> Turns the provided text bold green
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.bold.green("this is now bold green"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.bold.green("this is now bold green"))
+
+> ```
 
 `function colors.bold.cyan(text: string): string`
 
-[=[
-Turns the provided text bold cyan
+> Turns the provided text bold cyan
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.bold.cyan("this is now bold cyan"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.bold.cyan("this is now bold cyan"))
+
+> ```
 
 `function colors.bold.yellow(text: string): string`
 
-[=[
-Turns the provided text bold yellow
+> Turns the provided text bold yellow
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.bold.yellow("this is now bold yellow"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.bold.yellow("this is now bold yellow"))
+
+> ```
 
 `function colors.bold.blue(text: string): string`
 
-[=[
-Turns the provided text bold blue
+> Turns the provided text bold blue
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.bold.blue("this is now bold blue"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.bold.blue("this is now bold blue"))
+
+> ```
 
 `function colors.bold.red(text: string): string`
 
-[=[
-Turns the provided text bold red
+> Turns the provided text bold red
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.bold.red("this is now bold red"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.bold.red("this is now bold red"))
+
+> ```
 
 `colors.style = {`
 
+> Use different styles such as dim or bold
+
 `dim = function(text: string): string return nil :: any end`
+
+> --- dim style
 
 `bold = function(text: string): string return nil :: any end`
 
+> --- bold style
+
 `underline = function(text: string): string return nil :: any end`
+
+> --- underline your text
 
 `colors.codes = {`
 
-[=[
-An assorted collection of ANSI color codes to help you colorize your text however you want!!
+> An assorted collection of ANSI color codes to help you colorize your text however you want!!
 
-Don't forget to finish off your colorized strings with a `RESET` :p
+> Don't forget to finish off your colorized strings with a `RESET` :p
 
-Usage:
+> Usage:
 
-```luau
-local colors = require("@std/io/colors")
-print(colors.bold.red("this is now bold red"))
-```
+> ```luau
+
+> local colors = require("@std/io/colors")
+
+> print(colors.bold.red("this is now bold red"))
+
+> ```

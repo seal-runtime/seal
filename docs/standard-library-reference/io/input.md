@@ -2,7 +2,11 @@
 
 # Input
 
+input handling lib
+
 `@[deprecated { use = "io.prompt.text OR io.input.readline OR io.input.rawline" }]`
+
+> gets input with an optional `raw_prompt` to display before getting said input.
 
 `function input.get(raw_prompt: string): string`
 
@@ -12,7 +16,6 @@
 
 <summary> See the docs </summary
 
-[=[
 Determine whether we're connected to a sane [TTY](https://en.wikipedia.org/wiki/Tty_(Unix)) terminal.
 
 This can be used to detect if users can provide rich input at runtime (`io.prompt.*` or `io.input.readline`) or if we're limited to basic stdin (`io.input.rawline`)
@@ -26,10 +29,9 @@ If *seal* is being run in a child process, this will almost always return `false
 
 `function input.rawline(prompt: string?): string`
 
-[=[
-Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
+> Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
 
-But works with stdin in a child process/works while piped, making it a fallback for automated solutions or cursed ancient terminals.
+> But works with stdin in a child process/works while piped, making it a fallback for automated solutions or cursed ancient terminals.
 
 `function input.readline(prompt: string): string | interrupt | error`
 
@@ -37,7 +39,6 @@ But works with stdin in a child process/works while piped, making it a fallback 
 
 <summary> See the docs </summary
 
-[=[
 Prompts the user for one line of text with proper text buffer handling and error handling.
 
 For a higher-level prompting API, use `@std/io/prompt` instead.
@@ -76,8 +77,7 @@ Falls back to `io.input.rawline` if called in a non-TTY (like a piped child proc
 
 `function input.interrupt(key: "CtrlC" | "CtrlD"): interrupt`
 
-[=[
-Returns an `interrupt` userdata object. For reasons. Maybe control flow.
+> Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 `function input.rawmode(enabled: boolean)`
 
@@ -85,7 +85,6 @@ Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 <summary> See the docs </summary
 
-[=[
 Set stdin to raw mode, allowing you direct control over incoming keypresses.
 
 Use this with `input.events` to write a TUI.
@@ -100,9 +99,15 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 `mouse: (enabled: boolean) -> ()`
 
+> --- Allows `MouseEvents` to be reported by `input.events()`.
+
 `focus: (enabled: boolean) -> ()`
 
+> --- Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
+
 `paste: (enabled: boolean) -> ()`
+
+> --- Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
 
 `function input.events(poll: Duration): () -> TerminalEvent`
 
@@ -110,7 +115,6 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 <summary> See the docs </summary
 
-[=[
 Listens for raw terminal events from stdin, returning an iterator over those events.
 
 Use this function to write interactive TUIs that immediately redraw and respond to user input.
@@ -172,3 +176,5 @@ To enable `Mouse`, `Focus`, and clipboard `Paste` events, check out the `input.c
 </details>
 
 `export type KeyModifiers = {`
+
+> Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.

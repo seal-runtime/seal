@@ -4,9 +4,15 @@
 
 ` params: {`
 
+> --- Query parameters to append to the url string
+
 `function HttpResponse.decode(self: HttpResponse): { [any]: any }`
 
+> --- decodes body to table, errors if body is invalid json or otherwise cannot be converted to table
+
 `function HttpResponse.unwrap_json(self: HttpResponse, default: { [any]: any }?): { [any]: any }`
+
+> --- decodes body as json or returns default value; errors if ok = false and default value not provided
 
 `function http.get(url: GetConfig): HttpResponse`
 
@@ -14,7 +20,6 @@
 
 <summary> See the docs </summary
 
-[=[
 Makes an HTTP `GET` request.
 
 ## Usage
@@ -45,39 +50,56 @@ local cats = http.get {
 
 `function http.post(config: PostConfig): HttpResponse`
 
-[=[
-Makes an HTTP `POST` request.
+> Makes an HTTP `POST` request.
 
-## Usage
+> ## Usage
 
-```lua
-local response = http.post {
- url = "https://somejson.com/post",
- headers = {
-  ["API-KEY"] = api_key,
-  -- note: Content-Type: application/json automatically handled when you pass a table as body!
- },
- body = {
-  username = "hiItsMe",
- }
-}
+> ```lua
 
-```#
+> local response = http.post {
+
+>  url = "<https://somejson.com/post>",
+
+>  headers = {
+
+>   ["API-KEY"] = api_key,
+
+>   -- note: Content-Type: application/json automatically handled when you pass a table as body!
+
+>  },
+
+>  body = {
+
+>   username = "hiItsMe",
+
+>  }
+
+> }
+
+> ```#
 
 `function http.request(config: RequestConfig): HttpResponse`
 
-[=[
-Sends an HTTP request:
+> Sends an HTTP request:
 
-## Usage
-```lua
-local response = http.request({
- method = "PUT",
- url = "https://somewhere.net/api/put",
- body = somebody,
-})
+> ## Usage
 
-if response.ok then
- print(response:decode())
-end
-```
+> ```lua
+
+> local response = http.request({
+
+>  method = "PUT",
+
+>  url = "<https://somewhere.net/api/put>",
+
+>  body = somebody,
+
+> })
+
+> if response.ok then
+
+>  print(response:decode())
+
+> end
+
+> ```

@@ -4,12 +4,15 @@
 
 `function FileLib.from(path: string): FileEntry`
 
---[=[
-Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if a file is not found or permission was denied, etc.
+> Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if a file is not found or permission was denied, etc.
 
 `function FileLib.build(name: string, content: string): FileBuilder`
 
+> --- Returns a `FileBuilder` for use with `fs.readtree` and `fs.writetree`
+
 `function FileLib.create(path: string): FileEntry`
+
+> --- Creates a *new*, empty file at `path` using Rust's `fs::File::create_new`; errors if a file or other entry already exists at that path.
 
 `function FileLib.try_read(path: string): (string?, "Ok" | "NotFound" | "PermissionDenied")`
 
@@ -17,7 +20,6 @@ Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if 
 
 <summary> See the docs </summary
 
---[=[
 Tries to read a file to string from `path` when errors such as `NotFound` or `PermissionDenied` are expected and should be handled explicitly.
 
 This is a better and TOCTOU-safer variant to `local content = if fs.path.exists(path) then fs.readfile(path) else nil`
@@ -44,7 +46,6 @@ This is a better and TOCTOU-safer variant to `local content = if fs.path.exists(
 
 <summary> See the docs </summary
 
---[=[
 Tries to read a file to buffer from `path` when errors such as `NotFound` or `PermissionDenied` are expected and should be handled explicitly.
 
 This is a better and TOCTOU-safer variant to `local content = if fs.path.exists(path) then fs.readbytes(path) else nil`
@@ -77,7 +78,6 @@ This is a better and TOCTOU-safer variant to `local content = if fs.path.exists(
 
 <summary> See the docs </summary
 
---[=[
 Try to write `content` (string or buffer) into file at `path`, overwriting an existing file if present.
 
 Use this if `PermissionDenied` is an expected result for your usecase.
@@ -95,25 +95,28 @@ Use this if `PermissionDenied` is an expected result for your usecase.
 
 `function FileLib.try_remove(path: string): (boolean, "Ok" | "PermissionDenied" | "NotFound" | "IsADirectory")`
 
---[=[
-Try to remove a file at `path` without erroring if the file doesn't exist or if the user doesn't have access to it.
+> Try to remove a file at `path` without erroring if the file doesn't exist or if the user doesn't have access to it.
 
-Doesn't follow symlinks.
+> Doesn't follow symlinks.
 
-## Errors
+> ## Errors
 
-- if `path` is not a valid utf-8 encoded path that could possibly exist on the filesystem
+> - if `path` is not a valid utf-8 encoded path that could possibly exist on the filesystem
 
 `function FileLib.__call(self: any, path: string): FileEntry?`
 
---[=[
-Convenient and slightly more efficient alternative to `fs.find(path):try_file()`
+> Convenient and slightly more efficient alternative to `fs.find(path):try_file()`
 
-## Usage
+> ## Usage
 
-```luau
- local myfile = fs.file("./myfile.txt")
- if myfile then
-  print(myfile:metadata())
- end
-```
+> ```luau
+
+>  local myfile = fs.file("./myfile.txt")
+
+>  if myfile then
+
+>   print(myfile:metadata())
+
+>  end
+
+> ```

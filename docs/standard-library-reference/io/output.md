@@ -2,7 +2,6 @@
 
 # Output
 
-[=[
 Write to the terminal's stdout/stderr.
 
 `function output.write(contents: string | buffer, flush: boolean?): error?`
@@ -11,7 +10,6 @@ Write to the terminal's stdout/stderr.
 
 <summary> See the docs </summary
 
---[=[
 Writes `contents` to stdout without any intermediate utf-8 validation, flushing the stream immediately.
 
 ## Windows Portability Concerns
@@ -41,7 +39,6 @@ Additionally, on Windows it may fail silently when used in a child process.
 
 <summary> See the docs </summary
 
---[=[
 Writes `contents` to stderr without any intermediate utf-8 validation, flushing the stream immediately.
 
 ## Windows Portability Concerns
@@ -63,3 +60,5 @@ Additionally, on Windows it may fail silently when used in a child process.
 </details>
 
 `function output.clear(): ()`
+
+> --- clears stdout akin to `cls` or `clear`.

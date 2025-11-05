@@ -42,10 +42,10 @@ for _, filename in luau_files do
             current_api_parent = type_name
         elseif string.match(line, "^%s*%-%-%-") then
             last_line_was_doc_end = true
+            table.insert(current_doc, str.trimfront(line, "---", " ", "\t"))
             continue
         elseif string.match(line, "^%s*%-%-%[=%[") then
             in_doc = true
-            table.insert(current_doc, str.trimfront(line, "---", " ", "\t"))
             continue
         elseif string.match(line, "%]=%]") then
             in_doc = false
@@ -135,7 +135,10 @@ for path, apis in apis_by_path do
     for _, api in apis do
         push("`" .. api.name .. "`")
         if #api.docs > 1 and #api.docs < 340 then
-            push(api.docs)
+            -- push(`api.docs`)
+            for _, splitline in str.splitlines(api.docs) do
+                push(`> {splitline}`)
+            end
         elseif #api.docs > 340 then
             push("<details>")
             push("<summary> See the docs </summary")

@@ -4,7 +4,15 @@
 
 `function datetime.now(): DateTime`
 
+> Constructs a `DateTime` from right now (based on system time) in your local timezone.
+
 `function datetime.from(timestamp: number, timezone: IanaTimezone?, nanos: number?)`
+
+> Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
+
+> - `timezone` defaults to `"UTC"` if not specified
+
+> - `nanos` defaults to `0` if not specified
 
 `function datetime.parse(source: string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime`
 
@@ -12,7 +20,6 @@
 
 <summary> See the docs </summary
 
-[=[
 Constructs a `DateTime` from a strtime string or `common_format`.
 
 All seal `DateTime`s are timezone aware, which prevents annoying and complex bugs down the line.
@@ -37,7 +44,6 @@ All seal `DateTime`s are timezone aware, which prevents annoying and complex bug
 
 <summary> See the docs </summary
 
-[=[
 Constructs a `TimeSpan` from years. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
 
 ## how relatives work
@@ -67,7 +73,6 @@ Constructs a `TimeSpan` from years. Months and years *must* be relative to a `Da
 
 <summary> See the docs </summary
 
-[=[
 Constructs a `TimeSpan` from months. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
 
 ## how relatives work
@@ -93,10 +98,20 @@ Constructs a `TimeSpan` from months. Months and years *must* be relative to a `D
 
 `function datetime.days(days: number): TimeSpan`
 
+> Constructs a `TimeSpan` from days. Assumes every day is 24 hours.
+
 `function datetime.hours(hours: number): TimeSpan`
+
+> Constructs a `TimeSpan` from hours.
 
 `function datetime.minutes(minutes: number): TimeSpan`
 
+> Constructs a `TimeSpan` from minutes.
+
 `function datetime.seconds(seconds: number): TimeSpan`
 
+> Constructs a `TimeSpan` from seconds.
+
 `function datetime.milliseconds(milliseconds: number): TimeSpan`
+
+> Constructs a `TimeSpan` from milliseconds.

@@ -2,7 +2,6 @@
 
 # Str
 
-[=[
 Features ergonomic methods like `str.startwith`, `str.trimfront/trimback`, etc.
 
 This library features utf-8-aware string handling, including easy access to splitting utf-8 strings,
@@ -13,21 +12,47 @@ to be valid utf-8 encoded strings.
 
 `function str.startswith(s: string, prefix: string): boolean`
 
+> check if a string starts with `prefix`
+
 `function str.endswith(s: string, suffix: string): boolean`
+
+> check if a string ends with `suffix`
 
 `function str.starts(s: string, ...: string): boolean`
 
+> like str.startswith, but accepts multiple prefixes
+
 `function str.ends(s: string, ...: string): boolean`
+
+> like str.endswith, but accepts multiple suffixes
 
 `function str.trimfront(s: string, ...: string): string`
 
+> trims any of the provided strings/characters from the front of the string `s`
+
+> if no strings provided as ..., `str.trimfront` will trim whitespace (" ", "\n", etc.)
+
 `function str.trimback(s: string, ...: string): string`
+
+> trims any of the provided strings/characters/patterns from the back of the string `s`
+
+> if no strings provided as ..., `str.trimback` will trim whitespace (" ", "\n", etc.)
 
 `function str.trim(s: string, ...: string): string`
 
+> trims one or many strings/characters/patterns from both front and back of string `s`
+
+> if no strings provided to `...`, then default is whitespace
+
 `function str.splitlines(s: string, trim_trailing_whitespace: boolean?): { string }`
 
+> splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
+
+> without an extra empty string, etc.
+
 `function str.len(s: string): number`
+
+> returns the utf-8 length if `s` is utf-8 or the regular string length #
 
 `function str.width(s: string): number`
 
@@ -35,7 +60,6 @@ to be valid utf-8 encoded strings.
 
 <summary> See the docs </summary
 
-[=[
 `str.width` estimates the number of monospace space characters required to correctly format/pad a utf8-encoded string.
 
 ## Handles (or attempts to)
@@ -85,15 +109,27 @@ to be valid utf-8 encoded strings.
 
 `function str.leftpad(s: string, width: number, pad: string?): string`
 
+> left pads `s` to make it at least `width` characters long, using `pad` as the padding character.
+
 `function str.escape(s: string): string`
+
+> escapes special characters like `\n`, `\t`, `\\` for easier debugging
 
 `function str.unescape(s: string): string`
 
+> reverts `str.escape`
+
 `function str.slice(s: string, first: number, final: number)`
+
+> alias for string.sub
 
 `function str.indent(s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string`
 
+> indents multiline string `count` characters; lines separated by `sep` (default "\n")
+
 `function str.unindent(s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string`
+
+> unindents multiline string by `count` characters; lines separated by `sep` (default "\n")
 
 `str.split = internal.split :: (s: string, ...string) -> { string }`
 
@@ -101,7 +137,6 @@ to be valid utf-8 encoded strings.
 
 <summary> See the docs </summary
 
-[=[
 `str.split` is an improvement on luau's `string.split` in that it can split by multiple different strings (not just one single character)
 at the same time and that the splitting is fully unicode grapheme aware.
 
@@ -140,7 +175,6 @@ with multiple separator strings.
 
 <summary> See the docs </summary
 
-[=[
 Splits string `s` *around* one or more separator strings, keeping the separators in the final result.
 This is especially useful for parsing and tokenizing text!
 
@@ -166,7 +200,6 @@ Like `str.split`, `str.splitaround` is fully unicode grapheme-aware and can oper
 
 <summary> See the docs </summary
 
-[=[
 Splits `s` in front of any passed separator strings, keeping the separator in the subsequent element of the returned array.
 
 Otherwise has the same semantics as `str.split`.
@@ -192,7 +225,6 @@ Otherwise has the same semantics as `str.split`.
 
 <summary> See the docs </summary
 
-[=[
 Splits `s` after every occurrence of a separator string, keeping the separator in the current element of the returned array.
 
 Otherwise has the same semantics as `str.split`.
@@ -213,10 +245,9 @@ Otherwise has the same semantics as `str.split`.
 
 `function str.chars(s: string): (...any) -> (number, string)`
 
-[=[
-Iterate over the human-readable characters (graphemes) of a string
+> Iterate over the human-readable characters (graphemes) of a string
 
-This function counts by 'characters', whereas `str.graphemes` provides byte indices for `string.sub`/`str.slice`
+> This function counts by 'characters', whereas `str.graphemes` provides byte indices for `string.sub`/`str.slice`
 
 `str.graphemes = internal.graphemes :: (s: string) -> (...any) -> (number, string)`
 
@@ -224,7 +255,6 @@ This function counts by 'characters', whereas `str.graphemes` provides byte indi
 
 <summary> See the docs </summary
 
-[=[
 Iterate over the utf-8 graphemes of `s` with indices useful for `str.slice` or `string.sub`
 
 ## Usage
