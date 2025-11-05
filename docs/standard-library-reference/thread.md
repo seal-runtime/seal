@@ -2,12 +2,6 @@
 
 # Thread
 
-`local thread = {}`
-
-<details>
-
-<summary> Docs </summary
-
 Run Luau code in parallel in a new VM and communicate between threads via message passing.
 
 This allows for structured parallelism that you can use for both multiprocessing and as
@@ -68,13 +62,11 @@ although this is configurable with `thread.spawn`'s `ThreadSpawnOptions`. Readin
 
 ```
 
-</details>
-
 `function ThreadHandle.join(self: ThreadHandle): ()`
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
@@ -86,7 +78,7 @@ Errors if the thread has already been joined or somehow disappeared.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Serializes and sends data to the child thread on the regular channel. Data can either be a string or a JsonSerializableTable; table data is serialized to json for transport
 and automatically deserialized when received by :read methods.
@@ -102,7 +94,7 @@ Errors if the channel has somehow become disconnected or provided data isn't jso
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Try to send data to the child thread on the regular channel with the same semantics as `ThreadHandle:send`,
 except doesn't block if the channel is already full, and doesn't throw an error if the channel is disconnected.
@@ -119,7 +111,7 @@ This is usually caused by trying to send a message to a thread that's already be
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
 
@@ -131,7 +123,7 @@ Errors if the channel has somehow become disconnected.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Try to send data on the bytes channel with the same semantics as `ThreadHandle:sendbytes`,
 except doesn't block if the channel is already full, and doesn't throw an error if the channel is disconnected.
@@ -148,7 +140,7 @@ This is usually caused by trying to send a message to a thread that's already be
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Read a message from the regular channel without blocking the current thread.
 
@@ -160,7 +152,7 @@ Errors if the channel has somehow become disconnected.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Read a message from the regular channel, blocking until the next message is available.
 
@@ -172,7 +164,7 @@ Errors if the channel has somehow become disconnected.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Read a message from the bytes channel without blocking the current thread.
 
@@ -184,7 +176,7 @@ Errors if the channel has somehow become disconnected.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Read a message from the bytes channel, blocking until the next message is available.
 
@@ -196,7 +188,7 @@ Errors if the channel has somehow become disconnected.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Spawns a new Rust Thread running Luau code in a new Luau VM.
 
@@ -247,7 +239,7 @@ Spawns a new Rust Thread running Luau code in a new Luau VM.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Literally the same as `time.wait`, except in milliseconds.
 

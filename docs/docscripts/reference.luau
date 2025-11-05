@@ -3,6 +3,13 @@ local process = require("@std/process")
 local str = require("@std/str")
 
 local standard_library_reference = "./docs/standard-library-reference"
+for _, existing in fs.listdir(standard_library_reference) do
+    if fs.is(existing) == "File" then
+        fs.removefile(existing)
+    elseif fs.is(existing) == "Directory" then
+        fs.removetree(existing)
+    end
+end
 
 local std_defs = "./.seal/typedefs/std"
 
@@ -80,7 +87,10 @@ for _, filename in luau_files do
         end
     end
 
-    apis_by_path[filename] = apis_for_file
+    if #apis_for_file > 0 then
+        apis_by_path[filename] = apis_for_file
+    end
+
 end
 
 local markdownlint_help = process.shell("markdownlint-cli2 --help")
@@ -106,14 +116,22 @@ for path, apis in apis_by_path do
     end
 
     local header = (fs.path.child(reference_file_path) :: string):gsub("%.md$", "")
+    if header == "init" then
+        header = fs.path.child(fs.path.parent(reference_file_path) :: string) :: string
+    end
     header = string.upper(header:sub(1, 1)) .. header:sub(2, #header)
     push("<!-- markdownlint-disable MD033 -->")
     push("# " .. header)
+    local first_api = apis[1]
+    if str.startswith(first_api.name, "local") then
+        push(first_api.docs)
+        table.remove(apis, 1) -- pop header name
+    end
     for _, api in apis do
         push("`" .. api.name .. "`")
         if #api.docs > 1 then
             push("<details>")
-            push("<summary> Docs </summary")
+            push("<summary> See the docs </summary")
             push(api.docs)
             push("</details>", 2)
         end

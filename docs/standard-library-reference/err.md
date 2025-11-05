@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Create an `error` with a custom error message. This allows you to return result-like unions that can be `typeof` checked.
 
@@ -36,7 +36,7 @@ Create an `error` with a custom error message. This allows you to return result-
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Wraps an error message with the stack traceback at the location this function was called.
 

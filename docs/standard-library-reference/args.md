@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 # CLI Argument Parsing
 

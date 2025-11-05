@@ -10,7 +10,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Constructs a `DateTime` from a strtime string or `common_format`.
 
@@ -34,7 +34,7 @@ All seal `DateTime`s are timezone aware, which prevents annoying and complex bug
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Constructs a `TimeSpan` from years. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
 
@@ -63,7 +63,7 @@ Constructs a `TimeSpan` from years. Months and years *must* be relative to a `Da
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Constructs a `TimeSpan` from months. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
 

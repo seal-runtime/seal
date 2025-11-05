@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 The `@std/io/colors` lib, because if your terminal output isn't colorized, is it even output?
 
@@ -22,7 +22,7 @@ local colors = require("@std/io/colors")
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text magenta
 
@@ -39,7 +39,7 @@ print(colors.magenta("this text is hereby colored magenta"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text blue
 
@@ -56,7 +56,7 @@ print(colors.blue("this text is hereby colored blue"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text cyan
 
@@ -73,7 +73,7 @@ print(colors.cyan("this text is hereby colored cyan"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text black
 
@@ -90,7 +90,7 @@ print(colors.black("this text is hereby colored black"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text green
 
@@ -107,7 +107,7 @@ print(colors.green("this text is hereby colored green"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text yellow
 
@@ -124,7 +124,7 @@ print(colors.yellow("this text is hereby colored yellow"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text white
 
@@ -141,7 +141,7 @@ print(colors.white("this text is hereby colored white"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text red
 
@@ -158,7 +158,7 @@ print(colors.red("this text is hereby colored red"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text bold white
 
@@ -175,7 +175,7 @@ print(colors.bold.white("this is now bold white"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text bold magenta
 
@@ -192,7 +192,7 @@ print(colors.bold.magenta("this is now bold magenta"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text bold black
 
@@ -209,7 +209,7 @@ print(colors.bold.black("this is now bold black"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text bold green
 
@@ -226,7 +226,7 @@ print(colors.bold.green("this is now bold green"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text bold cyan
 
@@ -243,7 +243,7 @@ print(colors.bold.cyan("this is now bold cyan"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text bold yellow
 
@@ -260,7 +260,7 @@ print(colors.bold.yellow("this is now bold yellow"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text bold blue
 
@@ -277,7 +277,7 @@ print(colors.bold.blue("this is now bold blue"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Turns the provided text bold red
 
@@ -294,7 +294,7 @@ print(colors.bold.red("this is now bold red"))
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 An assorted collection of ANSI color codes to help you colorize your text however you want!!
 

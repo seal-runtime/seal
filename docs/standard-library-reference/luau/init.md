@@ -1,12 +1,12 @@
 <!-- markdownlint-disable MD033 -->
 
-# Init
+# Luau
 
 `function luau.eval(src: string, options: EvalOptions?): unknown | error`
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Evaluate Luau source code from a string in the current Luau VM.
 
@@ -52,7 +52,7 @@ an error that occurred when evaluating the code, such as a syntax error or runti
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Same as `luau.eval`, except can also accept bytecode as a string or buffer.
 
@@ -70,7 +70,7 @@ and *coredump*.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Compiles `src` to Luau bytecode.
 
@@ -80,7 +80,7 @@ Compiles `src` to Luau bytecode.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns *seal*'s require resolver implementation used internally.
 

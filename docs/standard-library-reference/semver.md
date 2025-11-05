@@ -2,12 +2,6 @@
 
 # Semver
 
-`local semver = {}`
-
-<details>
-
-<summary> Docs </summary
-
 ### semver = semantic versioning
 
 This implementation roughly follows the described spec at <https://semver.org>.
@@ -46,8 +40,6 @@ second_version:satisfies("^0.0.1") --> true
 assert(first_version < second_version)
 ```
 
-</details>
-
 `function semver.default(): Semver`
 
 `function semver.from(s: string): Semver`
@@ -56,7 +48,7 @@ assert(first_version < second_version)
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns true if the `self` is compatible with (within the range of) semver_range.
 

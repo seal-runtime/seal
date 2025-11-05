@@ -1,12 +1,12 @@
 <!-- markdownlint-disable MD033 -->
 
-# Init
+# Io
 
 `export type io = {`
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Standard library for handling **terminal** input/output.
 

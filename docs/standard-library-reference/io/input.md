@@ -8,7 +8,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Determine whether we're connected to a sane [TTY](https://en.wikipedia.org/wiki/Tty_(Unix)) terminal.
 
@@ -25,7 +25,7 @@ If *seal* is being run in a child process, this will almost always return `false
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
 
@@ -37,7 +37,7 @@ But works with stdin in a child process/works while piped, making it a fallback 
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Prompts the user for one line of text with proper text buffer handling and error handling.
 
@@ -79,7 +79,7 @@ Falls back to `io.input.rawline` if called in a non-TTY (like a piped child proc
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
@@ -89,7 +89,7 @@ Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Set stdin to raw mode, allowing you direct control over incoming keypresses.
 
@@ -107,7 +107,7 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Listens for raw terminal events from stdin, returning an iterator over those events.
 

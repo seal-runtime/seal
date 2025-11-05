@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns the `RunResult`'s `stdout` if it was successful, otherwise returns a default value.
 
@@ -19,7 +19,7 @@ If you provide a `default` function, `:unwrap_or` will return what it returns.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 A `ChildProcessStream` captures incoming bytes from your `ChildProcess`' output streams (either stdout or stderr),
 and caches them in its `inner` buffer. Each stream is spawned in a separate Rust thread to facilitate
@@ -53,7 +53,7 @@ By default, seal truncates bytes from the front of inner, causing old data to be
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Reads up to `count` bytes from the stream for up to `timeout` seconds, retrying while the stream remains empty.
 
@@ -101,7 +101,7 @@ Get everything currently in the stream without blocking:
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Reads exactly `count` bytes from the stream, retrying until `count` bytes are available or `timeout` seconds elapse.
 
@@ -151,7 +151,7 @@ Read from both streams every 0.5 seconds, byte by byte, without otherwise blocki
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Keep reading from the stream until search `term` is encountered. This is especially useful if you're trying to read line-by-line,
 or until a specific delimiter is encountered.
@@ -178,7 +178,7 @@ Blocks the current VM until `term` is found, `timeout` seconds elapse, or the re
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Fill the `target` buffer with as many bytes as possible from the stream. Retries until the stream is nonempty or `timeout` seconds elapse.
 
@@ -214,7 +214,7 @@ This function should not overfill the target buffer! A maximum of `buffer.len(ta
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Read exactly `count` bytes into the `target` buffer at `target_offset`, retrying until `count` bytes are available or `timeout` seconds elapse.
 
@@ -240,7 +240,7 @@ Pass a `timeout` of `0` seconds to prevent this function from blocking!
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Iterate over the lines in the stream, blocking the current VM (Rust Thread) until all lines are read or the timeout has been reached.
 
@@ -286,7 +286,7 @@ Unlike `:iter`, this method cleans up `\r` prefixes and trailing `\n`s.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Iterate over the stream with more granular options:
 
@@ -305,7 +305,7 @@ This function does *not* strip preceding '\r's and trailing '\n's (unlike `:line
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Iterate over the lines of the `ChildProcessStream` with generalized iteration, blocking until `break` or the reader thread exits.
 
@@ -317,7 +317,7 @@ Basically equivalent to `ChildProcessStream:lines()` except with generalized ite
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Attempts to write to the child process' stdin; if an error occurs (usually a broken pipe), returns a seal `error` userdata.
 
@@ -327,7 +327,7 @@ Attempts to write to the child process' stdin; if an error occurs (usually a bro
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Explicitly closes the child process stdin; this signals EOF for some programs that read multiple lines from stdin.
 
@@ -350,7 +350,7 @@ Errors if it can't flush the child process' stdin before closing.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Runs a program, yields until it completes, and returns its results.
 
@@ -391,7 +391,7 @@ Until the process exits.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Launches a shell command in a child process.
 
@@ -422,7 +422,7 @@ so I recommend sticking to `process.run` with `args` unless you need shell behav
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Spawns a long-running process in a non-blocking manner, returns a `ChildProcess` that contains handles to the spawned process' stdout, stderr, and stdin.
 

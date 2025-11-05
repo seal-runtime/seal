@@ -1,13 +1,5 @@
 <!-- markdownlint-disable MD033 -->
 
-# Init
-
-`local serde = {}`
-
-<details>
-
-<summary> Docs </summary
+# Serde
 
 Lib for serializing/deserializing/encoding/decoding different things.
-
-</details>

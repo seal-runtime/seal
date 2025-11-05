@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Write to the terminal's stdout/stderr.
 
@@ -16,7 +16,7 @@ Write to the terminal's stdout/stderr.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Writes `contents` to stdout without any intermediate utf-8 validation, flushing the stream immediately.
 
@@ -45,7 +45,7 @@ Additionally, on Windows it may fail silently when used in a child process.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Writes `contents` to stderr without any intermediate utf-8 validation, flushing the stream immediately.
 

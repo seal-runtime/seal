@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Easily manipulate JSON (JavaScript Object Notation) data.
 

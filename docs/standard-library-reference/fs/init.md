@@ -1,12 +1,12 @@
 <!-- markdownlint-disable MD033 -->
 
-# Init
+# Fs
 
 `function fs.readfile(path: string): string`
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Reads the file at `path` to string, without performing utf-8 validation on the file's contents.
 
@@ -26,7 +26,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Reads the file at `path` into a buffer.
 
@@ -63,7 +63,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Iterate over the lines of a file without reading the whole file into memory.
 
@@ -91,7 +91,7 @@ This function returns a normal iterator function, so if you save the return of `
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Writes `content` to the file at `path`, overwriting any file that already exists there.
 
@@ -118,7 +118,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Removes a regular file at `path` without following symlinks.
 
@@ -136,7 +136,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Check what's at `path`.
 
@@ -178,7 +178,7 @@ A more exhaustive check:
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Creates a symlink from `link` to `target`, possibly overwriting any already-existing symlink at `link`.
 
@@ -196,7 +196,7 @@ If you're on Windows, you need to run this program with Administrator permission
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Removes the symlink at `link`.
 
@@ -215,7 +215,7 @@ Removes the symlink at `link`.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Follows `symlink` and returns the *path* targeted by the symlink.
 
@@ -229,7 +229,7 @@ Follows `symlink` and returns the *path* targeted by the symlink.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Watch for filesystem changes on one or more `paths`.
 
@@ -351,7 +351,7 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
 
@@ -361,7 +361,7 @@ Recursively read contents of directory at `path` into a `fs.DirectoryTree` that 
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Writes a new directory tree at `path` (which includes the directory's name) from `tree`:
 
@@ -404,7 +404,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Removes a directory tree or an empty directory at `path` by calling Rust's `fs::remove_dir_all`, without following symlinks.
 
@@ -428,7 +428,7 @@ Please use this function carefully.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Create an empty directory at `path` according to (an optional) `options` table.
 
@@ -462,7 +462,7 @@ If you want to ensure that a directory exists (like `fs.makedir(d, { error_if_ex
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns an array of all child paths of directory `path`, relative to the passed path.
 
@@ -495,7 +495,7 @@ If a filter function is passed, only paths that pass the filter are included.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Move a regular file or directory `from` a path `to` a new path.
 
@@ -512,7 +512,7 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Copy a regular file or directory from `source` to `destination`.
 
@@ -524,7 +524,7 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Check the filesystem for `path`, returning a `fs.FindResult` that's useful for finding `fs.FileEntry` or `fs.DirectoryEntry` to work with.
 
@@ -572,7 +572,7 @@ Check if we have access to `path`
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns a table mapping the paths of the directory at `path` with their `fs.Entry`s.
 
@@ -594,7 +594,7 @@ Returns a table mapping the paths of the directory at `path` with their `fs.Entr
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 A sublib for handling operations with files and `fs.FileEntry`s.
 
@@ -608,7 +608,7 @@ This library can be called as a function as a convenience alternative for `fs.fi
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 A sublib for handling operations with directories and `fs.DirectoryEntry`s.
 
@@ -620,7 +620,7 @@ This library can be called as a function as a convenience alternative to `fs.fin
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
 
@@ -632,7 +632,7 @@ Commonly used `fs.path` functions include: `fs.path.join` for combining paths an
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
@@ -642,7 +642,7 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Top level categories to filter events by.
 

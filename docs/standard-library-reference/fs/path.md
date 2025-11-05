@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Joins path components together in a cross-platform-safe manner.
 
@@ -30,7 +30,7 @@ On Windows, pass `.\` as the first component to `path.join` to use `\` in relati
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Checks if `path` exists on the filesystem using Rust's `std::fs::exists`.
 
@@ -45,7 +45,7 @@ handle cases like `NotFound` and `PermissionDenied` without wrapping error-throw
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns the canonical (absolute) form of `path` using Rust's `std::fs::canonicalize`, resolving symlinks and intermediate components.
 
@@ -57,7 +57,7 @@ Errors if the requested path doesn't exist on the filesystem or is invalid.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns the absolute path of `path` without checking the filesystem.
 
@@ -69,7 +69,7 @@ Use this function if your path may or may not exist (yet).
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns a normalized (cleaned) version of `path` with a consistent path separator and with duplicate separators and unneeded relative path symbol removed.
 
@@ -97,7 +97,7 @@ as well as UNC paths like `"\\network\share\text.txt"` or `"\\?\wsl\mnt\..."`.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns the path of the parent directory `n` (default = 1) parents to the left of `path`
 
@@ -118,7 +118,7 @@ Returns the path of the parent directory `n` (default = 1) parents to the left o
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns the *seal* project directory `n` projects up, relative to `script_path` or the current `script:path()` if unspecified.
 

@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 A stdlib to interact with the script's running environment.
 
@@ -16,7 +16,7 @@ A stdlib to interact with the script's running environment.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Get the current working directory of the running process.
 
@@ -28,7 +28,7 @@ Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission deni
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Gets an environment variable in the current process.
 
@@ -38,7 +38,7 @@ Gets an environment variable in the current process.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Sets an environment variable in the current process.
 
@@ -50,7 +50,7 @@ Note, this function is **unsafe** in multithreaded contexts on Linux.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Removes an environment variable in the current process.
 

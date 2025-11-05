@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Ensures that a directory exists at `path` by trying to create it, catching any AlreadyExists error, and returning a `DirectoryEntry` at that path.
 
@@ -26,7 +26,7 @@ Similar to `fs.makedir(path, { error_if_exists = false }); fs.dir.from(path)`
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Try to remove directory at `path` using Rust's `fs::remove_dir_all` without erroring in common cases.
 
@@ -43,7 +43,7 @@ with result "Other", as well as an error kind string that describes what went wr
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Returns a `DirectoryEntry` corresponding to the user's home directory, erroring if not found.
 
@@ -63,7 +63,7 @@ Returns a `DirectoryEntry` corresponding to the user's home directory, erroring 
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Constructs a `DirectoryEntry` from the user's current working directory (cwd)
 
@@ -76,7 +76,7 @@ where the user is when they execute your code.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Constructs a `DirectoryEntry` from the script's current *seal* project.
 
@@ -106,7 +106,7 @@ Use this for most project-relative paths instead of `fs.path.cwd` or `fs.dir.cwd
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
  Convenient and slightly more efficient alternative to `fs.find(path):try_dir()`
 

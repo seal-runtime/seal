@@ -1,12 +1,12 @@
 <!-- markdownlint-disable MD033 -->
 
-# Init
+# Http
 
 `function http.get(url: GetConfig): HttpResponse`
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Makes an HTTP `GET` request.
 
@@ -40,7 +40,7 @@ local cats = http.get {
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Makes an HTTP `POST` request.
 
@@ -67,7 +67,7 @@ local response = http.post {
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Sends an HTTP request:
 

@@ -1,12 +1,12 @@
 <!-- markdownlint-disable MD033 -->
 
-# Init
+# Time
 
 `type time = {`
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 A time library with `time.wait` and functions for creating `Duration` objects.
 

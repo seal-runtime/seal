@@ -2,12 +2,6 @@
 
 # Str
 
-`local str = {}`
-
-<details>
-
-<summary> Docs </summary
-
 Features ergonomic methods like `str.startwith`, `str.trimfront/trimback`, etc.
 
 This library features utf-8-aware string handling, including easy access to splitting utf-8 strings,
@@ -15,8 +9,6 @@ iterating over the graphemes of a string, etc.
 
 Unlike many seal standard libraries, inputs to `str` library functions don't necessarily have
 to be valid utf-8 encoded strings.
-
-</details>
 
 `function str.startswith(s: string, prefix: string): boolean`
 
@@ -40,7 +32,7 @@ to be valid utf-8 encoded strings.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 `str.width` estimates the number of monospace space characters required to correctly format/pad a utf8-encoded string.
 
@@ -105,7 +97,7 @@ to be valid utf-8 encoded strings.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 `str.split` is an improvement on luau's `string.split` in that it can split by multiple different strings (not just one single character)
 at the same time and that the splitting is fully unicode grapheme aware.
@@ -143,7 +135,7 @@ with multiple separator strings.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Splits string `s` *around* one or more separator strings, keeping the separators in the final result.
 This is especially useful for parsing and tokenizing text!
@@ -168,7 +160,7 @@ Like `str.split`, `str.splitaround` is fully unicode grapheme-aware and can oper
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Splits `s` in front of any passed separator strings, keeping the separator in the subsequent element of the returned array.
 
@@ -193,7 +185,7 @@ Otherwise has the same semantics as `str.split`.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Splits `s` after every occurrence of a separator string, keeping the separator in the current element of the returned array.
 
@@ -217,7 +209,7 @@ Otherwise has the same semantics as `str.split`.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Iterate over the human-readable characters (graphemes) of a string
 
@@ -229,7 +221,7 @@ This function counts by 'characters', whereas `str.graphemes` provides byte indi
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Iterate over the utf-8 graphemes of `s` with indices useful for `str.slice` or `string.sub`
 

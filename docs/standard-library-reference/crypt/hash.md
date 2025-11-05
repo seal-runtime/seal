@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Contains function sha2, which can be used to create an **unsalted** hash, returned as a buffer.
 
@@ -18,7 +18,7 @@ Contains function sha2, which can be used to create an **unsalted** hash, return
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Hashes plaintext with the SHA2-256 algorithm, returns a buffer (of length 32) containing the result.
 

@@ -6,7 +6,7 @@
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Format objects for pretty printing to stdout/stderr.
 
@@ -16,7 +16,7 @@ Format objects for pretty printing to stdout/stderr.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Formats `item` in the same way as `print` or `pp`.
 
@@ -26,7 +26,7 @@ Formats `item` in the same way as `print` or `pp`.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Like pretty printing but without colors.
 
@@ -36,7 +36,7 @@ Like pretty printing but without colors.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Prints the debug representation of `item`, equivalent to using `{:?}` in Rust.
 
@@ -46,7 +46,7 @@ Prints the debug representation of `item`, equivalent to using `{:?}` in Rust.
 
 <details>
 
-<summary> Docs </summary
+<summary> See the docs </summary
 
 Removes ANSI color codes from a pretty formatted string.
 
