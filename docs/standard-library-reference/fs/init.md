@@ -548,7 +548,7 @@ Returns a table mapping the paths of the directory at `path` with their `fs.Entr
   end
 ```
 
-` file: filelib.FileLib`
+`fs.file: filelib.FileLib`
 
 A sublib for handling operations with files and `fs.FileEntry`s.
 
@@ -556,13 +556,13 @@ Contains (relatively) TOCTOU-safe apis such as `fs.file.try_read`, etc.
 
 This library can be called as a function as a convenience alternative for `fs.find(f):try_file()`.
 
-` dir: dirlib.DirLib`
+`fs.dir: dirlib.DirLib`
 
 A sublib for handling operations with directories and `fs.DirectoryEntry`s.
 
 This library can be called as a function as a convenience alternative to `fs.find(d):try_dir()`
 
-` path:  pathlib.PathLib`
+`fs.path:  pathlib.PathLib`
 
 A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
 
@@ -588,7 +588,7 @@ Some usage notes:
 
 </details>
 
-` is_write: boolean`
+`WatchEventInfo.is_write: boolean`
 
  if the event is *most likely* a write event (`Create::File` or `Modify::Data` or `Close::Write`)
 

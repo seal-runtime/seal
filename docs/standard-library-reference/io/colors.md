@@ -190,15 +190,15 @@ print(colors.bold.red("this is now bold red"))
 
  Use different styles such as dim or bold
 
-`dim = function(text: string): string return nil :: any end`
+`codes.dim = function(text: string): string return nil :: any end`
 
  dim style
 
-`bold = function(text: string): string return nil :: any end`
+`codes.bold = function(text: string): string return nil :: any end`
 
  bold style
 
-`underline = function(text: string): string return nil :: any end`
+`codes.underline = function(text: string): string return nil :: any end`
 
  underline your text
 

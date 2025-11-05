@@ -4,15 +4,15 @@
 
 A stdlib to interact with the script's running environment.
 
-` args: {string}`
+`env.args: {string}`
 
  a list of arguments passed to the program
 
-` os: "Windows" | "Linux" | "Android" | "MacOS" | "Other"`
+`env.os: "Windows" | "Linux" | "Android" | "MacOS" | "Other"`
 
  your operating system
 
-` executable_path: string`
+`env.executable_path: string`
 
  the path of the executable
 

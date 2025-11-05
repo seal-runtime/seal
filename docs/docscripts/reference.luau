@@ -38,6 +38,9 @@ for _, filename in luau_files do
 
     for line_number, line in fs.readlines(filename) do
         local type_name = string.match(line, "export type ([%w_]+) =")
+        if not type_name then
+            type_name = string.match(line, "%s*([%w_]+): {$")
+        end
         if type_name then
             current_api_parent = type_name
         elseif string.match(line, "^%s*%-%-%-") then
@@ -73,6 +76,8 @@ for _, filename in luau_files do
                 if string.match(line, `{current_api_parent}%.[%w_]+: `) then
                     line = `function {line:gsub(": ", "", 1):gsub(" %->", ":")}`
                 end
+            elseif str.starts(line, " ", "\t") and current_api_parent then
+                line = `{current_api_parent}.{str.trimfront(line)}`
             end
             local new_api: Api = {
                 name = line,

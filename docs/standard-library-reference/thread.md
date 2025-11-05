@@ -62,7 +62,7 @@ although this is configurable with `thread.spawn`'s `ThreadSpawnOptions`. Readin
 
 ```
 
-` read name: string`
+`ThreadHandle.read name: string`
 
  the name of your thread (defaults to a petname if not provided)
 
@@ -152,31 +152,31 @@ Read a message from the bytes channel, blocking until the next message is availa
 
 Errors if the channel has somehow become disconnected.
 
-` name: string?`
+`ThreadSpawnOptions.name: string?`
 
  Name your thread to quickly identify which one it is; if not provided a default alliterative petname will be provided instead.
 
-` path: string?`
+`ThreadSpawnOptions.path: string?`
 
  Path to your source file you want to run in the separate thread, relative to the current file (not cwd).
 
-` src: string?`
+`ThreadSpawnOptions.src: string?`
 
  Source code to evaluate; recommend passing a path instead.
 
-` data: JsonSerializableTable?`
+`ThreadSpawnOptions.data: JsonSerializableTable?`
 
  Optional data you want to provide to your thread at startup; accessible with `channel.data` in the child thread.
 
-` capacity: {`
+`capacity.capacity: {`
 
  Override the queue capacity of your thread's regular and bytes channels.
 
-`  regular: number?`
+`capacity.regular: number?`
 
  default is 12
 
-`  bytes: number?`
+`capacity.bytes: number?`
 
  default is 24
 

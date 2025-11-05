@@ -2,7 +2,7 @@
 
 # Http
 
-` params: {`
+`params.params: {`
 
  Query parameters to append to the url string
 

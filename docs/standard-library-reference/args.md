@@ -166,15 +166,15 @@ For programs with multiple commands, use `args.parse(program_name, desc):command
 
  Add a default command.
 
-`description: string?`
+`ProgramInfo.description: string?`
 
  if provided, goes below program name/tagline in `--help`
 
-`examples: { string }?`
+`ProgramInfo.examples: { string }?`
 
  examples of arguments *following* program and path (already pre-filled)
 
-`footer: string?`
+`ProgramInfo.footer: string?`
 
  put authors and/or repository link here
 
@@ -191,7 +191,7 @@ For programs with multiple commands, use `args.parse(program_name, desc):command
  validate the argument's input by passing a function that returns either the transformed
  validated input (such as converting input strings from p -> project) or an error object.
 
-`name: string`
+`Flag.name: string`
 
  Must start with `--` and cannot be `--help` or `--commands`
 
@@ -199,7 +199,7 @@ For programs with multiple commands, use `args.parse(program_name, desc):command
 
  flag aliases must start with `-` and cannot be `-h` (reserved for help)
 
-`name: string`
+`Named.name: string`
 
  Must start with `--` and cannot be `--help` or `--commands`
 
