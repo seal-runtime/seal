@@ -3,6 +3,8 @@
 
 # Fs
 
+`fs.-- fs.readfile(path: string) -> string`
+
 `function fs.readfile(path: string): string`
 
 <details>
@@ -60,6 +62,8 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 </details>
 
+`fs.-- fs.readlines(path: string) -> () -> (number, string)`
+
 `function fs.readlines(path: string): (): (number, string)`
 
 <details>
@@ -77,16 +81,18 @@ This function returns a normal iterator function, so if you save the return of `
 ## Usage
 
 ```luau
-  for line_number, line in fs.readlines("./myfile.txt") do
-   print(`{line_number} says {line}`)
-  end
+        for line_number, line in fs.readlines("./myfile.txt") do
+            print(`{line_number} says {line}`)
+        end
 
-  local nextline = fs.readlines("./myfile.txt")
-  local _, line1 = nextline()
-  local _, line2 = nextline()
+        local nextline = fs.readlines("./myfile.txt")
+        local _, line1 = nextline()
+        local _, line2 = nextline()
 ```
 
 </details>
+
+`fs.-- fs.writefile(path: string, content: string | buffer) -> ()`
 
 `function fs.writefile(path: string, content: string | buffer): ()`
 
@@ -101,8 +107,8 @@ Note that `content` may be either a string or a buffer; in either case, `content
 ## Usage
 
 ```luau
-  local content = getcontent()
-  fs.writefile("./myfile.txt",content)
+        local content = getcontent()
+        fs.writefile("./myfile.txt",content)
 ```
 
 ## Errors
@@ -115,6 +121,8 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 </details>
 
+`fs.-- fs.removefile(path: string) -> ()`
+
 `function fs.removefile(path: string): ()`
 
 Removes a regular file at `path` without following symlinks.
@@ -122,10 +130,12 @@ Removes a regular file at `path` without following symlinks.
 ## Usage
 
 ```luau
-  fs.removefile("./bad.exe")
+        fs.removefile("./bad.exe")
 ```
 
 This function blocks the current Luau VM. To use it in parallel, call it within a child thread from `@std/thread`.
+
+`fs.--> fs.is(path: string) -> PathIs`
 
 `function fs.is(path: string): PathIs`
 
@@ -140,34 +150,36 @@ Check what's at `path`.
 Check if something's a file:
 
 ```luau
-  if fs.is(path) == "File" then
-   print(fs.readfile(path)) -- not TOCTOU safe
-  end
+        if fs.is(path) == "File" then
+            print(fs.readfile(path)) -- not TOCTOU safe
+        end
 ```
 
 A more exhaustive check:
 
 ```luau
-  for _, path in fs.listdir(directory) do
-   local path_is = fs.is(path)
+        for _, path in fs.listdir(directory) do
+            local path_is = fs.is(path)
 
-   if path_is == "File" then
-    print(`{path} is a file!`)
-   elseif path_is == "Directory" then
-    print(`{path} is a directory!`)
-   elseif path_is == "Symlink" then
-    print(`{path} is a symlink!`)
-   elseif path_is == "NotFound" then
-    print(`{path} not found!`)
-   elseif path_is == "PermissionDenied" then
-    print(`We don't have permission to access {path} (try sudo)`)
-   else
-    print(`{path} is weird one! got {path_is}`)
-   end
-  end
+            if path_is == "File" then
+                print(`{path} is a file!`)
+            elseif path_is == "Directory" then
+                print(`{path} is a directory!`)
+            elseif path_is == "Symlink" then
+                print(`{path} is a symlink!`)
+            elseif path_is == "NotFound" then
+                print(`{path} not found!`)
+            elseif path_is == "PermissionDenied" then
+                print(`We don't have permission to access {path} (try sudo)`)
+            else
+                print(`{path} is weird one! got {path_is}`)
+            end
+        end
 ```
 
 </details>
+
+`fs.--> fs.symlink(target: string, link: string) -> success`
 
 `function fs.symlink(target: string, link: string): boolean`
 
@@ -208,6 +220,8 @@ Follows `symlink` and returns the *path* targeted by the symlink.
 
 - if `symlink` is not a symlink, does not exist on the filesystem, or is permission denied
 
+`fs.--> fs.watch(paths: string | { string }, options: WatchOptions)`
+
 `function fs.watch(paths: string | { string }, options: WatchOptions?): (): (WatchEventCategory, WatchEventInfo)`
 
 <details>
@@ -245,94 +259,98 @@ on all platforms (though they *should* be similar.)
 Run a Lune script whenever a file in ./src/** changes:
 
 ```luau
-  local fs = require("@std/fs")
-  local str = require("@std/str")
-  local process = require("@std/process")
+        local fs = require("@std/fs")
+        local str = require("@std/str")
+        local process = require("@std/process")
 
-  local serializer_script = fs.path.join(".", ".lune", "instance_serializer.luau")
+        local serializer_script = fs.path.join(".", ".lune", "instance_serializer.luau")
 
-  for category, event in fs.watch("./src") do
-   if category == "Access" or category == "None" then
-    continue -- ignore these, we only need "None" if we want to break loop
-   elseif event.is_write then
-    local modified_path = event.paths[1]
-    local result = process.run {
-     program = "lune",
-     args = {"run", serializer_script, modified_path}
-    }
-   end
-  end
+        for category, event in fs.watch("./src") do
+            if category == "Access" or category == "None" then
+                continue -- ignore these, we only need "None" if we want to break loop
+            elseif event.is_write then
+                local modified_path = event.paths[1]
+                local result = process.run {
+                    program = "lune",
+                    args = {"run", serializer_script, modified_path}
+                }
+            end
+        end
 ```
 
 Watch only .json config files for changes:
 
 ```luau
-  local options: fs.WatchOptions = {
-   recursive = false,
-   timeout_ms = 2, -- blocks vm for max of 2 milliseconds
-  }
+        local options: fs.WatchOptions = {
+            recursive = false,
+            timeout_ms = 2, -- blocks vm for max of 2 milliseconds
+        }
 
-  local files = fs.listdir(
-   "./src",
-   true, -- recursive
-   function(path: string) -- filter
-    return if string.match(path, "%.json$") or string.match(path, "%.luaurc")
-     then true
-     else false
-   end
-  )
+        local files = fs.listdir(
+            "./src",
+            true, -- recursive
+            function(path: string) -- filter
+                return if string.match(path, "%.json$") or string.match(path, "%.luaurc")
+                    then true
+                    else false
+            end
+        )
 
-  for _, event in fs.watch(files, options) do
-   if event.is_write then
-    local modified = fs.path.child(event.paths[1])
-    if modified then
-     print(`Config file modified: {modified}!`)
-    end
-   end
-  end
+        for _, event in fs.watch(files, options) do
+            if event.is_write then
+                local modified = fs.path.child(event.paths[1])
+                if modified then
+                    print(`Config file modified: {modified}!`)
+                end
+            end
+        end
 ```
 
 Manually poll a few times:
 
 ```luau
-  local options = {
-   recursive = true,
-   timeout_ms = 2, -- check for 2 seconds
-  }
-  time.wait(1)
-  local poll = fs.watch("./src", options)
-  local cat, event = poll()
-  if cat == "None" then
-   time.wait(1) -- retry
-   cat, event = poll()
-  end
-  if cat == "None" then
-   print("not found")
-  end
+        local options = {
+            recursive = true,
+            timeout_ms = 2, -- check for 2 seconds
+        }
+        time.wait(1)
+        local poll = fs.watch("./src", options)
+        local cat, event = poll()
+        if cat == "None" then
+            time.wait(1) -- retry
+            cat, event = poll()
+        end
+        if cat == "None" then
+            print("not found")
+        end
 ```
 
 With a custom timeout:
 
 ```luau
-  local start_time = os.clock()
-  for category, event in fs.watch(script:parent()) do
-   if category == "None" and os.clock() - start_time > 5 then
-    break
-   end
-   if event.is_write then
-    print(event)
-   end
-  end
-  print("hi after 5 seconds")
+        local start_time = os.clock()
+        for category, event in fs.watch(script:parent()) do
+            if category == "None" and os.clock() - start_time > 5 then
+                break
+            end
+            if event.is_write then
+                print(event)
+            end
+        end
+        print("hi after 5 seconds")
 ```
 
 This function uses the Rust `notify` crate as its backend; please refer to its documentation for more specifics.
 
 </details>
 
+`fs.-- fs.readtree(path: string) -> DirectoryTree`
+
 `function fs.readtree(path: string): DirectoryTree`
 
 Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
+
+`fs.-- fs.writetree(path: string, tree: TreeBuilder | DirectoryTree) -> ()`
 
 `function fs.writetree(path: string, tree: TreeBuilder | DirectoryTree): ()`
 
@@ -345,24 +363,24 @@ Writes a new directory tree at `path` (which includes the directory's name) from
 ## Usage
 
 ```luau
-  -- using TreeBuilders from fs.tree()
-  fs.writetree("./tests", fs.tree()
-   :with_file("run.luau", test_runner_src)
-   :with_tree("simple-tests", fs.tree()
-    :with_file("cats.spec.luau", cats_src)
-    :with_file("seals.spec.luau", seals_src)
-   )
-  )
-  -- or using a return from fs.readtree:
-  local all_tests = fs.readtree("./all_tests")
-  local applicable_tests: fs.DirectoryTree = {} do
-   for _, entry in all_tests do
-    if entry.type == "File" and string.find(entry.name, "spec%.luau$") then
-     table.insert(applicable_tests, entry)
-    end
-   end
-  end
-  fs.writetree("./applicable_tests", applicable_tests)
+        -- using TreeBuilders from fs.tree()
+        fs.writetree("./tests", fs.tree()
+            :with_file("run.luau", test_runner_src)
+            :with_tree("simple-tests", fs.tree()
+                :with_file("cats.spec.luau", cats_src)
+                :with_file("seals.spec.luau", seals_src)
+            )
+        )
+        -- or using a return from fs.readtree:
+        local all_tests = fs.readtree("./all_tests")
+        local applicable_tests: fs.DirectoryTree = {} do
+            for _, entry in all_tests do
+                if entry.type == "File" and string.find(entry.name, "spec%.luau$") then
+                    table.insert(applicable_tests, entry)
+                end
+            end
+        end
+        fs.writetree("./applicable_tests", applicable_tests)
 ```
 
 ## Errors
@@ -377,6 +395,8 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 </details>
 
+`fs.-- fs.removetree(path: string) -> ()`
+
 `function fs.removetree(path: string): ()`
 
 <details>
@@ -386,9 +406,9 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 Removes a directory tree or an empty directory at `path` by calling Rust's `fs::remove_dir_all`, without following symlinks.
 
 ```luau
-  local victim_folder = fs.path.join(fs.path.cwd(), "badfolder")
-  fs.makedir(victim_folder, { error_if_exists = false })
-  fs.removetree(victim_folder)
+        local victim_folder = fs.path.join(fs.path.cwd(), "badfolder")
+        fs.makedir(victim_folder, { error_if_exists = false })
+        fs.removetree(victim_folder)
 ```
 
 Please use this function carefully.
@@ -400,6 +420,8 @@ Please use this function carefully.
 - `fs.removetree` fails to remove some (or all) files and directories within `path`
 
 </details>
+
+`fs.-- fs.makedir(path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?) -> boolean`
 
 `function fs.makedir(path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?): boolean`
 
@@ -419,10 +441,10 @@ If you want to ensure that a directory exists (like `fs.makedir(d, { error_if_ex
 ## Usage
 
 ```luau
-  fs.makedir(fs.path.join(fs.path.cwd(), "Config", "Editor", "Formatting"), {
-   create_missing = true,
-   error_if_exists = false,
-  })
+        fs.makedir(fs.path.join(fs.path.cwd(), "Config", "Editor", "Formatting"), {
+            create_missing = true,
+            error_if_exists = false,
+        })
 ```
 
 # Errors
@@ -434,6 +456,8 @@ If you want to ensure that a directory exists (like `fs.makedir(d, { error_if_ex
 - an intermediate component directory of `path` is missing and `create_missing` is omitted or set to `false`
 
 </details>
+
+`fs.-- fs.listdir(path: string, recursive: boolean?, filter: FilterFn?) -> { string }`
 
 `function fs.listdir(path: string, recursive: boolean?, filter: ((path: string): boolean)?): { string }`
 
@@ -452,12 +476,12 @@ If a filter function is passed, only paths that pass the filter are included.
 ## Usage
 
 ```luau
-  local test_files: { string } = fs.listdir("./tests", --[[recursive =]] true)
+        local test_files: { string } = fs.listdir("./tests", --[[recursive =]] true)
 
-  -- all .luau files
-  local luau_files = fs.listdir("./tests", true, function(path: string)
-   return if string.match(path, "%.luau$") then true else false
-  end)
+        -- all .luau files
+        local luau_files = fs.listdir("./tests", true, function(path: string)
+            return if string.match(path, "%.luau$") then true else false
+        end)
 ```
 
 ## Errors
@@ -467,6 +491,8 @@ If a filter function is passed, only paths that pass the filter are included.
 - user does not have permission to access `path`
 
 </details>
+
+`fs.-- fs.move(from: string, to: string) -> ()`
 
 `function fs.move(from: string, to: string): ()`
 
@@ -479,11 +505,15 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 - if `from` or `to` are not valid utf-8 encoded paths
 - `from` does not exist on the filesystem
 
+`fs.-- fs.copy(source: string, destination: string) -> ()`
+
 `function fs.copy(source: string, destination: string): ()`
 
 Copy a regular file or directory from `source` to `destination`.
 
 TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
+
+`fs.-- fs.find(path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult`
 
 `function fs.find(path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?): FindResult`
 
@@ -502,28 +532,28 @@ Note that `fs.find` and `fs.Entry`-related apis are **not TOCTOU (Time Of Check 
 Look for a `FileEntry` at `path`:
 
 ```luau
-  local file_content: string? = nil
-  local file = fs.find("./myfile.txt"):try_file()
-  if file then
-   file_content = file:read()
-  end
+        local file_content: string? = nil
+        local file = fs.find("./myfile.txt"):try_file()
+        if file then
+            file_content = file:read()
+        end
 ```
 
 Check if `path` is a file:
 
 ```luau
-  if fs.find("./mypath").type == "File" then
-   -- code
-  end
+        if fs.find("./mypath").type == "File" then
+            -- code
+        end
 ```
 
 Check if we have access to `path`
 
 ```luau
-  local result = fs.find(maybeaccesspath, { error_if_permission_denied = false })
-  if result.type ~= "PermissionDenied" then
-   -- code
-  end
+        local result = fs.find(maybeaccesspath, { error_if_permission_denied = false })
+        if result.type ~= "PermissionDenied" then
+            -- code
+        end
 ```
 
 ## Errors
@@ -533,21 +563,29 @@ Check if we have access to `path`
 
 </details>
 
+`fs.-- fs.entries(path: string) -> { [string]: Entry }`
+
 `function fs.entries(path: string): { [string]: Entry }`
+
+<details>
+
+<summary> See the docs </summary
 
 Returns a table mapping the paths of the directory at `path` with their `fs.Entry`s.
 
 ## Usage
 
 ```luau
-  for path, entry in fs.entries("./src") do
-   if entry.type == "File" then
-    print(`{entry.name} is a file`)
-   elseif entry.type == "Directory" then
-    print(`{entry.name} is a directory`)
-   end
-  end
+        for path, entry in fs.entries("./src") do
+            if entry.type == "File" then
+                print(`{entry.name} is a file`)
+            elseif entry.type == "Directory" then
+                print(`{entry.name} is a directory`)
+            end
+        end
 ```
+
+</details>
 
 `fs.file: filelib.FileLib`
 
@@ -573,6 +611,10 @@ Commonly used `fs.path` functions include: `fs.path.join` for combining paths an
 
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
+`WatchOptions.recursive: boolean?`
+
+`WatchOptions.timeout_ms: number?`
+
 `export type WatchEventCategory`
 
 <details>
@@ -588,6 +630,10 @@ Some usage notes:
 - `"None"` indicates a timeout was reached; use it to early exit or `break` without blocking the VM.
 
 </details>
+
+`WatchEventInfo.paths: { string }`
+
+`WatchEventInfo.kind: WatchKind`
 
 `WatchEventInfo.is_write: boolean`
 
