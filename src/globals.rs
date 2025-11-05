@@ -30,6 +30,7 @@ pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
     globals.raw_set("ecall", luau.create_function(ecall)?)?;
     globals.raw_set("warn", luau.create_function(warn)?)?;
     globals.raw_set("_SEAL_VERSION", SEAL_VERSION)?;
+    globals.raw_set("_LOAD_EXTERN", luau.create_function(require::load_extern)?)?;
     globals.raw_set("_VERSION", format!("seal {} | {}", SEAL_VERSION, luau_version.to_string_lossy()))?;
     globals.raw_set("_G", TableBuilder::create(luau)?.build()?)?;
     globals.raw_set("_REQUIRE_CACHE", TableBuilder::create(luau)?.build()?)?;

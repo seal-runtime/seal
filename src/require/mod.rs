@@ -52,6 +52,21 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
     }
 }
 
+pub fn load_extern(luau: &Lua, path: LuaValue) -> LuaValueResult {
+    let path = match path {
+        LuaValue::String(path) => path.to_string_lossy(),
+        other => {
+            return wrap_err!("_LOAD_EXTERN expected a string path (like \"@seal/std/fs\"), got: {:#?}", other);
+        }
+    };
+
+    if let Some(lib_path) = path.strip_prefix("@seal/") {
+        get_standard_library(luau, lib_path)
+    } else {
+        wrap_err!("_LOAD_EXTERN got invalid path: {}", path)
+    }
+}
+
 fn get_standard_library(luau: &Lua, path: &str) -> LuaValueResult {
     match path {
         "std/fs" => ok_table(std_fs::create(luau)),
