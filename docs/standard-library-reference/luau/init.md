@@ -68,12 +68,12 @@ and *coredump*.
 
 `function luau.bytecode(src: string): buffer | error`
 
-> Compiles `src` to Luau bytecode.
+Compiles `src` to Luau bytecode.
 
 `function luau.require_resolver(): {`
 
-> Returns *seal*'s require resolver implementation used internally.
+Returns *seal*'s require resolver implementation used internally.
 
 `function luau.resolve(requested_path: string, requiring_file_path: string): { err: string, path: nil } | { path: string, err: nil }`
 
-> --- Resolve a Luau require alias (`requested_path`) relative to `requiring_file_path` to find its location on the filesystem.
+ Resolve a Luau require alias (`requested_path`) relative to `requiring_file_path` to find its location on the filesystem.

@@ -8,6 +8,6 @@ Contains function sha2, which can be used to create an **unsalted** hash, return
 
 `function Hash.sha2(plaintext: string): buffer`
 
-> Hashes plaintext with the SHA2-256 algorithm, returns a buffer (of length 32) containing the result.
+Hashes plaintext with the SHA2-256 algorithm, returns a buffer (of length 32) containing the result.
 
-> You can use the @std/serde library to convert the result into a 'readable' format
+You can use the @std/serde library to convert the result into a 'readable' format

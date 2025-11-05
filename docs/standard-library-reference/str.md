@@ -12,47 +12,46 @@ to be valid utf-8 encoded strings.
 
 `function str.startswith(s: string, prefix: string): boolean`
 
-> check if a string starts with `prefix`
+ check if a string starts with `prefix`
 
 `function str.endswith(s: string, suffix: string): boolean`
 
-> check if a string ends with `suffix`
+ check if a string ends with `suffix`
 
 `function str.starts(s: string, ...: string): boolean`
 
-> like str.startswith, but accepts multiple prefixes
+ like str.startswith, but accepts multiple prefixes
 
 `function str.ends(s: string, ...: string): boolean`
 
-> like str.endswith, but accepts multiple suffixes
+ like str.endswith, but accepts multiple suffixes
 
 `function str.trimfront(s: string, ...: string): string`
 
-> trims any of the provided strings/characters from the front of the string `s`
+ trims any of the provided strings/characters from the front of the string `s`
 
-> if no strings provided as ..., `str.trimfront` will trim whitespace (" ", "\n", etc.)
+ if no strings provided as ..., `str.trimfront` will trim whitespace (" ", "\n", etc.)
 
 `function str.trimback(s: string, ...: string): string`
 
-> trims any of the provided strings/characters/patterns from the back of the string `s`
+ trims any of the provided strings/characters/patterns from the back of the string `s`
 
-> if no strings provided as ..., `str.trimback` will trim whitespace (" ", "\n", etc.)
+ if no strings provided as ..., `str.trimback` will trim whitespace (" ", "\n", etc.)
 
 `function str.trim(s: string, ...: string): string`
 
-> trims one or many strings/characters/patterns from both front and back of string `s`
+ trims one or many strings/characters/patterns from both front and back of string `s`
 
-> if no strings provided to `...`, then default is whitespace
+ if no strings provided to `...`, then default is whitespace
 
 `function str.splitlines(s: string, trim_trailing_whitespace: boolean?): { string }`
 
-> splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
-
-> without an extra empty string, etc.
+ splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
+ without an extra empty string, etc.
 
 `function str.len(s: string): number`
 
-> returns the utf-8 length if `s` is utf-8 or the regular string length #
+ returns the utf-8 length if `s` is utf-8 or the regular string length #
 
 `function str.width(s: string): number`
 
@@ -109,27 +108,27 @@ to be valid utf-8 encoded strings.
 
 `function str.leftpad(s: string, width: number, pad: string?): string`
 
-> left pads `s` to make it at least `width` characters long, using `pad` as the padding character.
+ left pads `s` to make it at least `width` characters long, using `pad` as the padding character.
 
 `function str.escape(s: string): string`
 
-> escapes special characters like `\n`, `\t`, `\\` for easier debugging
+ escapes special characters like `\n`, `\t`, `\\` for easier debugging
 
 `function str.unescape(s: string): string`
 
-> reverts `str.escape`
+ reverts `str.escape`
 
 `function str.slice(s: string, first: number, final: number)`
 
-> alias for string.sub
+ alias for string.sub
 
 `function str.indent(s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string`
 
-> indents multiline string `count` characters; lines separated by `sep` (default "\n")
+ indents multiline string `count` characters; lines separated by `sep` (default "\n")
 
 `function str.unindent(s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string`
 
-> unindents multiline string by `count` characters; lines separated by `sep` (default "\n")
+ unindents multiline string by `count` characters; lines separated by `sep` (default "\n")
 
 `str.split = internal.split :: (s: string, ...string) -> { string }`
 
@@ -245,9 +244,9 @@ Otherwise has the same semantics as `str.split`.
 
 `function str.chars(s: string): (...any) -> (number, string)`
 
-> Iterate over the human-readable characters (graphemes) of a string
+Iterate over the human-readable characters (graphemes) of a string
 
-> This function counts by 'characters', whereas `str.graphemes` provides byte indices for `string.sub`/`str.slice`
+This function counts by 'characters', whereas `str.graphemes` provides byte indices for `string.sub`/`str.slice`
 
 `str.graphemes = internal.graphemes :: (s: string) -> (...any) -> (number, string)`
 

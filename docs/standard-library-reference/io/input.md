@@ -2,11 +2,11 @@
 
 # Input
 
-input handling lib
+ input handling lib
 
 `@[deprecated { use = "io.prompt.text OR io.input.readline OR io.input.rawline" }]`
 
-> gets input with an optional `raw_prompt` to display before getting said input.
+ gets input with an optional `raw_prompt` to display before getting said input.
 
 `function input.get(raw_prompt: string): string`
 
@@ -29,9 +29,9 @@ If *seal* is being run in a child process, this will almost always return `false
 
 `function input.rawline(prompt: string?): string`
 
-> Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
+Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
 
-> But works with stdin in a child process/works while piped, making it a fallback for automated solutions or cursed ancient terminals.
+But works with stdin in a child process/works while piped, making it a fallback for automated solutions or cursed ancient terminals.
 
 `function input.readline(prompt: string): string | interrupt | error`
 
@@ -77,7 +77,7 @@ Falls back to `io.input.rawline` if called in a non-TTY (like a piped child proc
 
 `function input.interrupt(key: "CtrlC" | "CtrlD"): interrupt`
 
-> Returns an `interrupt` userdata object. For reasons. Maybe control flow.
+Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 `function input.rawmode(enabled: boolean)`
 
@@ -99,15 +99,15 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 `mouse: (enabled: boolean) -> ()`
 
-> --- Allows `MouseEvents` to be reported by `input.events()`.
+ Allows `MouseEvents` to be reported by `input.events()`.
 
 `focus: (enabled: boolean) -> ()`
 
-> --- Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
+ Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
 
 `paste: (enabled: boolean) -> ()`
 
-> --- Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
+ Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
 
 `function input.events(poll: Duration): () -> TerminalEvent`
 
@@ -177,4 +177,4 @@ To enable `Mouse`, `Focus`, and clipboard `Paste` events, check out the `input.c
 
 `export type KeyModifiers = {`
 
-> Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
+ Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.

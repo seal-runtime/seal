@@ -61,4 +61,4 @@ Additionally, on Windows it may fail silently when used in a child process.
 
 `function output.clear(): ()`
 
-> --- clears stdout akin to `cls` or `clear`.
+ clears stdout akin to `cls` or `clear`.

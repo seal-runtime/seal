@@ -116,17 +116,15 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 `function fs.removefile(path: string): ()`
 
-> Removes a regular file at `path` without following symlinks.
+Removes a regular file at `path` without following symlinks.
 
-> ## Usage
+## Usage
 
-> ```luau
+```luau
+  fs.removefile("./bad.exe")
+```
 
->   fs.removefile("./bad.exe")
-
-> ```
-
-> This function blocks the current Luau VM. To use it in parallel, call it within a child thread from `@std/thread`.
+This function blocks the current Luau VM. To use it in parallel, call it within a child thread from `@std/thread`.
 
 `function fs.is(path: string): PathIs`
 
@@ -190,25 +188,24 @@ If you're on Windows, you need to run this program with Administrator permission
 
 `function fs.unsymlink(link: string): boolean`
 
-> Removes the symlink at `link`.
+Removes the symlink at `link`.
 
-> ## Returns
+## Returns
 
-> - `true` if the symlink was successfully removed
+- `true` if the symlink was successfully removed
 
-> ## Errors
+## Errors
 
-> - If `link` points to something that isn't a symlink.
-
-> - If the symlink at `link` is not found or permission denied.
+- If `link` points to something that isn't a symlink.
+- If the symlink at `link` is not found or permission denied.
 
 `function fs.readlink(symlink: string): string`
 
-> Follows `symlink` and returns the *path* targeted by the symlink.
+Follows `symlink` and returns the *path* targeted by the symlink.
 
-> ## Errors
+## Errors
 
-> - if `symlink` is not a symlink, does not exist on the filesystem, or is permission denied
+- if `symlink` is not a symlink, does not exist on the filesystem, or is permission denied
 
 `function fs.watch(paths: string | { string }, options: WatchOptions?): (): (WatchEventCategory, WatchEventInfo)`
 
@@ -334,7 +331,7 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 
 `function fs.readtree(path: string): DirectoryTree`
 
-> Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
+Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
 
 `function fs.writetree(path: string, tree: TreeBuilder | DirectoryTree): ()`
 
@@ -472,21 +469,20 @@ If a filter function is passed, only paths that pass the filter are included.
 
 `function fs.move(from: string, to: string): ()`
 
-> Move a regular file or directory `from` a path `to` a new path.
+Move a regular file or directory `from` a path `to` a new path.
 
-> TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
+TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
-> ## Errors
+## Errors
 
-> - if `from` or `to` are not valid utf-8 encoded paths
-
-> - `from` does not exist on the filesystem
+- if `from` or `to` are not valid utf-8 encoded paths
+- `from` does not exist on the filesystem
 
 `function fs.copy(source: string, destination: string): ()`
 
-> Copy a regular file or directory from `source` to `destination`.
+Copy a regular file or directory from `source` to `destination`.
 
-> TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
+TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 `function fs.find(path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?): FindResult`
 
@@ -538,51 +534,43 @@ Check if we have access to `path`
 
 `function fs.entries(path: string): { [string]: Entry }`
 
-> Returns a table mapping the paths of the directory at `path` with their `fs.Entry`s.
+Returns a table mapping the paths of the directory at `path` with their `fs.Entry`s.
 
-> ## Usage
+## Usage
 
-> ```luau
-
->   for path, entry in fs.entries("./src") do
-
->    if entry.type == "File" then
-
->     print(`{entry.name} is a file`)
-
->    elseif entry.type == "Directory" then
-
->     print(`{entry.name} is a directory`)
-
->    end
-
->   end
-
-> ```
+```luau
+  for path, entry in fs.entries("./src") do
+   if entry.type == "File" then
+    print(`{entry.name} is a file`)
+   elseif entry.type == "Directory" then
+    print(`{entry.name} is a directory`)
+   end
+  end
+```
 
 ` file: filelib.FileLib`
 
-> A sublib for handling operations with files and `fs.FileEntry`s.
+A sublib for handling operations with files and `fs.FileEntry`s.
 
-> Contains (relatively) TOCTOU-safe apis such as `fs.file.try_read`, etc.
+Contains (relatively) TOCTOU-safe apis such as `fs.file.try_read`, etc.
 
-> This library can be called as a function as a convenience alternative for `fs.find(f):try_file()`.
+This library can be called as a function as a convenience alternative for `fs.find(f):try_file()`.
 
 ` dir: dirlib.DirLib`
 
-> A sublib for handling operations with directories and `fs.DirectoryEntry`s.
+A sublib for handling operations with directories and `fs.DirectoryEntry`s.
 
-> This library can be called as a function as a convenience alternative to `fs.find(d):try_dir()`
+This library can be called as a function as a convenience alternative to `fs.find(d):try_dir()`
 
 ` path:  pathlib.PathLib`
 
-> A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
+A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
 
-> Commonly used `fs.path` functions include: `fs.path.join` for combining paths and `fs.path.cwd` and `fs.path.home`.
+Commonly used `fs.path` functions include: `fs.path.join` for combining paths and `fs.path.cwd` and `fs.path.home`.
 
 `function fs.tree(): TreeBuilder`
 
-> Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
+Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
 `export type WatchEventCategory`
 
@@ -602,7 +590,7 @@ Some usage notes:
 
 ` is_write: boolean`
 
-> --- if the event is *most likely* a write event (`Create::File` or `Modify::Data` or `Close::Write`)
+ if the event is *most likely* a write event (`Create::File` or `Modify::Data` or `Close::Write`)
 
 `export type WatchKind`
 
@@ -610,15 +598,15 @@ Some usage notes:
 
 <summary> See the docs </summary
 
-Represents the specific Event.WatchKind from notify.
+ Represents the specific Event.WatchKind from notify.
 
-Note that relying on these is inherently unreliable as notify tends to combine related events.
-Especially if they're received within a short interval of each other.
+ Note that relying on these is inherently unreliable as notify tends to combine related events.
+ Especially if they're received within a short interval of each other.
 
-Note that the `Kind::Any` options tend to be generated in place of `Kind::File` or
-`Kind::Directory` on Windows!
+ Note that the `Kind::Any` options tend to be generated in place of `Kind::File` or
+ `Kind::Directory` on Windows!
 
-`None::Timeout` is fired if no events have been seen when `WatchOptions.timeout_ms` elapses
-for an iteration of `fs.watch`. This allows you to break early without indefinitely blocking the Luau VM.
+ `None::Timeout` is fired if no events have been seen when `WatchOptions.timeout_ms` elapses
+ for an iteration of `fs.watch`. This allows you to break early without indefinitely blocking the Luau VM.
 
 </details>

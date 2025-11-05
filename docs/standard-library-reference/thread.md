@@ -64,13 +64,13 @@ although this is configurable with `thread.spawn`'s `ThreadSpawnOptions`. Readin
 
 ` read name: string`
 
-> --- the name of your thread (defaults to a petname if not provided)
+ the name of your thread (defaults to a petname if not provided)
 
 `function ThreadHandle.join(self: ThreadHandle): ()`
 
-> Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
+Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
-> Errors if the thread has already been joined or somehow disappeared.
+Errors if the thread has already been joined or somehow disappeared.
 
 `function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | string): ()`
 
@@ -107,9 +107,9 @@ This is usually caused by trying to send a message to a thread that's already be
 
 `function ThreadHandle.sendbytes(self: ThreadHandle, data: buffer): ()`
 
-> Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
+Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
 
-> Errors if the channel has somehow become disconnected.
+Errors if the channel has somehow become disconnected.
 
 `function ThreadHandle.try_sendbytes(self: ThreadHandle, data: buffer): (boolean, "Sent" | "Disconnected" | "Full")`
 
@@ -130,55 +130,55 @@ This is usually caused by trying to send a message to a thread that's already be
 
 `function ThreadHandle.read(self: ThreadHandle): JsonSerializableTable? | string?`
 
-> Read a message from the regular channel without blocking the current thread.
+Read a message from the regular channel without blocking the current thread.
 
-> Errors if the channel has somehow become disconnected.
+Errors if the channel has somehow become disconnected.
 
 `function ThreadHandle.read_await(self: ThreadHandle): JsonSerializableTable | string`
 
-> Read a message from the regular channel, blocking until the next message is available.
+Read a message from the regular channel, blocking until the next message is available.
 
-> Errors if the channel has somehow become disconnected.
+Errors if the channel has somehow become disconnected.
 
 `function ThreadHandle.readbytes(self: ThreadHandle): buffer?`
 
-> Read a message from the bytes channel without blocking the current thread.
+Read a message from the bytes channel without blocking the current thread.
 
-> Errors if the channel has somehow become disconnected.
+Errors if the channel has somehow become disconnected.
 
 `function ThreadHandle.readbytes_await(self: ThreadHandle): buffer`
 
-> Read a message from the bytes channel, blocking until the next message is available.
+Read a message from the bytes channel, blocking until the next message is available.
 
-> Errors if the channel has somehow become disconnected.
+Errors if the channel has somehow become disconnected.
 
 ` name: string?`
 
-> --- Name your thread to quickly identify which one it is; if not provided a default alliterative petname will be provided instead.
+ Name your thread to quickly identify which one it is; if not provided a default alliterative petname will be provided instead.
 
 ` path: string?`
 
-> --- Path to your source file you want to run in the separate thread, relative to the current file (not cwd).
+ Path to your source file you want to run in the separate thread, relative to the current file (not cwd).
 
 ` src: string?`
 
-> --- Source code to evaluate; recommend passing a path instead.
+ Source code to evaluate; recommend passing a path instead.
 
 ` data: JsonSerializableTable?`
 
-> --- Optional data you want to provide to your thread at startup; accessible with `channel.data` in the child thread.
+ Optional data you want to provide to your thread at startup; accessible with `channel.data` in the child thread.
 
 ` capacity: {`
 
-> --- Override the queue capacity of your thread's regular and bytes channels.
+ Override the queue capacity of your thread's regular and bytes channels.
 
 `  regular: number?`
 
-> --- default is 12
+ default is 12
 
 `  bytes: number?`
 
-> --- default is 24
+ default is 24
 
 `function thread.spawn(spawn_options: ThreadSpawnOptions): ThreadHandle`
 
@@ -233,4 +233,4 @@ Spawns a new Rust Thread running Luau code in a new Luau VM.
 
 `function thread.sleep(milliseconds: number): true`
 
-> Literally the same as `time.wait`, except in milliseconds.
+Literally the same as `time.wait`, except in milliseconds.

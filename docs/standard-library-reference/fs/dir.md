@@ -4,15 +4,15 @@
 
 `function DirLib.from(path: string): DirectoryEntry`
 
-> --- Creates a `DirectoryEntry` from the directory at `path`, erroring if the directory is NotFound/PermissionDenied, etc.
+ Creates a `DirectoryEntry` from the directory at `path`, erroring if the directory is NotFound/PermissionDenied, etc.
 
 `function DirLib.build(name: string, tree: DirectoryTree): DirectoryBuilder`
 
-> --- Returns a `DirectoryBuilder` table for `fs.readtree`, `fs.writetree`, etc.
+ Returns a `DirectoryBuilder` table for `fs.readtree`, `fs.writetree`, etc.
 
 `function DirLib.create(path: string): DirectoryEntry`
 
-> --- Creates a *new* directory at `path`, erroring if an entry already exists there.
+ Creates a *new* directory at `path`, erroring if an entry already exists there.
 
 `function DirLib.ensure(path: string, create_missing: boolean?): DirectoryEntry`
 
@@ -53,31 +53,24 @@ with result "Other", as well as an error kind string that describes what went wr
 
 `function DirLib.home(): DirectoryEntry`
 
-> Returns a `DirectoryEntry` corresponding to the user's home directory, erroring if not found.
+Returns a `DirectoryEntry` corresponding to the user's home directory, erroring if not found.
 
-> ## Usage
+## Usage
 
-> ```luau
-
->   local zip_downloads = fs.dir.home()
-
->    :expect_dir("Downloads")
-
->    :list(false, function(path: string)
-
->     return str.endswith(path, ".zip")
-
->    end)
-
-> ```
+```luau
+  local zip_downloads = fs.dir.home()
+   :expect_dir("Downloads")
+   :list(false, function(path: string)
+    return str.endswith(path, ".zip")
+   end)
+```
 
 `function DirLib.cwd(): DirectoryEntry`
 
-> Constructs a `DirectoryEntry` from the user's current working directory (cwd)
+Constructs a `DirectoryEntry` from the user's current working directory (cwd)
 
-> If you're looking for project-relative pathing, I recommend using `fs.dir.project()` instead, as those will work no matter
-
-> where the user is when they execute your code.
+If you're looking for project-relative pathing, I recommend using `fs.dir.project()` instead, as those will work no matter
+where the user is when they execute your code.
 
 `function DirLib.project(n: number?): DirectoryEntry`
 
@@ -111,20 +104,13 @@ Use this for most project-relative paths instead of `fs.path.cwd` or `fs.dir.cwd
 
 `function DirLib.__call(self: any, path: string): DirectoryEntry?`
 
->  Convenient and slightly more efficient alternative to `fs.find(path):try_dir()`
+ Convenient and slightly more efficient alternative to `fs.find(path):try_dir()`
 
->  ## Usage
-
-> ```luau
-
->  local src_dir = fs.dir("./src")
-
->  if src_dir then
-
->   local main_luau = src_dir:expect_file("main.luau")
-
->   main_luau:append('print("meow")')
-
->  end
-
-> ```
+ ## Usage
+```luau
+ local src_dir = fs.dir("./src")
+ if src_dir then
+  local main_luau = src_dir:expect_file("main.luau")
+  main_luau:append('print("meow")')
+ end
+```
