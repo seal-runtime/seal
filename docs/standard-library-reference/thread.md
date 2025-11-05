@@ -27,39 +27,39 @@ although this is configurable with `thread.spawn`'s `ThreadSpawnOptions`. Readin
 
 ```luau
     -- parent.luau
-    local thread = require("@std/thread")
+local thread = require("@std/thread")
 
-    local handle = thread.spawn {
-        path = "./child.luau", -- note these paths are relative like luau requires and unlike std/fs paths
-        data = { urls = urls }, -- you can optionally pass in startup data to use in the other thread
-    }
+local handle = thread.spawn {
+    path = "./child.luau", -- note these paths are relative like luau requires and unlike std/fs paths
+    data = { urls = urls }, -- you can optionally pass in startup data to use in the other thread
+}
 
-    -- receive data from your thread using handle:read and handle:read_await
-    local data = handle:read_await()
-    while thread.sleep(20) do
-        local data = handle:read()
-        if typeof(data) == "table" then
-            print(data)
-        else
-            break
-        end
+-- receive data from your thread using handle:read and handle:read_await
+local data = handle:read_await()
+while thread.sleep(20) do
+    local data = handle:read()
+    if typeof(data) == "table" then
+        print(data)
+    else
+        break
     end
-    -- send data to your child thread using handle:send and handle:sendbytes
-    handle:send("hi")
+end
+-- send data to your child thread using handle:send and handle:sendbytes
+handle:send("hi")
 
-    -- don't forget to join your threads before your program exits!!
-    handle:join()
+-- don't forget to join your threads before your program exits!!
+handle:join()
 
-    -- child.luau
-    if channel then -- channel is a global that exists in child threads and can be used to communicate with the parent thread
-        local urls = (channel.data :: { urls: { string } }).urls
-        channel:send("first")
-        for _, url in urls do
-            local result = callapi(url)
-            channel:send(result)
-        end
-        channel:send("done")
+-- child.luau
+if channel then -- channel is a global that exists in child threads and can be used to communicate with the parent thread
+    local urls = (channel.data :: { urls: { string } }).urls
+    channel:send("first")
+    for _, url in urls do
+        local result = callapi(url)
+        channel:send(result)
     end
+    channel:send("done")
+end
 
 ```
 
@@ -75,41 +75,41 @@ Spawns a new Rust Thread running Luau code in a new Luau VM.
 
 ```luau
     -- main.luau
-    local thread = require("@std/thread")
+local thread = require("@std/thread")
 
-    local urls = {
-        "https://sealfinder.net/api/random",
-        "https://example.com/endpoint",
+local urls = {
+    "https://sealfinder.net/api/random",
+    "https://example.com/endpoint",
+}
+
+local threadpool: { thread.ThreadHandle } = {}
+for _, url in urls do
+    local handle = thread.spawn {
+        path = "./web_get.luau",
+        data = { url = url },
     }
+    table.insert(threadpool, handle)
+end
 
-    local threadpool: { thread.ThreadHandle } = {}
-    for _, url in urls do
-        local handle = thread.spawn {
-            path = "./web_get.luau",
-            data = { url = url },
-        }
-        table.insert(threadpool, handle)
-    end
-
-    while true do
-        for index, handle in threadpool do
-            local response = handle:read()
-            if response then
-                print(response)
-                handle:join()
-                table.remove(threadpool, index)
-            end
+while true do
+    for index, handle in threadpool do
+        local response = handle:read()
+        if response then
+            print(response)
+            handle:join()
+            table.remove(threadpool, index)
         end
     end
+end
 
-    -- web_get.luau
-    if channel then -- make sure we're in a child thread
-        local http = require("@std/net/http")
-        local response = http.get {
-            url = channel.data.url,
-        }
-        channel:send(response)
-    end
+-- web_get.luau
+if channel then -- make sure we're in a child thread
+    local http = require("@std/net/http")
+    local response = http.get {
+        url = channel.data.url,
+    }
+    channel:send(response)
+end
 ```
 
 </details>

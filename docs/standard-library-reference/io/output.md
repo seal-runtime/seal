@@ -26,10 +26,10 @@ Additionally, on Windows it may fail silently when used in a child process.
 ## Usage
 
 ```luau
-        local err = output.write("idk")
-        if err then
-            warn(`error writing to stdout: {err}`)
-        end
+local err = output.write("idk")
+if err then
+    warn(`error writing to stdout: {err}`)
+end
 ```
 
 </details>
@@ -55,7 +55,7 @@ Additionally, on Windows it may fail silently when used in a child process.
 ## Usage
 
 ```luau
-        local err = output.ewrite("error message\n")
+local err = output.ewrite("error message\n")
 ```
 
 </details>

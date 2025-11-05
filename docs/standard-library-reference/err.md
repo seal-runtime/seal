@@ -16,21 +16,21 @@ Create an `error` with a custom error message. This allows you to return result-
 ## Usage
 
 ```luau
-  local err = require("@std/err")
+local err = require("@std/err")
 
-  local function canfail(): string | error
-   if not somecheck() then
-    return err.message("whoops we failed")
-   end
-   return "success"
-  end
+local function canfail(): string | error
+    if not somecheck() then
+        return err.message("whoops we failed")
+    end
+    return "success"
+end
 
-  local res = canfail()
-  if typeof(res) == "error" then
-   -- error handling
-  else
-   -- res should be narrowed to `string`
-  end
+local res = canfail()
+if typeof(res) == "error" then
+    -- error handling
+else
+    -- res should be narrowed to `string`
+end
 ```
 
 </details>

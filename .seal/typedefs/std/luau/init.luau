@@ -75,10 +75,10 @@ export type EvalOptions = {
 }
 
 export type LuaurcAliases = {
-	path: string,
-	aliases: {
-		[string]: string
-	}
+    path: string,
+    aliases: {
+        [string]: string
+    }
 }
 
 return {} :: luau

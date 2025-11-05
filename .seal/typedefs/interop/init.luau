@@ -1,3 +1,3 @@
 return {
-	mlua = require("@self/mlua"),
+    mlua = require("@self/mlua"),
 }

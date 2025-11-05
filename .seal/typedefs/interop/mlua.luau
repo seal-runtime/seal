@@ -10,13 +10,13 @@ local mlua = {}
 --- this breaks Rust-side functions that expect a `LuaInteger` and don't properly handle the `LuaNumber` case.
 @checked
 function mlua.isint(n: number): boolean
-	return nil :: any
+    return nil :: any
 end
 
 --- Returns `true` if `e` is an mlua Error, false otherwise
 @checked
 function mlua.iserror(e: any): boolean
-	return nil :: any
+    return nil :: any
 end
 
 return mlua

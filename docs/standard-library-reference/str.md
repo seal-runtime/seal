@@ -71,38 +71,38 @@ to be valid utf-8 encoded strings.
 ## Simple usage
 
 ```luau
-    print(str.width("Hello")) -- 5
-    print(str.width("田中良")) -- 6 (each character takes 2 spaces)
-    print(str.width("🔥🎉")) -- 4 (each emoji takes 2 spaces)
+print(str.width("Hello")) -- 5
+print(str.width("田中良")) -- 6 (each character takes 2 spaces)
+print(str.width("🔥🎉")) -- 4 (each emoji takes 2 spaces)
 ```
 
 ## Actual example
 
 ```luau
- local students = {
-  { name = "Alex Johnson", score = 95 },
-  { name = "田中良", score = 88 },
-  { name = "🔥🎉 Emily Carter", score = 92 },
-  { name = "Nadiya Kovalenko", score = 85 },
- }
+local students = {
+    { name = "Alex Johnson", score = 95 },
+    { name = "田中良", score = 88 },
+    { name = "🔥🎉 Emily Carter", score = 92 },
+    { name = "Nadiya Kovalenko", score = 85 },
+}
 
- -- Calculate column widths dynamically using `str.width`
- local max_name_width = 0
- for _, student in students do
-  max_name_width = math.max(max_name_width, str.width(student.name))
- end
+-- Calculate column widths dynamically using `str.width`
+local max_name_width = 0
+for _, student in students do
+    max_name_width = math.max(max_name_width, str.width(student.name))
+end
 
- -- Print formatted table
- print("Name" .. string.rep(" ", max_name_width - str.width("Name")) .. " | Score")
- print(string.rep("-", max_name_width) .. "-|------")
+-- Print formatted table
+print("Name" .. string.rep(" ", max_name_width - str.width("Name")) .. " | Score")
+print(string.rep("-", max_name_width) .. "-|------")
 
- for _, student in students do
-  print(
-   student.name
-   .. string.rep(" ", max_name_width - str.width(student.name))
-   .. " | " .. student.score
-  )
- end
+for _, student in students do
+    print(
+        student.name
+        .. string.rep(" ", max_name_width - str.width(student.name))
+        .. " | " .. student.score
+    )
+end
 ```
 
 </details>
@@ -147,12 +147,12 @@ with multiple separator strings.
 ## Usage
 
 ```luau
- local chars = str.split("seals 🦭 ")
- --> { "s", "e", "a", "l", "s", " ", "🦭", " "  }
- local words = str.split("seals 🦭 say hi", " ")
- --> { "seals", "🦭", "say", "hi" }
- local omit_hi = str.split("seals 🦭 say hi", " ", "hi")
- --> { "seals", "🦭", "say" }
+local chars = str.split("seals 🦭 ")
+--> { "s", "e", "a", "l", "s", " ", "🦭", " "  }
+local words = str.split("seals 🦭 say hi", " ")
+--> { "seals", "🦭", "say", "hi" }
+local omit_hi = str.split("seals 🦭 say hi", " ", "hi")
+--> { "seals", "🦭", "say" }
 ```
 
 ### Notes
@@ -187,9 +187,9 @@ Like `str.split`, `str.splitaround` is fully unicode grapheme-aware and can oper
 ## Usage
 
 ```luau
- local line = `function Cat.meow(name: string, age: number)`
- local tokens = str.splitaround(line, " ", ".", "(", ":", ",", ")")
- --> { "function", " ", "Cat", ".", "meow", "(", "name", ":", " ", "string", ",", " ", "age", ":", " ", "number", ")"}
+local line = `function Cat.meow(name: string, age: number)`
+local tokens = str.splitaround(line, " ", ".", "(", ":", ",", ")")
+--> { "function", " ", "Cat", ".", "meow", "(", "name", ":", " ", "string", ",", " ", "age", ":", " ", "number", ")"}
 ```
 
 </details>
@@ -207,14 +207,14 @@ Otherwise has the same semantics as `str.split`.
 ## Usage
 
 ```luau
- local messages = "[INFO] message\nnext line of message\n[WARN] bad warning\n[ERROR] message\n stack traceback"
- local splitted = str.splitbefore(messages, "[INFO]", "[WARN]", "[ERROR]")
- print(splitted) -->
- {
-  "[INFO] message\nnext line of message\n",
-  "[WARN] bad warning\n",
-  "[ERROR] message\n stack traceback",
- }
+local messages = "[INFO] message\nnext line of message\n[WARN] bad warning\n[ERROR] message\n stack traceback"
+local splitted = str.splitbefore(messages, "[INFO]", "[WARN]", "[ERROR]")
+print(splitted) -->
+{
+    "[INFO] message\nnext line of message\n",
+    "[WARN] bad warning\n",
+    "[ERROR] message\n stack traceback",
+}
 ```
 
 </details>
@@ -232,13 +232,13 @@ Otherwise has the same semantics as `str.split`.
 ## Usage
 
 ```luau
- local httpheaders = "Content-Type: text/html\r\nContent-Length: 123\r\nConnection: keep-alive\r\n"
- local splitted = str.splitafter(httpheaders, "\r\n") -->
- {
-  "Content-Type: text/html\r\n",
-  "Content-Length: 123\r\n",
-  "Connection: keep-alive\r\n"
- }
+local httpheaders = "Content-Type: text/html\r\nContent-Length: 123\r\nConnection: keep-alive\r\n"
+local splitted = str.splitafter(httpheaders, "\r\n") -->
+{
+    "Content-Type: text/html\r\n",
+    "Content-Length: 123\r\n",
+    "Connection: keep-alive\r\n"
+}
 ```
 
 </details>
@@ -260,12 +260,12 @@ Iterate over the utf-8 graphemes of `s` with indices useful for `str.slice` or `
 ## Usage
 
 ```luau
- local str = require("@std/str")
+local str = require("@std/str")
 
- local utf8_string = "सील hi i am a seal 🦭"
- for offset, grapheme in str.graphemes(utf8_string) do
-  print(`found '{grapheme}' starting at {offset} and ending at {offset + #grapheme}`)
- end
+local utf8_string = "सील hi i am a seal 🦭"
+for offset, grapheme in str.graphemes(utf8_string) do
+    print(`found '{grapheme}' starting at {offset} and ending at {offset + #grapheme}`)
+end
 ```
 
 ### Edge cases

@@ -18,11 +18,11 @@ On Windows, pass `.\` as the first component to `path.join` to use `\` in relati
 ## Usage
 
 ```luau
-        local srcpath = path.join(path.cwd(), "src")
-        local main_luau = path.join(srcpath, "main.luau")
-        local main_content = fs.readfile(main_luau)
+local srcpath = path.join(path.cwd(), "src")
+local main_luau = path.join(srcpath, "main.luau")
+local main_content = fs.readfile(main_luau)
 
-        local otherfile_in_script_dir = path.join(script:parent(), "otherfile.txt")
+local otherfile_in_script_dir = path.join(script:parent(), "otherfile.txt")
 ```
 
 </details>
@@ -65,16 +65,16 @@ Returns a normalized (cleaned) version of `path` with a consistent path separato
 By default, uses '/' as the path separator unless `path` is a Windows-style absolute path, in which case it'll use a backslash instead.
 
 ```luau
-        local mixed_path = [[./hi/im/a\./file.txt]]
-        print(path.normalize(mixed_path)) --> "./hi/im/a/file.txt"
+local mixed_path = [[./hi/im/a\./file.txt]]
+print(path.normalize(mixed_path)) --> "./hi/im/a/file.txt"
 
-        -- absolute paths on windows use \
-        local windows_path = [[C:\Users\Example\Documents\project/main.luau]]
-        print(path.normalize(windows_path)) --> "C:\Users\Example\Documents\project\main.luau"
+-- absolute paths on windows use \
+local windows_path = [[C:\Users\Example\Documents\project/main.luau]]
+print(path.normalize(windows_path)) --> "C:\Users\Example\Documents\project\main.luau"
 
-        -- paths with redundant separators get cleaned
-        local redundant_separators = [[C:\\Users\\Example//Documents////project\main.luau]]
-        print(path.normalize(redundant_separators)) --> "C:\Users\Example\Documents\project\main.luau"
+-- paths with redundant separators get cleaned
+local redundant_separators = [[C:\\Users\\Example//Documents////project\main.luau]]
+print(path.normalize(redundant_separators)) --> "C:\Users\Example\Documents\project\main.luau"
 ```
 
 For Windows-style absolute paths, `path.normalize` handles both drive letter paths like `"C:\Users\Username\Documents\..."`
@@ -89,12 +89,12 @@ Returns the path of the parent directory `n` (default = 1) parents to the left o
 ## Usage
 
 ```luau
-        local fs = require("@std/fs")
-        local env = require("@std/env")
-        local path = fs.path
+local fs = require("@std/fs")
+local env = require("@std/env")
+local path = fs.path
 
-        local cwd = env.current_working_directory
-        local parent_dir = path.parent(cwd)
+local cwd = env.current_working_directory
+local parent_dir = path.parent(cwd)
 ```
 
 `function PathLib.child(path: string): string?`

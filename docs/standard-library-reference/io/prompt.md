@@ -8,17 +8,17 @@ Prompt users for personal information :)
 ## Usage
 
 ```luau
-    local prompt = require("@std/io/prompt")
+local prompt = require("@std/io/prompt")
 
-    -- confirm (defaults to true)
-    if prompt.confirm(`Switch to branch {branch}`) then
-        -- displays "Switch to branch branchname (Y/n): "
-        switch_branch(branch)
-    end
+-- confirm (defaults to true)
+if prompt.confirm(`Switch to branch {branch}`) then
+    -- displays "Switch to branch branchname (Y/n): "
+    switch_branch(branch)
+end
 
-    -- Ask the user to provide one line of arbitrary text, supporting normal text buffer operations:
-    local result = prompt.text("What's your name?")
-    -- displays "What's your name?: "
+-- Ask the user to provide one line of arbitrary text, supporting normal text buffer operations:
+local result = prompt.text("What's your name?")
+-- displays "What's your name?: "
 ```
 
 `function prompt.text(message: string): string`
@@ -39,15 +39,15 @@ If you want to apply *custom validation*, use `prompt.validate` instead!
 ## Usage
 
 ```luau
-        local name = prompt.text("What's your name?")
-        -- displays "What's your name?: "
-        if name == "deviaze" then
-            print("no that's me")
-        end
+local name = prompt.text("What's your name?")
+-- displays "What's your name?: "
+if name == "deviaze" then
+    print("no that's me")
+end
 
-        -- a very bold question
-        local ssn = prompt.text(colors.bold.white("whats your ssn???: "))
-        -- seal doesn't display an extra `: ` after your message
+-- a very bold question
+local ssn = prompt.text(colors.bold.white("whats your ssn???: "))
+-- seal doesn't display an extra `: ` after your message
 ```
 
 </details>
@@ -68,10 +68,10 @@ To confirm, the user may send any of `Y`, `y`, `n`, or `N` to explicitly signify
 ## Usage
 
 ```luau
-        if prompt.confirm("are roses red") then
-            -- displays "are roses red [Y/n]: "
-            print("violets are blue")
-        end
+if prompt.confirm("are roses red") then
+    -- displays "are roses red [Y/n]: "
+    print("violets are blue")
+end
 ```
 
 </details>
@@ -92,16 +92,16 @@ Like `prompt.text`, but validates the response with a custom validation function
 ## Usage
 
 ```luau
-        local response = prompt.validate("Favorite animal that starts with 's'",
-            function(response: string): true | string
-                return
-                    if response == "seal" then
-                        true
-                    elseif not str.startswith(response, "s") then
-                        `'{response}' does not start with s!`
-                    else "nope not the answer :)"
-            end
-        )
+local response = prompt.validate("Favorite animal that starts with 's'",
+    function(response: string): true | string
+        return
+            if response == "seal" then
+                true
+            elseif not str.startswith(response, "s") then
+                `'{response}' does not start with s!`
+            else "nope not the answer :)"
+    end
+)
 ```
 
 </details>
@@ -149,17 +149,17 @@ Prompts users to pick one of a list of options by index.
 ## Usage
 
 ```luau
-        local opt = prompt.pick("Pick an editor", {"vscode/code", "zed", "nvim"}, 1)
-        if opt == 1 then
-            -- handle vscode stuff
-        elseif opt == 2 then
-            -- handle zed stuff
-        elseif opt == 3 then
-            -- handle nvim stuff
-        end
+local opt = prompt.pick("Pick an editor", {"vscode/code", "zed", "nvim"}, 1)
+if opt == 1 then
+    -- handle vscode stuff
+elseif opt == 2 then
+    -- handle zed stuff
+elseif opt == 3 then
+    -- handle nvim stuff
+end
 
-        -- or dynamically
-        local file = files[prompt.pick("Pick a file", files)]
+-- or dynamically
+local file = files[prompt.pick("Pick a file", files)]
 ```
 
 </details>

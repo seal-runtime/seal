@@ -12,8 +12,8 @@ local process = require("@std/process")
 
 -- run a simple program with args
 local result = process.run {
-    program = "markdownlint-cli2",
-    args = { "--fix", "myfile.md" },
+program = "markdownlint-cli2",
+args = { "--fix", "myfile.md" },
 }
 
 -- a shell command
@@ -21,13 +21,13 @@ local files = process.shell("ls -l"):unwrap()
 
 -- a long running child process
 local child = process.spawn({
-    program = "someutil --watch",
-    shell = "sh",
+program = "someutil --watch",
+shell = "sh",
 })
 
 for line in child.stdout:lines() do
-    local thing_changed = line:match("([%w]+) changed!")
-    print(`Change detected: {thing_changed}`)
+local thing_changed = line:match("([%w]+) changed!")
+print(`Change detected: {thing_changed}`)
 end
 ```
 
@@ -42,15 +42,15 @@ Runs a program, yields until it completes, and returns its results.
 Takes a RunOptions table:
 
 ```luau
-    type RunOptions = {
-        program: string,
+type RunOptions = {
+    program: string,
  optional args you want to pass
-        args: { string }?,
+    args: { string }?,
  the name or path of the shell, omit to run without shell
-        shell: string?
+    shell: string?
  path to the the working directory you want your command to execute in
-        cwd: string?,
-    }
+    cwd: string?,
+}
 ```
 
 ### Blocks
@@ -60,14 +60,14 @@ Until the process exits.
 ### Usage
 
 ```luau
-    local process = require("@std/process")
-    local result = process.run {
-        program = "lune",
-        args = {"run", somefile},
-    }
-    if result.ok then
-        print(result.stdout)
-    end
+local process = require("@std/process")
+local result = process.run {
+    program = "lune",
+    args = {"run", somefile},
+}
+if result.ok then
+    print(result.stdout)
+end
 ```
 
 </details>
@@ -96,9 +96,9 @@ so I recommend sticking to `process.run` with `args` unless you need shell behav
 ### Usage
 
 ```luau
-    local process = require("@std/process")
-    local file_stuff: {string} = process.shell("ls -l"):unwrap()
-    print(file_stuff)
+local process = require("@std/process")
+local file_stuff: {string} = process.shell("ls -l"):unwrap()
+print(file_stuff)
 ```
 
 </details>
@@ -114,16 +114,16 @@ Spawns a long-running process in a non-blocking manner, returns a `ChildProcess`
 ## Usage
 
 ```luau
-    local process = require("@std/process")
-    local child = process.spawn({
-        program = "someutil --watch",
-        shell = "sh",
-    })
+local process = require("@std/process")
+local child = process.spawn({
+    program = "someutil --watch",
+    shell = "sh",
+})
 
-    for line in child.stdout:lines() do
-        local thing_changed = line:match("([%w]+) changed!")
-        print(`Change detected: {thing_changed}`)
-    end
+for line in child.stdout:lines() do
+    local thing_changed = line:match("([%w]+) changed!")
+    print(`Change detected: {thing_changed}`)
+end
 ```
 
 </details>
@@ -261,20 +261,20 @@ To prevent this function from blocking, pass a `timeout` of 0 seconds!
 Keep reading until data appears (default behavior):
 
 ```luau
-        local first_message = child.stdout:read() :: string
-        print(first_message)
+local first_message = child.stdout:read() :: string
+print(first_message)
 ```
 
 Read the first 256 bytes once data appears:
 
 ```luau
-        local first_part = child.stdout:read(256) :: string
+local first_part = child.stdout:read(256) :: string
 ```
 
 Get everything currently in the stream without blocking:
 
 ```luau
-        local current_data = child.stdout:read(nil, 0.0)
+local current_data = child.stdout:read(nil, 0.0)
 ```
 
 </details>
@@ -307,24 +307,24 @@ Pass a timeout of `0` seconds to make this function nonblocking.
 Read exactly 512 bytes as soon as 512 bytes are available:
 
 ```luau
-        local first_512 = child.stdout:read_exact(512)
+local first_512 = child.stdout:read_exact(512)
 ```
 
 Read from both streams every 0.5 seconds, byte by byte, without otherwise blocking the VM:
 
 ```luau
-        local stdout_chars: { string } = {}
-        local stderr_chars: { string } = {}
-        while time.wait(0.5) and child:alive() do
-            local stdout_char = child.stdout:read_exact(1, 0.0)
-            if stdout_char then
-                table.insert(stdout_chars, stdout_char)
-            end
-            local stderr_char = child.stderr:read_exact(1, 0.0)
-            if stderr_char then
-                table.insert(stderr_chars, stderr_char)
-            end
-        end
+local stdout_chars: { string } = {}
+local stderr_chars: { string } = {}
+while time.wait(0.5) and child:alive() do
+    local stdout_char = child.stdout:read_exact(1, 0.0)
+    if stdout_char then
+        table.insert(stdout_chars, stdout_char)
+    end
+    local stderr_char = child.stderr:read_exact(1, 0.0)
+    if stderr_char then
+        table.insert(stderr_chars, stderr_char)
+    end
+end
 ```
 
 </details>
@@ -382,12 +382,12 @@ This function should not overfill the target buffer! A maximum of `buffer.len(ta
 ## Usage
 
 ```luau
-        local buffy = buffer.create(1024)
-        local offset = 0
-        while child:alive() and offset < 1024 do
-            local count = child.stdout:fill(buffy, offset)
-            offset += count
-        end
+local buffy = buffer.create(1024)
+local offset = 0
+while child:alive() and offset < 1024 do
+    local count = child.stdout:fill(buffy, offset)
+    offset += count
+end
 ```
 
 </details>
@@ -444,30 +444,30 @@ Unlike `:iter`, this method cleans up `\r` prefixes and trailing `\n`s.
 ### In a loop
 
 ```luau
-        local process = require("@std/process")
-        local child = process.spawn({
-            program = "someutil --watch",
-            shell = "sh",
-        })
+local process = require("@std/process")
+local child = process.spawn({
+    program = "someutil --watch",
+    shell = "sh",
+})
 
-        for line in child.stdout:lines() do
-            local thing_changed = line:match("([%w]+) changed!")
-            print(`Change detected: {thing_changed}`)
-        end
+for line in child.stdout:lines() do
+    local thing_changed = line:match("([%w]+) changed!")
+    print(`Change detected: {thing_changed}`)
+end
 ```
 
 ### As iterator
 
 ```luau
-        local process = require("@std/process")
-        local child = process.spawn {
-            program = "somewatcher --watch",
-            shell = "sh",
-        }
+local process = require("@std/process")
+local child = process.spawn {
+    program = "somewatcher --watch",
+    shell = "sh",
+}
 
-        local next_line = child.stdout:lines()
-        local first_line = next_line()
-        local second_line = next_line()
+local next_line = child.stdout:lines()
+local first_line = next_line()
+local second_line = next_line()
 ```
 
 </details>
@@ -503,10 +503,6 @@ Attempts to write to the child process' stdin; if an error occurs (usually a bro
 
 `function ChildProcessStream.close(self: ChildProcessStdin): ()`
 
-<details>
-
-<summary> See the docs </summary
-
 Explicitly closes the child process stdin; this signals EOF for some programs that read multiple lines from stdin.
 
 Errors if it can't flush the child process' stdin before closing.
@@ -514,12 +510,10 @@ Errors if it can't flush the child process' stdin before closing.
 ## Usage
 
 ```luau
-        local child = process.spawn {
-            program = "python3",
-            args = { "-" },
-        }
-        child.stdin:write(PYTHON_SRC)
-        child.stdin:close()
+local child = process.spawn {
+    program = "python3",
+    args = { "-" },
+}
+child.stdin:write(PYTHON_SRC)
+child.stdin:close()
 ```
-
-</details>

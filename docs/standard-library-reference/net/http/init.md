@@ -3,7 +3,7 @@
 
 # Http
 
-` params: {`
+`params: {`
 
  Query parameters to append to the url string
 
@@ -27,23 +27,23 @@ Makes an HTTP `GET` request.
 
 ```lua
 local response = http.get({
- url = "https://catfact.ninja/fact",
+url = "https://catfact.ninja/fact",
 })
 if response.ok then
- local raw_body = response.body
- local decoded_json_body = response:decode()
+local raw_body = response.body
+local decoded_json_body = response:decode()
 end
 
 -- or with more features:
 
 local cats = http.get {
- url = "my.cats.net/get",
- headers = {
-  Authorization = someauth
- },
- params = {
-  name = "Nanuk",
- },
+url = "my.cats.net/get",
+headers = {
+    Authorization = someauth
+},
+params = {
+    name = "Nanuk",
+},
 }:unwrap_json()
 ```
 
@@ -57,14 +57,14 @@ Makes an HTTP `POST` request.
 
 ```lua
 local response = http.post {
- url = "https://somejson.com/post",
- headers = {
-  ["API-KEY"] = api_key,
-  -- note: Content-Type: application/json automatically handled when you pass a table as body!
- },
- body = {
-  username = "hiItsMe",
- }
+url = "https://somejson.com/post",
+headers = {
+    ["API-KEY"] = api_key,
+    -- note: Content-Type: application/json automatically handled when you pass a table as body!
+},
+body = {
+    username = "hiItsMe",
+}
 }
 
 ```#
@@ -76,12 +76,12 @@ Sends an HTTP request:
 ## Usage
 ```lua
 local response = http.request({
- method = "PUT",
- url = "https://somewhere.net/api/put",
- body = somebody,
+method = "PUT",
+url = "https://somewhere.net/api/put",
+body = somebody,
 })
 
 if response.ok then
- print(response:decode())
+print(response:decode())
 end
 ```

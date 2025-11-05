@@ -18,7 +18,7 @@ local datetime = {
 
 --- Constructs a `DateTime` from right now (based on system time) in your local timezone.
 function datetime.now(): DateTime
-	return nil :: any
+    return nil :: any
 end
 
 --- Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.

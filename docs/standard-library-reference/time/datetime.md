@@ -31,9 +31,9 @@ All seal `DateTime`s are timezone aware, which prevents annoying and complex bug
 
 ```luau
     -- Parse a simple ISO 8601 timestamp that we're sure came from US/CST time.
-    local dt = datetime.parse("2025-01-02 05:00", "ISO_8601", "US/Central")
-    -- Parse an RFC 3339 timestamp that already has timezone offset info in it.
-    local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
+local dt = datetime.parse("2025-01-02 05:00", "ISO_8601", "US/Central")
+-- Parse an RFC 3339 timestamp that already has timezone offset info in it.
+local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
 ```
 
 </details>
@@ -49,20 +49,20 @@ Constructs a `TimeSpan` from years. Months and years *must* be relative to a `Da
 ## how relatives work
 
 ```luau
-    local now = datetime.now()
+local now = datetime.now()
 
-    -- you don't need to specify relative here, because we know it's relative to `now`
-    local next_year = now + datetime.years(1)
+-- you don't need to specify relative here, because we know it's relative to `now`
+local next_year = now + datetime.years(1)
 
-    -- you don't need to specify relative here, because operands execute left to right
-    local next_year = now + datetime.years(1) + datetime.months(2)
+-- you don't need to specify relative here, because operands execute left to right
+local next_year = now + datetime.years(1) + datetime.months(2)
 
-    -- you NEED to specify relative here because we don't know what it's relative to
-    local span = datetime.years(1, datetime.now()) + datetime.seconds(10)
+-- you NEED to specify relative here because we don't know what it's relative to
+local span = datetime.years(1, datetime.now()) + datetime.seconds(10)
 
-    -- only one of the operands needs to have a relative date (and it's inherited by the resulting `TimeSpan`)
-    local span2 = datetime.years(1) + datetime.months(1, datetime.now())
-    assert(span2.relative_to ~= nil, "should have relative DateTime")
+-- only one of the operands needs to have a relative date (and it's inherited by the resulting `TimeSpan`)
+local span2 = datetime.years(1) + datetime.months(1, datetime.now())
+assert(span2.relative_to ~= nil, "should have relative DateTime")
 ```
 
 </details>
@@ -78,20 +78,20 @@ Constructs a `TimeSpan` from months. Months and years *must* be relative to a `D
 ## how relatives work
 
 ```luau
-    local now = datetime.now()
+local now = datetime.now()
 
-    -- you don't need to specify relative here, because we know it's relative to `now`
-    local next_year = now + datetime.years(1)
+-- you don't need to specify relative here, because we know it's relative to `now`
+local next_year = now + datetime.years(1)
 
-    -- you don't need to specify relative here, because operands execute left to right
-    local next_year = now + datetime.years(1) + datetime.months(2)
+-- you don't need to specify relative here, because operands execute left to right
+local next_year = now + datetime.years(1) + datetime.months(2)
 
-    -- you NEED to specify relative here because we don't know what it's relative to
-    local span = datetime.years(1, datetime.now()) + datetime.seconds(10)
+-- you NEED to specify relative here because we don't know what it's relative to
+local span = datetime.years(1, datetime.now()) + datetime.seconds(10)
 
-    -- only one of the operands needs to have a relative date (and it's inherited by the resulting `TimeSpan`)
-    local span2 = datetime.years(1) + datetime.months(1, datetime.now())
-    assert(span2.relative_to ~= nil, "should have relative DateTime")
+-- only one of the operands needs to have a relative date (and it's inherited by the resulting `TimeSpan`)
+local span2 = datetime.years(1) + datetime.months(1, datetime.now())
+assert(span2.relative_to ~= nil, "should have relative DateTime")
 ```
 
 </details>

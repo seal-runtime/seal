@@ -59,19 +59,19 @@ Falls back to `io.input.rawline` if called in a non-TTY (like a piped child proc
 ## Usage
 
 ```luau
-    local line: string?
-    local result = input.readline("what's your name?: ")
-    if typeof(result) == "string" then
-        line = result
-    elseif typeof(result) == "interrupt" then
-        if result.code == "CtrlC" then
-            process.exit(0)
-        elseif result.code == "CtrlD" then
-            line = ""
-        end
-    elseif typeof(result) == "error" then
-        print(`got error {result}`)
+local line: string?
+local result = input.readline("what's your name?: ")
+if typeof(result) == "string" then
+    line = result
+elseif typeof(result) == "interrupt" then
+    if result.code == "CtrlC" then
+        process.exit(0)
+    elseif result.code == "CtrlD" then
+        line = ""
     end
+elseif typeof(result) == "error" then
+    print(`got error {result}`)
+end
 ```
 
 </details>
@@ -135,43 +135,43 @@ the user's terminal, prevent them from exiting your program, or worse.
 To enable `Mouse`, `Focus`, and clipboard `Paste` events, check out the `input.capture` apis.
 
 ```luau
-    if input.tty() then -- MUST be checked
-        input.rawmode(true)
-        input.capture.paste(true)
-        output.write("\27[?25l") -- hide cursor
+if input.tty() then -- MUST be checked
+    input.rawmode(true)
+    input.capture.paste(true)
+    output.write("\27[?25l") -- hide cursor
 
-        local interrupted: interrupt?
+    local interrupted: interrupt?
 
-        for event in input.events(time.milliseconds(40)) do
-            if event.is == "Key" then
-                if event.modifiers.ctrl and event.key == "c" then
-                    interrupted = input.interrupt("CtrlC")
-                    break -- user pressed Ctrl + C
-                elseif event.modifiers.ctrl and event.key == "d" then
-                    interrupted = input.interrupt("CtrlD")
-                    break -- user pressed Ctrl + D
-                end
-
-                if event.key == "Up" then
-                    -- up arrow key
-                elseif event.key == "Left" then
-                    -- left arrow key
-                elseif event.key == "Enter" then
-                    -- user pressed Enter or Return
-                elseif event.key == "Space" then
-                    -- user pressed spacebar
-                else
-                    print(event.key)
-                end
-            elseif event.is == "Paste" then
-                print(`user pasted {event.contents}`)
+    for event in input.events(time.milliseconds(40)) do
+        if event.is == "Key" then
+            if event.modifiers.ctrl and event.key == "c" then
+                interrupted = input.interrupt("CtrlC")
+                break -- user pressed Ctrl + C
+            elseif event.modifiers.ctrl and event.key == "d" then
+                interrupted = input.interrupt("CtrlD")
+                break -- user pressed Ctrl + D
             end
-        end
 
-        output.write("\27[?25h") -- show cursor
-        input.capture.paste(false)
-        input.rawmode(false)
+            if event.key == "Up" then
+                -- up arrow key
+            elseif event.key == "Left" then
+                -- left arrow key
+            elseif event.key == "Enter" then
+                -- user pressed Enter or Return
+            elseif event.key == "Space" then
+                -- user pressed spacebar
+            else
+                print(event.key)
+            end
+        elseif event.is == "Paste" then
+            print(`user pasted {event.contents}`)
+        end
     end
+
+    output.write("\27[?25h") -- show cursor
+    input.capture.paste(false)
+    input.rawmode(false)
+end
 ```
 
 </details>

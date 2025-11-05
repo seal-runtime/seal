@@ -36,15 +36,15 @@ an error that occurred when evaluating the code, such as a syntax error or runti
 ## Usage
 
 ```luau
-        local luau = require("@std/luau")
-        local src = [[return { meow = 2 }]]
-        local res = luau.eval(src)
-        local data: { meow: number } = {}
-        if typeof(res) == "error" then
-            print(`error running code: {res}`)
-        else
-            data.meow = (res :: any).meow
-        end
+local luau = require("@std/luau")
+local src = [[return { meow = 2 }]]
+local res = luau.eval(src)
+local data: { meow: number } = {}
+if typeof(res) == "error" then
+    print(`error running code: {res}`)
+else
+    data.meow = (res :: any).meow
+end
 ```
 
 </details>

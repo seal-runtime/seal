@@ -28,15 +28,15 @@ This is a better and TOCTOU-safer variant to `local content = if fs.path.exists(
 ## Usage
 
 ```luau
-        local content, result = fs.file.try_read("./mymaybefile.txt")
-        if typeof(content) == "string" and result == "Ok" then
-            -- success case
-        elseif result == "NotFound" then
-        elseif result == "PermissionDenied" then
-            print("i don't have access to this path!!")
-        else
-            print(`unexpected extremely rare error: {result}`)
-        end
+local content, result = fs.file.try_read("./mymaybefile.txt")
+if typeof(content) == "string" and result == "Ok" then
+    -- success case
+elseif result == "NotFound" then
+elseif result == "PermissionDenied" then
+    print("i don't have access to this path!!")
+else
+    print(`unexpected extremely rare error: {result}`)
+end
 ```
 
 </details>
@@ -54,15 +54,15 @@ This is a better and TOCTOU-safer variant to `local content = if fs.path.exists(
 ## Usage
 
 ```luau
-        local content, result = fs.file.try_readbytes("./mymaybefile.txt", 0, 120)
-        if typeof(content) == "buffer" and result == "Ok" then
-            -- success case
-        elseif result == "NotFound" then
-        elseif result == "PermissionDenied" then
-            print("i don't have access to this path!!")
-        else
-            print(`unexpected extremely rare error: {result}`)
-        end
+local content, result = fs.file.try_readbytes("./mymaybefile.txt", 0, 120)
+if typeof(content) == "buffer" and result == "Ok" then
+    -- success case
+elseif result == "NotFound" then
+elseif result == "PermissionDenied" then
+    print("i don't have access to this path!!")
+else
+    print(`unexpected extremely rare error: {result}`)
+end
 ```
 
 ## Errors
@@ -86,10 +86,10 @@ Use this if `PermissionDenied` is an expected result for your usecase.
 ## Usage
 
 ```luau
-    local success, result = fs.file.try_write("/opt/meow.txt", "meow")
-    if result == "PermissionDenied" then
-        print("Can't write to file! Run me with sudo!!")
-    end
+local success, result = fs.file.try_write("/opt/meow.txt", "meow")
+if result == "PermissionDenied" then
+    print("Can't write to file! Run me with sudo!!")
+end
 ```
 
 </details>
@@ -111,8 +111,8 @@ Convenient and slightly more efficient alternative to `fs.find(path):try_file()`
 ## Usage
 
 ```luau
-    local myfile = fs.file("./myfile.txt")
-    if myfile then
-        print(myfile:metadata())
-    end
+local myfile = fs.file("./myfile.txt")
+if myfile then
+    print(myfile:metadata())
+end
 ```

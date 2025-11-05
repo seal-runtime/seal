@@ -68,14 +68,14 @@ Note that release candidates (rc.<number>) are ordered before full releases, the
 ## Usage
 
 ```luau
-    local semver = require("@std/semver")
+local semver = require("@std/semver")
 
-    local some_version = semver.from(require("./config.luau").version)
-    if some_version:satisfies("^0.1.0") then
-        print("compatible version!")
-    else
-        print("incompatible version :(")
-    end
+local some_version = semver.from(require("./config.luau").version)
+if some_version:satisfies("^0.1.0") then
+    print("compatible version!")
+else
+    print("incompatible version :(")
+end
 ```
 
 </details>

@@ -30,6 +30,8 @@ local apis_by_path: {
 for _, filename in luau_files do
     local in_doc = false
     local last_line_was_doc_end = false
+    local last_line_started_codeblock = false
+    local codeblock_unindent: string? = nil
     local in_a_codeblock = false
     local current_api_parent: string? = nil
 
@@ -58,11 +60,22 @@ for _, filename in luau_files do
         if in_doc then
             if string.match(line, "```luau?") then
                 in_a_codeblock = true
+                last_line_started_codeblock = true
                 line = str.trimfront(line)
             elseif in_a_codeblock and string.match(line, "```") then
                 in_a_codeblock = false
-            end
-            if not in_a_codeblock then
+                codeblock_unindent = nil
+                line = str.trimfront(line)
+            elseif in_a_codeblock and last_line_started_codeblock then
+                local preceding_whitespace = string.match(line, "^([%s]+)[%w]+")
+                if preceding_whitespace then
+                    codeblock_unindent = preceding_whitespace
+                    last_line_started_codeblock = false
+                    line = str.unindent(line, if string.find(codeblock_unindent, "\t", 1, true) then "Tabs" else "Spaces", #codeblock_unindent)
+                end
+            elseif in_a_codeblock and codeblock_unindent then
+                line = str.unindent(line, if string.find(codeblock_unindent, "\t", 1, true) then "Tabs" else "Spaces", #codeblock_unindent)
+            elseif not in_a_codeblock then
                 line = str.trimfront(line)
             end
             table.insert(current_doc, line)
@@ -138,7 +151,7 @@ for path, apis in apis_by_path do
     push("<!-- markdownlint-disable MD033 -->\n<!-- markdownlint-disable MD024 -->")
     push("# " .. header)
     local first_api = apis[1]
-    if str.starts(first_api.name, "local", "export type") then
+    if str.starts(first_api.name, "local", "type", "export type") then
         push(first_api.docs)
         table.remove(apis, 1) -- pop header name
     end
