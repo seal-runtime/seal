@@ -96,4 +96,4 @@ export type FileLib = setmetatable<{
 	__call: (self: any, path: string) -> FileEntry?,
 }>
 
-return {} :: FileLib
+return _LOAD_EXTERN("@seal/std/fs/file") :: FileLib

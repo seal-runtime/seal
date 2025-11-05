@@ -1,4 +1,4 @@
-local str = require("@std/str")
+local str = require("../../typedefs/std/str")
 
 type CsvRowStruct = { { [string]: string } }
 type CsvRowImpl = {

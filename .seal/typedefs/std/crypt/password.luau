@@ -81,4 +81,4 @@ export type Password = {
 	verify: (verify_options: PasswordVerifyOptions) -> boolean
 }
 
-return {} :: Password
+return _LOAD_EXTERN("@seal/std/crypt/password") :: Password

@@ -35,4 +35,4 @@ type json = {
 	array: <T>(t: { T }?) -> { T }
 }
 
-return {} :: json
+return _LOAD_EXTERN("@seal/std/json") :: json

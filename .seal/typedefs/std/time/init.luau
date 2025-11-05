@@ -38,4 +38,4 @@ type time = {
     nanoseconds: (n: number) -> Duration,
 }
 
-return {} :: time
+return _LOAD_EXTERN("@seal/std/time") :: time

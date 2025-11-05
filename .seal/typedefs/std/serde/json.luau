@@ -1,1 +1,1 @@
-return require("@std/json")
+return require("../json")

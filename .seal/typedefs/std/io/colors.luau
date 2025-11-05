@@ -368,4 +368,5 @@ colors.codes = {
     DIM = "\x1b[2m",
     UNDERLINE = "\x1b[4m",
 }
-return colors
+
+return _LOAD_EXTERN("@seal/std/io/colors") :: typeof(colors)

@@ -722,4 +722,4 @@ export type IanaTimezone =
     | "Zulu"
 
 
-return datetime
+return _LOAD_EXTERN("@seal/std/time/datetime") :: typeof(datetime)

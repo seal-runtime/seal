@@ -9,4 +9,4 @@ export type Rsa = {
 	decrypt: (ciphertext: string, private_key: string) -> string,
 }
 
-return {} :: Rsa
+return _LOAD_EXTERN("@seal/std/crypt/rsa") :: Rsa

@@ -3,12 +3,12 @@ Lib for serializing/deserializing/encoding/decoding different things.
 ]=]
 local serde = {}
 
-serde.json = require("@std/json")
+serde.json = require("@self/json")
 
-serde.base64 = require("@std/serde/base64")
+serde.base64 = require("@self/base64")
 
-serde.toml = require("@std/serde/toml")
+serde.toml = require("@self/toml")
 
-serde.yaml = require("@std/serde/yaml")
+serde.yaml = require("@self/yaml")
 
 return serde

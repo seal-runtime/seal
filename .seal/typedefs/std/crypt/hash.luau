@@ -12,4 +12,4 @@ export type Hash = {
 	sha2: (plaintext: string) -> buffer,
 }
 
-return {} :: Hash
+return _LOAD_EXTERN("@seal/std/crypt/hash") :: Hash

@@ -172,4 +172,4 @@ export type prompt = {
     pick: (message: string, options: { string }, default: number?) -> number,
 }
 
-return {} :: prompt
+return _LOAD_EXTERN("@seal/std/io/prompt") :: prompt

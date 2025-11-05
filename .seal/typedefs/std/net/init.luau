@@ -1,5 +1,5 @@
 local net = {}
 
-net.http = require("@std/net/http")
+net.http = require("@self/http")
 
 return net

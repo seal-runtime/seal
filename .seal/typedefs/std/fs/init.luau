@@ -653,5 +653,4 @@ export type WatchKind =
 	-- No event received after `timeout_ms` ms elapsed
 	| "None::Timeout"
 
-
-return {} :: fs
+return _LOAD_EXTERN("@seal/std/fs") :: fs

@@ -2,21 +2,21 @@
 Of course *you'd* require the whole standard library at once...
 ]=]
 local std = {
-	fs = require("@std/fs"),
-	str = require("@std/str"),
-	semver = require("@std/semver"),
-	env = require("@std/env"),
-	io = require("@std/io"),
-	colors = require("@std/colors"),
-	format = require("@std/io/format"),
-	time = require("@std/time"),
-	datetime = require("@std/time/datetime"),
-	process = require("@std/process"),
-	serde = require("@std/serde"),
-	json = require("@std/json"),
-	net = require("@std/net"),
-	thread = require("@std/thread"),
-	luau = require("@std/luau"),
+	fs = require("@self/fs"),
+	str = require("@self/str"),
+	semver = require("@self/semver"),
+	env = require("@self/env"),
+	io = require("@self/io"),
+	colors = require("@self/colors"),
+	format = require("@self/io/format"),
+	time = require("@self/time"),
+	datetime = require("@self/time/datetime"),
+	process = require("@self/process"),
+	serde = require("@self/serde"),
+	json = require("@self/json"),
+	net = require("@self/net"),
+	thread = require("@self/thread"),
+	luau = require("@self/luau"),
 }
 
 return std

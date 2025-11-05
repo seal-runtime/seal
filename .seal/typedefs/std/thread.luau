@@ -214,4 +214,4 @@ function thread.sleep(milliseconds: number): true
 	return nil :: any
 end
 
-return thread
+return _LOAD_EXTERN("@seal/std/thread") :: typeof(thread)

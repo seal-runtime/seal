@@ -1,6 +1,6 @@
 type YamlValue = { [any]: any }
 
-return {
+return _LOAD_EXTERN("@seal/std/serde/yaml") :: typeof({
 	encode = function(t: YamlValue): string
 		return nil :: any
 	end,
@@ -13,4 +13,4 @@ return {
 	writefile = function(path: string, content: YamlValue): ()
 		return nil :: any
 	end
-}
+})

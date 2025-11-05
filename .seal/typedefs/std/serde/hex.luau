@@ -3,4 +3,4 @@ export type Hex = {
 	decode: (encoded: string) -> buffer,
 }
 
-return {} :: Hex
+return _LOAD_EXTERN("@seal/std/serde/hex") :: Hex

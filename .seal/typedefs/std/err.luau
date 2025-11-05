@@ -41,4 +41,4 @@ export type err = {
 
 export type Result<T> = T | error
 
-return {} :: err
+return _LOAD_EXTERN("@seal/std/err") :: err

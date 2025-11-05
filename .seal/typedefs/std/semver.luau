@@ -1,8 +1,6 @@
 --!nonstrict
--- note! although this library is implemented in luau, modifying its typedefs won't
--- modify it in seal!
 
-local str = require("@std/str")
+local str = require("./str")
 
 --[=[
 ### semver = semantic versioning

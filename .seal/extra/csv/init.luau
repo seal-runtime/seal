@@ -1,6 +1,6 @@
-local fs = require("@std/fs")
-local str = require("@std/str")
-local output = require("@std/io/output")
+local fs = require("@self/../../typedefs/std/fs")
+local str = require("@@self/../../typedefs/std/str")
+local output = require("@self/../../typedefs/std/io/output")
 
 local types = require("@self/types")
 export type Csv = types.Csv

@@ -240,4 +240,4 @@ export type Named = {
     value: any,
 }
 
-return {} :: args
+return _LOAD_EXTERN("@seal/std/args") :: args

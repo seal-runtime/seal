@@ -9,11 +9,12 @@
 	- Want to format your tables in the same pretty way as `print`? Use `@std/io/format`.
 	- If you want to be colorful, use `@std/io/colors`, which is aliased to just `@std/colors` as well (due to high traffic).
 ]=]
-export type io = {
-	input: typeof(require("@self/input")),
-	output: typeof(require("@self/output")),
-	colors: typeof(require("@self/colors")),
-	format: typeof(require("@self/format")),
-	prompt: typeof(require("@self/prompt")),
+local io = {
+	input = require("@self/input"),
+	output = require("@self/output"),
+	colors = require("@self/colors"),
+	format = require("@self/format"),
+	prompt = require("@self/prompt"),
 }
-return {} :: io
+
+return io

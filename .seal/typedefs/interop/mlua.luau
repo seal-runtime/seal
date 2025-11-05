@@ -19,4 +19,4 @@ function mlua.iserror(e: any): boolean
 	return nil :: any
 end
 
-return mlua
+return _LOAD_EXTERN("@seal/interop/mlua") :: typeof(mlua)
