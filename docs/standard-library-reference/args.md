@@ -145,8 +145,6 @@ For programs with multiple commands, use `args.parse(program_name, desc):command
  Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
  generate commands.
 
-`}`
-
 `function args.positional(name: string, help: string): Positional`
 
  Add a positional argument
@@ -216,14 +214,6 @@ For programs with multiple commands, use `args.parse(program_name, desc):command
 `ArgList.help: string`
 
 `ArgList.values: { string }?`
-
-`Arg.| Positional`
-
-`Arg.| Flag`
-
-`Arg.| Named`
-
-`| ArgList`
 
 `Positional.name: string`
 

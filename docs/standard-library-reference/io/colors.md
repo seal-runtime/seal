@@ -45,8 +45,6 @@ local colors = require("@std/io/colors")
 
 `function bold.white(text: string): string`
 
-`}`
-
 `style: {`
 
 `function style.dim(text: string): string`
@@ -54,8 +52,6 @@ local colors = require("@std/io/colors")
 `function style.bold(text: string): string`
 
 `function style.underline(text: string): string`
-
-`}`
 
 `codes: {`
 
@@ -146,8 +142,6 @@ local colors = require("@std/io/colors")
 `codes.DIM: "\x1b[2m"`
 
 `codes.UNDERLINE: "\x1b[4m"`
-
-`}`
 
 `function colors.magenta(text: string): string`
 
@@ -344,9 +338,3 @@ Usage:
 local colors = require("@std/io/colors")
 print(colors.bold.red("this is now bold red"))
 ```
-
-`codes.BOLD = "\x1b[1m"`
-
-`codes.DIM = "\x1b[2m"`
-
-`codes.UNDERLINE = "\x1b[4m"`

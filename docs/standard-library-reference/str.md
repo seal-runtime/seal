@@ -23,33 +23,9 @@ to be valid utf-8 encoded strings.
 
  like str.startswith, but accepts multiple prefixes
 
-`for _, prefix in {...} do`
-
-`if str.startswith(s, prefix) then`
-
-`return true`
-
-`end`
-
-`end`
-
-`return false`
-
 `function str.ends(s: string, ...: string): boolean`
 
  like str.endswith, but accepts multiple suffixes
-
-`for _, suffix in {...} do`
-
-`if str.endswith(s, suffix) then`
-
-`return true`
-
-`end`
-
-`end`
-
-`return false`
 
 `function str.trimfront(s: string, ...: string): string`
 

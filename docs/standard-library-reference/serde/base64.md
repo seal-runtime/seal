@@ -14,5 +14,3 @@ good for serving binary stuff in a digestable form for serving things on the int
 `function urlsafe.encode(data: string | buffer): string`
 
 `function urlsafe.decode(data: string): buffer`
-
-`}`

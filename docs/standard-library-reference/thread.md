@@ -122,15 +122,11 @@ Literally the same as `time.wait`, except in milliseconds.
 
  the name of your thread (defaults to a petname if not provided)
 
-`-- ThreadHandle:join()`
-
 `function ThreadHandle.join(self: ThreadHandle): ()`
 
 Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
 Errors if the thread has already been joined or somehow disappeared.
-
-`-- ThreadHandle:send(data)`
 
 `function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | string): ()`
 
@@ -147,8 +143,6 @@ If you want to not block the current thread, use `try_send` instead.
 Errors if the channel has somehow become disconnected or provided data isn't json-serializable.
 
 </details>
-
-`-- ThreadHandle:try_send(data)`
 
 `function ThreadHandle.try_send(self: ThreadHandle, data: JsonSerializableTable | string): (boolean, "Sent" | "Disconnected" | "Full")`
 
@@ -194,15 +188,11 @@ This is usually caused by trying to send a message to a thread that's already be
 
 </details>
 
-`-- ThreadHandle:read()`
-
 `function ThreadHandle.read(self: ThreadHandle): JsonSerializableTable? | string?`
 
 Read a message from the regular channel without blocking the current thread.
 
 Errors if the channel has somehow become disconnected.
-
-`-- ThreadHandle:read_await()`
 
 `function ThreadHandle.read_await(self: ThreadHandle): JsonSerializableTable | string`
 
@@ -210,15 +200,11 @@ Read a message from the regular channel, blocking until the next message is avai
 
 Errors if the channel has somehow become disconnected.
 
-`-- ThreadHandle:readbytes()`
-
 `function ThreadHandle.readbytes(self: ThreadHandle): buffer?`
 
 Read a message from the bytes channel without blocking the current thread.
 
 Errors if the channel has somehow become disconnected.
-
-`-- ThreadHandle:readbytes_await()`
 
 `function ThreadHandle.readbytes_await(self: ThreadHandle): buffer`
 
@@ -253,5 +239,3 @@ Errors if the channel has somehow become disconnected.
 `capacity.bytes: number?`
 
  default is 24
-
-`capacity.}?`

@@ -217,15 +217,3 @@ To enable `Mouse`, `Focus`, and clipboard `Paste` events, check out the `input.c
 `PasteEvent.contents: string`
 
 `is: "Empty"`
-
-`TerminalEvent.| KeyEvent`
-
-`TerminalEvent.| MouseEvent`
-
-`TerminalEvent.| ResizeEvent`
-
-`TerminalEvent.| PasteEvent`
-
-`TerminalEvent.| FocusGained | FocusLost`
-
-`TerminalEvent.| Empty`

@@ -244,8 +244,6 @@ By default, seal truncates bytes from the front of inner, causing old data to be
 
  what side of stderr should be truncated when full? defaults to "front"
 
-`stream.}?`
-
 `export type ChildProcessStream = setmetatable<{`
 
  Represents the stdout and stderr streams of a `ChildProcess`, both ran in parallel threads
@@ -528,8 +526,6 @@ or decrease this value if your child process outputs quickly and you want iterat
 This function does *not* strip preceding '\r's and trailing '\n's (unlike `:lines()` and generalized iteration).
 
 </details>
-
-`ChildProcessStream.--> for line in stream`
 
 `function ChildProcessStream.__iter(self: ChildProcessStream): (): string`
 

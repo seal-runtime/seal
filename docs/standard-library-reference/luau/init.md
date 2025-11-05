@@ -81,8 +81,6 @@ and *coredump*.
 
 Compiles `src` to Luau bytecode.
 
-`luau.--> luau.require_resolver()`
-
 `function luau.require_resolver(): {`
 
 Returns *seal*'s require resolver implementation used internally.
@@ -94,5 +92,3 @@ Returns *seal*'s require resolver implementation used internally.
 `function luau.get_aliases(requiring_file_path: string): ({ LuaurcAliases }?, string?)`
 
 `function luau.expand_aliases(requested_path: string, aliases_by_luaurc: { LuaurcAliases }): (string?, string?)`
-
-`}`

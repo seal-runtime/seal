@@ -66,7 +66,7 @@ for _, filename in luau_files do
                 line = str.trimfront(line)
             end
             table.insert(current_doc, line)
-        elseif last_line_was_doc_end or str.startswith(line, " ") and line:match(" ") then
+        elseif last_line_was_doc_end or str.startswith(line, " ") and line:match(": ") then
             if in_doc then in_doc = false end
             last_line_was_doc_end = false
             line = str.trimback(line, ",")
