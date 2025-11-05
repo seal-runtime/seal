@@ -338,7 +338,7 @@ export type fs = {
         ## Errors
         - if `path` not a valid utf-8 string representing a path on the filesystem
         - an entry already exists at `path` or user does not have permission to access `path`
-        - `tree` is not a valid `fs.TreeBuilder` or `fs.DirectoryTree` (`{ fs.FileBuiler | fs.DirectoryBuilder }`) 
+        - `tree` is not a valid `fs.TreeBuilder` or `fs.DirectoryTree` (`{ fs.FileBuilder | fs.DirectoryBuilder }`) 
 
         Use fs.makedir instead if you  just want to make an empty directory.
 

@@ -61,7 +61,7 @@ export type HttpResponse = ({
 Makes an HTTP `GET` request.
 
 ## Usage
-```lua
+```luau
 local response = http.get({
     url = "https://catfact.ninja/fact",
 })
@@ -101,7 +101,7 @@ export type PostConfig = {
 Makes an HTTP `POST` request.
 
 ## Usage
-```lua
+```luau
 local response = http.post {
     url = "https://somejson.com/post",
     headers = {
@@ -123,7 +123,7 @@ end
 Sends an HTTP request:
 
 ## Usage
-```lua
+```luau
 local response = http.request({
     method = "PUT",
     url = "https://somewhere.net/api/put",
