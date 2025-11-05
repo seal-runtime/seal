@@ -2,9 +2,11 @@
 
 # Semver
 
+`local semver = {}`
+
 <details>
 
-<summary> `local semver = {}` </summary
+<summary> Docs </summary
 
 ### semver = semantic versioning
 
@@ -50,9 +52,11 @@ assert(first_version < second_version)
 
 `function semver.from(s: string): Semver`
 
+`function semver.satisfies(self: Semver, semver_range: string): boolean`
+
 <details>
 
-<summary> `function semver.satisfies(self: Semver, semver_range: string): boolean` </summary
+<summary> Docs </summary
 
 Returns true if the `self` is compatible with (within the range of) semver_range.
 

@@ -110,13 +110,12 @@ for path, apis in apis_by_path do
     push("<!-- markdownlint-disable MD033 -->")
     push("# " .. header)
     for _, api in apis do
+        push("`" .. api.name .. "`")
         if #api.docs > 1 then
             push("<details>")
-            push("<summary> `" .. api.name .. "` </summary")
+            push("<summary> Docs </summary")
             push(api.docs)
             push("</details>", 2)
-        else
-            push("`" .. api.name .. "`")
         end
     end
 
@@ -135,5 +134,4 @@ for path, apis in apis_by_path do
         args = { "--fix", reference_file_path }
     }
 
-    break
 end
