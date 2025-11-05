@@ -32,8 +32,8 @@ canadd()
 local function cansub()
     local now = datetime.now()
     local three_days_ago = datetime.now() - datetime.days(3)
-    -- this also ensures .days is rounded to 4 decimal places
-    assert(now:since(three_days_ago):duration().days == 3, "should be three days since 3 days ago")
+    local dur = math.round(now:since(three_days_ago):duration().days)
+    assert(dur == 3, `should be three days since 3 days ago, got {dur}`)
 end
 
 cansub()

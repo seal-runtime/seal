@@ -65,10 +65,22 @@ jobs:
         run: |
           $BIN_PATH = ".\target\release\seal.exe"
           $SCRIPT_PATH = ".\tests\run.luau"
-          & $BIN_PATH $SCRIPT_PATH 2> $stderrOutput
-          if ($stderrOutput.Length -gt 0) {
-            Write-Host "Tests failed! STDERR contains output."
+          $stderrFile = "stderr_output.txt"
+
+          # Run the test and redirect stderr to a file
+          & $BIN_PATH $SCRIPT_PATH 2> $stderrFile
+
+          # Check stderr contents
+          $stderrContent = Get-Content $stderrFile
+          if ($stderrContent.Length -gt 0) {
+            Write-Host "Tests failed! STDERR contains output:"
+            Write-Host $stderrContent
             exit 1
+          }
+          # Check exit code explicitly
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Tests failed! Process exited with code $LASTEXITCODE."
+            exit $LASTEXITCODE
           }
         shell: pwsh
 

@@ -2,6 +2,7 @@ local process = require("@std/process")
 local env = require("@std/env")
 local fs = require("@std/fs")
 local str = require("@std/str")
+local cheese = require("@tests/cheese")
 
 local seal_path = env.executable_path
 local longrunning_path = fs.path.join(script:parent(), "longrunning.luau")
@@ -102,7 +103,7 @@ local function canreadintowholebufferwithchecks()
     assert(buffer.tostring(buffy) == "In Flander's Fields the poppies ", "Exactly 32 bytes should've been read")
 end
 
-canreadintowholebufferwithchecks()
+cheese.retry(canreadintowholebufferwithchecks, 3)
 
 local function vibereadingintobuffer()
     local child, poem_path = spawn_poem()

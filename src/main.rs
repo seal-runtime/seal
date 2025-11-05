@@ -399,14 +399,15 @@ impl SealCommand {
 
         let command = Self::from(first_arg, args.clone())?;
         // `seal ./mycli.luau --help` should be passed to ./mycli.luau not directly to seal
-        if !command.is_default() && command.next_is_help(&args) {
+        // same with `seal run --help` where --help should be passed to entry point
+        if command.next_is_help(&args) && !command.skip_help() {
             Ok(Self::CommandHelp(Box::new(command)))
         } else {
             Ok(command)
         }
     }
-    fn is_default(&self) -> bool {
-        matches!(self, Self::Default { .. })
+    fn skip_help(&self) -> bool {
+        matches!(self, Self::Default { .. }) || matches!(self, Self::Run)
     }
     fn help(&self) -> LuauLoadResult {
         let luau_to_run_help = Lua::default();
