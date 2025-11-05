@@ -2,19 +2,15 @@
 
 # Json
 
+` pretty: boolean?`
+
+` sorted: boolean?`
+
 `type json = {`
 
 <details>
 
 <summary> See the docs </summary
-
---- with tabs/newlines/spaces for easy reading (default true)
-pretty: boolean?,
---- sorted in alphanumeric order (default false)
-sorted: boolean?,
-}
-
-export type JsonData = { [any]: any }
 
 Easily manipulate JSON (JavaScript Object Notation) data.
 
@@ -28,3 +24,11 @@ json.writefile("./animals.json", data)
 ```
 
 </details>
+
+`function JsonData.encode(t: JsonData, options: EncodeOptions?): string`
+
+`function JsonData.raw(t: JsonData): string`
+
+`function JsonData.null(): any`
+
+`function JsonData.array<T>(t: { T }?): { T }`

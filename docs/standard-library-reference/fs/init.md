@@ -599,3 +599,7 @@ Some usage notes:
 - `"None"` indicates a timeout was reached; use it to early exit or `break` without blocking the VM.
 
 </details>
+
+` is_write: boolean`
+
+`export type WatchKind`

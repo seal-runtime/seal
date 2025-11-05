@@ -2,27 +2,15 @@
 
 # Datetime
 
+`function datetime.now(): DateTime`
+
+`function datetime.from(timestamp: number, timezone: IanaTimezone?, nanos: number?)`
+
 `function datetime.parse(source: string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime`
 
 <details>
 
 <summary> See the docs </summary
-
---- Constructs a `DateTime` from right now (based on system time) in your local timezone.
-function datetime.now(): DateTime
-return nil :: any
-end
-
---- Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`
----
-
---- - `timezone` defaults to `"UTC"` if not specified
---- - `nanos` defaults to `0` if not specified
-function datetime.from(timestamp: number, timezone: IanaTimezone?, nanos: number?)
-return nil :: any
-end
-
-type CommonFormatKeys = keyof<index<typeof(datetime), "common_formats">>
 
 Constructs a `DateTime` from a strtime string or `common_format`.
 
@@ -99,3 +87,13 @@ Constructs a `TimeSpan` from months. Months and years *must* be relative to a `D
 ```
 
 </details>
+
+`function datetime.days(days: number): TimeSpan`
+
+`function datetime.hours(hours: number): TimeSpan`
+
+`function datetime.minutes(minutes: number): TimeSpan`
+
+`function datetime.seconds(seconds: number): TimeSpan`
+
+`function datetime.milliseconds(milliseconds: number): TimeSpan`

@@ -102,22 +102,18 @@ Returns the path of the parent directory `n` (default = 1) parents to the left o
 
 </details>
 
+`function PathLib.child(path: string): string?`
+
+`function PathLib.home(): string`
+
+`function PathLib.cwd(): string`
+
 `function PathLib.project(n: number?, script_path: string?): string?`
 
 <details>
 
 <summary> See the docs </summary
 
---- the farthest child/leaf/node of the path, ex. `path.child("./src/main.luau") == "main.luau"`
-child: (path: string) -> string?,
---- returns the user's home directory, also known as `~`
-home: () -> string,
---- returns the current working directory, errors if not found or invalid utf-8
----
-
---- Consider using `fs.path.project()` or `fs.dir.project()` instead if you want paths to be relative
---- to the current project instead of relying on the user's cwd.
-cwd: () -> string,
 Returns the *seal* project directory `n` projects up, relative to `script_path` or the current `script:path()` if unspecified.
 
 To get the closest project directory to the current file, use `fs.path.project()`.

@@ -58,3 +58,5 @@ Additionally, on Windows it may fail silently when used in a child process.
 ```
 
 </details>
+
+`function output.clear(): ()`

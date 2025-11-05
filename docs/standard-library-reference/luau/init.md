@@ -73,3 +73,5 @@ Compiles `src` to Luau bytecode.
 `function luau.require_resolver(): {`
 
 Returns *seal*'s require resolver implementation used internally.
+
+`function luau.resolve(requested_path: string, requiring_file_path: string): { err: string, path: nil } | { path: string, err: nil }`

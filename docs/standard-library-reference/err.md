@@ -8,8 +8,6 @@
 
 <summary> See the docs </summary
 
---- Simple library for managing `error` types from seal.
-export type err = {
 Create an `error` with a custom error message. This allows you to return result-like unions that can be `typeof` checked.
 
 ## Usage
@@ -39,3 +37,9 @@ Create an `error` with a custom error message. This allows you to return result-
 Wraps an error message with the stack traceback at the location this function was called.
 
 Unlike `err.message`, errors created with this function are red colored and contain their own error tracebacks.
+
+`function err.format(err: error): string`
+
+`function err.traceback(): string`
+
+`function err.throw(err: error): never`

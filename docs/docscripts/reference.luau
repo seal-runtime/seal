@@ -41,7 +41,6 @@ for _, filename in luau_files do
         if type_name then
             current_api_parent = type_name
         elseif string.match(line, "^%s*%-%-%-") then
-            in_doc = true
             last_line_was_doc_end = true
             continue
         elseif string.match(line, "^%s*%-%-%[=%[") then

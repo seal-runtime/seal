@@ -4,23 +4,17 @@
 
 A stdlib to interact with the script's running environment.
 
+` args: {string}`
+
+` os: "Windows" | "Linux" | "Android" | "MacOS" | "Other"`
+
+` executable_path: string`
+
 `function env.cwd(): string`
 
-<details>
-
-<summary> See the docs </summary
-
---- a list of arguments passed to the program
-args: {string},
---- your operating system
-os: "Windows" | "Linux" | "Android" | "MacOS" | "Other",
---- the path of the executable
-executable_path: string,
 Get the current working directory of the running process.
 
 Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission denied).
-
-</details>
 
 `function env.getvar(key: string): string?`
 

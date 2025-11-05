@@ -132,3 +132,39 @@ For programs with multiple commands, use `args.parse(program_name, desc):command
         print(`Got repo name {parsed:expect("repo")}`)
     end
 ```
+
+`function args.simple(self: any, ...Arg): Parsed`
+
+`function args.commands(self: any, ...Command): Parsed`
+
+`function args.positional(name: string, help: string): Positional`
+
+`function args.named(name: string, help: string): Named`
+
+`function args.command(name: string, help: string): Command`
+
+`function args.flag(name: string, help: string): Flag`
+
+`function args.list(name: string, help: string): ArgList`
+
+`function args.default(...Arg): Command`
+
+`description: string?`
+
+`examples: { string }?`
+
+`footer: string?`
+
+`function Command.aliases(self: Command, ...string): Command`
+
+`function Positional.optional(self: Positional): Positional`
+
+`function Positional.validate(self: Positional, validator: Validator): Positional`
+
+`name: string`
+
+`function Flag.aliases(self: Flag, ...string): Flag`
+
+`name: string`
+
+`function Named.aliases(self: Named, ...string): Named`
