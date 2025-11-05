@@ -1,8 +1,3 @@
-export type EvalOptions = {
-    name: string?,
-    stdlib: ("seal" | "safe" | "none")?,
-}
-
 export type luau = {
     --> luau.eval(src: string, options: EvalOptions?)
     --[=[
@@ -72,6 +67,11 @@ export type luau = {
         get_aliases: (requiring_file_path: string) -> ({ LuaurcAliases }?, string?),
         expand_aliases: (requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?),
     }
+}
+
+export type EvalOptions = {
+    name: string?,
+    stdlib: ("seal" | "safe" | "none")?,
 }
 
 export type LuaurcAliases = {

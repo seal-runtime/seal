@@ -3,10 +3,6 @@
 
 # Luau
 
-`EvalOptions.name: string?`
-
-`EvalOptions.stdlib: ("seal" | "safe" | "none")?`
-
 `luau.--> luau.eval(src: string, options: EvalOptions?)`
 
 `function luau.eval(src: string, options: EvalOptions?): unknown | error`
@@ -92,3 +88,7 @@ Returns *seal*'s require resolver implementation used internally.
 `function luau.get_aliases(requiring_file_path: string): ({ LuaurcAliases }?, string?)`
 
 `function luau.expand_aliases(requested_path: string, aliases_by_luaurc: { LuaurcAliases }): (string?, string?)`
+
+`EvalOptions.name: string?`
+
+`EvalOptions.stdlib: ("seal" | "safe" | "none")?`
