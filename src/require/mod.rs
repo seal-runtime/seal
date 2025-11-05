@@ -18,7 +18,7 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
     };
 
     if is_reserved(&path) {
-        get_standard_library(luau, path)
+        get_standard_library(luau, &path)
     } else {
         let path = resolve_path(luau, path)?;
         // must use globals.get() due to safeenv
@@ -51,8 +51,8 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
     }
 }
 
-fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
-    match path.as_str() {
+fn get_standard_library(luau: &Lua, path: &str) -> LuaValueResult {
+    match path {
         "@std/fs" => ok_table(std_fs::create(luau)),
         "@std/fs/path" => ok_table(std_fs::pathlib::create(luau)),
         "@std/fs/file" => ok_table(std_fs::filelib::create(luau)),
