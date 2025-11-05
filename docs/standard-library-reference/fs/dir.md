@@ -28,12 +28,14 @@ Similar to `fs.makedir(path, { error_if_exists = false }); fs.dir.from(path)`
 ## Usage
 
 ```luau
- -- doesn't replace .vscode if it already exists, but creates it if it doesn't
- local dot_vscode = fs.dir.ensure(".vscode")
- local settings_json = dot_vscode:find("settings.json"):try_file()
+    -- doesn't replace .vscode if it already exists, but creates it if it doesn't
+    local dot_vscode = fs.dir.ensure(".vscode")
+    local settings_json = dot_vscode:find("settings.json"):try_file()
 ```
 
 </details>
+
+`DirLib.-- fs.dir.try_remove(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?)`
 
 `function DirLib.try_remove(path: string): (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?)`
 
@@ -59,11 +61,11 @@ Returns a `DirectoryEntry` corresponding to the user's home directory, erroring 
 ## Usage
 
 ```luau
-  local zip_downloads = fs.dir.home()
-   :expect_dir("Downloads")
-   :list(false, function(path: string)
-    return str.endswith(path, ".zip")
-   end)
+        local zip_downloads = fs.dir.home()
+            :expect_dir("Downloads")
+            :list(false, function(path: string)
+                return str.endswith(path, ".zip")
+            end)
 ```
 
 `function DirLib.cwd(): DirectoryEntry`
@@ -91,27 +93,27 @@ Use this for most project-relative paths instead of `fs.path.cwd` or `fs.dir.cwd
 ## Usage
 
 ```luau
-  local fs = require("@std/fs")
-  local str = require("@std/str")
+        local fs = require("@std/fs")
+        local str = require("@std/str")
 
-  local input_files = fs.dir.project()
-   :expect_dir("input")
-   :list(false, function(path: string)
-    return str.endswith(path, ".csv")
-   end)
+        local input_files = fs.dir.project()
+            :expect_dir("input")
+            :list(false, function(path: string)
+                return str.endswith(path, ".csv")
+            end)
 
 </details>
 
 
 `function DirLib.__call(self: any, path: string): DirectoryEntry?`
 
- Convenient and slightly more efficient alternative to `fs.find(path):try_dir()`
+    Convenient and slightly more efficient alternative to `fs.find(path):try_dir()`
 
- ## Usage
+    ## Usage
 ```luau
- local src_dir = fs.dir("./src")
- if src_dir then
-  local main_luau = src_dir:expect_file("main.luau")
-  main_luau:append('print("meow")')
- end
+    local src_dir = fs.dir("./src")
+    if src_dir then
+        local main_luau = src_dir:expect_file("main.luau")
+        main_luau:append('print("meow")')
+    end
 ```
