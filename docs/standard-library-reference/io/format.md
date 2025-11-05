@@ -2,15 +2,7 @@
 
 # Format
 
-`export type format = setmetatable<{`
-
-<details>
-
-<summary> See the docs </summary
-
 Format objects for pretty printing to stdout/stderr.
-
-</details>
 
 `function format.pretty(item: unknown): string`
 

@@ -2,12 +2,6 @@
 
 # Args
 
-`export type args = {`
-
-<details>
-
-<summary> See the docs </summary
-
 # CLI Argument Parsing
 
 This implementation supports
@@ -138,5 +132,3 @@ For programs with multiple commands, use `args.parse(program_name, desc):command
         print(`Got repo name {parsed:expect("repo")}`)
     end
 ```
-
-</details>

@@ -2,12 +2,6 @@
 
 # Prompt
 
-`export type prompt = {`
-
-<details>
-
-<summary> See the docs </summary
-
 Prompt users for personal information :)
 
 ## Usage
@@ -25,8 +19,6 @@ Prompt users for personal information :)
     local result = prompt.text("What's your name?")
     -- displays "What's your name?: "
 ```
-
-</details>
 
 `function prompt.text(message: string): string`
 

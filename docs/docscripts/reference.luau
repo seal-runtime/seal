@@ -123,7 +123,7 @@ for path, apis in apis_by_path do
     push("<!-- markdownlint-disable MD033 -->")
     push("# " .. header)
     local first_api = apis[1]
-    if str.startswith(first_api.name, "local") then
+    if str.starts(first_api.name, "local", "export type") then
         push(first_api.docs)
         table.remove(apis, 1) -- pop header name
     end

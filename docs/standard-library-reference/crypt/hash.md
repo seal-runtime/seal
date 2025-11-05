@@ -2,17 +2,9 @@
 
 # Hash
 
-`export type Hash = {`
-
-<details>
-
-<summary> See the docs </summary
-
 Contains function sha2, which can be used to create an **unsalted** hash, returned as a buffer.
 
 ### Please use the `@std/crypt/password` library if you want to hash passwords (salted)
-
-</details>
 
 `function Hash.sha2(plaintext: string): buffer`
 

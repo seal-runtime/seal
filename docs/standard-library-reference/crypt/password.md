@@ -2,17 +2,9 @@
 
 # Password
 
-`export type Password = {`
-
-<details>
-
-<summary> See the docs </summary
-
 ## This is the password handling lib
 
 Please use with caution.
-
-</details>
 
 `function Password.hash(raw_password: string): HashedPassword`
 

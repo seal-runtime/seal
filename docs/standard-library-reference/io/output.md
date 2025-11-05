@@ -2,15 +2,7 @@
 
 # Output
 
-`export type output = {`
-
-<details>
-
-<summary> See the docs </summary
-
 Write to the terminal's stdout/stderr.
-
-</details>
 
 `function output.write(contents: string | buffer, flush: boolean?): error?`
 
