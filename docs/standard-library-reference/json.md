@@ -8,6 +8,14 @@
 
 <summary> See the docs </summary
 
+--- with tabs/newlines/spaces for easy reading (default true)
+pretty: boolean?,
+--- sorted in alphanumeric order (default false)
+sorted: boolean?,
+}
+
+export type JsonData = { [any]: any }
+
 Easily manipulate JSON (JavaScript Object Notation) data.
 
 ## Usage

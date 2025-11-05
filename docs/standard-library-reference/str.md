@@ -10,29 +10,117 @@ iterating over the graphemes of a string, etc.
 Unlike many seal standard libraries, inputs to `str` library functions don't necessarily have
 to be valid utf-8 encoded strings.
 
-`function str.startswith(s: string, prefix: string): boolean`
-
-`function str.endswith(s: string, suffix: string): boolean`
-
-`function str.starts(s: string, ...: string): boolean`
-
-`function str.ends(s: string, ...: string): boolean`
-
-`function str.trimfront(s: string, ...: string): string`
-
-`function str.trimback(s: string, ...: string): string`
-
-`function str.trim(s: string, ...: string): string`
-
-`function str.splitlines(s: string, trim_trailing_whitespace: boolean?): { string }`
-
-`function str.len(s: string): number`
-
 `function str.width(s: string): number`
 
 <details>
 
 <summary> See the docs </summary
+
+--- check if a string starts with `prefix`
+function str.startswith(s: string, prefix: string): boolean
+return nil :: any
+end
+
+--- check if a string ends with `suffix`
+function str.endswith(s: string, suffix: string): boolean
+-- return string.sub(s, -#suffix) == suffix
+return nil :: any
+end
+
+--- like str.startswith, but accepts multiple prefixes
+function str.starts(s: string, ...: string): boolean
+for _, prefix in {...} do
+if str.startswith(s, prefix) then
+return true
+end
+end
+return false
+end
+
+--- like str.endswith, but accepts multiple suffixes
+function str.ends(s: string, ...: string): boolean
+for _, suffix in {...} do
+if str.endswith(s, suffix) then
+return true
+end
+end
+return false
+end
+
+--- trims any of the provided strings/characters from the front of the string `s`
+---
+
+--- if no strings provided as ..., `str.trimfront` will trim whitespace (" ", "\n", etc.)
+function str.trimfront(s: string, ...: string): string
+-- local patterns = {...}
+-- if #patterns == 0 then
+--  s = string.gsub(s, "^%s*", "")
+-- else
+--  for _, pattern in patterns do
+--   while string.find(s, "^" .. pattern) do
+--    s = string.gsub(s, "^" .. pattern, "")
+--   end
+--  end
+-- end
+
+-- return s
+return nil :: any
+end
+
+--- trims any of the provided strings/characters/patterns from the back of the string `s`
+---
+
+--- if no strings provided as ..., `str.trimback` will trim whitespace (" ", "\n", etc.)
+function str.trimback(s: string, ...: string): string
+-- local patterns = {...}
+-- if #patterns == 0 then
+--  s = string.gsub(s, "%s*$", "")
+-- else
+--  for _, pattern in patterns do
+--   while string.find(s, pattern .. "$") do
+--    s = string.gsub(s, pattern .. "$", "")
+--   end
+--  end
+-- end
+
+-- return s
+return nil :: any
+end
+
+--- trims one or many strings/characters/patterns from both front and back of string `s`
+---
+
+--- if no strings provided to `...`, then default is whitespace
+function str.trim(s: string, ...: string): string
+-- return str.trimback(str.trimfront(s, ...), ...)
+return nil :: any
+end
+
+--- splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
+--- without an extra empty string, etc.
+function str.splitlines(s: string, trim_trailing_whitespace: boolean?): { string }
+-- trim_trailing_whitespace = trim_trailing_whitespace ~= false -- handle true and nil
+-- local lines = {}
+-- for line in string.gmatch(s, "[^\r\n]+") do
+--     if trim_trailing_whitespace then
+--         line = string.gsub(line, "%s*$", "")
+--     end
+--     table.insert(lines, line)
+-- end
+-- return lines
+return nil :: any
+end
+
+--- returns the utf-8 length if `s` is utf-8 or the regular string length #
+function str.len(s: string): number
+-- local utf8_len = utf8.len(s)
+-- if utf8_len then
+--  return utf8_len
+-- else
+--  return #s
+-- end
+return nil :: any
+end
 
 `str.width` estimates the number of monospace space characters required to correctly format/pad a utf8-encoded string.
 
@@ -81,23 +169,87 @@ to be valid utf-8 encoded strings.
 
 </details>
 
-`function str.leftpad(s: string, width: number, pad: string?): string`
-
-`function str.escape(s: string): string`
-
-`function str.unescape(s: string): string`
-
-`function str.slice(s: string, first: number, final: number)`
-
-`function str.indent(s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string`
-
-`function str.unindent(s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string`
-
 `str.split = internal.split :: (s: string, ...string) -> { string }`
 
 <details>
 
 <summary> See the docs </summary
+
+--- left pads `s` to make it at least `width` characters long, using `pad` as the padding character.
+function str.leftpad(s: string, width: number, pad: string?): string
+-- pad = pad or " " -- default to space if no padding character is provided
+-- local padding_needed = width - #s
+-- if padding_needed > 0 then
+--     return string.rep(pad, padding_needed) .. s
+-- end
+-- return s
+return nil :: any
+end
+
+--- escapes special characters like `\n`, `\t`, `\\` for easier debugging
+function str.escape(s: string): string
+-- return (string.gsub(s, "[\\\n\t\r]", {
+--     ["\\"] = "\\\\",
+--     ["\n"] = "\\n",
+--     ["\t"] = "\\t",
+--     ["\r"] = "\\r"
+-- }))
+return nil :: any
+end
+
+--- reverts `str.escape`
+function str.unescape(s: string): string
+-- local unescape_map = {
+--     ["\\n"] = "\n",
+--     ["\\t"] = "\t",
+--     ["\\r"] = "\r",
+--     ["\\\\"] = "\\"
+-- }
+-- return (string.gsub(s, "\\(.)", unescape_map))
+return nil :: any
+end
+
+--- alias for string.sub
+function str.slice(s: string, first: number, final: number)
+-- return string.sub(s, first, final)
+return nil :: any
+end
+
+--- indents multiline string `count` characters; lines separated by `sep` (default "\n")
+function str.indent(s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string
+-- local indent = if whitespace_type == "Tabs" then string.rep("\t", count) else string.rep(" ", count)
+-- local sep = sep or "\n" -- allows users to pass in \r\n or w/e if needed
+
+-- local result = {}
+-- local lines = str.splitlines(s)
+-- for _, line in lines do
+--     table.insert(result, indent .. line)
+-- end
+
+-- return table.concat(result, sep)
+return nil :: any
+end
+
+--- unindents multiline string by `count` characters; lines separated by `sep` (default "\n")
+function str.unindent(s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string
+-- local indent = if whitespace_type == "Tabs" then string.rep("\t", count) else string.rep(" ", count)
+-- local sep = sep or "\n"
+
+-- local result = {}
+-- for _, line in str.splitlines(s) do
+--     if str.startswith(line, indent) then
+--         local trimmed_line = string.gsub(line, "^" .. indent, "")
+--         table.insert(result, trimmed_line)
+--     else
+--         table.insert(result, line)
+--     end
+-- end
+
+-- return table.concat(result, sep)
+return nil :: any
+end
+
+local internal = (require)("@std/str_internal")
 
 `str.split` is an improvement on luau's `string.split` in that it can split by multiple different strings (not just one single character)
 at the same time and that the splitting is fully unicode grapheme aware.

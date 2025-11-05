@@ -2,14 +2,22 @@
 
 # Input
 
-`function input.get(raw_prompt: string): string`
-
 `function input.tty(stream: "Stdout" | "Stderr" | "Stdin"?): boolean`
 
 <details>
 
 <summary> See the docs </summary
 
+--- input handling lib
+local input = {}
+
+--- gets input with an optional `raw_prompt` to display before getting said input.
+@[deprecated { use = "io.prompt.text OR io.input.readline OR io.input.rawline" }]
+function input.get(raw_prompt: string): string
+return nil :: any
+end
+
+--> io.input.tty(stream: "Stdout" | "Stderr" | "Stdin"?): boolean
 Determine whether we're connected to a sane [TTY](https://en.wikipedia.org/wiki/Tty_(Unix)) terminal.
 
 This can be used to detect if users can provide rich input at runtime (`io.prompt.*` or `io.input.readline`) or if we're limited to basic stdin (`io.input.rawline`)
@@ -102,6 +110,14 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 <details>
 
 <summary> See the docs </summary
+
+--- Allows `MouseEvents` to be reported by `input.events()`.
+mouse: (enabled: boolean) -> (),
+--- Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
+focus: (enabled: boolean) -> (),
+--- Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
+paste: (enabled: boolean) -> (),
+}
 
 Listens for raw terminal events from stdin, returning an iterator over those events.
 

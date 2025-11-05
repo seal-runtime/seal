@@ -40,7 +40,10 @@ for _, filename in luau_files do
         local type_name = string.match(line, "export type ([%w_]+) =")
         if type_name then
             current_api_parent = type_name
-        elseif string.match(line, "%-%-%[=%[") then
+        elseif string.match(line, "^%s*%-%-%-") then
+            in_doc = true
+            last_line_was_doc_end = true
+        elseif string.match(line, "^%s*%-%-%[=%[") then
             in_doc = true
             continue
         elseif string.match(line, "%]=%]") then
@@ -60,6 +63,7 @@ for _, filename in luau_files do
             end
             table.insert(current_doc, line)
         elseif last_line_was_doc_end then
+            if in_doc then in_doc = false end
             last_line_was_doc_end = false
             line = str.trimback(line, ",")
             line = str.trimback(line, "=")

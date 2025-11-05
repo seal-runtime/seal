@@ -8,6 +8,8 @@
 
 <summary> See the docs </summary
 
+--- Simple library for managing `error` types from seal.
+export type err = {
 Create an `error` with a custom error message. This allows you to return result-like unions that can be `typeof` checked.
 
 ## Usage

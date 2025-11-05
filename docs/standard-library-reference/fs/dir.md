@@ -8,6 +8,13 @@
 
 <summary> See the docs </summary
 
+--- Creates a `DirectoryEntry` from the directory at `path`, erroring if the directory is NotFound/PermissionDenied, etc.
+from: (path: string) -> DirectoryEntry,
+--- Returns a `DirectoryBuilder` table for `fs.readtree`, `fs.writetree`, etc.
+build: (name: string, tree: DirectoryTree) -> DirectoryBuilder,
+--- Creates a *new* directory at `path`, erroring if an entry already exists there.
+create: (path: string) -> DirectoryEntry,
+
 Ensures that a directory exists at `path` by trying to create it, catching any AlreadyExists error, and returning a `DirectoryEntry` at that path.
 
 Similar to `fs.makedir(path, { error_if_exists = false }); fs.dir.from(path)`

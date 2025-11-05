@@ -12,6 +12,11 @@ Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if 
 
 <summary> See the docs </summary
 
+--- Returns a `FileBuilder` for use with `fs.readtree` and `fs.writetree`
+build: (name: string, content: string) -> FileBuilder,
+--- Creates a *new*, empty file at `path` using Rust's `fs::File::create_new`; errors if a file or other entry already exists at that path.
+create: (path: string) -> FileEntry,
+
 Tries to read a file to string from `path` when errors such as `NotFound` or `PermissionDenied` are expected and should be handled explicitly.
 
 This is a better and TOCTOU-safer variant to `local content = if fs.path.exists(path) then fs.readfile(path) else nil`

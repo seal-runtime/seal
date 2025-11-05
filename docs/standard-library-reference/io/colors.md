@@ -192,6 +192,16 @@ print(colors.bold.red("this is now bold red"))
 
 <summary> See the docs </summary
 
+--- Use different styles such as dim or bold
+colors.style = {
+--- dim style
+dim = function(text: string): string return nil :: any end,
+--- bold style
+bold = function(text: string): string return nil :: any end,
+--- underline your text
+underline = function(text: string): string return nil :: any end,
+}
+
 An assorted collection of ANSI color codes to help you colorize your text however you want!!
 
 Don't forget to finish off your colorized strings with a `RESET` :p

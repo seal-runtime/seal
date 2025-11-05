@@ -64,9 +64,18 @@ although this is configurable with `thread.spawn`'s `ThreadSpawnOptions`. Readin
 
 `function ThreadHandle.join(self: ThreadHandle): ()`
 
+<details>
+
+<summary> See the docs </summary
+
+--- the name of your thread (defaults to a petname if not provided)
+read name: string,
+-- ThreadHandle:join()
 Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
 Errors if the thread has already been joined or somehow disappeared.
+
+</details>
 
 `function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | string): ()`
 
@@ -153,6 +162,23 @@ Errors if the channel has somehow become disconnected.
 <details>
 
 <summary> See the docs </summary
+
+--- Name your thread to quickly identify which one it is; if not provided a default alliterative petname will be provided instead.
+name: string?,
+--- Path to your source file you want to run in the separate thread, relative to the current file (not cwd).
+path: string?,
+--- Source code to evaluate; recommend passing a path instead.
+src: string?,
+--- Optional data you want to provide to your thread at startup; accessible with `channel.data` in the child thread.
+data: JsonSerializableTable?,
+--- Override the queue capacity of your thread's regular and bytes channels.
+capacity: {
+--- default is 12
+regular: number?,
+--- default is 24
+bytes: number?,
+}?
+}
 
 Spawns a new Rust Thread running Luau code in a new Luau VM.
 
