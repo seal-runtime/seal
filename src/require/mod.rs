@@ -18,7 +18,8 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
     };
 
     if is_reserved(&path) {
-        get_standard_library(luau, &path)
+        // strip @ from alias
+        get_standard_library(luau, &path[1..])
     } else {
         let path = resolve_path(luau, path)?;
         // must use globals.get() due to safeenv
@@ -53,61 +54,61 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
 
 fn get_standard_library(luau: &Lua, path: &str) -> LuaValueResult {
     match path {
-        "@std/fs" => ok_table(std_fs::create(luau)),
-        "@std/fs/path" => ok_table(std_fs::pathlib::create(luau)),
-        "@std/fs/file" => ok_table(std_fs::filelib::create(luau)),
-        "@std/fs/dir" => ok_table(std_fs::dirlib::create(luau)),
+        "std/fs" => ok_table(std_fs::create(luau)),
+        "std/fs/path" => ok_table(std_fs::pathlib::create(luau)),
+        "std/fs/file" => ok_table(std_fs::filelib::create(luau)),
+        "std/fs/dir" => ok_table(std_fs::dirlib::create(luau)),
 
-        "@std/env" => ok_table(std_env::create(luau)),
+        "std/env" => ok_table(std_env::create(luau)),
 
-        "@std/err" => ok_table(std_err::create(luau)),
+        "std/err" => ok_table(std_err::create(luau)),
 
-        "@std/io" => ok_table(std_io::create(luau)),
-        "@std/io/input" => ok_table(std_io::input::create(luau)),
-        "@std/io/output" => ok_table(std_io::output::create(luau)),
-        "@std/io/colors" => ok_table(colors::create(luau)),
-        "@std/io/clear" => ok_function(std_io::output::clear, luau),
-        "@std/io/format" => ok_table(std_io::format::create(luau)),
-        "@std/io/prompt" => ok_table(std_io::prompt::create(luau)),
-        "@std/colors" => ok_table(colors::create(luau)),
+        "std/io" => ok_table(std_io::create(luau)),
+        "std/io/input" => ok_table(std_io::input::create(luau)),
+        "std/io/output" => ok_table(std_io::output::create(luau)),
+        "std/io/colors" => ok_table(colors::create(luau)),
+        "std/io/clear" => ok_function(std_io::output::clear, luau),
+        "std/io/format" => ok_table(std_io::format::create(luau)),
+        "std/io/prompt" => ok_table(std_io::prompt::create(luau)),
+        "std/colors" => ok_table(colors::create(luau)),
 
-        "@std/time" => ok_table(std_time::create(luau)),
-        "@std/datetime" => ok_table(std_time::datetime::create(luau)),
-        "@std/time/datetime" => ok_table(std_time::datetime::create(luau)),
+        "std/time" => ok_table(std_time::create(luau)),
+        "std/datetime" => ok_table(std_time::datetime::create(luau)),
+        "std/time/datetime" => ok_table(std_time::datetime::create(luau)),
 
-        "@std/process" => ok_table(std_process::create(luau)),
+        "std/process" => ok_table(std_process::create(luau)),
 
-        "@std/serde" => ok_table(std_serde::create(luau)),
-        "@std/serde/base64" => ok_table(std_serde::base64::create(luau)),
-        "@std/serde/toml" => ok_table(std_serde::toml::create(luau)),
-        "@std/serde/yaml" => ok_table(std_serde::yaml::create(luau)),
-        "@std/serde/json" => ok_table(std_json::create(luau)),
-        "@std/serde/hex" => ok_table(std_serde::hex::create(luau)),
-        "@std/json" => ok_table(std_json::create(luau)),
+        "std/serde" => ok_table(std_serde::create(luau)),
+        "std/serde/base64" => ok_table(std_serde::base64::create(luau)),
+        "std/serde/toml" => ok_table(std_serde::toml::create(luau)),
+        "std/serde/yaml" => ok_table(std_serde::yaml::create(luau)),
+        "std/serde/json" => ok_table(std_json::create(luau)),
+        "std/serde/hex" => ok_table(std_serde::hex::create(luau)),
+        "std/json" => ok_table(std_json::create(luau)),
 
-        "@std/net" => ok_table(std_net::create(luau)),
-        "@std/net/http" => ok_table(std_net::http::create(luau)),
-        "@std/net/http/server" => ok_table(std_net::serve::create(luau)),
-        "@std/net/request" => ok_function(std_net::http::request, luau),
+        "std/net" => ok_table(std_net::create(luau)),
+        "std/net/http" => ok_table(std_net::http::create(luau)),
+        "std/net/http/server" => ok_table(std_net::serve::create(luau)),
+        "std/net/request" => ok_function(std_net::http::request, luau),
 
-        "@std/crypt" => ok_table(std_crypt::create(luau)),
-        "@std/crypt/aes" => ok_table(std_crypt::create_aes(luau)),
-        "@std/crypt/rsa" => ok_table(std_crypt::create_rsa(luau)),
-        "@std/crypt/hash" => ok_table(std_crypt::create_hash(luau)),
-        "@std/crypt/password" => ok_table(std_crypt::create_password(luau)),
+        "std/crypt" => ok_table(std_crypt::create(luau)),
+        "std/crypt/aes" => ok_table(std_crypt::create_aes(luau)),
+        "std/crypt/rsa" => ok_table(std_crypt::create_rsa(luau)),
+        "std/crypt/hash" => ok_table(std_crypt::create_hash(luau)),
+        "std/crypt/password" => ok_table(std_crypt::create_password(luau)),
 
-        "@internal/str" => ok_table(std_str_internal::create(luau)),
-        "@std/str" => ok_table(load_std_str(luau)),
+        "internal/str" => ok_table(std_str_internal::create(luau)),
+        "std/str" => ok_table(load_std_str(luau)),
 
-        "@std/semver" => ok_table(load_std_semver(luau)),
+        "std/semver" => ok_table(load_std_semver(luau)),
 
-        "@std/thread" => ok_table(std_thread::create(luau)),
+        "std/thread" => ok_table(std_thread::create(luau)),
 
-        "@std/luau" => ok_table(std_luau::create(luau)),
+        "std/luau" => ok_table(std_luau::create(luau)),
 
-        "@std/args" => ok_table(std_args::create(luau)),
+        "std/args" => ok_table(std_args::create(luau)),
 
-        "@std" => {
+        "std" => {
             ok_table(TableBuilder::create(luau)?
                 .with_value("fs", std_fs::create(luau)?)?
                 .with_value("str", load_std_str(luau)?)?
@@ -128,15 +129,15 @@ fn get_standard_library(luau: &Lua, path: &str) -> LuaValueResult {
                 .build_readonly()
             )
         },
-        "@interop" => ok_table(interop::create(luau)),
-        "@interop/standalone" => ok_table(interop::create_standalone(luau)),
-        "@interop/mlua" => ok_table(interop::create_mlua(luau)),
+        "interop" => ok_table(interop::create(luau)),
+        "interop/standalone" => ok_table(interop::create_standalone(luau)),
+        "interop/mlua" => ok_table(interop::create_mlua(luau)),
 
-        "@internal/setup" => ok_table(setup::create_internal(luau)),
+        "internal/setup" => ok_table(setup::create_internal(luau)),
 
-        "@internal/reserved_aliases" => RESERVED_ALIASES.into_lua(luau),
+        "internal/reserved_aliases" => RESERVED_ALIASES.into_lua(luau),
         other => {
-            wrap_err!("program required an unexpected standard library: {}", other)
+            wrap_err!("program required an unexpected standard library: @{}", other)
         }
     }
 }
