@@ -1,4 +1,5 @@
 <!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD024 -->
 
 # Thread
 
@@ -25,52 +26,111 @@ although this is configurable with `thread.spawn`'s `ThreadSpawnOptions`. Readin
 ## Usage
 
 ```luau
- -- parent.luau
- local thread = require("@std/thread")
+    -- parent.luau
+    local thread = require("@std/thread")
 
- local handle = thread.spawn {
-  path = "./child.luau", -- note these paths are relative like luau requires and unlike std/fs paths
-  data = { urls = urls }, -- you can optionally pass in startup data to use in the other thread
- }
+    local handle = thread.spawn {
+        path = "./child.luau", -- note these paths are relative like luau requires and unlike std/fs paths
+        data = { urls = urls }, -- you can optionally pass in startup data to use in the other thread
+    }
 
- -- receive data from your thread using handle:read and handle:read_await
- local data = handle:read_await()
- while thread.sleep(20) do
-  local data = handle:read()
-  if typeof(data) == "table" then
-   print(data)
-  else
-   break
-  end
- end
- -- send data to your child thread using handle:send and handle:sendbytes
- handle:send("hi")
+    -- receive data from your thread using handle:read and handle:read_await
+    local data = handle:read_await()
+    while thread.sleep(20) do
+        local data = handle:read()
+        if typeof(data) == "table" then
+            print(data)
+        else
+            break
+        end
+    end
+    -- send data to your child thread using handle:send and handle:sendbytes
+    handle:send("hi")
 
- -- don't forget to join your threads before your program exits!!
- handle:join()
+    -- don't forget to join your threads before your program exits!!
+    handle:join()
 
- -- child.luau
- if channel then -- channel is a global that exists in child threads and can be used to communicate with the parent thread
-  local urls = (channel.data :: { urls: { string } }).urls
-  channel:send("first")
-  for _, url in urls do
-   local result = callapi(url)
-   channel:send(result)
-  end
-  channel:send("done")
- end
+    -- child.luau
+    if channel then -- channel is a global that exists in child threads and can be used to communicate with the parent thread
+        local urls = (channel.data :: { urls: { string } }).urls
+        channel:send("first")
+        for _, url in urls do
+            local result = callapi(url)
+            channel:send(result)
+        end
+        channel:send("done")
+    end
 
 ```
+
+`function thread.spawn(spawn_options: ThreadSpawnOptions): ThreadHandle`
+
+<details>
+
+<summary> See the docs </summary
+
+Spawns a new Rust Thread running Luau code in a new Luau VM.
+
+## Usage
+
+```luau
+    -- main.luau
+    local thread = require("@std/thread")
+
+    local urls = {
+        "https://sealfinder.net/api/random",
+        "https://example.com/endpoint",
+    }
+
+    local threadpool: { thread.ThreadHandle } = {}
+    for _, url in urls do
+        local handle = thread.spawn {
+            path = "./web_get.luau",
+            data = { url = url },
+        }
+        table.insert(threadpool, handle)
+    end
+
+    while true do
+        for index, handle in threadpool do
+            local response = handle:read()
+            if response then
+                print(response)
+                handle:join()
+                table.remove(threadpool, index)
+            end
+        end
+    end
+
+    -- web_get.luau
+    if channel then -- make sure we're in a child thread
+        local http = require("@std/net/http")
+        local response = http.get {
+            url = channel.data.url,
+        }
+        channel:send(response)
+    end
+```
+
+</details>
+
+`function thread.sleep(milliseconds: number): true`
+
+Literally the same as `time.wait`, except in milliseconds.
 
 `ThreadHandle.read name: string`
 
  the name of your thread (defaults to a petname if not provided)
+
+`-- ThreadHandle:join()`
 
 `function ThreadHandle.join(self: ThreadHandle): ()`
 
 Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
 Errors if the thread has already been joined or somehow disappeared.
+
+`-- ThreadHandle:send(data)`
 
 `function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | string): ()`
 
@@ -87,6 +147,8 @@ If you want to not block the current thread, use `try_send` instead.
 Errors if the channel has somehow become disconnected or provided data isn't json-serializable.
 
 </details>
+
+`-- ThreadHandle:try_send(data)`
 
 `function ThreadHandle.try_send(self: ThreadHandle, data: JsonSerializableTable | string): (boolean, "Sent" | "Disconnected" | "Full")`
 
@@ -105,11 +167,15 @@ This is usually caused by trying to send a message to a thread that's already be
 
 </details>
 
+`-- ThreadHandle:sendbytes(data: buffer)`
+
 `function ThreadHandle.sendbytes(self: ThreadHandle, data: buffer): ()`
 
 Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
 
 Errors if the channel has somehow become disconnected.
+
+`-- ThreadHandle:try_sendbytes(data: buffer)`
 
 `function ThreadHandle.try_sendbytes(self: ThreadHandle, data: buffer): (boolean, "Sent" | "Disconnected" | "Full")`
 
@@ -128,11 +194,15 @@ This is usually caused by trying to send a message to a thread that's already be
 
 </details>
 
+`-- ThreadHandle:read()`
+
 `function ThreadHandle.read(self: ThreadHandle): JsonSerializableTable? | string?`
 
 Read a message from the regular channel without blocking the current thread.
 
 Errors if the channel has somehow become disconnected.
+
+`-- ThreadHandle:read_await()`
 
 `function ThreadHandle.read_await(self: ThreadHandle): JsonSerializableTable | string`
 
@@ -140,11 +210,15 @@ Read a message from the regular channel, blocking until the next message is avai
 
 Errors if the channel has somehow become disconnected.
 
+`-- ThreadHandle:readbytes()`
+
 `function ThreadHandle.readbytes(self: ThreadHandle): buffer?`
 
 Read a message from the bytes channel without blocking the current thread.
 
 Errors if the channel has somehow become disconnected.
+
+`-- ThreadHandle:readbytes_await()`
 
 `function ThreadHandle.readbytes_await(self: ThreadHandle): buffer`
 
@@ -168,7 +242,7 @@ Errors if the channel has somehow become disconnected.
 
  Optional data you want to provide to your thread at startup; accessible with `channel.data` in the child thread.
 
-`capacity.capacity: {`
+`capacity: {`
 
  Override the queue capacity of your thread's regular and bytes channels.
 
@@ -180,57 +254,4 @@ Errors if the channel has somehow become disconnected.
 
  default is 24
 
-`function thread.spawn(spawn_options: ThreadSpawnOptions): ThreadHandle`
-
-<details>
-
-<summary> See the docs </summary
-
-Spawns a new Rust Thread running Luau code in a new Luau VM.
-
-## Usage
-
-```luau
- -- main.luau
- local thread = require("@std/thread")
-
- local urls = {
-  "https://sealfinder.net/api/random",
-  "https://example.com/endpoint",
- }
-
- local threadpool: { thread.ThreadHandle } = {}
- for _, url in urls do
-  local handle = thread.spawn {
-   path = "./web_get.luau",
-   data = { url = url },
-  }
-  table.insert(threadpool, handle)
- end
-
- while true do
-  for index, handle in threadpool do
-   local response = handle:read()
-   if response then
-    print(response)
-    handle:join()
-    table.remove(threadpool, index)
-   end
-  end
- end
-
- -- web_get.luau
- if channel then -- make sure we're in a child thread
-  local http = require("@std/net/http")
-  local response = http.get {
-   url = channel.data.url,
-  }
-  channel:send(response)
- end
-```
-
-</details>
-
-`function thread.sleep(milliseconds: number): true`
-
-Literally the same as `time.wait`, except in milliseconds.
+`capacity.}?`

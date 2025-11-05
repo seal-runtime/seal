@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD024 -->
 
-# Server
+# Hex
 
-`function server.serve(config: ServeConfig)`
+Deal with hex data.

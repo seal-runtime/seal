@@ -1,4 +1,5 @@
 <!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD024 -->
 
 # Format
 
@@ -19,3 +20,5 @@ Prints the debug representation of `item`, equivalent to using `{:?}` in Rust.
 `function format.uncolor(s: string): string`
 
 Removes ANSI color codes from a pretty formatted string.
+
+`function format.__call(self: any, item: unknown): string`

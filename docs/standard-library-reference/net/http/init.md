@@ -1,8 +1,9 @@
 <!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD024 -->
 
 # Http
 
-`params.params: {`
+` params: {`
 
  Query parameters to append to the url string
 

@@ -66,18 +66,23 @@ for _, filename in luau_files do
                 line = str.trimfront(line)
             end
             table.insert(current_doc, line)
-        elseif last_line_was_doc_end then
+        elseif last_line_was_doc_end or str.startswith(line, " ") and line:match(" ") then
             if in_doc then in_doc = false end
             last_line_was_doc_end = false
             line = str.trimback(line, ",")
             line = str.trimback(line, "=")
+            if string.match(line, "return nil") then
+                continue
+            end
             if str.starts(line, "  ", "\t") and string.match(line, "%->") and current_api_parent then
                 line = `{current_api_parent}.{str.trimfront(line)}`
                 if string.match(line, `{current_api_parent}%.[%w_]+: `) then
                     line = `function {line:gsub(": ", "", 1):gsub(" %->", ":")}`
                 end
             elseif str.starts(line, " ", "\t") and current_api_parent then
-                line = `{current_api_parent}.{str.trimfront(line)}`
+                if #line > 5 and not line:match(current_api_parent) then
+                    line = `{current_api_parent}.{str.trimfront(line)}`
+                end
             end
             local new_api: Api = {
                 name = line,
@@ -130,7 +135,7 @@ for path, apis in apis_by_path do
         header = fs.path.child(fs.path.parent(reference_file_path) :: string) :: string
     end
     header = string.upper(header:sub(1, 1)) .. header:sub(2, #header)
-    push("<!-- markdownlint-disable MD033 -->")
+    push("<!-- markdownlint-disable MD033 -->\n<!-- markdownlint-disable MD024 -->")
     push("# " .. header)
     local first_api = apis[1]
     if str.starts(first_api.name, "local", "export type") then
