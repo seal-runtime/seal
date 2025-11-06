@@ -190,6 +190,9 @@ for path, apis in apis_by_path do
         table.remove(apis, 1) -- pop header name
     end
     for _, api in apis do
+        if str.startswith(api.name, "export type") then
+            push(" ", 2)
+        end
         push("`" .. api.name .. "`")
         if #api.docs > 1 and #api.docs < 340 then
             push(api.docs)
