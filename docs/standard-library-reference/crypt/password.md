@@ -3,6 +3,16 @@
 
 # Password
 
+`HashedPassword.salt: buffer,`
+
+`HashedPassword.hash: buffer,`
+
+`PasswordVerifyOptions.raw_password: string,`
+
+`PasswordVerifyOptions.hashed_password: HashedPassword,`
+
+`export type Password = {`
+
 ## This is the password handling lib
 
 Please use with caution.

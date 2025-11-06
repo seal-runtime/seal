@@ -41,9 +41,35 @@ second_version:satisfies("^0.0.1") --> true
 assert(first_version < second_version)
 ```
 
+`SemverFields.major: number,`
+
+`SemverFields.minor: number,`
+
+`SemverFields.patch: number,`
+
+`metadata.metadata: {`
+
+`release_candidate.release_candidate: {`
+
+`release_candidate.tag: string,`
+
+`release_candidate.ver: number,`
+
+`release_candidate.build: string?,`
+
 `function semver.default(): Semver`
 
+`Semver.local fields: SemverFields = {`
+
 `function semver.from(s: string): Semver`
+
+`Semver.error("Invalid semver string: " .. s)`
+
+`Semver.error(`Invalid semver string: {s}`)`
+
+`Semver.local fields: SemverFields = {`
+
+`Semver.metadata = metadata :: any, -- LUAU FIXME: not optional fields not qualifying as optionals`
 
 `function semver.satisfies(self: Semver, semver_range: string): boolean`
 
@@ -79,6 +105,8 @@ end
 ```
 
 </details>
+
+`SemverVals.local function get_specific_range(part: string): (SemverVals, string)`
 
 `function semver.__eq(self: Semver, other: Semver): boolean`
 

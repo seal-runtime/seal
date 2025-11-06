@@ -179,3 +179,41 @@ end
 `export type KeyModifiers = {`
 
  Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
+
+`KeyModifiers.ctrl: boolean,`
+
+`KeyModifiers.shift: boolean,`
+
+`KeyModifiers.alt: boolean,`
+
+`KeyEvent.is: "Key",`
+
+`KeyEvent.key: string,`
+
+`KeyEvent.modifiers: KeyModifiers,`
+
+`MouseEvent.is: "Mouse",`
+
+`MouseEvent.kind: string,`
+
+`MouseEvent.column: number,`
+
+`MouseEvent.row: number,`
+
+`MouseEvent.modifiers: KeyModifiers,`
+
+`ResizeEvent.is: "Resize",`
+
+`ResizeEvent.columns: number,`
+
+`ResizeEvent.rows: number,`
+
+`FocusGained.is: "FocusGained",`
+
+`FocusLost.is: "FocusLost",`
+
+`PasteEvent.is: "Paste",`
+
+`PasteEvent.contents: string,`
+
+`Empty.is: "Empty",`

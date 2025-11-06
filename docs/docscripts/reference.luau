@@ -39,10 +39,18 @@ for _, filename in luau_files do
     local current_doc: { string } = {}
 
     for line_number, line in fs.readlines(filename) do
-        local type_name = string.match(line, "export type ([%w_]+) =")
-        if not type_name then
-            type_name = string.match(line, "%s*([%w_]+): {$")
+        local type_name: string?
+
+        if not in_doc then
+            type_name = string.match(line, "export type ([%w_]+) =")
+            if not type_name then
+                type_name = string.match(line, "type ([%w_]+) =")
+            end
+            if not type_name then
+                type_name = string.match(line, "%s*([%w_]+): {$")
+            end
         end
+
         if type_name then
             current_api_parent = type_name
         elseif string.match(line, "^%s*%-%-%-") then
@@ -57,6 +65,7 @@ for _, filename in luau_files do
             last_line_was_doc_end = true
             continue
         end
+
         if in_doc then
             if string.match(line, "```luau?") then
                 in_a_codeblock = true
@@ -112,6 +121,20 @@ for _, filename in luau_files do
             }
             table.insert(apis_for_file, new_api)
             table.clear(current_doc)
+        elseif 
+            current_api_parent and #current_doc == 0
+            -- regular properties
+            and string.match(line, "%s*([%w_]+):")
+            -- ensure not a regular comment outside doc
+            and not str.startswith(str.trimfront(line), "--")
+        then
+            local name = `{current_api_parent}.{str.trimfront(line)}`
+            local new_api_no_docs: Api = {
+                name = name,
+                docs = "",
+                path = filename
+            }
+            table.insert(apis_for_file, new_api_no_docs)
         end
     end
 

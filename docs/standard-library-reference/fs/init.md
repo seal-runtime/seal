@@ -573,6 +573,10 @@ Commonly used `fs.path` functions include: `fs.path.join` for combining paths an
 
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
+`WatchOptions.recursive: boolean?,`
+
+`WatchOptions.timeout_ms: number?,`
+
 `export type WatchEventCategory`
 
 <details>
@@ -588,6 +592,16 @@ Some usage notes:
 - `"None"` indicates a timeout was reached; use it to early exit or `break` without blocking the VM.
 
 </details>
+
+`WatchEventCategory.| "Modify::Data"`
+
+`WatchEventCategory.| "Modify::Metadata"`
+
+`WatchEventCategory.| "Modify::Other"`
+
+`WatchEventInfo.paths: { string },`
+
+`WatchEventInfo.kind: WatchKind,`
 
 `WatchEventInfo.is_write: boolean`
 
@@ -611,3 +625,81 @@ Some usage notes:
  for an iteration of `fs.watch`. This allows you to break early without indefinitely blocking the Luau VM.
 
 </details>
+
+`WatchKind.| "Open::Execute"`
+
+`WatchKind.| "Open::Read"`
+
+`WatchKind.| "Open::Write"`
+
+`WatchKind.| "Open::Other"`
+
+`WatchKind.| "Close::Execute"`
+
+`WatchKind.| "Close::Read"`
+
+`WatchKind.| "Close::Write"`
+
+`WatchKind.| "Close::Other"`
+
+`WatchKind.| "Close::Any"`
+
+`WatchKind.| "Open::Any"`
+
+`WatchKind.| "Access::Any"`
+
+`WatchKind.| "Access::Other"`
+
+`WatchKind.| "Create::File"`
+
+`WatchKind.| "Create::Directory" -- sent on macos and unixlike`
+
+`WatchKind.| "Create::Other"`
+
+`WatchKind.| "Create::Any"`
+
+`WatchKind.| "Rename::Any"`
+
+`WatchKind.| "Rename::From"`
+
+`WatchKind.| "Rename::To"`
+
+`WatchKind.| "Rename::Both"`
+
+`WatchKind.| "Rename::Other"`
+
+`WatchKind.| "Modify::Data" -- sent on unixlike`
+
+`WatchKind.| "Modify::Data::Content"`
+
+`WatchKind.| "Modify::Data::Size"`
+
+`WatchKind.| "Modify::Data::Other" -- sent on windows`
+
+`WatchKind.| "Modify::Metadata::AccessTime"`
+
+`WatchKind.| "Modify::Metadata::WriteTime"`
+
+`WatchKind.| "Modify::Metadata::Ownership"`
+
+`WatchKind.| "Modify::Metadata::Permissions"`
+
+`WatchKind.| "Modify::Metadata::Extended"`
+
+`WatchKind.| "Modify::Metadata::Other"`
+
+`WatchKind.| "Modify::Metadata::Any"`
+
+`WatchKind.| "Modify::Any"`
+
+`WatchKind.| "Modify::Other"`
+
+`WatchKind.| "Remove::File" -- sent on unixlike`
+
+`WatchKind.| "Remove::Directory" -- sent on unixlike`
+
+`WatchKind.| "Remove::Other"`
+
+`WatchKind.| "Remove::Any" -- sent on Windows`
+
+`WatchKind.| "None::Timeout"`

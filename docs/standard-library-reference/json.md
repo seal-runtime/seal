@@ -22,6 +22,14 @@ json.writefile("./animals.json", data)
 
  encodes a table as json in a condensed fashion for passing as data (without newlines, not as easily readable)
 
+`json.decode: (json: string) -> JsonData,`
+
+`json.readfile: (path: string) -> JsonData,`
+
+`json.writefile: (path: string, data: JsonData, options: EncodeOptions?) -> (),`
+
+`json.writefile_raw: (path: string, data: JsonData) -> (),`
+
 `function json.null(): any`
 
  returns an object that serializes to json's `null`

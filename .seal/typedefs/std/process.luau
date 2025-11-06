@@ -1,33 +1,33 @@
 --!strict
 
 --[=[
-Library for running child processes.
+    Library for running child processes.
 
-## Usage
+    ## Usage
 
-```luau
-local process = require("@std/process")
+    ```luau
+    local process = require("@std/process")
 
--- run a simple program with args
-local result = process.run {
-    program = "markdownlint-cli2",
-    args = { "--fix", "myfile.md" },
-}
+    -- run a simple program with args
+    local result = process.run {
+        program = "markdownlint-cli2",
+        args = { "--fix", "myfile.md" },
+    }
 
--- a shell command
-local files = process.shell("ls -l"):unwrap()
+    -- a shell command
+    local files = process.shell("ls -l"):unwrap()
 
--- a long running child process
-local child = process.spawn({
-    program = "someutil --watch",
-    shell = "sh",
-})
+    -- a long running child process
+    local child = process.spawn({
+        program = "someutil --watch",
+        shell = "sh",
+    })
 
-for line in child.stdout:lines() do
-    local thing_changed = line:match("([%w]+) changed!")
-    print(`Change detected: {thing_changed}`)
-end
-```
+    for line in child.stdout:lines() do
+        local thing_changed = line:match("([%w]+) changed!")
+        print(`Change detected: {thing_changed}`)
+    end
+    ```
 ]=]
 export type process = {
     --[=[
@@ -105,7 +105,15 @@ export type process = {
     ```
     ]=]
     spawn: (options: SpawnOptions) -> ChildProcess,
+    --[=[
+        Doesn't work.
+    ]=]
     setexitcallback: ((number) -> ()) -> (),
+    --[=[
+        Immediately terminate the current program with exit `code`.
+
+        Typically exit code 0 means success and exit code 1 means failure.
+    ]=]
     exit: (code: number?) -> never,
 }
 export type RunResult = ({

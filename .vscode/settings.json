@@ -20,7 +20,8 @@
     "**/tests/**/init.luau": "tests/${dirname}",
     "**/tests/**": "tests/${dirname}/${filename}",
     "**/typedefs/**/init.luau": "defs/${dirname}",
-    "**/typedefs/**": "defs/${dirname}/${filename}"
+    "**/typedefs/**": "defs/${dirname}/${filename}",
+    "**/standard-library-reference/**": "refs/${dirname}/${filename}"
   },
   "luau-lsp.types.definitionFiles": [
     "./.seal/typedefs/globals.d.luau"

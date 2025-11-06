@@ -11,6 +11,138 @@ Usage:
 local colors = require("@std/io/colors")
 ```
 
+`colors.black: (text: string) -> string,`
+
+`colors.red: (text: string) -> string,`
+
+`colors.green: (text: string) -> string,`
+
+`colors.yellow: (text: string) -> string,`
+
+`colors.blue: (text: string) -> string,`
+
+`colors.magenta: (text: string) -> string,`
+
+`colors.cyan: (text: string) -> string,`
+
+`colors.white: (text: string) -> string,`
+
+`bold.bold: {`
+
+`bold.black: (text: string) -> string,`
+
+`bold.red: (text: string) -> string,`
+
+`bold.green: (text: string) -> string,`
+
+`bold.yellow: (text: string) -> string,`
+
+`bold.blue: (text: string) -> string,`
+
+`bold.magenta: (text: string) -> string,`
+
+`bold.cyan: (text: string) -> string,`
+
+`bold.white: (text: string) -> string,`
+
+`style.style: {`
+
+`style.dim: (text: string) -> string,`
+
+`style.bold: (text: string) -> string,`
+
+`style.underline: (text: string) -> string,`
+
+`codes.codes: {`
+
+`codes.RESET: "\x1b[0m",`
+
+`codes.BLACK: "\x1b[30m",`
+
+`codes.RED: "\x1b[31m",`
+
+`codes.GREEN: "\x1b[32m",`
+
+`codes.YELLOW: "\x1b[33m",`
+
+`codes.BLUE: "\x1b[34m",`
+
+`codes.MAGENTA: "\x1b[35m",`
+
+`codes.CYAN: "\x1b[36m",`
+
+`codes.WHITE: "\x1b[37m",`
+
+`codes.BOLD_BLACK: "\x1b[1;30m",`
+
+`codes.BOLD_RED: "\x1b[1;31m",`
+
+`codes.BOLD_GREEN: "\x1b[1;32m",`
+
+`codes.BOLD_YELLOW: "\x1b[1;33m",`
+
+`codes.BOLD_BLUE: "\x1b[1;34m",`
+
+`codes.BOLD_MAGENTA: "\x1b[1;35m",`
+
+`codes.BOLD_CYAN: "\x1b[1;36m",`
+
+`codes.BOLD_WHITE: "\x1b[1;37m",`
+
+`codes.BRIGHT_BLACK: "\x1b[90m",`
+
+`codes.BRIGHT_RED: "\x1b[91m",`
+
+`codes.BRIGHT_GREEN: "\x1b[92m",`
+
+`codes.BRIGHT_YELLOW: "\x1b[93m",`
+
+`codes.BRIGHT_BLUE: "\x1b[94m",`
+
+`codes.BRIGHT_MAGENTA: "\x1b[95m",`
+
+`codes.BRIGHT_CYAN: "\x1b[96m",`
+
+`codes.BRIGHT_WHITE: "\x1b[97m",`
+
+`codes.BLACK_BG: "\x1b[40m",`
+
+`codes.RED_BG: "\x1b[41m",`
+
+`codes.GREEN_BG: "\x1b[42m",`
+
+`codes.YELLOW_BG: "\x1b[43m",`
+
+`codes.BLUE_BG: "\x1b[44m",`
+
+`codes.MAGENTA_BG: "\x1b[45m",`
+
+`codes.CYAN_BG: "\x1b[46m",`
+
+`codes.WHITE_BG: "\x1b[47m",`
+
+`codes.BRIGHT_BLACK_BG: "\x1b[100m",`
+
+`codes.BRIGHT_RED_BG: "\x1b[101m",`
+
+`codes.BRIGHT_GREEN_BG: "\x1b[102m",`
+
+`codes.BRIGHT_YELLOW_BG: "\x1b[103m",`
+
+`codes.BRIGHT_BLUE_BG: "\x1b[104m",`
+
+`codes.BRIGHT_MAGENTA_BG: "\x1b[105m",`
+
+`codes.BRIGHT_CYAN_BG: "\x1b[106m",`
+
+`codes.BRIGHT_WHITE_BG: "\x1b[107m",`
+
+`codes.BOLD: "\x1b[1m",`
+
+`codes.DIM: "\x1b[2m",`
+
+`codes.UNDERLINE: "\x1b[4m",`
+
 `function colors.magenta(text: string): string`
 
 Turns the provided text magenta

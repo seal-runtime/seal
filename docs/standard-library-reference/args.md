@@ -134,6 +134,8 @@ elseif parsed.command == "remove" then
 end
 ```
 
+`args.parse: (program: string, tagline: string, info: ProgramInfo?) -> {`
+
 `function args.simple(self: any, ...Arg): Parsed`
 
  Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
@@ -179,31 +181,111 @@ end
 
  put authors and/or repository link here
 
+`Command.name: string,`
+
+`Command.is: "Command",`
+
+`Command.help: string,`
+
+`Command._args: { Arg },`
+
+`Command.args: (self: Command, ...Arg) -> Command,`
+
+`Command._aliases: { [string]: true? },`
+
 `function Command.aliases(self: Command, ...string): Command`
 
  Aliases for your command, like `seal r -> seal run`
 
+`Parsed.command: string | "default",`
+
+`Parsed.get: <T>(self: Parsed, name: string, default: T?) -> T?,`
+
+`Parsed.expect: <T>(self: Parsed, name: string, assertion: string?) -> T,`
+
+`Parsed.help: (self: Parsed) -> string,`
+
+`Parsed.flags: { [string]: true? },`
+
+`ArgList.name: string,`
+
+`ArgList.is: "ArgList",`
+
+`ArgList.help: string,`
+
+`ArgList.values: { string }?,`
+
+`Validator.export type Validator = (arg: string) -> any | error`
+
+`Positional.name: string,`
+
+`Positional.is: "Positional",`
+
+`Positional.help: string,`
+
+`Positional._default: any,`
+
+`Positional.default: (any) -> Positional,`
+
+`Positional._optional: boolean,`
+
 `function Positional.optional(self: Positional): Positional`
 
  call this to turn the positional argument into an optional positional argument
+
+`Positional._validator: Validator?,`
 
 `function Positional.validate(self: Positional, validator: Validator): Positional`
 
  validate the argument's input by passing a function that returns either the transformed
  validated input (such as converting input strings from p -> project) or an error object.
 
+`Positional.value: any,`
+
 `Flag.name: string`
 
  Must start with `--` and cannot be `--help` or `--commands`
+
+`Flag.is: "Flag",`
+
+`Flag.help: string,`
+
+`Flag._aliases: { [string]: true? },`
 
 `function Flag.aliases(self: Flag, ...string): Flag`
 
  flag aliases must start with `-` and cannot be `-h` (reserved for help)
 
+`Flag._default: boolean?,`
+
+`Flag.default: (self: Flag, boolean) -> Flag,`
+
+`Flag.value: boolean,`
+
 `Named.name: string`
 
  Must start with `--` and cannot be `--help` or `--commands`
 
+`Named.is: "Named",`
+
+`Named.help: string,`
+
+`Named._default: any,`
+
+`Named.default: (self: Named, any) -> Named,`
+
+`Named._aliases: { [string]: true? },`
+
 `function Named.aliases(self: Named, ...string): Named`
 
  aliases must start with `-` and cannot be `-h` (reserved for help)
+
+`Named._required: boolean,`
+
+`Named.required: (self: Named) -> Named,`
+
+`Named._validator: Validator?,`
+
+`Named.validate: (self: Named, validator: Validator) -> Named,`
+
+`Named.value: any,`
