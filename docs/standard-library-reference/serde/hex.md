@@ -5,6 +5,6 @@
 
 Deal with hex data.
 
-`hex.encode: (data: buffer | string) -> string,`
+`hex.encode: (data: buffer | string) -> string`
 
-`hex.decode: (encoded: string) -> buffer,`
+`hex.decode: (encoded: string) -> buffer`

@@ -21,4 +21,4 @@ Prints the debug representation of `item`, equivalent to using `{:?}` in Rust.
 
 Removes ANSI color codes from a pretty formatted string.
 
-`format.__call: (self: any, item: unknown) -> string,`
+`format.__call: (self: any, item: unknown) -> string`

@@ -3,6 +3,12 @@
 
 # Dir
 
+`export type DirectoryEntry =`
+
+`export type DirectoryBuilder =`
+
+`export type DirLib =`
+
 `function DirLib.from(path: string): DirectoryEntry`
 
  Creates a `DirectoryEntry` from the directory at `path`, erroring if the directory is NotFound/PermissionDenied, etc.

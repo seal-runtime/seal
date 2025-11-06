@@ -3,39 +3,43 @@
 
 # Server
 
-`ServeRequest.peer_address: string,`
+`ServeRequest.peer_address: string`
 
-`ServeRequest.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",`
+`ServeRequest.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"`
 
-`ServeRequest.path: string,`
+`ServeRequest.path: string`
 
 `headers.headers: {`
 
-`headers.raw_text: string,`
+`headers.raw_text: string`
 
-`headers.body: string,`
+`headers.body: string`
 
-`ServeResponse.status_code: StatusCode,`
+`export type ServeResponse =`
 
-`ServeResponse.content_type: ContentType,`
+`ServeResponse.status_code: StatusCode`
 
-`ServeResponse.body: string,`
+`ServeResponse.content_type: ContentType`
+
+`ServeResponse.body: string`
 
 `headers.headers: {`
 
 `cookies.cookies: {`
 
-`cookies.http_version: string?,`
+`cookies.http_version: string?`
 
-`cookies.reason_phrase: string?,`
+`cookies.reason_phrase: string?`
 
 `cookies.redirect_url: string?`
 
-`ServeConfig.address: string,`
+`export type ServeConfig =`
 
-`ServeConfig.port: string | number,`
+`ServeConfig.address: string`
 
-`ServeConfig.handler: (ServeRequest) -> ServeResponse,`
+`ServeConfig.port: string | number`
+
+`ServeConfig.handler: (ServeRequest) -> ServeResponse`
 
 `function server.serve(config: ServeConfig)`
 

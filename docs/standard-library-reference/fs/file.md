@@ -3,6 +3,10 @@
 
 # File
 
+`export type FileBuilder =`
+
+`export type FileLib =`
+
 `function FileLib.from(path: string): FileEntry`
 
 Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if a file is not found or permission was denied, etc.

@@ -3,6 +3,8 @@
 
 # Fs
 
+`export type fs =`
+
 `function fs.readfile(path: string): string`
 
 <details>
@@ -573,9 +575,25 @@ Commonly used `fs.path` functions include: `fs.path.join` for combining paths an
 
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
-`WatchOptions.recursive: boolean?,`
+`export type DirectoryTree =`
 
-`WatchOptions.timeout_ms: number?,`
+`export type DirectoryBuilder =`
+
+`export type TreeBuilder =`
+
+`export type FindResult =`
+
+`export type Entry =`
+
+`export type FileEntry =`
+
+`export type DirectoryEntry =`
+
+`export type WatchOptions =`
+
+`WatchOptions.recursive: boolean?`
+
+`WatchOptions.timeout_ms: number?`
 
 `export type WatchEventCategory`
 
@@ -599,9 +617,11 @@ Some usage notes:
 
 `WatchEventCategory.| "Modify::Other"`
 
-`WatchEventInfo.paths: { string },`
+`export type WatchEventInfo =`
 
-`WatchEventInfo.kind: WatchKind,`
+`WatchEventInfo.paths: { string }`
+
+`WatchEventInfo.kind: WatchKind`
 
 `WatchEventInfo.is_write: boolean`
 

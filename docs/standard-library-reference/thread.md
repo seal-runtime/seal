@@ -118,6 +118,10 @@ end
 
 Literally the same as `time.wait`, except in milliseconds.
 
+`export type JsonSerializableTable =`
+
+`export type ThreadHandle =`
+
 `ThreadHandle.read name: string`
 
  the name of your thread (defaults to a petname if not provided)
@@ -207,6 +211,8 @@ Errors if the channel has somehow become disconnected.
 Read a message from the bytes channel, blocking until the next message is available.
 
 Errors if the channel has somehow become disconnected.
+
+`export type ThreadSpawnOptions =`
 
 `ThreadSpawnOptions.name: string?`
 

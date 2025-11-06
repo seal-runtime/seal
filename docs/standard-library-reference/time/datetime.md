@@ -115,3 +115,5 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 `function datetime.milliseconds(milliseconds: number): TimeSpan`
 
  Constructs a `TimeSpan` from milliseconds.
+
+`export type IanaTimezone =`

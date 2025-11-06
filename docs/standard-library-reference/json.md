@@ -22,13 +22,13 @@ json.writefile("./animals.json", data)
 
  encodes a table as json in a condensed fashion for passing as data (without newlines, not as easily readable)
 
-`json.decode: (json: string) -> JsonData,`
+`json.decode: (json: string) -> JsonData`
 
-`json.readfile: (path: string) -> JsonData,`
+`json.readfile: (path: string) -> JsonData`
 
-`json.writefile: (path: string, data: JsonData, options: EncodeOptions?) -> (),`
+`json.writefile: (path: string, data: JsonData, options: EncodeOptions?) -> ()`
 
-`json.writefile_raw: (path: string, data: JsonData) -> (),`
+`json.writefile_raw: (path: string, data: JsonData) -> ()`
 
 `function json.null(): any`
 
@@ -40,6 +40,8 @@ json.writefile("./animals.json", data)
 
  If `t` isn't provided, returns a new array-like table that will serialize to a json array.
 
+`export type EncodeOptions =`
+
 `EncodeOptions.pretty: boolean?`
 
  with tabs/newlines/spaces for easy reading (default true)
@@ -47,3 +49,5 @@ json.writefile("./animals.json", data)
 `EncodeOptions.sorted: boolean?`
 
  sorted in alphanumeric order (default false)
+
+`export type JsonData =`

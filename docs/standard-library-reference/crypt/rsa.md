@@ -3,12 +3,14 @@
 
 # Rsa
 
-`RsaKeys.public: string,`
+`RsaKeys.public: string`
 
 `RsaKeys.private: string`
 
-`Rsa.generatekeys: () -> RsaKeys,`
+`export type Rsa =`
 
-`Rsa.encrypt: (plaintext: string, public_key: string) -> string,`
+`Rsa.generatekeys: () -> RsaKeys`
 
-`Rsa.decrypt: (ciphertext: string, private_key: string) -> string,`
+`Rsa.encrypt: (plaintext: string, public_key: string) -> string`
+
+`Rsa.decrypt: (ciphertext: string, private_key: string) -> string`

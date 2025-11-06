@@ -121,6 +121,16 @@ for _, filename in luau_files do
             }
             table.insert(apis_for_file, new_api)
             table.clear(current_doc)
+        elseif str.startswith(line, "export type") then
+            local name = string.match(line, "(export type [%w_]+%s*=)")
+            if name then
+                local new_api_no_docs: Api = {
+                    name = name,
+                    docs = "",
+                    path = filename
+                }
+                table.insert(apis_for_file, new_api_no_docs)
+            end
         elseif 
             current_api_parent and #current_doc == 0
             -- regular properties
@@ -129,6 +139,7 @@ for _, filename in luau_files do
             and not str.startswith(str.trimfront(line), "--")
         then
             local name = `{current_api_parent}.{str.trimfront(line)}`
+            name = str.trimback(name, ",")
             local new_api_no_docs: Api = {
                 name = name,
                 docs = "",

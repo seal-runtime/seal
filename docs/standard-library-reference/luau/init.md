@@ -79,14 +79,18 @@ Returns *seal*'s require resolver implementation used internally.
 
  Resolve a Luau require alias (`requested_path`) relative to `requiring_file_path` to find its location on the filesystem.
 
-`luau.get_aliases: (requiring_file_path: string) -> ({ LuaurcAliases }?, string?),`
+`luau.get_aliases: (requiring_file_path: string) -> ({ LuaurcAliases }?, string?)`
 
-`luau.expand_aliases: (requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?),`
+`luau.expand_aliases: (requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?)`
 
-`EvalOptions.name: string?,`
+`export type EvalOptions =`
 
-`EvalOptions.stdlib: ("seal" | "safe" | "none")?,`
+`EvalOptions.name: string?`
 
-`LuaurcAliases.path: string,`
+`EvalOptions.stdlib: ("seal" | "safe" | "none")?`
+
+`export type LuaurcAliases =`
+
+`LuaurcAliases.path: string`
 
 `aliases.aliases: {`

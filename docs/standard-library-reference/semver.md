@@ -41,21 +41,23 @@ second_version:satisfies("^0.0.1") --> true
 assert(first_version < second_version)
 ```
 
-`SemverFields.major: number,`
+`SemverFields.major: number`
 
-`SemverFields.minor: number,`
+`SemverFields.minor: number`
 
-`SemverFields.patch: number,`
+`SemverFields.patch: number`
 
 `metadata.metadata: {`
 
 `release_candidate.release_candidate: {`
 
-`release_candidate.tag: string,`
+`release_candidate.tag: string`
 
-`release_candidate.ver: number,`
+`release_candidate.ver: number`
 
-`release_candidate.build: string?,`
+`release_candidate.build: string?`
+
+`export type Semver =`
 
 `function semver.default(): Semver`
 

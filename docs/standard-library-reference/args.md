@@ -169,6 +169,8 @@ end
 
  Add a default command.
 
+`export type ProgramInfo =`
+
 `ProgramInfo.description: string?`
 
  if provided, goes below program name/tagline in `--help`
@@ -181,111 +183,125 @@ end
 
  put authors and/or repository link here
 
-`Command.name: string,`
+`export type Command =`
 
-`Command.is: "Command",`
+`Command.name: string`
 
-`Command.help: string,`
+`Command.is: "Command"`
 
-`Command._args: { Arg },`
+`Command.help: string`
 
-`Command.args: (self: Command, ...Arg) -> Command,`
+`Command._args: { Arg }`
 
-`Command._aliases: { [string]: true? },`
+`Command.args: (self: Command, ...Arg) -> Command`
+
+`Command._aliases: { [string]: true? }`
 
 `function Command.aliases(self: Command, ...string): Command`
 
  Aliases for your command, like `seal r -> seal run`
 
-`Parsed.command: string | "default",`
+`export type Parsed =`
 
-`Parsed.get: <T>(self: Parsed, name: string, default: T?) -> T?,`
+`Parsed.command: string | "default"`
 
-`Parsed.expect: <T>(self: Parsed, name: string, assertion: string?) -> T,`
+`Parsed.get: <T>(self: Parsed, name: string, default: T?) -> T?`
 
-`Parsed.help: (self: Parsed) -> string,`
+`Parsed.expect: <T>(self: Parsed, name: string, assertion: string?) -> T`
 
-`Parsed.flags: { [string]: true? },`
+`Parsed.help: (self: Parsed) -> string`
 
-`ArgList.name: string,`
+`Parsed.flags: { [string]: true? }`
 
-`ArgList.is: "ArgList",`
+`export type ArgList =`
 
-`ArgList.help: string,`
+`ArgList.name: string`
 
-`ArgList.values: { string }?,`
+`ArgList.is: "ArgList"`
 
-`Validator.export type Validator = (arg: string) -> any | error`
+`ArgList.help: string`
 
-`Positional.name: string,`
+`ArgList.values: { string }?`
 
-`Positional.is: "Positional",`
+`export type Validator =`
 
-`Positional.help: string,`
+`export type Arg =`
 
-`Positional._default: any,`
+`export type Positional =`
 
-`Positional.default: (any) -> Positional,`
+`Positional.name: string`
 
-`Positional._optional: boolean,`
+`Positional.is: "Positional"`
+
+`Positional.help: string`
+
+`Positional._default: any`
+
+`Positional.default: (any) -> Positional`
+
+`Positional._optional: boolean`
 
 `function Positional.optional(self: Positional): Positional`
 
  call this to turn the positional argument into an optional positional argument
 
-`Positional._validator: Validator?,`
+`Positional._validator: Validator?`
 
 `function Positional.validate(self: Positional, validator: Validator): Positional`
 
  validate the argument's input by passing a function that returns either the transformed
  validated input (such as converting input strings from p -> project) or an error object.
 
-`Positional.value: any,`
+`Positional.value: any`
+
+`export type Flag =`
 
 `Flag.name: string`
 
  Must start with `--` and cannot be `--help` or `--commands`
 
-`Flag.is: "Flag",`
+`Flag.is: "Flag"`
 
-`Flag.help: string,`
+`Flag.help: string`
 
-`Flag._aliases: { [string]: true? },`
+`Flag._aliases: { [string]: true? }`
 
 `function Flag.aliases(self: Flag, ...string): Flag`
 
  flag aliases must start with `-` and cannot be `-h` (reserved for help)
 
-`Flag._default: boolean?,`
+`Flag._default: boolean?`
 
-`Flag.default: (self: Flag, boolean) -> Flag,`
+`Flag.default: (self: Flag, boolean) -> Flag`
 
-`Flag.value: boolean,`
+`Flag.value: boolean`
+
+`export type Named =`
 
 `Named.name: string`
 
  Must start with `--` and cannot be `--help` or `--commands`
 
-`Named.is: "Named",`
+`Named.is: "Named"`
 
-`Named.help: string,`
+`Named.help: string`
 
-`Named._default: any,`
+`Named._default: any`
 
-`Named.default: (self: Named, any) -> Named,`
+`Named.default: (self: Named, any) -> Named`
 
-`Named._aliases: { [string]: true? },`
+`Named._aliases: { [string]: true? }`
 
 `function Named.aliases(self: Named, ...string): Named`
 
  aliases must start with `-` and cannot be `-h` (reserved for help)
 
-`Named._required: boolean,`
+`Named._required: boolean`
 
-`Named.required: (self: Named) -> Named,`
+`Named.required: (self: Named) -> Named`
 
-`Named._validator: Validator?,`
+`Named._validator: Validator?`
 
-`Named.validate: (self: Named, validator: Validator) -> Named,`
+`Named.validate: (self: Named, validator: Validator) -> Named`
 
-`Named.value: any,`
+`Named.value: any`

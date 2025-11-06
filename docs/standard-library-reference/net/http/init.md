@@ -82,42 +82,54 @@ Create a webserver that listens for incoming requests.
 
 ⚠️ Expect breaking changes. This API will be heavily modified in the future.
 
-`HttpResponse.ok: true,`
+`export type HttpServerLib =`
 
-`HttpResponse.status_code: StatusCode,`
+`export type HttpResponse =`
 
-`HttpResponse.body: string,`
+`HttpResponse.ok: true`
+
+`HttpResponse.status_code: StatusCode`
+
+`HttpResponse.body: string`
 
 `function HttpResponse.decode(self: HttpResponse): { [any]: any }`
 
  decodes body to table, errors if body is invalid json or otherwise cannot be converted to table
 
-`HttpResponse.ok: false,`
+`HttpResponse.ok: false`
 
-`HttpResponse.err: string,`
+`HttpResponse.err: string`
 
 `function HttpResponse.unwrap_json(self: HttpResponse, default: { [any]: any }?): { [any]: any }`
 
  decodes body as json or returns default value; errors if ok = false and default value not provided
 
-`RequestConfig.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",`
+`export type RequestConfig =`
 
-`RequestConfig.url: string,`
+`RequestConfig.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"`
 
-`RequestConfig.headers: { [string]: string }?,`
+`RequestConfig.url: string`
 
-`RequestConfig.params: { [string]: string }?,`
+`RequestConfig.headers: { [string]: string }?`
 
-`GetConfig.url: string,`
+`RequestConfig.params: { [string]: string }?`
 
-`GetConfig.headers: { [string]: string }?,`
+`export type GetConfig =`
+
+`GetConfig.url: string`
+
+`GetConfig.headers: { [string]: string }?`
 
 `params: {`
 
  Query parameters to append to the url string
 
-`PostConfig.url: string,`
+`export type PostConfig =`
+
+`PostConfig.url: string`
 
 `headers.headers: {`
 
 `headers.body: string | {`
+
+`export type StatusCode =`

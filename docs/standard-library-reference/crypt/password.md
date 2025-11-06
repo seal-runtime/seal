@@ -3,13 +3,15 @@
 
 # Password
 
-`HashedPassword.salt: buffer,`
+`HashedPassword.salt: buffer`
 
-`HashedPassword.hash: buffer,`
+`HashedPassword.hash: buffer`
 
-`PasswordVerifyOptions.raw_password: string,`
+`export type PasswordVerifyOptions =`
 
-`PasswordVerifyOptions.hashed_password: HashedPassword,`
+`PasswordVerifyOptions.raw_password: string`
+
+`PasswordVerifyOptions.hashed_password: HashedPassword`
 
 `export type Password = {`
 

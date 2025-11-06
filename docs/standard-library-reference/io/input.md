@@ -180,40 +180,56 @@ end
 
  Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
 
-`KeyModifiers.ctrl: boolean,`
+`KeyModifiers.ctrl: boolean`
 
-`KeyModifiers.shift: boolean,`
+`KeyModifiers.shift: boolean`
 
-`KeyModifiers.alt: boolean,`
+`KeyModifiers.alt: boolean`
 
-`KeyEvent.is: "Key",`
+`export type KeyEvent =`
 
-`KeyEvent.key: string,`
+`KeyEvent.is: "Key"`
 
-`KeyEvent.modifiers: KeyModifiers,`
+`KeyEvent.key: string`
 
-`MouseEvent.is: "Mouse",`
+`KeyEvent.modifiers: KeyModifiers`
 
-`MouseEvent.kind: string,`
+`export type MouseEvent =`
 
-`MouseEvent.column: number,`
+`MouseEvent.is: "Mouse"`
 
-`MouseEvent.row: number,`
+`MouseEvent.kind: string`
 
-`MouseEvent.modifiers: KeyModifiers,`
+`MouseEvent.column: number`
 
-`ResizeEvent.is: "Resize",`
+`MouseEvent.row: number`
 
-`ResizeEvent.columns: number,`
+`MouseEvent.modifiers: KeyModifiers`
 
-`ResizeEvent.rows: number,`
+`export type ResizeEvent =`
 
-`FocusGained.is: "FocusGained",`
+`ResizeEvent.is: "Resize"`
 
-`FocusLost.is: "FocusLost",`
+`ResizeEvent.columns: number`
 
-`PasteEvent.is: "Paste",`
+`ResizeEvent.rows: number`
 
-`PasteEvent.contents: string,`
+`export type FocusGained =`
 
-`Empty.is: "Empty",`
+`FocusGained.is: "FocusGained"`
+
+`export type FocusLost =`
+
+`FocusLost.is: "FocusLost"`
+
+`export type PasteEvent =`
+
+`PasteEvent.is: "Paste"`
+
+`PasteEvent.contents: string`
+
+`export type Empty =`
+
+`Empty.is: "Empty"`
+
+`export type TerminalEvent =`
