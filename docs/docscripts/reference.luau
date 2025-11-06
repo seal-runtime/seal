@@ -191,7 +191,7 @@ for path, apis in apis_by_path do
     end
     for _, api in apis do
         if str.startswith(api.name, "export type") then
-            push(" ", 2)
+            push(" ", 4)
         end
         push("`" .. api.name .. "`")
         if #api.docs > 1 and #api.docs < 340 then
