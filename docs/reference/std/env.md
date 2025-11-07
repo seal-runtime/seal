@@ -5,38 +5,38 @@
 
 `local env = require("@std/env")`
 
-A stdlib to interact with the script's running environment.
+$hspace{5pt}$A stdlib to interact with the script's running environment.
 
 .args: `{string}`
 
- a list of arguments passed to the program
+$hspace{5pt}$ a list of arguments passed to the program
 
 .os: `"Windows" | "Linux" | "Android" | "MacOS" | "Other"`
 
- your operating system
+$hspace{5pt}$ your operating system
 
 .executable_path: `string`
 
- the path of the executable
+$hspace{5pt}$ the path of the executable
 
 .cwd: `() -> string`
 
-Get the current working directory of the running process.
-
-Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission denied).
+$hspace{5pt}$Get the current working directory of the running process.
+$hspace{5pt}$
+$hspace{5pt}$Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission denied).
 
 .getvar: `(key: string) -> string?`
 
-Gets an environment variable in the current process.
+$hspace{5pt}$Gets an environment variable in the current process.
 
 .setvar: `(key: string, value: string) -> string`
 
-Sets an environment variable in the current process.
-
-Note, this function is **unsafe** in multithreaded contexts on Linux.
+$hspace{5pt}$Sets an environment variable in the current process.
+$hspace{5pt}$
+$hspace{5pt}$Note, this function is **unsafe** in multithreaded contexts on Linux.
 
 .removevar: `(key: string) -> nil`
 
-Removes an environment variable in the current process.
-
-Note, this function is **unsafe** in multithreaded contexts on Linux.
+$hspace{5pt}$Removes an environment variable in the current process.
+$hspace{5pt}$
+$hspace{5pt}$Note, this function is **unsafe** in multithreaded contexts on Linux.

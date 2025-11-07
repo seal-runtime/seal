@@ -5,7 +5,7 @@
 
 `local http = require("@std/net/http")`
 
-Library for sending HTTP Requests.
+$hspace{5pt}$Library for sending HTTP Requests.
 
 http.get: `(config: GetConfig | string) -> HttpResponse`
 
@@ -13,76 +13,85 @@ http.get: `(config: GetConfig | string) -> HttpResponse`
 
 <summary> See the docs </summary
 
-Makes an HTTP `GET` request.
-
-## Usage
-
-```luau
-local response = http.get({
-    url = "https://catfact.ninja/fact",
-})
-if response.ok then
-    local raw_body = response.body
-    local decoded_json_body = response:decode()
-end
-
--- or with more features:
-
-local cats = http.get {
-    url = "my.cats.net/get",
-    headers = {
-        Authorization = someauth
-    },
-    params = {
-        name = "Nanuk",
-    },
-}:unwrap_json()
-```
+$hspace{5pt}$Makes an HTTP `GET` request.
+$hspace{5pt}$
+$hspace{5pt}$## Usage
+$hspace{5pt}$```luau
+$hspace{5pt}$local response = http.get({
+$hspace{5pt}$    url = "https://catfact.ninja/fact",
+$hspace{5pt}$})
+$hspace{5pt}$if response.ok then
+$hspace{5pt}$    local raw_body = response.body
+$hspace{5pt}$    local decoded_json_body = response:decode()
+$hspace{5pt}$end
+$hspace{5pt}$
+$hspace{5pt}$-- or with more features:
+$hspace{5pt}$
+$hspace{5pt}$local cats = http.get {
+$hspace{5pt}$    url = "my.cats.net/get",
+$hspace{5pt}$    headers = {
+$hspace{5pt}$        Authorization = someauth
+$hspace{5pt}$    },
+$hspace{5pt}$    params = {
+$hspace{5pt}$        name = "Nanuk",
+$hspace{5pt}$    },
+$hspace{5pt}$}:unwrap_json()
+$hspace{5pt}$```
 
 </details>
 
 http.post: `(config: PostConfig) -> HttpResponse`
 
-Makes an HTTP `POST` request.
+<details>
 
-## Usage
+<summary> See the docs </summary
 
-```luau
-local response = http.post {
-    url = "https://somejson.com/post",
-    headers = {
-        ["API-KEY"] = api_key,
-        -- note: Content-Type: application/json automatically handled when you pass a table as body!
-    },
-    body = {
-        username = "hiItsMe",
-    }
-}
-```
+$hspace{5pt}$Makes an HTTP `POST` request.
+$hspace{5pt}$
+$hspace{5pt}$## Usage
+$hspace{5pt}$```luau
+$hspace{5pt}$local response = http.post {
+$hspace{5pt}$    url = "https://somejson.com/post",
+$hspace{5pt}$    headers = {
+$hspace{5pt}$        ["API-KEY"] = api_key,
+$hspace{5pt}$        -- note: Content-Type: application/json automatically handled when you pass a table as body!
+$hspace{5pt}$    },
+$hspace{5pt}$    body = {
+$hspace{5pt}$        username = "hiItsMe",
+$hspace{5pt}$    }
+$hspace{5pt}$}
+$hspace{5pt}$```
+
+</details>
 
 http.request: `(config: RequestConfig) -> HttpResponse`
 
-Sends an HTTP request:
+<details>
 
-## Usage
+<summary> See the docs </summary
 
-```luau
-local response = http.request({
-    method = "PUT",
-    url = "https://somewhere.net/api/put",
-    body = somebody,
-})
+$hspace{5pt}$Sends an HTTP request:
+$hspace{5pt}$
+$hspace{5pt}$## Usage
+$hspace{5pt}$```luau
+$hspace{5pt}$local response = http.request({
+$hspace{5pt}$    method = "PUT",
+$hspace{5pt}$    url = "https://somewhere.net/api/put",
+$hspace{5pt}$    body = somebody,
+$hspace{5pt}$})
+$hspace{5pt}$
+$hspace{5pt}$if response.ok then
+$hspace{5pt}$    print(response:decode())
+$hspace{5pt}$end
+$hspace{5pt}$```
 
-if response.ok then
-    print(response:decode())
-end
-```
+</details>
 
 http.server: `HttpServerLib`
 
-Create a webserver that listens for incoming requests.
-
-⚠️ Expect breaking changes. This API will be heavily modified in the future.
+$hspace{5pt}$Create a webserver that listens for incoming requests.
+$hspace{5pt}$
+$hspace{5pt}$⚠️ Expect breaking changes. This API will be heavily modified in the future.
 
 `export type` HttpServerLib
 
@@ -96,7 +105,7 @@ HttpResponse.body: `string`
 
 HttpResponse.decode: `(self: HttpResponse) -> { [any]: any }`
 
- decodes body to table, errors if body is invalid json or otherwise cannot be converted to table
+$hspace{5pt}$ decodes body to table, errors if body is invalid json or otherwise cannot be converted to table
 
 HttpResponse.ok: `false`
 
@@ -104,7 +113,7 @@ HttpResponse.err: `string`
 
 HttpResponse.unwrap_json: `(self: HttpResponse, default: { [any]: any }?) -> { [any]: any }`
 
- decodes body as json or returns default value; errors if ok = false and default value not provided
+$hspace{5pt}$ decodes body as json or returns default value; errors if ok = false and default value not provided
 
 `export type` RequestConfig
 
@@ -124,7 +133,7 @@ GetConfig.headers: `{ [string]: string }?`
 
 `export type` PostConfig
 
- Query parameters to append to the url string
+$hspace{5pt}$ Query parameters to append to the url string
 
 PostConfig.url: `string`
 

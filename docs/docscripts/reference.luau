@@ -126,6 +126,7 @@ for _, filepath in typedefs_paths do
                 reset_in_docs_next_iteration = false
                 in_docs = false
             end
+            line = "$\hspace{5pt}$" .. line
             table.insert(current_docs, line)
             continue
         end
