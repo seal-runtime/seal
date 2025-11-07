@@ -265,7 +265,7 @@ colors.bold.style.codes.UNDERLINE: `"\x1b[4m"`
 
 ---
 
-colors.bold.style.codes.function colors.magenta(text: `string): string`
+function colors.magenta(text: `string): string`
 
 Turns the provided text magenta
 
@@ -278,7 +278,7 @@ print(colors.magenta("this text is hereby colored magenta"))
 
 ---
 
-colors.bold.style.codes.function colors.blue(text: `string): string`
+function colors.blue(text: `string): string`
 
 Turns the provided text blue
 
@@ -291,7 +291,7 @@ print(colors.blue("this text is hereby colored blue"))
 
 ---
 
-colors.bold.style.codes.function colors.cyan(text: `string): string`
+function colors.cyan(text: `string): string`
 
 Turns the provided text cyan
 
@@ -304,7 +304,7 @@ print(colors.cyan("this text is hereby colored cyan"))
 
 ---
 
-colors.bold.style.codes.function colors.black(text: `string): string`
+function colors.black(text: `string): string`
 
 Turns the provided text black
 
@@ -317,7 +317,7 @@ print(colors.black("this text is hereby colored black"))
 
 ---
 
-colors.bold.style.codes.function colors.green(text: `string): string`
+function colors.green(text: `string): string`
 
 Turns the provided text green
 
@@ -330,7 +330,7 @@ print(colors.green("this text is hereby colored green"))
 
 ---
 
-colors.bold.style.codes.function colors.yellow(text: `string): string`
+function colors.yellow(text: `string): string`
 
 Turns the provided text yellow
 
@@ -343,7 +343,7 @@ print(colors.yellow("this text is hereby colored yellow"))
 
 ---
 
-colors.bold.style.codes.function colors.white(text: `string): string`
+function colors.white(text: `string): string`
 
 Turns the provided text white
 
@@ -356,7 +356,7 @@ print(colors.white("this text is hereby colored white"))
 
 ---
 
-colors.bold.style.codes.function colors.red(text: `string): string`
+function colors.red(text: `string): string`
 
 Turns the provided text red
 
@@ -369,7 +369,7 @@ print(colors.red("this text is hereby colored red"))
 
 ---
 
-colors.bold.style.codes.function colors.bold.white(text: `string): string`
+function colors.bold.white(text: `string): string`
 
 Turns the provided text bold white
 
@@ -382,7 +382,7 @@ print(colors.bold.white("this is now bold white"))
 
 ---
 
-colors.bold.style.codes.function colors.bold.magenta(text: `string): string`
+function colors.bold.magenta(text: `string): string`
 
 Turns the provided text bold magenta
 
@@ -395,7 +395,7 @@ print(colors.bold.magenta("this is now bold magenta"))
 
 ---
 
-colors.bold.style.codes.function colors.bold.black(text: `string): string`
+function colors.bold.black(text: `string): string`
 
 Turns the provided text bold black
 
@@ -408,7 +408,7 @@ print(colors.bold.black("this is now bold black"))
 
 ---
 
-colors.bold.style.codes.function colors.bold.green(text: `string): string`
+function colors.bold.green(text: `string): string`
 
 Turns the provided text bold green
 
@@ -421,7 +421,7 @@ print(colors.bold.green("this is now bold green"))
 
 ---
 
-colors.bold.style.codes.function colors.bold.cyan(text: `string): string`
+function colors.bold.cyan(text: `string): string`
 
 Turns the provided text bold cyan
 
@@ -434,7 +434,7 @@ print(colors.bold.cyan("this is now bold cyan"))
 
 ---
 
-colors.bold.style.codes.function colors.bold.yellow(text: `string): string`
+function colors.bold.yellow(text: `string): string`
 
 Turns the provided text bold yellow
 
@@ -447,7 +447,7 @@ print(colors.bold.yellow("this is now bold yellow"))
 
 ---
 
-colors.bold.style.codes.function colors.bold.blue(text: `string): string`
+function colors.bold.blue(text: `string): string`
 
 Turns the provided text bold blue
 
@@ -460,7 +460,7 @@ print(colors.bold.blue("this is now bold blue"))
 
 ---
 
-colors.bold.style.codes.function colors.bold.red(text: `string): string`
+function colors.bold.red(text: `string): string`
 
 Turns the provided text bold red
 

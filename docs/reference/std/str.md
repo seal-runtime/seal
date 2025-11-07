@@ -14,25 +14,25 @@ Unlike many seal standard libraries, inputs to `str` library functions don't nec
 to be valid utf-8 encoded strings.
  check if a string starts with `prefix`
 
-.function str.endswith(s: `string, suffix: string): boolean`
+function str.endswith(s: `string, suffix: string): boolean`
 
  check if a string ends with `suffix`
 
 ---
 
-.function str.starts(s: `string, ...: string): boolean`
+function str.starts(s: `string, ...: string): boolean`
 
  like str.startswith, but accepts multiple prefixes
 
 ---
 
-.function str.ends(s: `string, ...: string): boolean`
+function str.ends(s: `string, ...: string): boolean`
 
  like str.endswith, but accepts multiple suffixes
 
 ---
 
-.function str.trimfront(s: `string, ...: string): string`
+function str.trimfront(s: `string, ...: string): string`
 
  trims any of the provided strings/characters from the front of the string `s`
 
@@ -40,7 +40,7 @@ to be valid utf-8 encoded strings.
 
 ---
 
-.function str.trimback(s: `string, ...: string): string`
+function str.trimback(s: `string, ...: string): string`
 
  trims any of the provided strings/characters/patterns from the back of the string `s`
 
@@ -48,7 +48,7 @@ to be valid utf-8 encoded strings.
 
 ---
 
-.function str.trim(s: `string, ...: string): string`
+function str.trim(s: `string, ...: string): string`
 
  trims one or many strings/characters/patterns from both front and back of string `s`
 
@@ -56,20 +56,20 @@ to be valid utf-8 encoded strings.
 
 ---
 
-.function str.splitlines(s: `string, trim_trailing_whitespace: boolean?): { string }`
+function str.splitlines(s: `string, trim_trailing_whitespace: boolean?): { string }`
 
  splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
  without an extra empty string, etc.
 
 ---
 
-.function str.len(s: `string): number`
+function str.len(s: `string): number`
 
  returns the utf-8 length if `s` is utf-8 or the regular string length #
 
 ---
 
-.function str.width(s: `string): number`
+function str.width(s: `string): number`
 
 <details>
 
@@ -124,43 +124,43 @@ end
 
 ---
 
-.function str.leftpad(s: `string, width: number, pad: string?): string`
+function str.leftpad(s: `string, width: number, pad: string?): string`
 
  left pads `s` to make it at least `width` characters long, using `pad` as the padding character.
 
 ---
 
-.function str.escape(s: `string): string`
+function str.escape(s: `string): string`
 
  escapes special characters like `\n`, `\t`, `\\` for easier debugging
 
 ---
 
-.function str.unescape(s: `string): string`
+function str.unescape(s: `string): string`
 
  reverts `str.escape`
 
 ---
 
-.function str.slice(s: `string, first: number, final: number)`
+function str.slice(s: `string, first: number, final: number)`
 
  alias for string.sub
 
 ---
 
-.function str.indent(s: `string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string`
+function str.indent(s: `string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string`
 
  indents multiline string `count` characters; lines separated by `sep` (default "\n")
 
 ---
 
-.function str.unindent(s: `string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string`
+function str.unindent(s: `string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string`
 
  unindents multiline string by `count` characters; lines separated by `sep` (default "\n")
 
 ---
 
-.str.split = internal.split : `: (s: string, ...string) -> { string }`
+str.split = internal.split : `: (s: string, ...string) -> { string }`
 
 <details>
 
@@ -200,7 +200,7 @@ local omit_hi = str.split("seals 🦭 say hi", " ", "hi")
 
 ---
 
-.str.splitaround = internal.splitaround : `: (s: string, seps: string, ...string) -> { string }`
+str.splitaround = internal.splitaround : `: (s: string, seps: string, ...string) -> { string }`
 
 <details>
 
@@ -227,7 +227,7 @@ local tokens = str.splitaround(line, " ", ".", "(", ":", ",", ")")
 
 ---
 
-.str.splitbefore = internal.splitbefore : `: (s: string, seps: string, ...string) -> { string }`
+str.splitbefore = internal.splitbefore : `: (s: string, seps: string, ...string) -> { string }`
 
 <details>
 
@@ -254,7 +254,7 @@ print(splitted) -->
 
 ---
 
-.str.splitafter = internal.splitafter : `: (s: string, seps: string, ...string) -> { string }`
+str.splitafter = internal.splitafter : `: (s: string, seps: string, ...string) -> { string }`
 
 <details>
 
@@ -280,7 +280,7 @@ local splitted = str.splitafter(httpheaders, "\r\n") -->
 
 ---
 
-.function str.chars(s: `string): (...any) -> (number, string)`
+function str.chars(s: `string): (...any) -> (number, string)`
 
 Iterate over the human-readable characters (graphemes) of a string
 
@@ -288,7 +288,7 @@ This function counts by 'characters', whereas `str.graphemes` provides byte indi
 
 ---
 
-.str.graphemes = internal.graphemes : `: (s: string) -> (...any) -> (number, string)`
+str.graphemes = internal.graphemes : `: (s: string) -> (...any) -> (number, string)`
 
 <details>
 

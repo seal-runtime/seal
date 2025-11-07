@@ -79,7 +79,7 @@ Semver.local fields: `SemverFields = {`
 
 ---
 
-Semver.function semver.from(s: `string): Semver`
+function semver.from(s: `string): Semver`
 
 ---
 
@@ -103,7 +103,7 @@ Semver.metadata = metadata : `: any, -- LUAU FIXME: not optional fields not qual
 
 ---
 
-SemverVals.function semver.satisfies(self: `Semver, semver_range: string): boolean`
+function semver.satisfies(self: `Semver, semver_range: string): boolean`
 
 <details>
 
@@ -144,18 +144,18 @@ SemverVals.local function get_specific_range(part: `string): (SemverVals, string
 
 ---
 
-SemverVals.function semver.__eq(self: `Semver, other: Semver): boolean`
+function semver.__eq(self: `Semver, other: Semver): boolean`
 
 ---
 
-SemverVals.function semver.__lt(self: `Semver, other: Semver): boolean`
+function semver.__lt(self: `Semver, other: Semver): boolean`
 
 ---
 
-SemverVals.function semver.__le(self: `Semver, other: Semver): boolean`
+function semver.__le(self: `Semver, other: Semver): boolean`
 
 ---
 
-SemverVals.function semver.__tostring(self: `Semver): string`
+function semver.__tostring(self: `Semver): string`
 
 ---

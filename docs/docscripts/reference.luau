@@ -160,8 +160,15 @@ for _, filepath in typedefs_paths do
 
         if string.match(line, "[%w_]+:") then
             if not str.startswith(str.trimfront(line), "--") then
+                local trimmed_line = str.trimfront(line)
+                local found_name = table.concat(current_names, ".")
+                if #found_name == 0 or str.startswith(trimmed_line, "function") then
+                    found_name = trimmed_line
+                else
+                    found_name = table.concat(current_names, ".") .. `.{trimmed_line}`
+                end
                 local new_api: Api = {
-                    name = table.concat(current_names, ".") .. `.{str.trimfront(line)}`,
+                    name = found_name,
                     docs = table.concat(current_docs, "\n"),
                     is = "Property",
                 }

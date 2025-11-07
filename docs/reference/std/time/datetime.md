@@ -5,43 +5,43 @@
 
 `local datetime = require("@std/time/datetime")`
 
-.RFC_2822 = "%a, %d %b %Y %H: `%M:%S %z" :: "%a, %d %b %Y %H:%M:%S %z"`
+RFC_2822 = "%a, %d %b %Y %H: `%M:%S %z" :: "%a, %d %b %Y %H:%M:%S %z"`
 
 ---
 
-.RFC_3339 = "%Y-%m-%dT%H: `%M:%S%:z" :: "%Y-%m-%dT%H:%M:%S%:z"`
+RFC_3339 = "%Y-%m-%dT%H: `%M:%S%:z" :: "%Y-%m-%dT%H:%M:%S%:z"`
 
 ---
 
-.SHORT_TIME = "%H: `%M" :: "%H:%M"`
+SHORT_TIME = "%H: `%M" :: "%H:%M"`
 
 ---
 
-.FULL_DATE_TIME = "%A, %B %d, %Y %H: `%M:%S" :: "%A, %B %d, %Y %H:%M:%S"`
+FULL_DATE_TIME = "%A, %B %d, %Y %H: `%M:%S" :: "%A, %B %d, %Y %H:%M:%S"`
 
 ---
 
-.LOGGING_24_HR = "%a %b %e %H: `%M:%S %Z %Y" :: "%a %b %e %H:%M:%S %Z %Y"`
+LOGGING_24_HR = "%a %b %e %H: `%M:%S %Z %Y" :: "%a %b %e %H:%M:%S %Z %Y"`
 
 ---
 
-.LOGGING_12_HR = "%a %b %e %I: `%M:%S %p %Z %Y" :: "%a %b %e %I:%M:%S %p %Z %Y"`
+LOGGING_12_HR = "%a %b %e %I: `%M:%S %p %Z %Y" :: "%a %b %e %I:%M:%S %p %Z %Y"`
 
 ---
 
-.["MM/DD/YYYY HH: `MM (AM/PM)"] = "%m/%d/%Y %I:%M %p" :: "%m/%d/%Y %I:%M %p"`
+["MM/DD/YYYY HH: `MM (AM/PM)"] = "%m/%d/%Y %I:%M %p" :: "%m/%d/%Y %I:%M %p"`
 
 ---
 
-.["HH: `MM (AM/PM)"] = "%I:%M %p" :: "%I:%M %p"`
+["HH: `MM (AM/PM)"] = "%I:%M %p" :: "%I:%M %p"`
 
 ---
 
-.AMERICAN_FULL_DATE_TIME = "%A, %B %d, %Y %I: `%M:%S %p" :: "%A, %B %d, %Y %I:%M:%S %p"`
+AMERICAN_FULL_DATE_TIME = "%A, %B %d, %Y %I: `%M:%S %p" :: "%A, %B %d, %Y %I:%M:%S %p"`
 
 ---
 
-.function datetime.from(timestamp: `number, timezone: IanaTimezone?, nanos: number?)`
+function datetime.from(timestamp: `number, timezone: IanaTimezone?, nanos: number?)`
 
  Constructs a `DateTime` from right now (based on system time) in your local timezone.
  Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
@@ -55,7 +55,7 @@
 
 ---
 
-CommonFormatKeys.function datetime.parse(source: `string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime`
+function datetime.parse(source: `string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime`
 
 <details>
 
@@ -81,7 +81,7 @@ All seal `DateTime`s are timezone aware, which prevents annoying and complex bug
 
 ---
 
-CommonFormatKeys.function datetime.years(years: `number, relative_to: DateTime?): TimeSpan`
+function datetime.years(years: `number, relative_to: DateTime?): TimeSpan`
 
 <details>
 
@@ -112,7 +112,7 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-CommonFormatKeys.function datetime.months(months: `number, relative_to: DateTime?): TimeSpan`
+function datetime.months(months: `number, relative_to: DateTime?): TimeSpan`
 
 <details>
 
@@ -143,31 +143,31 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-CommonFormatKeys.function datetime.days(days: `number): TimeSpan`
+function datetime.days(days: `number): TimeSpan`
 
  Constructs a `TimeSpan` from days. Assumes every day is 24 hours.
 
 ---
 
-CommonFormatKeys.function datetime.hours(hours: `number): TimeSpan`
+function datetime.hours(hours: `number): TimeSpan`
 
  Constructs a `TimeSpan` from hours.
 
 ---
 
-CommonFormatKeys.function datetime.minutes(minutes: `number): TimeSpan`
+function datetime.minutes(minutes: `number): TimeSpan`
 
  Constructs a `TimeSpan` from minutes.
 
 ---
 
-CommonFormatKeys.function datetime.seconds(seconds: `number): TimeSpan`
+function datetime.seconds(seconds: `number): TimeSpan`
 
  Constructs a `TimeSpan` from seconds.
 
 ---
 
-CommonFormatKeys.function datetime.milliseconds(milliseconds: `number): TimeSpan`
+function datetime.milliseconds(milliseconds: `number): TimeSpan`
 
  Constructs a `TimeSpan` from milliseconds.
 
