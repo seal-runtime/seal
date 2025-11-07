@@ -5,9 +5,9 @@
 
 `local server = require("@std/net/http/server")`
 
-ContentType
+`export type` ContentType
 
-ServeRequest
+`export type` ServeRequest
 
 ServeRequest.peer_address: `string`
 
@@ -19,7 +19,7 @@ ServeRequest.raw_text: `string`
 
 ServeRequest.body: `string`
 
-ServeResponse
+`export type` ServeResponse
 
 ServeResponse.status_code: `StatusCode`
 
@@ -33,7 +33,7 @@ ServeResponse.headers.cookies.reason_phrase: `string?`
 
 ServeResponse.headers.cookies.redirect_url: `string?`
 
-ServeConfig
+`export type` ServeConfig
 
 ServeConfig.address: `string`
 

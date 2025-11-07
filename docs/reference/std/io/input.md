@@ -173,7 +173,7 @@ end
 
 </details>
 
-KeyModifiers
+`export type` KeyModifiers
 
  Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
 
@@ -183,7 +183,7 @@ KeyModifiers.shift: `boolean`
 
 KeyModifiers.alt: `boolean`
 
-KeyEvent
+`export type` KeyEvent
 
 KeyEvent.is: `"Key"`
 
@@ -191,7 +191,7 @@ KeyEvent.key: `string`
 
 KeyEvent.modifiers: `KeyModifiers`
 
-MouseEvent
+`export type` MouseEvent
 
 MouseEvent.is: `"Mouse"`
 
@@ -203,7 +203,7 @@ MouseEvent.row: `number`
 
 MouseEvent.modifiers: `KeyModifiers`
 
-ResizeEvent
+`export type` ResizeEvent
 
 ResizeEvent.is: `"Resize"`
 
@@ -211,24 +211,24 @@ ResizeEvent.columns: `number`
 
 ResizeEvent.rows: `number`
 
-FocusGained
+`export type` FocusGained
 
 FocusGained.is: `"FocusGained"`
 
-FocusLost
+`export type` FocusLost
 
 FocusLost.is: `"FocusLost"`
 
-PasteEvent
+`export type` PasteEvent
 
 PasteEvent.is: `"Paste"`
 
 PasteEvent.contents: `string`
 
-Empty
+`export type` Empty
 
 Empty.is: `"Empty"`
 
-TerminalEvent
+`export type` TerminalEvent
 
-input
+`export type` input

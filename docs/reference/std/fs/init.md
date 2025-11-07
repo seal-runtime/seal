@@ -5,8 +5,6 @@
 
 `local fs = require("@std/fs")`
 
-fs
-
 fs.readfile: `(path: string) -> string`
 
 <details>
@@ -577,27 +575,29 @@ fs.tree: `() -> TreeBuilder`
 
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
-DirectoryTree
+`export type` PathIs
 
-DirectoryBuilder
+`export type` DirectoryTree
 
-TreeBuilder
+`export type` DirectoryBuilder
 
-FindResult
+`export type` TreeBuilder
 
-Entry
+`export type` FindResult
 
-FileEntry
+`export type` Entry
 
-DirectoryEntry
+`export type` FileEntry
 
-WatchOptions
+`export type` DirectoryEntry
+
+`export type` WatchOptions
 
 WatchOptions.recursive: `boolean?`
 
 WatchOptions.timeout_ms: `number?`
 
-WatchEventCategory
+`export type` WatchEventCategory
 
 <details>
 
@@ -619,7 +619,7 @@ WatchEventCategory.| "Modify: `:Metadata"`
 
 WatchEventCategory.| "Modify: `:Other"`
 
-WatchEventInfo
+`export type` WatchEventInfo
 
 WatchEventInfo.paths: `{ string }`
 
@@ -629,7 +629,7 @@ WatchEventInfo.is_write: `boolean`
 
  if the event is *most likely* a write event (`Create::File` or `Modify::Data` or `Close::Write`)
 
-WatchKind
+`export type` WatchKind
 
 <details>
 

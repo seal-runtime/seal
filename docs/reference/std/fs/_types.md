@@ -26,7 +26,7 @@ local dir = fs.tree()
     )
 ```
 
-FileEntry
+`export type` FileEntry
 
 FileEntry.name: `string`
 
@@ -146,7 +146,7 @@ FileEntry.remove: `(self: FileEntry) -> ()`
 
  Removes the file at `FileEntry.path`.
 
-DirectoryEntry
+`export type` DirectoryEntry
 
 DirectoryEntry.name: `string`
 
@@ -242,9 +242,9 @@ DirectoryEntry.remove: `(self: DirectoryEntry) -> ()`
 
  Removes the directory at `DirectoryEntry.path`, alongside all its contents.
 
-Entry
+`export type` Entry
 
-FsMetadata
+`export type` FsMetadata
 
 FsMetadata.created_at: `DateTime?`
 
@@ -270,7 +270,7 @@ FsMetadata.permissions.unix_mode: `number?`
  Represents the numeric Unix permission bits for the `Entry`, combining read, write, and execute permissions
  for owner, group, and others. This field is optional because it's not available on Windows.
 
-FindResult
+`export type` FindResult
 
 FindResult.ok: `boolean`
 
@@ -330,7 +330,7 @@ FindResult.unwrap_dir: `(self: FindResult) -> DirectoryEntry`
 
  Create a `DirectoryEntry` from the `FindResult`, erroring if the directory doesn't exist.
 
-FileBuilder
+`export type` FileBuilder
 
 FileBuilder.name: `string`
 
@@ -338,7 +338,7 @@ FileBuilder.type: `"File"`
 
 FileBuilder.content: `string`
 
-DirectoryBuilder
+`export type` DirectoryBuilder
 
 DirectoryBuilder.name: `string`
 
@@ -346,4 +346,4 @@ DirectoryBuilder.type: `"Directory"`
 
 DirectoryBuilder.children: `DirectoryTree`
 
-DirectoryTree
+`export type` DirectoryTree

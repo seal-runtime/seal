@@ -84,9 +84,9 @@ Create a webserver that listens for incoming requests.
 
 ⚠️ Expect breaking changes. This API will be heavily modified in the future.
 
-HttpServerLib
+`export type` HttpServerLib
 
-HttpResponse
+`export type` HttpResponse
 
 HttpResponse.ok: `true`
 
@@ -106,7 +106,7 @@ HttpResponse.unwrap_json: `(self: HttpResponse, default: { [any]: any }?) -> { [
 
  decodes body as json or returns default value; errors if ok = false and default value not provided
 
-RequestConfig
+`export type` RequestConfig
 
 RequestConfig.method: `"GET" | "POST" | "PUT" | "PATCH" | "DELETE"`
 
@@ -116,13 +116,13 @@ RequestConfig.headers: `{ [string]: string }?`
 
 RequestConfig.params: `{ [string]: string }?`
 
-GetConfig
+`export type` GetConfig
 
 GetConfig.url: `string`
 
 GetConfig.headers: `{ [string]: string }?`
 
-PostConfig
+`export type` PostConfig
 
  Query parameters to append to the url string
 
@@ -130,4 +130,4 @@ PostConfig.url: `string`
 
 PostConfig.headers.body: `string | {`
 
-StatusCode
+`export type` StatusCode

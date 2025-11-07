@@ -31,7 +31,7 @@
 - `timezone` defaults to `"UTC"` if not specified
 - `nanos` defaults to `0` if not specified
 
-CommonFormatKeys
+`export type` CommonFormatKeys
 
 CommonFormatKeys.function datetime.parse(source: `string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime`
 
@@ -135,4 +135,4 @@ CommonFormatKeys.function datetime.milliseconds(milliseconds: `number): TimeSpan
 
  Constructs a `TimeSpan` from milliseconds.
 
-IanaTimezone
+`export type` IanaTimezone

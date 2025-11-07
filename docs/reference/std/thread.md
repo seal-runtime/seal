@@ -112,9 +112,9 @@ Spawns a new Rust Thread running Luau code in a new Luau VM.
 
 Literally the same as `time.wait`, except in milliseconds.
 
-JsonSerializableTable
+`export type` JsonSerializableTable
 
-ThreadHandle
+`export type` ThreadHandle
 
 ThreadHandle.read name: `string`
 
@@ -206,7 +206,7 @@ Read a message from the bytes channel, blocking until the next message is availa
 
 Errors if the channel has somehow become disconnected.
 
-ThreadSpawnOptions
+`export type` ThreadSpawnOptions
 
 ThreadSpawnOptions.name: `string?`
 

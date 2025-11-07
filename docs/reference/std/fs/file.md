@@ -5,9 +5,9 @@
 
 `local file = require("@std/fs/file")`
 
-FileBuilder
+`export type` FileBuilder
 
-FileLib
+`export type` FileLib
 
 FileLib.from: `(path: string) -> FileEntry`
 

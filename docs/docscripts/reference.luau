@@ -206,8 +206,11 @@ for _, library in libraries do
         end
         local split_name = str.splitafter(api.name, ":")
         local name, defs = table.remove(split_name, 1), str.trim(table.concat(split_name, ""))
-        defs = str.trimback(defs, ",")
         if name and defs then
+            defs = str.trimback(defs, ",")
+            if api.is == "Type" then
+                name = "`export type` " .. name
+            end
             if #defs > 0 then
                 push(`{name} \`{defs}\``)
             else

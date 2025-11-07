@@ -3,19 +3,6 @@ local pathlib = require("@self/path")
 local filelib = require("@self/file")
 local common_types = require("@self/_types")
 
-export type PathIs =
-    | "File"
-    | "Directory"
-    | "Symlink"
-    | "UnixSocket"
-    | "UnixFifo"
-    | "UnixCharDevice"
-    | "UnixBlockDevice"
-    | "WindowsReparsePoint"
-    | "Other"
-    | "NotFound"
-    | "PermissionDenied"
-
 export type fs = {
     -- fs.readfile(path: string) -> string
     --[=[
@@ -526,6 +513,19 @@ export type fs = {
     ]=]
     tree: () -> TreeBuilder,
 }
+
+export type PathIs =
+    | "File"
+    | "Directory"
+    | "Symlink"
+    | "UnixSocket"
+    | "UnixFifo"
+    | "UnixCharDevice"
+    | "UnixBlockDevice"
+    | "WindowsReparsePoint"
+    | "Other"
+    | "NotFound"
+    | "PermissionDenied"
 
 export type DirectoryTree = common_types.DirectoryTree
 export type DirectoryBuilder = common_types.DirectoryBuilder

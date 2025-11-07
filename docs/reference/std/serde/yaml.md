@@ -15,4 +15,4 @@ yaml.readfile: `(path: string) -> YamlValue`
 
 yaml.writefile: `(path: string, content: YamlValue) -> ()`
 
-YamlValue
+`export type` YamlValue

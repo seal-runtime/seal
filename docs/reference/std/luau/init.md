@@ -85,12 +85,12 @@ luau.get_aliases: `(requiring_file_path: string) -> ({ LuaurcAliases }?, string?
 
 luau.expand_aliases: `(requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?)`
 
-EvalOptions
+`export type` EvalOptions
 
 EvalOptions.name: `string?`
 
 EvalOptions.stdlib: `("seal" | "safe" | "none")?`
 
-LuaurcAliases
+`export type` LuaurcAliases
 
 LuaurcAliases.path: `string`

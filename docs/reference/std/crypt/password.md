@@ -9,13 +9,13 @@ HashedPassword.salt: `buffer`
 
 HashedPassword.hash: `buffer`
 
-PasswordVerifyOptions
+`export type` PasswordVerifyOptions
 
 PasswordVerifyOptions.raw_password: `string`
 
 PasswordVerifyOptions.hashed_password: `HashedPassword`
 
-Password
+`export type` Password
 
 ## This is the password handling lib
 

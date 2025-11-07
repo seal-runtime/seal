@@ -171,7 +171,7 @@ args.default: `(...Arg) -> Command`
 
  Add a default command.
 
-ProgramInfo
+`export type` ProgramInfo
 
 ProgramInfo.description: `string?`
 
@@ -185,7 +185,7 @@ ProgramInfo.footer: `string?`
 
  put authors and/or repository link here
 
-Command
+`export type` Command
 
 Command.name: `string`
 
@@ -203,7 +203,7 @@ Command.aliases: `(self: Command, ...string) -> Command`
 
  Aliases for your command, like `seal r -> seal run`
 
-Parsed
+`export type` Parsed
 
 Parsed.command: `string | "default"`
 
@@ -215,7 +215,7 @@ Parsed.help: `(self: Parsed) -> string`
 
 Parsed.flags: `{ [string]: true? }`
 
-ArgList
+`export type` ArgList
 
 ArgList.name: `string`
 
@@ -225,11 +225,11 @@ ArgList.help: `string`
 
 ArgList.values: `{ string }?`
 
-Validator
+`export type` Validator
 
-Arg
+`export type` Arg
 
-Positional
+`export type` Positional
 
 Positional.name: `string`
 
@@ -256,7 +256,7 @@ Positional.validate: `(self: Positional, validator: Validator) -> Positional`
 
 Positional.value: `any`
 
-Flag
+`export type` Flag
 
 Flag.name: `string`
 
@@ -278,7 +278,7 @@ Flag.default: `(self: Flag, boolean) -> Flag`
 
 Flag.value: `boolean`
 
-Named
+`export type` Named
 
 Named.name: `string`
 

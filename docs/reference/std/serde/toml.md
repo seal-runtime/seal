@@ -15,4 +15,4 @@ toml.readfile: `(path: string) -> TomlValue`
 
 toml.writefile: `(path: string, content: TomlValue) -> ()`
 
-TomlValue
+`export type` TomlValue

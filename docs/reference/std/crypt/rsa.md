@@ -9,7 +9,7 @@ RsaKeys.public: `string`
 
 RsaKeys.private: `string`
 
-Rsa
+`export type` Rsa
 
 Rsa.generatekeys: `() -> RsaKeys`
 

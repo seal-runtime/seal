@@ -5,11 +5,11 @@
 
 `local dir = require("@std/fs/dir")`
 
-DirectoryEntry
+`export type` DirectoryEntry
 
-DirectoryBuilder
+`export type` DirectoryBuilder
 
-DirLib
+`export type` DirLib
 
 DirLib.from: `(path: string) -> DirectoryEntry`
 

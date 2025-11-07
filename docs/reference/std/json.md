@@ -42,7 +42,7 @@ json.array: `<T>(t: { T }?) -> { T }`
 
  If `t` isn't provided, returns a new array-like table that will serialize to a json array.
 
-EncodeOptions
+`export type` EncodeOptions
 
 EncodeOptions.pretty: `boolean?`
 
@@ -52,4 +52,4 @@ EncodeOptions.sorted: `boolean?`
 
  sorted in alphanumeric order (default false)
 
-JsonData
+`export type` JsonData

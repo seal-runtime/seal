@@ -55,9 +55,9 @@ SemverFields.metadata.release_candidate.ver: `number`
 
 SemverFields.metadata.release_candidate.build: `string?`
 
-SemverImpl
+`export type` SemverImpl
 
-Semver
+`export type` Semver
 
 Semver.local fields: `SemverFields = {`
 
@@ -71,7 +71,7 @@ Semver.local fields: `SemverFields = {`
 
 .metadata = metadata : `: any, -- LUAU FIXME: not optional fields not qualifying as optionals`
 
-SemverVals
+`export type` SemverVals
 
 SemverVals.function semver.satisfies(self: `Semver, semver_range: string): boolean`
 
