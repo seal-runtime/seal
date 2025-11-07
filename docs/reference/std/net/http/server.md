@@ -25,11 +25,11 @@ ServeRequest.path: `string`
 
 ---
 
-ServeRequest.raw_text: `string`
+ServeRequest.headers.raw_text: `string`
 
 ---
 
-ServeRequest.body: `string`
+ServeRequest.headers.body: `string`
 
 ---
 
@@ -77,7 +77,7 @@ ServeConfig.handler: `(ServeRequest) -> ServeResponse`
 
 ---
 
-.function server.serve(config: `ServeConfig)`
+ServeConfig.function server.serve(config: `ServeConfig)`
 
 <details>
 

@@ -153,7 +153,7 @@ for _, filepath in typedefs_paths do
             end
         end
 
-        local found_indent = string.match(line, "(%s*)}[,]?$")
+        local found_indent = string.match(line, "$(%s*)}[,]?$")
         if #current_names > 0 and found_indent and #found_indent == last_indent() then
             pop_name()
         end

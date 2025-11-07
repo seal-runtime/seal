@@ -79,23 +79,23 @@ Semver.local fields: `SemverFields = {`
 
 ---
 
-.function semver.from(s: `string): Semver`
+Semver.function semver.from(s: `string): Semver`
 
 ---
 
-.error("Invalid semver string: `" .. s)`
+Semver.error("Invalid semver string: `" .. s)`
 
 ---
 
-.error(`Invalid semver string:`{s}`)`
+Semver.error(`Invalid semver string:`{s}`)`
 
 ---
 
-.local fields: `SemverFields = {`
+Semver.local fields: `SemverFields = {`
 
 ---
 
-.metadata = metadata : `: any, -- LUAU FIXME: not optional fields not qualifying as optionals`
+Semver.metadata = metadata : `: any, -- LUAU FIXME: not optional fields not qualifying as optionals`
 
 ---
 
