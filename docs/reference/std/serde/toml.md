@@ -5,14 +5,24 @@
 
 `local toml = require("@std/serde/toml")`
 
-$\hspace{5pt}$ Serialize TOML files.
+Serialize TOML files.
 
 toml.encode: `(t: TomlValue) -> string`
 
+---
+
 toml.decode: `(toml_data: string) -> TomlValue`
+
+---
 
 toml.readfile: `(path: string) -> TomlValue`
 
+---
+
 toml.writefile: `(path: string, content: TomlValue) -> ()`
 
+---
+
 `export type` TomlValue
+
+---

@@ -7,19 +7,31 @@
 
 HashedPassword.salt: `buffer`
 
+---
+
 HashedPassword.hash: `buffer`
+
+---
 
 `export type` PasswordVerifyOptions
 
+---
+
 PasswordVerifyOptions.raw_password: `string`
+
+---
 
 PasswordVerifyOptions.hashed_password: `HashedPassword`
 
+---
+
 `export type` Password
 
-$\hspace{5pt}$ ## This is the password handling lib.
-$\hspace{5pt}$
-$\hspace{5pt}$ Please use with caution.
+## This is the password handling lib
+
+Please use with caution.
+
+---
 
 Password.hash: `(raw_password: string) -> HashedPassword`
 
@@ -27,11 +39,11 @@ Password.hash: `(raw_password: string) -> HashedPassword`
 
 <summary> See the docs </summary
 
-$\hspace{5pt}$ Hash a password with the `PBKDF2_HMAC_SHA256` algorithm, returns a `HashedPassword`
-$\hspace{5pt}$ which you can later use to verify the password against a future
-$\hspace{5pt}$ passwording attempt.
-$\hspace{5pt}$
-$\hspace{5pt}$ ## Example:
+Hash a password with the `PBKDF2_HMAC_SHA256` algorithm, returns a `HashedPassword`
+which you can later use to verify the password against a future
+passwording attempt.
+
+## Example
 
 ```luau
 local input = require("@std/io/input")
@@ -52,10 +64,11 @@ if password.verify(verify_options) then
 else
     print("wrong password")
 end
-$\hspace{5pt}$ ```
+```
 
 </details>
 
+---
 
 Password.verify: `(verify_options: PasswordVerifyOptions) -> boolean`
 
@@ -63,7 +76,8 @@ Password.verify: `(verify_options: PasswordVerifyOptions) -> boolean`
 
 <summary> See the docs </summary
 
-$\hspace{5pt}$ Takes in a table of type:
+Takes in a table of type:
+
 ```luau
 type PasswordVerifyOptions = {
     raw_password: string,
@@ -74,10 +88,12 @@ type HashedPassword = {
     hash: buffer,
 }
 
-$\hspace{5pt}$ ```
-$\hspace{5pt}$ and returns a boolean (if valid or not)
-$\hspace{5pt}$ 
-$\hspace{5pt}$ ## Example:
+```
+
+and returns a boolean (if valid or not)
+
+## Example
+
 ```luau
 local input = require("@std/io/input")
 local password = require("@std/crypt/password")
@@ -97,7 +113,8 @@ if password.verify(verify_options) then
 else
     print("wrong password")
 end
-$\hspace{5pt}$ ```
+```
 
 </details>
 
+---

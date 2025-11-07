@@ -5,21 +5,21 @@
 
 `local args = require("@std/args")`
 
-$\hspace{5pt}$ # CLI Argument Parsing
-$\hspace{5pt}$
-$\hspace{5pt}$ This implementation supports
-$\hspace{5pt}$ - a single level of commands (such as `run` in `seal run`),
-$\hspace{5pt}$ - positional arguments (`./some/path` in `seal ./some/path`),
-$\hspace{5pt}$ - named arguments (`--name=value`),
-$\hspace{5pt}$ - flags (--verbose),
-$\hspace{5pt}$ - lists of multiple positional arguments, as long as they come after all other arguments
-$\hspace{5pt}$
-$\hspace{5pt}$ The flags `--help`, its alias `-h`, and `--commands` are reserved for builtins and may not be used.
-$\hspace{5pt}$
-$\hspace{5pt}$ ## Usage
-$\hspace{5pt}$
-$\hspace{5pt}$ For programs with a single command, use `args.parse(program_name, desc):simple(...)`:
-$\hspace{5pt}$
+# CLI Argument Parsing
+
+This implementation supports
+
+- a single level of commands (such as `run` in `seal run`),
+- positional arguments (`./some/path` in `seal ./some/path`),
+- named arguments (`--name=value`),
+- flags (--verbose),
+- lists of multiple positional arguments, as long as they come after all other arguments
+
+The flags `--help`, its alias `-h`, and `--commands` are reserved for builtins and may not be used.
+
+## Usage
+
+For programs with a single command, use `args.parse(program_name, desc):simple(...)`:
 
 ```luau
 local parsed = args.parse("scripty", "scripty mc scriptface", {
@@ -39,10 +39,10 @@ local script_path = parsed:expect("script") :: string
 if parsed.flags["verbose"] then -- "--verbose" also works
     print("am verbose")
 end
-$\hspace{5pt}$ ```
-$\hspace{5pt}$ 
-$\hspace{5pt}$ For programs with multiple commands, use `args.parse(program_name, desc):commands(...)`:
-$\hspace{5pt}$ 
+```
+
+For programs with multiple commands, use `args.parse(program_name, desc):commands(...)`:
+
 ```luau
     -- With a default command and validation
     local args = require("@std/args")
@@ -134,177 +134,310 @@ $\hspace{5pt}$
         print("Got command remove")
         print(`Got repo name {parsed:expect("repo")}`)
     end
-$\hspace{5pt}$ ```
-
+```
 
 args.parse: `(program: string, tagline: string, info: ProgramInfo?) -> {`
 
+---
+
 args.simple: `(self: any, ...Arg) -> Parsed`
 
-$\hspace{5pt}$ --- Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
+ Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
+
+---
 
 args.commands: `(self: any, ...Command) -> Parsed`
 
-$\hspace{5pt}$ --- Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
-$\hspace{5pt}$ --- generate commands.
+ Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
+ generate commands.
+
+---
 
 args.positional: `(name: string, help: string) -> Positional`
 
-$\hspace{5pt}$ --- Add a positional argument
+ Add a positional argument
+
+---
 
 args.named: `(name: string, help: string) -> Named`
 
-$\hspace{5pt}$ --- Add a named argument `--name=value` (or when aliased to -n, `-n value`). Named arguments must start with `--`
+ Add a named argument `--name=value` (or when aliased to -n, `-n value`). Named arguments must start with `--`
+
+---
 
 args.command: `(name: string, help: string) -> Command`
 
-$\hspace{5pt}$ --- Add a new top-level command, must be used with `args.parse(program, desc, info):commands(...)`
+ Add a new top-level command, must be used with `args.parse(program, desc, info):commands(...)`
+
+---
 
 args.flag: `(name: string, help: string) -> Flag`
 
-$\hspace{5pt}$ --- Add a new flag argument like `--verbose` or `--override`. Flags must start with `--` and cannot be `--help` or `--commands`.
+ Add a new flag argument like `--verbose` or `--override`. Flags must start with `--` and cannot be `--help` or `--commands`.
+
+---
 
 args.list: `(name: string, help: string) -> ArgList`
 
-$\hspace{5pt}$ --- Add a new list (tail) argument that collects all remaining positional arguments into a `{ string }`
+ Add a new list (tail) argument that collects all remaining positional arguments into a `{ string }`
+
+---
 
 args.default: `(...Arg) -> Command`
 
-$\hspace{5pt}$ --- Add a default command.
+ Add a default command.
+
+---
 
 `export type` ProgramInfo
 
+---
+
 ProgramInfo.description: `string?`
 
-$\hspace{5pt}$ --- if provided, goes below program name/tagline in `--help`
+ if provided, goes below program name/tagline in `--help`
+
+---
 
 ProgramInfo.examples: `{ string }?`
 
-$\hspace{5pt}$ --- examples of arguments *following* program and path (already pre-filled)
+ examples of arguments *following* program and path (already pre-filled)
+
+---
 
 ProgramInfo.footer: `string?`
 
-$\hspace{5pt}$ --- put authors and/or repository link here
+ put authors and/or repository link here
+
+---
 
 `export type` Command
 
+---
+
 Command.name: `string`
+
+---
 
 Command.is: `"Command"`
 
+---
+
 Command.help: `string`
+
+---
 
 Command._args: `{ Arg }`
 
+---
+
 Command.args: `(self: Command, ...Arg) -> Command`
+
+---
 
 Command._aliases: `{ [string]: true? }`
 
+---
+
 Command.aliases: `(self: Command, ...string) -> Command`
 
-$\hspace{5pt}$ --- Aliases for your command, like `seal r -> seal run`
+ Aliases for your command, like `seal r -> seal run`
+
+---
 
 `export type` Parsed
 
+---
+
 Parsed.command: `string | "default"`
+
+---
 
 Parsed.get: `<T>(self: Parsed, name: string, default: T?) -> T?`
 
+---
+
 Parsed.expect: `<T>(self: Parsed, name: string, assertion: string?) -> T`
+
+---
 
 Parsed.help: `(self: Parsed) -> string`
 
+---
+
 Parsed.flags: `{ [string]: true? }`
+
+---
 
 `export type` ArgList
 
+---
+
 ArgList.name: `string`
+
+---
 
 ArgList.is: `"ArgList"`
 
+---
+
 ArgList.help: `string`
+
+---
 
 ArgList.values: `{ string }?`
 
+---
+
 `export type` Validator
+
+---
 
 `export type` Arg
 
+---
+
 `export type` Positional
+
+---
 
 Positional.name: `string`
 
+---
+
 Positional.is: `"Positional"`
+
+---
 
 Positional.help: `string`
 
+---
+
 Positional._default: `any`
+
+---
 
 Positional.default: `(any) -> Positional`
 
+---
+
 Positional._optional: `boolean`
+
+---
 
 Positional.optional: `(self: Positional) -> Positional`
 
-$\hspace{5pt}$ --- call this to turn the positional argument into an optional positional argument
+ call this to turn the positional argument into an optional positional argument
+
+---
 
 Positional._validator: `Validator?`
 
+---
+
 Positional.validate: `(self: Positional, validator: Validator) -> Positional`
 
-$\hspace{5pt}$ --- validate the argument's input by passing a function that returns either the transformed
-$\hspace{5pt}$ --- validated input (such as converting input strings from p -> project) or an error object.
+ validate the argument's input by passing a function that returns either the transformed
+ validated input (such as converting input strings from p -> project) or an error object.
+
+---
 
 Positional.value: `any`
 
+---
+
 `export type` Flag
+
+---
 
 Flag.name: `string`
 
-$\hspace{5pt}$ --- Must start with `--` and cannot be `--help` or `--commands`
+ Must start with `--` and cannot be `--help` or `--commands`
+
+---
 
 Flag.is: `"Flag"`
 
+---
+
 Flag.help: `string`
+
+---
 
 Flag._aliases: `{ [string]: true? }`
 
+---
+
 Flag.aliases: `(self: Flag, ...string) -> Flag`
 
-$\hspace{5pt}$ --- flag aliases must start with `-` and cannot be `-h` (reserved for help)
+ flag aliases must start with `-` and cannot be `-h` (reserved for help)
+
+---
 
 Flag._default: `boolean?`
 
+---
+
 Flag.default: `(self: Flag, boolean) -> Flag`
+
+---
 
 Flag.value: `boolean`
 
+---
+
 `export type` Named
+
+---
 
 Named.name: `string`
 
-$\hspace{5pt}$ --- Must start with `--` and cannot be `--help` or `--commands`
+ Must start with `--` and cannot be `--help` or `--commands`
+
+---
 
 Named.is: `"Named"`
 
+---
+
 Named.help: `string`
+
+---
 
 Named._default: `any`
 
+---
+
 Named.default: `(self: Named, any) -> Named`
+
+---
 
 Named._aliases: `{ [string]: true? }`
 
+---
+
 Named.aliases: `(self: Named, ...string) -> Named`
 
-$\hspace{5pt}$ --- aliases must start with `-` and cannot be `-h` (reserved for help)
+ aliases must start with `-` and cannot be `-h` (reserved for help)
+
+---
 
 Named._required: `boolean`
 
+---
+
 Named.required: `(self: Named) -> Named`
+
+---
 
 Named._validator: `Validator?`
 
+---
+
 Named.validate: `(self: Named, validator: Validator) -> Named`
 
+---
+
 Named.value: `any`
+
+---

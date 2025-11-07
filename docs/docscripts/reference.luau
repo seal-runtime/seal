@@ -118,7 +118,6 @@ for _, filepath in typedefs_paths do
         if in_docs then
             if not in_a_codeblock then
                 line = str.trimfront(line)
-                line = "$\\hspace{5pt}$ " .. line
             elseif in_a_codeblock and codeblock_preceding_whitespace then
                 line = str.unindent(line, "Spaces", #codeblock_preceding_whitespace)
             end
@@ -227,6 +226,7 @@ for _, library in libraries do
             push(api.docs)
             push("</details>", 2)
         end
+        push("---")
         -- push(api.docs, 2)
     end
 

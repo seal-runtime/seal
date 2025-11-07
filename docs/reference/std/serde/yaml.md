@@ -5,14 +5,24 @@
 
 `local yaml = require("@std/serde/yaml")`
 
-$\hspace{5pt}$ Serialize YAML files.
+Serialize YAML files.
 
 yaml.encode: `(t: YamlValue) -> string`
 
+---
+
 yaml.decode: `(toml_data: string) -> YamlValue`
+
+---
 
 yaml.readfile: `(path: string) -> YamlValue`
 
+---
+
 yaml.writefile: `(path: string, content: YamlValue) -> ()`
 
+---
+
 `export type` YamlValue
+
+---

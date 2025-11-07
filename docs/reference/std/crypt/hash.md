@@ -5,12 +5,14 @@
 
 `local hash = require("@std/crypt/hash")`
 
-$\hspace{5pt}$ Contains function sha2, which can be used to create an **unsalted** hash, returned as a buffer.
-$\hspace{5pt}$
-$\hspace{5pt}$ ### Please use the `@std/crypt/password` library if you want to hash passwords (salted)
+Contains function sha2, which can be used to create an **unsalted** hash, returned as a buffer.
+
+### Please use the `@std/crypt/password` library if you want to hash passwords (salted)
 
 Hash.sha2: `(plaintext: string) -> buffer`
 
-$\hspace{5pt}$ Hashes plaintext with the SHA2-256 algorithm, returns a buffer (of length 32) containing the result.
-$\hspace{5pt}$
-$\hspace{5pt}$ You can use the @std/serde library to convert the result into a 'readable' format
+Hashes plaintext with the SHA2-256 algorithm, returns a buffer (of length 32) containing the result.
+
+You can use the @std/serde library to convert the result into a 'readable' format
+
+---

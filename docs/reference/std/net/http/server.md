@@ -7,39 +7,75 @@
 
 `export type` ContentType
 
+---
+
 `export type` ServeRequest
+
+---
 
 ServeRequest.peer_address: `string`
 
+---
+
 ServeRequest.method: `"GET" | "POST" | "PUT" | "PATCH" | "DELETE"`
+
+---
 
 ServeRequest.path: `string`
 
+---
+
 ServeRequest.raw_text: `string`
+
+---
 
 ServeRequest.body: `string`
 
+---
+
 `export type` ServeResponse
+
+---
 
 ServeResponse.status_code: `StatusCode`
 
+---
+
 ServeResponse.content_type: `ContentType`
+
+---
 
 ServeResponse.body: `string`
 
+---
+
 ServeResponse.headers.cookies.http_version: `string?`
+
+---
 
 ServeResponse.headers.cookies.reason_phrase: `string?`
 
+---
+
 ServeResponse.headers.cookies.redirect_url: `string?`
+
+---
 
 `export type` ServeConfig
 
+---
+
 ServeConfig.address: `string`
+
+---
 
 ServeConfig.port: `string | number`
 
+---
+
 ServeConfig.handler: `(ServeRequest) -> ServeResponse`
+
+---
 
 .function server.serve(config: `ServeConfig)`
 
@@ -47,12 +83,11 @@ ServeConfig.handler: `(ServeRequest) -> ServeResponse`
 
 <summary> See the docs </summary
 
-$\hspace{5pt}$ Create a webserver that listens for incoming requests.
-$\hspace{5pt}$
-$\hspace{5pt}$ ⚠️ Expect breaking changes. This API will be heavily modified in the future.
-$\hspace{5pt}$
-$\hspace{5pt}$ ## Usage
-$\hspace{5pt}$
+Create a webserver that listens for incoming requests.
+
+⚠️ Expect breaking changes. This API will be heavily modified in the future.
+
+## Usage
 
 ```luau
 local server = require("@std/net/http/server")
@@ -104,7 +139,8 @@ server.serve {
         return response :: server.ServeResponse
     end
 }
-$\hspace{5pt}$ ```
+```
 
 </details>
 
+---
