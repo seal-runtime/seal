@@ -53,56 +53,58 @@ $\hspace{5pt}$ ⚠️ Expect breaking changes. This API will be heavily modified
 $\hspace{5pt}$
 $\hspace{5pt}$ ## Usage
 $\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local server = require("@std/net/http/server")
-$\hspace{5pt}$ local fs = require("@std/fs")
-$\hspace{5pt}$ local json = require("@std/json")
-$\hspace{5pt}$
-$\hspace{5pt}$ print("starting seal server")
-$\hspace{5pt}$
-$\hspace{5pt}$ server.serve {
-$\hspace{5pt}$     address = "localhost",
-$\hspace{5pt}$     port = 4242,
-$\hspace{5pt}$     handler = function(info: server.ServeRequest)
-$\hspace{5pt}$         local response = {}
-$\hspace{5pt}$         if info.path == "/meow.json" then
-$\hspace{5pt}$             response.status_code = "200 OK"
-$\hspace{5pt}$             response.content_type = "json"
-$\hspace{5pt}$             response.body = json.encode {
-$\hspace{5pt}$                 ok = true,
-$\hspace{5pt}$                 says = "meow"
-$\hspace{5pt}$             }
-$\hspace{5pt}$         elseif info.path == "/" then
-$\hspace{5pt}$             local meow_page = fs.readfile("./tests/data/server-views/index.html")
-$\hspace{5pt}$             response.status_code = "200 OK"
-$\hspace{5pt}$             response.content_type = "html"
-$\hspace{5pt}$             response.body = meow_page
-$\hspace{5pt}$         elseif info.path == "/info" then
-$\hspace{5pt}$             local body = fs.readfile("./tests/data/server-views/info.html")
-$\hspace{5pt}$             response = {
-$\hspace{5pt}$                 status_code = "200 OK",
-$\hspace{5pt}$                 content_type = "html",
-$\hspace{5pt}$                 body = body
-$\hspace{5pt}$             }
-$\hspace{5pt}$         elseif info.path == "/some-post" then
-$\hspace{5pt}$             response = {
-$\hspace{5pt}$                 status_code = "200 OK",
-$\hspace{5pt}$                 content_type = "application/json",
-$\hspace{5pt}$                 body = json.encode {
-$\hspace{5pt}$                     ok = true,
-$\hspace{5pt}$                     recvbody = info.body,
-$\hspace{5pt}$                 }
-$\hspace{5pt}$             }
-$\hspace{5pt}$         else
-$\hspace{5pt}$             response.status_code = "404 Not Found"
-$\hspace{5pt}$             response.response_type = "json"
-$\hspace{5pt}$             response.body = json.encode {
-$\hspace{5pt}$                 ok = false,
-$\hspace{5pt}$             }
-$\hspace{5pt}$         end
-$\hspace{5pt}$         return response :: server.ServeResponse
-$\hspace{5pt}$     end
-$\hspace{5pt}$ }
-$\hspace{5pt}$```
+
+```luau
+local server = require("@std/net/http/server")
+local fs = require("@std/fs")
+local json = require("@std/json")
+
+print("starting seal server")
+
+server.serve {
+    address = "localhost",
+    port = 4242,
+    handler = function(info: server.ServeRequest)
+        local response = {}
+        if info.path == "/meow.json" then
+            response.status_code = "200 OK"
+            response.content_type = "json"
+            response.body = json.encode {
+                ok = true,
+                says = "meow"
+            }
+        elseif info.path == "/" then
+            local meow_page = fs.readfile("./tests/data/server-views/index.html")
+            response.status_code = "200 OK"
+            response.content_type = "html"
+            response.body = meow_page
+        elseif info.path == "/info" then
+            local body = fs.readfile("./tests/data/server-views/info.html")
+            response = {
+                status_code = "200 OK",
+                content_type = "html",
+                body = body
+            }
+        elseif info.path == "/some-post" then
+            response = {
+                status_code = "200 OK",
+                content_type = "application/json",
+                body = json.encode {
+                    ok = true,
+                    recvbody = info.body,
+                }
+            }
+        else
+            response.status_code = "404 Not Found"
+            response.response_type = "json"
+            response.body = json.encode {
+                ok = false,
+            }
+        end
+        return response :: server.ServeResponse
+    end
+}
+$\hspace{5pt}$ ```
 
 </details>
+

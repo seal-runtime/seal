@@ -9,9 +9,11 @@ $\hspace{5pt}$ The `@std/io/colors` lib, because if your terminal output isn't c
 $\hspace{5pt}$
 $\hspace{5pt}$ Usage:
 $\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$```
+
+```luau
+local colors = require("@std/io/colors")
+$\hspace{5pt}$ ```
+
 
 colors.black: `(text: string) -> string`
 
@@ -142,188 +144,188 @@ colors.codes.UNDERLINE: `"\x1b[4m"`
 colors.function colors.magenta(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text magenta
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.magenta("this text is hereby colored magenta"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.magenta("this text is hereby colored magenta"))
+$\hspace{5pt}$ ```
 
 colors.function colors.blue(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text blue
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.blue("this text is hereby colored blue"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.blue("this text is hereby colored blue"))
+$\hspace{5pt}$ ```
 
 colors.function colors.cyan(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text cyan
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.cyan("this text is hereby colored cyan"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.cyan("this text is hereby colored cyan"))
+$\hspace{5pt}$ ```
 
 colors.function colors.black(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text black
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.black("this text is hereby colored black"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.black("this text is hereby colored black"))
+$\hspace{5pt}$ ```
 
 colors.function colors.green(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text green
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.green("this text is hereby colored green"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.green("this text is hereby colored green"))
+$\hspace{5pt}$ ```
 
 colors.function colors.yellow(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text yellow
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.yellow("this text is hereby colored yellow"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.yellow("this text is hereby colored yellow"))
+$\hspace{5pt}$ ```
 
 colors.function colors.white(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text white
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.white("this text is hereby colored white"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.white("this text is hereby colored white"))
+$\hspace{5pt}$ ```
 
 colors.function colors.red(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text red
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.red("this text is hereby colored red"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.red("this text is hereby colored red"))
+$\hspace{5pt}$ ```
 
 colors.function colors.bold.white(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text bold white
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.bold.white("this is now bold white"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.bold.white("this is now bold white"))
+$\hspace{5pt}$ ```
 
 colors.function colors.bold.magenta(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text bold magenta
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.bold.magenta("this is now bold magenta"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.bold.magenta("this is now bold magenta"))
+$\hspace{5pt}$ ```
 
 colors.function colors.bold.black(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text bold black
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.bold.black("this is now bold black"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.bold.black("this is now bold black"))
+$\hspace{5pt}$ ```
 
 colors.function colors.bold.green(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text bold green
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.bold.green("this is now bold green"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.bold.green("this is now bold green"))
+$\hspace{5pt}$ ```
 
 colors.function colors.bold.cyan(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text bold cyan
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.bold.cyan("this is now bold cyan"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.bold.cyan("this is now bold cyan"))
+$\hspace{5pt}$ ```
 
 colors.function colors.bold.yellow(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text bold yellow
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.bold.yellow("this is now bold yellow"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.bold.yellow("this is now bold yellow"))
+$\hspace{5pt}$ ```
 
 colors.function colors.bold.blue(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text bold blue
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.bold.blue("this is now bold blue"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.bold.blue("this is now bold blue"))
+$\hspace{5pt}$ ```
 
 colors.function colors.bold.red(text: `string): string`
 
 $\hspace{5pt}$ Turns the provided text bold red
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Usage:
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local colors = require("@std/io/colors")
-$\hspace{5pt}$ print(colors.bold.red("this is now bold red"))
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local colors = require("@std/io/colors")
+print(colors.bold.red("this is now bold red"))
+$\hspace{5pt}$ ```
 
 colors.dim = function(text: `string): string return nil :: any end`
 
-$\hspace{5pt}$  Use different styles such as dim or bold
-$\hspace{5pt}$  dim style
+$\hspace{5pt}$ --- Use different styles such as dim or bold
+$\hspace{5pt}$ --- dim style
 
 colors.bold = function(text: `string): string return nil :: any end`
 
-$\hspace{5pt}$  bold style
+$\hspace{5pt}$ --- bold style
 
 colors.underline = function(text: `string): string return nil :: any end`
 
-$\hspace{5pt}$  underline your text
+$\hspace{5pt}$ --- underline your text

@@ -118,6 +118,7 @@ for _, filepath in typedefs_paths do
         if in_docs then
             if not in_a_codeblock then
                 line = str.trimfront(line)
+                line = "$\\hspace{5pt}$ " .. line
             elseif in_a_codeblock and codeblock_preceding_whitespace then
                 line = str.unindent(line, "Spaces", #codeblock_preceding_whitespace)
             end
@@ -126,7 +127,6 @@ for _, filepath in typedefs_paths do
                 reset_in_docs_next_iteration = false
                 in_docs = false
             end
-            line = "$\\hspace{5pt}$ " .. line
             table.insert(current_docs, line)
             continue
         end

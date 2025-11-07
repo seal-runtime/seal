@@ -5,8 +5,8 @@
 
 `local input = require("@std/io/input")`
 
-$\hspace{5pt}$  input handling lib
-$\hspace{5pt}$  gets input with an optional `raw_prompt` to display before getting said input.
+$\hspace{5pt}$ --- input handling lib
+$\hspace{5pt}$ --- gets input with an optional `raw_prompt` to display before getting said input.
 
 .function input.tty(stream: `"Stdout" | "Stderr" | "Stdin"?): boolean`
 
@@ -55,23 +55,25 @@ $\hspace{5pt}$ - *Throws* an error if some weird low level Errno code occurs.
 $\hspace{5pt}$
 $\hspace{5pt}$ ## Usage
 $\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local line: string?
-$\hspace{5pt}$ local result = input.readline("what's your name?: ")
-$\hspace{5pt}$ if typeof(result) == "string" then
-$\hspace{5pt}$     line = result
-$\hspace{5pt}$ elseif typeof(result) == "interrupt" then
-$\hspace{5pt}$     if result.code == "CtrlC" then
-$\hspace{5pt}$         process.exit(0)
-$\hspace{5pt}$     elseif result.code == "CtrlD" then
-$\hspace{5pt}$         line = ""
-$\hspace{5pt}$     end
-$\hspace{5pt}$ elseif typeof(result) == "error" then
-$\hspace{5pt}$     print(`got error {result}`)
-$\hspace{5pt}$ end
-$\hspace{5pt}$```
+
+```luau
+local line: string?
+local result = input.readline("what's your name?: ")
+if typeof(result) == "string" then
+    line = result
+elseif typeof(result) == "interrupt" then
+    if result.code == "CtrlC" then
+        process.exit(0)
+    elseif result.code == "CtrlD" then
+        line = ""
+    end
+elseif typeof(result) == "error" then
+    print(`got error {result}`)
+end
+$\hspace{5pt}$ ```
 
 </details>
+
 
 .function input.interrupt(key: `"CtrlC" | "CtrlD"): interrupt`
 
@@ -84,28 +86,29 @@ $\hspace{5pt}$ Returns an `interrupt` userdata object. For reasons. Maybe contro
 <summary> See the docs </summary
 
 $\hspace{5pt}$ Set stdin to raw mode, allowing you direct control over incoming keypresses.
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Use this with `input.events` to write a TUI.
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ ## ⚠️ Safety
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ - Do ***not*** use this in multithreaded programs (`@std/thread`) where another thread
 $\hspace{5pt}$ might be writing to stdout or reading from stdin at the same time. This may cause unexpected behavior.
 $\hspace{5pt}$ - Enabling this in a `ChildProcess (@std/process)` will somehow cause `output.write` to write to the parent process' stdout.
 
 </details>
 
+
 .mouse: `(enabled: boolean) -> ()`
 
-$\hspace{5pt}$  Allows `MouseEvents` to be reported by `input.events()`.
+$\hspace{5pt}$ --- Allows `MouseEvents` to be reported by `input.events()`.
 
 .focus: `(enabled: boolean) -> ()`
 
-$\hspace{5pt}$  Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
+$\hspace{5pt}$ --- Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
 
 .paste: `(enabled: boolean) -> ()`
 
-$\hspace{5pt}$  Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
+$\hspace{5pt}$ --- Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
 
 .function input.events(poll: `Duration): () -> TerminalEvent`
 
@@ -114,68 +117,69 @@ $\hspace{5pt}$  Allows `Paste` events to be reported by `input.events()`.<br>Mig
 <summary> See the docs </summary
 
 $\hspace{5pt}$ Listens for raw terminal events from stdin, returning an iterator over those events.
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Use this function to write interactive TUIs that immediately redraw and respond to user input.
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ ## ⚠️ Safety
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ This function has specific usage requirements:
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ - Stdin **must** be a valid TTY; use `input.tty()` to check.
 $\hspace{5pt}$ - Rawmode **must** be enabled before calling this function; set it with `input.rawmode(true)`.
 $\hspace{5pt}$ - Remember to check for/intercept Ctrl-C and Ctrl-D events otherwise users might not be able to cancel or exit your program.
 $\hspace{5pt}$ - Remember to disable rawmode once you're done listening to terminal events, otherwise you might break
 $\hspace{5pt}$ the user's terminal, prevent them from exiting your program, or worse.
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ ## Usage
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ To enable `Mouse`, `Focus`, and clipboard `Paste` events, check out the `input.capture` apis.
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ if input.tty() then -- MUST be checked
-$\hspace{5pt}$     input.rawmode(true)
-$\hspace{5pt}$     input.capture.paste(true)
-$\hspace{5pt}$     output.write("\27[?25l") -- hide cursor
-$\hspace{5pt}$
-$\hspace{5pt}$     local interrupted: interrupt?
-$\hspace{5pt}$
-$\hspace{5pt}$     for event in input.events(time.milliseconds(40)) do
-$\hspace{5pt}$         if event.is == "Key" then
-$\hspace{5pt}$             if event.modifiers.ctrl and event.key == "c" then
-$\hspace{5pt}$                 interrupted = input.interrupt("CtrlC")
-$\hspace{5pt}$                 break -- user pressed Ctrl + C
-$\hspace{5pt}$             elseif event.modifiers.ctrl and event.key == "d" then
-$\hspace{5pt}$                 interrupted = input.interrupt("CtrlD")
-$\hspace{5pt}$                 break -- user pressed Ctrl + D
-$\hspace{5pt}$             end
-$\hspace{5pt}$
-$\hspace{5pt}$             if event.key == "Up" then
-$\hspace{5pt}$                 -- up arrow key
-$\hspace{5pt}$             elseif event.key == "Left" then
-$\hspace{5pt}$                 -- left arrow key
-$\hspace{5pt}$             elseif event.key == "Enter" then
-$\hspace{5pt}$                 -- user pressed Enter or Return
-$\hspace{5pt}$             elseif event.key == "Space" then
-$\hspace{5pt}$                 -- user pressed spacebar
-$\hspace{5pt}$             else
-$\hspace{5pt}$                 print(event.key)
-$\hspace{5pt}$             end
-$\hspace{5pt}$         elseif event.is == "Paste" then
-$\hspace{5pt}$             print(`user pasted {event.contents}`)
-$\hspace{5pt}$         end
-$\hspace{5pt}$     end
-$\hspace{5pt}$
-$\hspace{5pt}$     output.write("\27[?25h") -- show cursor
-$\hspace{5pt}$     input.capture.paste(false)
-$\hspace{5pt}$     input.rawmode(false)
-$\hspace{5pt}$ end
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+if input.tty() then -- MUST be checked
+    input.rawmode(true)
+    input.capture.paste(true)
+    output.write("\27[?25l") -- hide cursor
+
+    local interrupted: interrupt?
+
+    for event in input.events(time.milliseconds(40)) do
+        if event.is == "Key" then
+            if event.modifiers.ctrl and event.key == "c" then
+                interrupted = input.interrupt("CtrlC")
+                break -- user pressed Ctrl + C
+            elseif event.modifiers.ctrl and event.key == "d" then
+                interrupted = input.interrupt("CtrlD")
+                break -- user pressed Ctrl + D
+            end
+
+            if event.key == "Up" then
+                -- up arrow key
+            elseif event.key == "Left" then
+                -- left arrow key
+            elseif event.key == "Enter" then
+                -- user pressed Enter or Return
+            elseif event.key == "Space" then
+                -- user pressed spacebar
+            else
+                print(event.key)
+            end
+        elseif event.is == "Paste" then
+            print(`user pasted {event.contents}`)
+        end
+    end
+
+    output.write("\27[?25h") -- show cursor
+    input.capture.paste(false)
+    input.rawmode(false)
+end
+$\hspace{5pt}$ ```
 
 </details>
 
+
 `export type` KeyModifiers
 
-$\hspace{5pt}$  Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
+$\hspace{5pt}$ --- Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
 
 KeyModifiers.ctrl: `boolean`
 

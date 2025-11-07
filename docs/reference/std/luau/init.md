@@ -36,19 +36,21 @@ $\hspace{5pt}$ - if the code cannot be evaluated, but not if it contains a synta
 $\hspace{5pt}$
 $\hspace{5pt}$ ## Usage
 $\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local luau = require("@std/luau")
-$\hspace{5pt}$ local src = [[return { meow = 2 }]]
-$\hspace{5pt}$ local res = luau.eval(src)
-$\hspace{5pt}$ local data: { meow: number } = {}
-$\hspace{5pt}$ if typeof(res) == "error" then
-$\hspace{5pt}$     print(`error running code: {res}`)
-$\hspace{5pt}$ else
-$\hspace{5pt}$     data.meow = (res :: any).meow
-$\hspace{5pt}$ end
-$\hspace{5pt}$```
+
+```luau
+local luau = require("@std/luau")
+local src = [[return { meow = 2 }]]
+local res = luau.eval(src)
+local data: { meow: number } = {}
+if typeof(res) == "error" then
+    print(`error running code: {res}`)
+else
+    data.meow = (res :: any).meow
+end
+$\hspace{5pt}$ ```
 
 </details>
+
 
 luau.eval_unsafe: `(src: string | buffer, options: EvalOptions?) -> unknown | error`
 
@@ -57,16 +59,17 @@ luau.eval_unsafe: `(src: string | buffer, options: EvalOptions?) -> unknown | er
 <summary> See the docs </summary
 
 $\hspace{5pt}$ Same as `luau.eval`, except can also accept bytecode as a string or buffer.
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ ## ⚠️ Safety
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ This function is unsafe. You are responsible for **passing valid Luau bytecode**, and therefore
 $\hspace{5pt}$ you should trust or check the bytecode you pass to this function.
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ If you pass invalid bytecode as `src`, seal will 💥 ***crash*** 💥 from an ***illegal hardware instruction***
 $\hspace{5pt}$ and *coredump*.
 
 </details>
+
 
 luau.bytecode: `(src: string) -> buffer | error`
 
@@ -78,7 +81,7 @@ $\hspace{5pt}$ Returns *seal*'s require resolver implementation used internally.
 
 luau.resolve: `(requested_path: string, requiring_file_path: string) -> { err: string, path: nil } | { path: string, err: nil }`
 
-$\hspace{5pt}$  Resolve a Luau require alias (`requested_path`) relative to `requiring_file_path` to find its location on the filesystem.
+$\hspace{5pt}$ --- Resolve a Luau require alias (`requested_path`) relative to `requiring_file_path` to find its location on the filesystem.
 
 luau.get_aliases: `(requiring_file_path: string) -> ({ LuaurcAliases }?, string?)`
 

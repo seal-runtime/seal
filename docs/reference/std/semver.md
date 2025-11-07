@@ -31,15 +31,17 @@ $\hspace{5pt}$ - Build metadata is ignored when comparing versions: `1.0.0+abc =
 $\hspace{5pt}$
 $\hspace{5pt}$ ## Usage
 $\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local semver = require("@std/semver")
-$\hspace{5pt}$ local first_version = semver.from("0.0.1")
-$\hspace{5pt}$ local second_version = semver.from("0.0.2")
-$\hspace{5pt}$
-$\hspace{5pt}$ first_version:satisfies("^0.0.1") --> true
-$\hspace{5pt}$ second_version:satisfies("^0.0.1") --> true
-$\hspace{5pt}$ assert(first_version < second_version)
-$\hspace{5pt}$```
+
+```luau
+local semver = require("@std/semver")
+local first_version = semver.from("0.0.1")
+local second_version = semver.from("0.0.2")
+
+first_version:satisfies("^0.0.1") --> true
+second_version:satisfies("^0.0.1") --> true
+assert(first_version < second_version)
+$\hspace{5pt}$ ```
+
 
 SemverFields.major: `number`
 
@@ -63,7 +65,7 @@ Semver.local fields: `SemverFields = {`
 
 .error("Invalid semver string: `" .. s)`
 
-.error(`Invalid semver string:`{s}`)`
+.error(`Invalid semver string: `{s}`)`
 
 .local fields: `SemverFields = {`
 
@@ -78,7 +80,7 @@ SemverVals.function semver.satisfies(self: `Semver, semver_range: string): boole
 <summary> See the docs </summary
 
 $\hspace{5pt}$ Returns true if the `self` is compatible with (within the range of) semver_range.
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ `semver_range` supports the following syntaxes:
 $\hspace{5pt}$ - `^` like `^0.1.0`, satisfied by any semvers greater than or equal to `0.1.0` but less than `0.2.0`,
 $\hspace{5pt}$ - `==` like `==0.1.0` for exact matches,
@@ -86,24 +88,25 @@ $\hspace{5pt}$ - `<=` like `<=1.0.0` for upper bounds that are not necessarily e
 $\hspace{5pt}$ - `>` like `<1.0.1` for lower bounds (exclusive),
 $\hspace{5pt}$ - Defaults to `^` when no operator provided (`0.2.1` defaults to `^0.2.1`),
 $\hspace{5pt}$ - Multiple constraints can be space-separated, e.g. `>=1.2.3 <2.0.0`, which all must be satisfied.
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ Note that release candidates (rc.<number>) are ordered before full releases, therefore
 $\hspace{5pt}$ `0.2.0-rc.1` < `0.2.0`.
-$\hspace{5pt}$
+$\hspace{5pt}$ 
 $\hspace{5pt}$ ## Usage
-$\hspace{5pt}$
-$\hspace{5pt}$ ```luau
-$\hspace{5pt}$ local semver = require("@std/semver")
-$\hspace{5pt}$
-$\hspace{5pt}$ local some_version = semver.from(require("./config.luau").version)
-$\hspace{5pt}$ if some_version:satisfies("^0.1.0") then
-$\hspace{5pt}$     print("compatible version!")
-$\hspace{5pt}$ else
-$\hspace{5pt}$     print("incompatible version :(")
-$\hspace{5pt}$ end
-$\hspace{5pt}$```
+$\hspace{5pt}$ 
+```luau
+local semver = require("@std/semver")
+
+local some_version = semver.from(require("./config.luau").version)
+if some_version:satisfies("^0.1.0") then
+    print("compatible version!")
+else
+    print("incompatible version :(")
+end
+$\hspace{5pt}$ ```
 
 </details>
+
 
 SemverVals.local function get_specific_range(part: `string): (SemverVals, string)`
 

@@ -9,15 +9,15 @@ $\hspace{5pt}$ A stdlib to interact with the script's running environment.
 
 .args: `{string}`
 
-$\hspace{5pt}$  a list of arguments passed to the program
+$\hspace{5pt}$ --- a list of arguments passed to the program
 
 .os: `"Windows" | "Linux" | "Android" | "MacOS" | "Other"`
 
-$\hspace{5pt}$  your operating system
+$\hspace{5pt}$ --- your operating system
 
 .executable_path: `string`
 
-$\hspace{5pt}$  the path of the executable
+$\hspace{5pt}$ --- the path of the executable
 
 .cwd: `() -> string`
 
