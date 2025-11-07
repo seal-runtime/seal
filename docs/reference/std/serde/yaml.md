@@ -5,7 +5,7 @@
 
 `local yaml = require("@std/serde/yaml")`
 
-$hspace{5pt}$Serialize YAML files.
+$\hspace{5pt}$ Serialize YAML files.
 
 yaml.encode: `(t: YamlValue) -> string`
 

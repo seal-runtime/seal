@@ -5,7 +5,7 @@
 
 `local hex = require("@std/serde/hex")`
 
-$hspace{5pt}$Deal with hex data.
+$\hspace{5pt}$ Deal with hex data.
 
 hex.encode: `(data: buffer | string) -> string`
 

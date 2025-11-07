@@ -5,7 +5,7 @@
 
 `local base64 = require("@std/serde/base64")`
 
-$hspace{5pt}$good for serving binary stuff in a digestable form for serving things on the internet
+$\hspace{5pt}$ good for serving binary stuff in a digestable form for serving things on the internet
 
 base64.encode: `(data: string | buffer) -> string`
 
