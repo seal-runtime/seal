@@ -7,37 +7,65 @@
 
 ---
 
-`export type` DirectoryEntry
+### `export type` DirectoryEntry
+
+```luau
+
+```
 
 ---
 
-`export type` DirectoryBuilder
+### `export type` DirectoryBuilder
+
+```luau
+
+```
 
 ---
 
-`export type` DirLib
+### `export type` DirLib
+
+```luau
+
+```
 
 ---
 
-DirLib.from: `(path: string) -> DirectoryEntry`
+### DirLib.from
+
+```luau
+DirLib.from: (path: string) -> DirectoryEntry,
+```
 
  Creates a `DirectoryEntry` from the directory at `path`, erroring if the directory is NotFound/PermissionDenied, etc.
 
 ---
 
-DirLib.build: `(name: string, tree: DirectoryTree) -> DirectoryBuilder`
+### DirLib.build
+
+```luau
+DirLib.build: (name: string, tree: DirectoryTree) -> DirectoryBuilder,
+```
 
  Returns a `DirectoryBuilder` table for `fs.readtree`, `fs.writetree`, etc.
 
 ---
 
-DirLib.create: `(path: string) -> DirectoryEntry`
+### DirLib.create
+
+```luau
+DirLib.create: (path: string) -> DirectoryEntry,
+```
 
  Creates a *new* directory at `path`, erroring if an entry already exists there.
 
 ---
 
-DirLib.ensure: `(path: string, create_missing: boolean?) -> DirectoryEntry`
+### DirLib.ensure
+
+```luau
+DirLib.ensure: (path: string, create_missing: boolean?) -> DirectoryEntry,
+```
 
 <details>
 
@@ -59,7 +87,11 @@ local settings_json = dot_vscode:find("settings.json"):try_file()
 
 ---
 
-DirLib.try_remove: `(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?)`
+### DirLib.try_remove
+
+```luau
+DirLib.try_remove: (path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?),
+```
 
 <details>
 
@@ -78,7 +110,11 @@ with result "Other", as well as an error kind string that describes what went wr
 
 ---
 
-DirLib.home: `() -> DirectoryEntry`
+### DirLib.home
+
+```luau
+DirLib.home: () -> DirectoryEntry,
+```
 
 Returns a `DirectoryEntry` corresponding to the user's home directory, erroring if not found.
 
@@ -94,7 +130,11 @@ local zip_downloads = fs.dir.home()
 
 ---
 
-DirLib.cwd: `() -> DirectoryEntry`
+### DirLib.cwd
+
+```luau
+DirLib.cwd: () -> DirectoryEntry,
+```
 
 Constructs a `DirectoryEntry` from the user's current working directory (cwd)
 
@@ -103,7 +143,11 @@ where the user is when they execute your code.
 
 ---
 
-DirLib.project: `(n: number?) -> DirectoryEntry`
+### DirLib.project
+
+```luau
+DirLib.project: (n: number?) -> DirectoryEntry,
+```
 
 <details>
 
@@ -135,11 +179,16 @@ local input_files = fs.dir.project()
 
 ---
 
-DirLib.__call: `(self: any, path: string) -> DirectoryEntry?`
+### DirLib.__call
+
+```luau
+DirLib.__call: (self: any, path: string) -> DirectoryEntry?,
+```
 
     Convenient and slightly more efficient alternative to `fs.find(path):try_dir()`
 
     ## Usage
+
 ```luau
 local src_dir = fs.dir("./src")
 if src_dir then

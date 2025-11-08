@@ -67,7 +67,11 @@ end
 
 ---
 
-thread.spawn: `(spawn_options: ThreadSpawnOptions) -> ThreadHandle`
+### thread.spawn
+
+```luau
+thread.spawn: (spawn_options: ThreadSpawnOptions) -> ThreadHandle,
+```
 
 <details>
 
@@ -120,27 +124,47 @@ end
 
 ---
 
-thread.sleep: `(milliseconds: number) -> true`
+### thread.sleep
+
+```luau
+thread.sleep: (milliseconds: number) -> true,
+```
 
 Literally the same as `time.wait`, except in milliseconds.
 
 ---
 
-`export type` JsonSerializableTable
+### `export type` JsonSerializableTable
+
+```luau
+
+```
 
 ---
 
-`export type` ThreadHandle
+### `export type` ThreadHandle
+
+```luau
+
+```
 
 ---
 
-ThreadHandle.read name: `string`
+### ThreadHandle.name
+
+```luau
+ThreadHandle.name: string,
+```
 
  the name of your thread (defaults to a petname if not provided)
 
 ---
 
-ThreadHandle.join: `(self: ThreadHandle) -> ()`
+### ThreadHandle.join
+
+```luau
+ThreadHandle.join: (self: ThreadHandle) -> (),
+```
 
 Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
@@ -148,7 +172,11 @@ Errors if the thread has already been joined or somehow disappeared.
 
 ---
 
-ThreadHandle.send: `(self: ThreadHandle, data: JsonSerializableTable | string) -> ()`
+### ThreadHandle.send
+
+```luau
+ThreadHandle.send: (self: ThreadHandle, data: JsonSerializableTable | string) -> (),
+```
 
 <details>
 
@@ -166,7 +194,11 @@ Errors if the channel has somehow become disconnected or provided data isn't jso
 
 ---
 
-ThreadHandle.try_send: `(self: ThreadHandle, data: JsonSerializableTable | string) -> (boolean, "Sent" | "Disconnected" | "Full")`
+### ThreadHandle.try_send
+
+```luau
+ThreadHandle.try_send: (self: ThreadHandle, data: JsonSerializableTable | string) -> (boolean, "Sent" | "Disconnected" | "Full"),
+```
 
 <details>
 
@@ -185,7 +217,11 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
-ThreadHandle.sendbytes: `(self: ThreadHandle, data: buffer) -> ()`
+### ThreadHandle.sendbytes
+
+```luau
+ThreadHandle.sendbytes: (self: ThreadHandle, data: buffer) -> (),
+```
 
 Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
 
@@ -193,7 +229,11 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-ThreadHandle.try_sendbytes: `(self: ThreadHandle, data: buffer) -> (boolean, "Sent" | "Disconnected" | "Full")`
+### ThreadHandle.try_sendbytes
+
+```luau
+ThreadHandle.try_sendbytes: (self: ThreadHandle, data: buffer) -> (boolean, "Sent" | "Disconnected" | "Full"),
+```
 
 <details>
 
@@ -212,7 +252,11 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
-ThreadHandle.read: `(self: ThreadHandle) -> JsonSerializableTable? | string?`
+### ThreadHandle.read
+
+```luau
+ThreadHandle.read: (self: ThreadHandle) -> JsonSerializableTable? | string?,
+```
 
 Read a message from the regular channel without blocking the current thread.
 
@@ -220,7 +264,11 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-ThreadHandle.read_await: `(self: ThreadHandle) -> JsonSerializableTable | string`
+### ThreadHandle.read_await
+
+```luau
+ThreadHandle.read_await: (self: ThreadHandle) -> JsonSerializableTable | string,
+```
 
 Read a message from the regular channel, blocking until the next message is available.
 
@@ -228,7 +276,11 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-ThreadHandle.readbytes: `(self: ThreadHandle) -> buffer?`
+### ThreadHandle.readbytes
+
+```luau
+ThreadHandle.readbytes: (self: ThreadHandle) -> buffer?,
+```
 
 Read a message from the bytes channel without blocking the current thread.
 
@@ -236,7 +288,11 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-ThreadHandle.readbytes_await: `(self: ThreadHandle) -> buffer`
+### ThreadHandle.readbytes_await
+
+```luau
+ThreadHandle.readbytes_await: (self: ThreadHandle) -> buffer,
+```
 
 Read a message from the bytes channel, blocking until the next message is available.
 
@@ -244,42 +300,70 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-`export type` ThreadSpawnOptions
+### `export type` ThreadSpawnOptions
+
+```luau
+
+```
 
 ---
 
-ThreadSpawnOptions.name: `string?`
+### ThreadSpawnOptions.name
+
+```luau
+ThreadSpawnOptions.name: string?,
+```
 
  Name your thread to quickly identify which one it is; if not provided a default alliterative petname will be provided instead.
 
 ---
 
-ThreadSpawnOptions.path: `string?`
+### ThreadSpawnOptions.path
+
+```luau
+ThreadSpawnOptions.path: string?,
+```
 
  Path to your source file you want to run in the separate thread, relative to the current file (not cwd).
 
 ---
 
-ThreadSpawnOptions.src: `string?`
+### ThreadSpawnOptions.src
+
+```luau
+ThreadSpawnOptions.src: string?,
+```
 
  Source code to evaluate; recommend passing a path instead.
 
 ---
 
-ThreadSpawnOptions.data: `JsonSerializableTable?`
+### ThreadSpawnOptions.data
+
+```luau
+ThreadSpawnOptions.data: JsonSerializableTable?,
+```
 
  Optional data you want to provide to your thread at startup; accessible with `channel.data` in the child thread.
 
 ---
 
-ThreadSpawnOptions.capacity.regular: `number?`
+### ThreadSpawnOptions.capacity.regular
+
+```luau
+ThreadSpawnOptions.capacity.regular: number?,
+```
 
  Override the queue capacity of your thread's regular and bytes channels.
  default is 12
 
 ---
 
-ThreadSpawnOptions.capacity.bytes: `number?`
+### ThreadSpawnOptions.capacity.bytes
+
+```luau
+ThreadSpawnOptions.capacity.bytes: number?,
+```
 
  default is 24
 

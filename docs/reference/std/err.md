@@ -9,7 +9,11 @@
 
 ---
 
-err.message: `(string) -> error`
+### err.message
+
+```luau
+err.message: (string) -> error,
+```
 
 <details>
 
@@ -41,7 +45,11 @@ end
 
 ---
 
-err.wrap: `(message: string) -> error`
+### err.wrap
+
+```luau
+err.wrap: (message: string) -> error,
+```
 
 Wraps an error message with the stack traceback at the location this function was called.
 
@@ -49,19 +57,31 @@ Unlike `err.message`, errors created with this function are red colored and cont
 
 ---
 
-err.format: `(err: error) -> string`
+### err.format
+
+```luau
+err.format: (err: error) -> string,
+```
 
  Prettifies an `error` from `pcall` or any of the error returning functions.
 
 ---
 
-err.traceback: `() -> string`
+### err.traceback
+
+```luau
+err.traceback: () -> string,
+```
 
  Gets and formats the stack traceback at the current location.
 
 ---
 
-err.throw: `(err: error) -> never`
+### err.throw
+
+```luau
+err.throw: (err: error) -> never,
+```
 
  Takes any error and throws it (causing an error).
 

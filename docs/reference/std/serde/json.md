@@ -5,6 +5,10 @@
 
 `local json = require("@std/serde/json")`
 
-returns: `require("@std/json")`
+### serde.json
+
+```luau
+return require("@std/json")
+```
 
 ---

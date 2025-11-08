@@ -17,22 +17,42 @@ libraries as you need them instead.
 
 ---
 
-io.input: `typeof(require("@self/input"))`
+### io.input
+
+```luau
+io.input: typeof(require("@self/input")),
+```
 
 ---
 
-io.output: `typeof(require("@self/output"))`
+### io.output
+
+```luau
+io.output: typeof(require("@self/output")),
+```
 
 ---
 
-io.colors: `typeof(require("@self/colors"))`
+### io.colors
+
+```luau
+io.colors: typeof(require("@self/colors")),
+```
 
 ---
 
-io.format: `typeof(require("@self/format"))`
+### io.format
+
+```luau
+io.format: typeof(require("@self/format")),
+```
 
 ---
 
-io.prompt: `typeof(require("@self/prompt"))`
+### io.prompt
+
+```luau
+io.prompt: typeof(require("@self/prompt")),
+```
 
 ---

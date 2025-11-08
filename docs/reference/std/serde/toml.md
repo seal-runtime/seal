@@ -9,22 +9,42 @@ Serialize TOML files.
 
 ---
 
-toml.encode: `(t: TomlValue) -> string`
+### toml.encode
+
+```luau
+toml.encode: (t: TomlValue) -> string,
+```
 
 ---
 
-toml.decode: `(toml_data: string) -> TomlValue`
+### toml.decode
+
+```luau
+toml.decode: (toml_data: string) -> TomlValue,
+```
 
 ---
 
-toml.readfile: `(path: string) -> TomlValue`
+### toml.readfile
+
+```luau
+toml.readfile: (path: string) -> TomlValue,
+```
 
 ---
 
-toml.writefile: `(path: string, content: TomlValue) -> ()`
+### toml.writefile
+
+```luau
+toml.writefile: (path: string, content: TomlValue) -> (),
+```
 
 ---
 
-`export type` TomlValue
+### `export type` TomlValue
+
+```luau
+
+```
 
 ---

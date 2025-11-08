@@ -5,6 +5,10 @@
 
 `local request = require("@std/net/request")`
 
-returns: `require("@std/net/http").request`
+### net.request
+
+```luau
+return require("@std/net/http").request
+```
 
 ---

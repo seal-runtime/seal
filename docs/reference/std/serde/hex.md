@@ -9,10 +9,18 @@ Deal with hex data.
 
 ---
 
-hex.encode: `(data: buffer | string) -> string`
+### hex.encode
+
+```luau
+hex.encode: (data: buffer | string) -> string,
+```
 
 ---
 
-hex.decode: `(encoded: string) -> buffer`
+### hex.decode
+
+```luau
+hex.decode: (encoded: string) -> buffer,
+```
 
 ---

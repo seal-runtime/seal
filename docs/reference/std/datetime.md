@@ -5,6 +5,10 @@
 
 `local datetime = require("@std/datetime")`
 
-returns: `require("./time/datetime")`
+### datetime
+
+```luau
+return require("./time/datetime")
+```
 
 ---

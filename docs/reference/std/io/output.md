@@ -9,7 +9,11 @@ Write to the terminal's stdout/stderr.
 
 ---
 
-output.write: `(contents: string | buffer, flush: boolean?) -> error?`
+### output.write
+
+```luau
+output.write: (contents: string | buffer, flush: boolean?) -> error?,
+```
 
 <details>
 
@@ -40,7 +44,11 @@ end
 
 ---
 
-output.ewrite: `(contents: string | buffer, flush: boolean?) -> error?`
+### output.ewrite
+
+```luau
+output.ewrite: (contents: string | buffer, flush: boolean?) -> error?,
+```
 
 <details>
 
@@ -68,7 +76,11 @@ local err = output.ewrite("error message\n")
 
 ---
 
-output.clear: `() -> ()`
+### output.clear
+
+```luau
+output.clear: () -> (),
+```
 
  clears stdout akin to `cls` or `clear`.
 

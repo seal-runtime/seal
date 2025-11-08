@@ -11,7 +11,11 @@ Contains function sha2, which can be used to create an **unsalted** hash, return
 
 ---
 
-Hash.sha2: `(plaintext: string) -> buffer`
+### Hash.sha2
+
+```luau
+Hash.sha2: (plaintext: string) -> buffer,
+```
 
 Hashes plaintext with the SHA2-256 algorithm, returns a buffer (of length 32) containing the result.
 

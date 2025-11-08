@@ -10,7 +10,11 @@
 
 ---
 
-input.tty: `(stream: "Stdout" | "Stderr" | "Stdin"?) -> boolean`
+### .stream
+
+```luau
+`function` .streaminput.tty: (stream: "Stdout" | "Stderr" | "Stdin"?) -> boolean
+```
 
 <details>
 
@@ -29,7 +33,11 @@ If *seal* is being run in a child process, this will almost always return `false
 
 ---
 
-input.rawline: `(prompt: string?) -> string`
+### .prompt
+
+```luau
+`function` .promptinput.rawline: (prompt: string?) -> string
+```
 
 Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
 
@@ -37,7 +45,11 @@ But works with stdin in a child process/works while piped, making it a fallback 
 
 ---
 
-input.readline: `(prompt: string) -> string | interrupt | error`
+### .prompt
+
+```luau
+`function` .promptinput.readline: (prompt: string) -> string | interrupt | error
+```
 
 <details>
 
@@ -81,13 +93,21 @@ end
 
 ---
 
-input.interrupt: `(key: "CtrlC" | "CtrlD") -> interrupt`
+### .key
+
+```luau
+`function` .keyinput.interrupt: (key: "CtrlC" | "CtrlD") -> interrupt
+```
 
 Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 ---
 
-input.rawmode: `(enabled: boolean)`
+### .enabled
+
+```luau
+`function` .enabledinput.rawmode: (enabled: boolean)
+```
 
 <details>
 
@@ -107,25 +127,41 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 ---
 
-mouse: `: (enabled: boolean) -> ()`
+### .mouse
+
+```luau
+`function` .mousemouse: : (enabled: boolean) -> (),
+```
 
  Allows `MouseEvents` to be reported by `input.events()`.
 
 ---
 
-focus: `: (enabled: boolean) -> ()`
+### .focus
+
+```luau
+`function` .focusfocus: : (enabled: boolean) -> (),
+```
 
  Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
 
 ---
 
-paste: `: (enabled: boolean) -> ()`
+### .paste
+
+```luau
+`function` .pastepaste: : (enabled: boolean) -> (),
+```
 
  Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
 
 ---
 
-input.events: `(poll: Duration) -> () -> TerminalEvent`
+### .poll
+
+```luau
+`function` .pollinput.events: (poll: Duration) -> () -> TerminalEvent
+```
 
 <details>
 
@@ -193,144 +229,284 @@ end
 
 ---
 
-`export type` KeyModifiers
+### `export type` KeyModifiers
+
+```luau
+
+```
 
  Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
 
 ---
 
-KeyModifiers.ctrl: `boolean`
+### KeyModifiers.ctrl
+
+```luau
+KeyModifiers.ctrl: boolean,
+```
 
 ---
 
-KeyModifiers.shift: `boolean`
+### KeyModifiers.shift
+
+```luau
+KeyModifiers.shift: boolean,
+```
 
 ---
 
-KeyModifiers.alt: `boolean`
+### KeyModifiers.alt
+
+```luau
+KeyModifiers.alt: boolean,
+```
 
 ---
 
-`export type` KeyEvent
+### `export type` KeyEvent
+
+```luau
+
+```
 
 ---
 
-KeyEvent.is: `"Key"`
+### KeyEvent.is
+
+```luau
+KeyEvent.is: "Key",
+```
 
 ---
 
-KeyEvent.key: `string`
+### KeyEvent.key
+
+```luau
+KeyEvent.key: string,
+```
 
 ---
 
-KeyEvent.modifiers: `KeyModifiers`
+### KeyEvent.modifiers
+
+```luau
+KeyEvent.modifiers: KeyModifiers,
+```
 
 ---
 
-`export type` MouseEvent
+### `export type` MouseEvent
+
+```luau
+
+```
 
 ---
 
-MouseEvent.is: `"Mouse"`
+### MouseEvent.is
+
+```luau
+MouseEvent.is: "Mouse",
+```
 
 ---
 
-MouseEvent.kind: `string`
+### MouseEvent.kind
+
+```luau
+MouseEvent.kind: string,
+```
 
 ---
 
-MouseEvent.column: `number`
+### MouseEvent.column
+
+```luau
+MouseEvent.column: number,
+```
 
 ---
 
-MouseEvent.row: `number`
+### MouseEvent.row
+
+```luau
+MouseEvent.row: number,
+```
 
 ---
 
-MouseEvent.modifiers: `KeyModifiers`
+### MouseEvent.modifiers
+
+```luau
+MouseEvent.modifiers: KeyModifiers,
+```
 
 ---
 
-`export type` ResizeEvent
+### `export type` ResizeEvent
+
+```luau
+
+```
 
 ---
 
-ResizeEvent.is: `"Resize"`
+### ResizeEvent.is
+
+```luau
+ResizeEvent.is: "Resize",
+```
 
 ---
 
-ResizeEvent.columns: `number`
+### ResizeEvent.columns
+
+```luau
+ResizeEvent.columns: number,
+```
 
 ---
 
-ResizeEvent.rows: `number`
+### ResizeEvent.rows
+
+```luau
+ResizeEvent.rows: number,
+```
 
 ---
 
-`export type` FocusGained
+### `export type` FocusGained
+
+```luau
+
+```
 
 ---
 
-FocusGained.is: `"FocusGained"`
+### FocusGained.is
+
+```luau
+FocusGained.is: "FocusGained",
+```
 
 ---
 
-`export type` FocusLost
+### `export type` FocusLost
+
+```luau
+
+```
 
 ---
 
-FocusLost.is: `"FocusLost"`
+### FocusLost.is
+
+```luau
+FocusLost.is: "FocusLost",
+```
 
 ---
 
-`export type` PasteEvent
+### `export type` PasteEvent
+
+```luau
+
+```
 
 ---
 
-PasteEvent.is: `"Paste"`
+### PasteEvent.is
+
+```luau
+PasteEvent.is: "Paste",
+```
 
 ---
 
-PasteEvent.contents: `string`
+### PasteEvent.contents
+
+```luau
+PasteEvent.contents: string,
+```
 
 ---
 
-`export type` Empty
+### `export type` Empty
+
+```luau
+
+```
 
 ---
 
-Empty.is: `"Empty"`
+### Empty.is
+
+```luau
+Empty.is: "Empty",
+```
 
 ---
 
-`export type` TerminalEvent
+### `export type` TerminalEvent
+
+```luau
+
+```
 
 ---
 
-TerminalEvent: `| KeyEvent`
+### TerminalEvent
+
+```luau
+| KeyEvent
+```
 
 ---
 
-TerminalEvent: `| MouseEvent`
+### TerminalEvent
+
+```luau
+| MouseEvent
+```
 
 ---
 
-TerminalEvent: `| ResizeEvent`
+### TerminalEvent
+
+```luau
+| ResizeEvent
+```
 
 ---
 
-TerminalEvent: `| PasteEvent`
+### TerminalEvent
+
+```luau
+| PasteEvent
+```
 
 ---
 
-TerminalEvent: `| FocusGained | FocusLost`
+### TerminalEvent
+
+```luau
+| FocusGained | FocusLost
+```
 
 ---
 
-TerminalEvent: `| Empty`
+### TerminalEvent
+
+```luau
+| Empty
+```
 
 ---
 
-`export type` input
+### `export type` input
+
+```luau
+
+```
 
 ---

@@ -25,7 +25,11 @@ local result = prompt.text("What's your name?")
 
 ---
 
-prompt.text: `(message: string) -> string`
+### prompt.text
+
+```luau
+prompt.text: (message: string) -> string,
+```
 
 <details>
 
@@ -58,7 +62,11 @@ local ssn = prompt.text(colors.bold.white("whats your ssn???: "))
 
 ---
 
-prompt.confirm: `(message: string, default: boolean?) -> boolean`
+### prompt.confirm
+
+```luau
+prompt.confirm: (message: string, default: boolean?) -> boolean,
+```
 
 <details>
 
@@ -84,7 +92,11 @@ end
 
 ---
 
-prompt.validate: `(message: string, v: (response: string) -> true | string) -> string`
+### prompt.validate
+
+```luau
+prompt.validate: (message: string, v: (response: string) -> true | string) -> string,
+```
 
 <details>
 
@@ -114,7 +126,11 @@ local response = prompt.validate("Favorite animal that starts with 's'",
 
 ---
 
-prompt.password: `(message: string, style: "Hidden" | "*"?) -> string`
+### prompt.password
+
+```luau
+prompt.password: (message: string, style: "Hidden" | "*"?) -> string,
+```
 
 <details>
 
@@ -144,7 +160,11 @@ but it may not be perfectly safe from introspection.
 
 ---
 
-prompt.pick: `(message: string, options: { string }, default: number?) -> number`
+### prompt.pick
+
+```luau
+prompt.pick: (message: string, options: { string }, default: number?) -> number,
+```
 
 <details>
 

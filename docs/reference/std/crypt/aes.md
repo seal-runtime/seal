@@ -7,14 +7,26 @@
 
 ---
 
-Aes.generatekey: `() -> string`
+### Aes.generatekey
+
+```luau
+Aes.generatekey: () -> string,
+```
 
 ---
 
-Aes.encrypt: `(plaintext: string, key: string) -> string`
+### Aes.encrypt
+
+```luau
+Aes.encrypt: (plaintext: string, key: string) -> string,
+```
 
 ---
 
-Aes.decrypt: `(ciphertext: string, key: string) -> string`
+### Aes.decrypt
+
+```luau
+Aes.decrypt: (ciphertext: string, key: string) -> string,
+```
 
 ---

@@ -45,79 +45,155 @@ assert(first_version < second_version)
 
 ---
 
-SemverFields.major: `number`
+### SemverFields.major
+
+```luau
+SemverFields.major: number,
+```
 
 ---
 
-SemverFields.minor: `number`
+### SemverFields.minor
+
+```luau
+SemverFields.minor: number,
+```
 
 ---
 
-SemverFields.patch: `number`
+### SemverFields.patch
+
+```luau
+SemverFields.patch: number,
+```
 
 ---
 
-SemverFields.metadata.release_candidate.tag: `string`
+### SemverFields.metadata.release_candidate.tag
+
+```luau
+SemverFields.metadata.release_candidate.tag: string,
+```
 
 ---
 
-SemverFields.metadata.release_candidate.ver: `number`
+### SemverFields.metadata.release_candidate.ver
+
+```luau
+SemverFields.metadata.release_candidate.ver: number,
+```
 
 ---
 
-SemverFields.metadata.release_candidate.build: `string?`
+### SemverFields.metadata.release_candidate.build
+
+```luau
+SemverFields.metadata.release_candidate.build: string?,
+```
 
 ---
 
-`export type` SemverImpl
+### `export type` SemverImpl
+
+```luau
+
+```
 
 ---
 
-`export type` Semver
+### `export type` Semver
+
+```luau
+
+```
 
 ---
 
-semver.from: `(s: string) -> Semver`
+### Semver.s
+
+```luau
+`function` Semver.ssemver.from: (s: string) -> Semver
+```
 
 ---
 
-Semver.error("Invalid semver string: `" .. s)`
+### Semver.string
+
+```luau
+Semver.string: " .. s)
+```
 
 ---
 
-Semver.error(`Invalid semver string:`{s}`)`
+### Semver.string
+
+```luau
+Semver.string: {s}`)
+```
 
 ---
 
-Semver.metadata = metadata : `: any, -- LUAU FIXME: not optional fields not qualifying as optionals`
+### Semver.FIXME
+
+```luau
+Semver.FIXME: not optional fields not qualifying as optionals
+```
 
 ---
 
-`export type` SemverVals
+### `export type` SemverVals
+
+```luau
+
+```
 
 ---
 
-SemverVals: `| "AND UP"`
+### SemverVals
+
+```luau
+| "AND UP"
+```
 
 ---
 
-SemverVals: `| "EXACTLY EQUAL"`
+### SemverVals
+
+```luau
+| "EXACTLY EQUAL"
+```
 
 ---
 
-SemverVals: `| "LESS THAN OR EQUAL"`
+### SemverVals
+
+```luau
+| "LESS THAN OR EQUAL"
+```
 
 ---
 
-SemverVals: `| "LESS THAN"`
+### SemverVals
+
+```luau
+| "LESS THAN"
+```
 
 ---
 
-SemverVals: `| "GREATER THAN NOT INCLUDING"`
+### SemverVals
+
+```luau
+| "GREATER THAN NOT INCLUDING"
+```
 
 ---
 
-semver.satisfies: `(self: Semver, semver_range: string) -> boolean`
+### SemverVals.self
+
+```luau
+`function` SemverVals.selfsemver.satisfies: (self: Semver, semver_range: string) -> boolean
+```
 
 <details>
 
@@ -154,18 +230,34 @@ end
 
 ---
 
-semver.__eq: `(self: Semver, other: Semver) -> boolean`
+### SemverVals.self
+
+```luau
+`function` SemverVals.selfsemver.__eq: (self: Semver, other: Semver) -> boolean
+```
 
 ---
 
-semver.__lt: `(self: Semver, other: Semver) -> boolean`
+### SemverVals.self
+
+```luau
+`function` SemverVals.selfsemver.__lt: (self: Semver, other: Semver) -> boolean
+```
 
 ---
 
-semver.__le: `(self: Semver, other: Semver) -> boolean`
+### SemverVals.self
+
+```luau
+`function` SemverVals.selfsemver.__le: (self: Semver, other: Semver) -> boolean
+```
 
 ---
 
-semver.__tostring: `(self: Semver) -> string`
+### SemverVals.self
+
+```luau
+`function` SemverVals.selfsemver.__tostring: (self: Semver) -> string
+```
 
 ---

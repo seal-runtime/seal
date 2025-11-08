@@ -9,7 +9,11 @@ Library for sending HTTP Requests.
 
 ---
 
-http.get: `(config: GetConfig | string) -> HttpResponse`
+### http.get
+
+```luau
+http.get: (config: GetConfig | string) -> HttpResponse,
+```
 
 <details>
 
@@ -45,7 +49,11 @@ local cats = http.get {
 
 ---
 
-http.post: `(config: PostConfig) -> HttpResponse`
+### http.post
+
+```luau
+http.post: (config: PostConfig) -> HttpResponse,
+```
 
 Makes an HTTP `POST` request.
 
@@ -66,7 +74,11 @@ local response = http.post {
 
 ---
 
-http.request: `(config: RequestConfig) -> HttpResponse`
+### http.request
+
+```luau
+http.request: (config: RequestConfig) -> HttpResponse,
+```
 
 Sends an HTTP request:
 
@@ -86,7 +98,11 @@ end
 
 ---
 
-http.server: `HttpServerLib`
+### http.server
+
+```luau
+http.server: HttpServerLib,
+```
 
 Create a webserver that listens for incoming requests.
 
@@ -94,188 +110,368 @@ Create a webserver that listens for incoming requests.
 
 ---
 
-`export type` HttpServerLib
+### `export type` HttpServerLib
+
+```luau
+
+```
 
 ---
 
-`export type` HttpResponse
+### `export type` HttpResponse
+
+```luau
+
+```
 
 ---
 
-HttpResponse.ok: `true`
+### HttpResponse.ok
+
+```luau
+HttpResponse.ok: true,
+```
 
 ---
 
-HttpResponse.status_code: `StatusCode`
+### HttpResponse.status_code
+
+```luau
+HttpResponse.status_code: StatusCode,
+```
 
 ---
 
-HttpResponse.body: `string`
+### HttpResponse.body
+
+```luau
+HttpResponse.body: string,
+```
 
 ---
 
-HttpResponse.decode: `(self: HttpResponse) -> { [any]: any }`
+### HttpResponse.decode
+
+```luau
+HttpResponse.decode: (self: HttpResponse) -> { [any]: any }
+```
 
  decodes body to table, errors if body is invalid json or otherwise cannot be converted to table
 
 ---
 
-HttpResponse.ok: `false`
+### HttpResponse.ok
+
+```luau
+HttpResponse.ok: false,
+```
 
 ---
 
-HttpResponse.err: `string`
+### HttpResponse.err
+
+```luau
+HttpResponse.err: string,
+```
 
 ---
 
-HttpResponse.unwrap_json: `(self: HttpResponse, default: { [any]: any }?) -> { [any]: any }`
+### HttpResponse.unwrap_json
+
+```luau
+HttpResponse.unwrap_json: (self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
+```
 
  decodes body as json or returns default value; errors if ok = false and default value not provided
 
 ---
 
-`export type` RequestConfig
+### `export type` RequestConfig
+
+```luau
+
+```
 
 ---
 
-RequestConfig.method: `"GET" | "POST" | "PUT" | "PATCH" | "DELETE"`
+### RequestConfig.method
+
+```luau
+RequestConfig.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+```
 
 ---
 
-RequestConfig.url: `string`
+### RequestConfig.url
+
+```luau
+RequestConfig.url: string,
+```
 
 ---
 
-RequestConfig.headers: `{ [string]: string }?`
+### RequestConfig.headers
+
+```luau
+RequestConfig.headers: { [string]: string }?,
+```
 
 ---
 
-RequestConfig.params: `{ [string]: string }?`
+### RequestConfig.params
+
+```luau
+RequestConfig.params: { [string]: string }?,
+```
 
 ---
 
-`export type` GetConfig
+### `export type` GetConfig
+
+```luau
+
+```
 
 ---
 
-GetConfig.url: `string`
+### GetConfig.url
+
+```luau
+GetConfig.url: string,
+```
 
 ---
 
-GetConfig.headers: `{ [string]: string }?`
+### GetConfig.headers
+
+```luau
+GetConfig.headers: { [string]: string }?,
+```
 
 ---
 
-`export type` PostConfig
+### `export type` PostConfig
+
+```luau
+
+```
 
  Query parameters to append to the url string
 
 ---
 
-PostConfig.url: `string`
+### PostConfig.url
+
+```luau
+PostConfig.url: string,
+```
 
 ---
 
-PostConfig.headers.body: `string | {`
+### PostConfig.headers.body
+
+```luau
+PostConfig.headers.body: string | {
+```
 
 ---
 
-`export type` StatusCode
+### `export type` StatusCode
+
+```luau
+
+```
 
 ---
 
-StatusCode: `| "200 OK"`
+### StatusCode
+
+```luau
+| "200 OK"
+```
 
 ---
 
-StatusCode: `| "201 Created"`
+### StatusCode
+
+```luau
+| "201 Created"
+```
 
 ---
 
-StatusCode: `| "204 No Content"`
+### StatusCode
+
+```luau
+| "204 No Content"
+```
 
 ---
 
-StatusCode: `| "301 Moved Permanently"`
+### StatusCode
+
+```luau
+| "301 Moved Permanently"
+```
 
 ---
 
-StatusCode: `| "302 Found"`
+### StatusCode
+
+```luau
+| "302 Found"
+```
 
 ---
 
-StatusCode: `| "304 Not Modified"`
+### StatusCode
+
+```luau
+| "304 Not Modified"
+```
 
 ---
 
-StatusCode: `| "307 Temporary Redirect"`
+### StatusCode
+
+```luau
+| "307 Temporary Redirect"
+```
 
 ---
 
-StatusCode: `| "308 Permanent Redirect"`
+### StatusCode
+
+```luau
+| "308 Permanent Redirect"
+```
 
 ---
 
-StatusCode: `| "400 Bad Request"`
+### StatusCode
+
+```luau
+| "400 Bad Request"
+```
 
 ---
 
-StatusCode: `| "401 Unauthorized"`
+### StatusCode
+
+```luau
+| "401 Unauthorized"
+```
 
 ---
 
-StatusCode: `| "403 Forbidden"`
+### StatusCode
+
+```luau
+| "403 Forbidden"
+```
 
 ---
 
-StatusCode: `| "404 Not Found"`
+### StatusCode
+
+```luau
+| "404 Not Found"
+```
 
 ---
 
-StatusCode: `| "405 Method Not Allowed"`
+### StatusCode
+
+```luau
+| "405 Method Not Allowed"
+```
 
 ---
 
-StatusCode: `| "409 Conflict"`
+### StatusCode
+
+```luau
+| "409 Conflict"
+```
 
 ---
 
-StatusCode: `| "410 Gone"`
+### StatusCode
+
+```luau
+| "410 Gone"
+```
 
 ---
 
-StatusCode: `| "412 Precondition Failed"`
+### StatusCode
+
+```luau
+| "412 Precondition Failed"
+```
 
 ---
 
-StatusCode: `| "415 Unsupported Media Type"`
+### StatusCode
+
+```luau
+| "415 Unsupported Media Type"
+```
 
 ---
 
-StatusCode: `| "429 Too Many Requests"`
+### StatusCode
+
+```luau
+| "429 Too Many Requests"
+```
 
 ---
 
-StatusCode: `| "500 Internal Server Error"`
+### StatusCode
+
+```luau
+| "500 Internal Server Error"
+```
 
 ---
 
-StatusCode: `| "501 Not Implemented"`
+### StatusCode
+
+```luau
+| "501 Not Implemented"
+```
 
 ---
 
-StatusCode: `| "502 Bad Gateway"`
+### StatusCode
+
+```luau
+| "502 Bad Gateway"
+```
 
 ---
 
-StatusCode: `| "503 Service Unavailable"`
+### StatusCode
+
+```luau
+| "503 Service Unavailable"
+```
 
 ---
 
-StatusCode: `| "504 Gateway Timeout"`
+### StatusCode
+
+```luau
+| "504 Gateway Timeout"
+```
 
 ---
 
-StatusCode: `| "505 HTTP Version Not Supported"`
+### StatusCode
+
+```luau
+| "505 HTTP Version Not Supported"
+```
 
 ---

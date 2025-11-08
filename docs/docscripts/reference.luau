@@ -8,8 +8,9 @@ local defs_path = fs.dir.project():join(".seal", "typedefs", "std")
 local refs_path = fs.dir.project():join("docs", "reference")
 
 type Api = {
-    is: "Function" | "Property" | "Type",
+    is: "Function" | "Property" | "Type" | "Enum",
     name: string,
+    defs: string,
     docs: string,
 }
 
@@ -137,6 +138,7 @@ for _, filepath in typedefs_paths do
             local new_api: Api = {
                 -- name = table.concat(current_names, "."),
                 name = found_type_name,
+                defs = "",
                 docs = table.concat(current_docs, "\n"),
                 is = "Type",
             }
@@ -167,34 +169,50 @@ for _, filepath in typedefs_paths do
         if string.match(line, "^%s*|") then -- enum-like types
             local found_name = current_names[1]
             local new_api: Api = {
-                name = `{found_name}: {trimmed_line}`,
+                name = found_name,
+                defs = trimmed_line,
                 docs = table.concat(current_docs, "\n"),
-                is = "Property",
+                is = "Enum",
             }
             table.insert(apis_for_path, new_api)
             table.clear(current_docs)
-        elseif string.match(line, "[%w_]+:") then
-            local found_name = table.concat(current_names, ".")
+        elseif string.match(line, "[%w_]+: ") then
+            local front_name = table.concat(current_names, ".")
             if str.startswith(trimmed_line, "local ") then
                 continue
             end
-            if #found_name == 0 or str.startswith(trimmed_line, "function") then
-                found_name = str.trimfront(trimmed_line, "function ")
-                    :gsub("%(", ": (", 1)
-                    :gsub("%): ", ") -> ")
-            else
-                found_name = table.concat(current_names, ".") .. `.{trimmed_line}`
-            end
+
+            local property_name, rest = string.match(trimmed_line, "([%w_]+): (.+)")
+            assert(property_name and rest, "unreachable")
+
+            local name = front_name .. "." .. property_name
+
+            local is = 
+                if #front_name == 0 or str.startswith(trimmed_line, "function") then
+                    "Function"
+                else
+                    "Property"
+            local defs =
+                if is == "Function" then
+                    str.trimfront(trimmed_line, "function ")
+                        :gsub("%(", ": (", 1)
+                        :gsub("%): ", ") -> ")
+                else
+                    `: {rest}`
+
             local new_api: Api = {
-                name = found_name,
+                name = name,
+                defs = name .. defs,
                 docs = table.concat(current_docs, "\n"),
-                is = "Property",
+                is = is,
             }
+
             table.insert(apis_for_path, new_api)
             table.clear(current_docs)
         elseif #apis_for_path == 0 and string.match(trimmed_line, "return require") then
             local new_api: Api = {
-                name = `returns: {str.trimfront(trimmed_line, "return ")}`,
+                name = library_name,
+                defs = trimmed_line,
                 docs = table.concat(current_docs, "\n"),
                 is = "Property",
             }
@@ -237,19 +255,27 @@ for _, library in libraries do
             push("---")
             continue
         end
-        local split_name = str.splitafter(api.name, ":")
-        local name, defs = table.remove(split_name, 1), str.trim(table.concat(split_name, ""))
-        if name and defs then
-            defs = str.trimback(defs, ",")
-            if api.is == "Type" then
-                name = "`export type` " .. name
-            end
-            if #defs > 0 then
-                push(`{name} \`{defs}\``)
-            else
-                push(name)
-            end
-        end
+        -- -- local split_name = str.splitafter(api.name, ":")
+        -- -- local name, defs = table.remove(split_name, 1), str.trim(table.concat(split_name, ""))
+        -- if name and defs then
+        --     defs = str.trimback(defs, ",")
+        --     if api.is == "Type" then
+        --         name = "`export type` " .. name
+        --     end
+
+        --     if #defs > 0 then
+        --         push(`{name} \`{defs}\``)
+        --     else
+        --         push(name)
+        --     end
+        -- end
+        local name = if api.is == "Type" then `\`export type\` {api.name}` else api.name
+        local defs = if api.is == "Function" then `\`function\` {api.defs}` else api.defs
+
+        push(`### {name}`)
+        push("```luau", 0)
+        push(defs, 0)
+        push("```")
 
         if #api.docs > 1 and #api.docs < 340 then
             push(api.docs)

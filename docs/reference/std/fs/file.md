@@ -7,33 +7,57 @@
 
 ---
 
-`export type` FileBuilder
+### `export type` FileBuilder
+
+```luau
+
+```
 
 ---
 
-`export type` FileLib
+### `export type` FileLib
+
+```luau
+
+```
 
 ---
 
-FileLib.from: `(path: string) -> FileEntry`
+### FileLib.from
+
+```luau
+FileLib.from: (path: string) -> FileEntry,
+```
 
 Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if a file is not found or permission was denied, etc.
 
 ---
 
-FileLib.build: `(name: string, content: string) -> FileBuilder`
+### FileLib.build
+
+```luau
+FileLib.build: (name: string, content: string) -> FileBuilder,
+```
 
  Returns a `FileBuilder` for use with `fs.readtree` and `fs.writetree`
 
 ---
 
-FileLib.create: `(path: string) -> FileEntry`
+### FileLib.create
+
+```luau
+FileLib.create: (path: string) -> FileEntry,
+```
 
  Creates a *new*, empty file at `path` using Rust's `fs::File::create_new`; errors if a file or other entry already exists at that path.
 
 ---
 
-FileLib.try_read: `(path: string) -> (string?, "Ok" | "NotFound" | "PermissionDenied")`
+### FileLib.try_read
+
+```luau
+FileLib.try_read: (path: string) -> (string?, "Ok" | "NotFound" | "PermissionDenied"),
+```
 
 <details>
 
@@ -61,7 +85,11 @@ end
 
 ---
 
-FileLib.try_readbytes: `(path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> (buffer?, "Ok" | "NotFound" | "PermissionDenied")`
+### FileLib.try_readbytes
+
+```luau
+FileLib.try_readbytes: (path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> (buffer?, "Ok" | "NotFound" | "PermissionDenied"),
+```
 
 <details>
 
@@ -95,7 +123,11 @@ end
 
 ---
 
-FileLib.try_write: `(path: string, content: string | buffer) -> (boolean, "Ok" | "PermissionDenied")`
+### FileLib.try_write
+
+```luau
+FileLib.try_write: (path: string, content: string | buffer) -> (boolean, "Ok" | "PermissionDenied"),
+```
 
 <details>
 
@@ -118,7 +150,11 @@ end
 
 ---
 
-FileLib.try_remove: `(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "IsADirectory")`
+### FileLib.try_remove
+
+```luau
+FileLib.try_remove: (path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "IsADirectory")
+```
 
 Try to remove a file at `path` without erroring if the file doesn't exist or if the user doesn't have access to it.
 
@@ -130,7 +166,11 @@ Doesn't follow symlinks.
 
 ---
 
-FileLib.__call: `(self: any, path: string) -> FileEntry?`
+### FileLib.__call
+
+```luau
+FileLib.__call: (self: any, path: string) -> FileEntry?,
+```
 
 Convenient and slightly more efficient alternative to `fs.find(path):try_file()`
 

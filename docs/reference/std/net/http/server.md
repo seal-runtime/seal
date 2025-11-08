@@ -7,207 +7,411 @@
 
 ---
 
-StatusCode: `| "200 OK"`
+### StatusCode
+
+```luau
+| "200 OK"
+```
 
 ---
 
-StatusCode: `| "201 Created"`
+### StatusCode
+
+```luau
+| "201 Created"
+```
 
 ---
 
-StatusCode: `| "204 No Content"`
+### StatusCode
+
+```luau
+| "204 No Content"
+```
 
 ---
 
-StatusCode: `| "301 Moved Permanently"`
+### StatusCode
+
+```luau
+| "301 Moved Permanently"
+```
 
 ---
 
-StatusCode: `| "302 Found"`
+### StatusCode
+
+```luau
+| "302 Found"
+```
 
 ---
 
-StatusCode: `| "304 Not Modified"`
+### StatusCode
+
+```luau
+| "304 Not Modified"
+```
 
 ---
 
-StatusCode: `| "307 Temporary Redirect"`
+### StatusCode
+
+```luau
+| "307 Temporary Redirect"
+```
 
 ---
 
-StatusCode: `| "308 Permanent Redirect"`
+### StatusCode
+
+```luau
+| "308 Permanent Redirect"
+```
 
 ---
 
-StatusCode: `| "400 Bad Request"`
+### StatusCode
+
+```luau
+| "400 Bad Request"
+```
 
 ---
 
-StatusCode: `| "401 Unauthorized"`
+### StatusCode
+
+```luau
+| "401 Unauthorized"
+```
 
 ---
 
-StatusCode: `| "403 Forbidden"`
+### StatusCode
+
+```luau
+| "403 Forbidden"
+```
 
 ---
 
-StatusCode: `| "404 Not Found"`
+### StatusCode
+
+```luau
+| "404 Not Found"
+```
 
 ---
 
-StatusCode: `| "405 Method Not Allowed"`
+### StatusCode
+
+```luau
+| "405 Method Not Allowed"
+```
 
 ---
 
-StatusCode: `| "409 Conflict"`
+### StatusCode
+
+```luau
+| "409 Conflict"
+```
 
 ---
 
-StatusCode: `| "410 Gone"`
+### StatusCode
+
+```luau
+| "410 Gone"
+```
 
 ---
 
-StatusCode: `| "412 Precondition Failed"`
+### StatusCode
+
+```luau
+| "412 Precondition Failed"
+```
 
 ---
 
-StatusCode: `| "415 Unsupported Media Type"`
+### StatusCode
+
+```luau
+| "415 Unsupported Media Type"
+```
 
 ---
 
-StatusCode: `| "429 Too Many Requests"`
+### StatusCode
+
+```luau
+| "429 Too Many Requests"
+```
 
 ---
 
-StatusCode: `| "500 Internal Server Error"`
+### StatusCode
+
+```luau
+| "500 Internal Server Error"
+```
 
 ---
 
-StatusCode: `| "501 Not Implemented"`
+### StatusCode
+
+```luau
+| "501 Not Implemented"
+```
 
 ---
 
-StatusCode: `| "502 Bad Gateway"`
+### StatusCode
+
+```luau
+| "502 Bad Gateway"
+```
 
 ---
 
-StatusCode: `| "503 Service Unavailable"`
+### StatusCode
+
+```luau
+| "503 Service Unavailable"
+```
 
 ---
 
-StatusCode: `| "504 Gateway Timeout"`
+### StatusCode
+
+```luau
+| "504 Gateway Timeout"
+```
 
 ---
 
-StatusCode: `| "505 HTTP Version Not Supported"`
+### StatusCode
+
+```luau
+| "505 HTTP Version Not Supported"
+```
 
 ---
 
-`export type` ContentType
+### `export type` ContentType
+
+```luau
+
+```
 
 ---
 
-ContentType: `| "Text"`
+### ContentType
+
+```luau
+| "Text"
+```
 
 ---
 
-ContentType: `| "HTML"`
+### ContentType
+
+```luau
+| "HTML"
+```
 
 ---
 
-ContentType: `| "JSON"`
+### ContentType
+
+```luau
+| "JSON"
+```
 
 ---
 
-ContentType: `| "XML"`
+### ContentType
+
+```luau
+| "XML"
+```
 
 ---
 
-ContentType: `| "CSS"`
+### ContentType
+
+```luau
+| "CSS"
+```
 
 ---
 
-ContentType: `| "JavaScript"`
+### ContentType
+
+```luau
+| "JavaScript"
+```
 
 ---
 
-ContentType: `| "Binary"`
+### ContentType
+
+```luau
+| "Binary"
+```
 
 ---
 
-ContentType: `| string`
+### ContentType
+
+```luau
+| string
+```
 
 ---
 
-`export type` ServeRequest
+### `export type` ServeRequest
+
+```luau
+
+```
 
 ---
 
-ServeRequest.peer_address: `string`
+### ServeRequest.peer_address
+
+```luau
+ServeRequest.peer_address: string,
+```
 
 ---
 
-ServeRequest.method: `"GET" | "POST" | "PUT" | "PATCH" | "DELETE"`
+### ServeRequest.method
+
+```luau
+ServeRequest.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+```
 
 ---
 
-ServeRequest.path: `string`
+### ServeRequest.path
+
+```luau
+ServeRequest.path: string,
+```
 
 ---
 
-ServeRequest.raw_text: `string`
+### ServeRequest.raw_text
+
+```luau
+ServeRequest.raw_text: string,
+```
 
 ---
 
-ServeRequest.body: `string`
+### ServeRequest.body
+
+```luau
+ServeRequest.body: string,
+```
 
 ---
 
-`export type` ServeResponse
+### `export type` ServeResponse
+
+```luau
+
+```
 
 ---
 
-ServeResponse.status_code: `StatusCode`
+### ServeResponse.status_code
+
+```luau
+ServeResponse.status_code: StatusCode,
+```
 
 ---
 
-ServeResponse.content_type: `ContentType`
+### ServeResponse.content_type
+
+```luau
+ServeResponse.content_type: ContentType,
+```
 
 ---
 
-ServeResponse.body: `string`
+### ServeResponse.body
+
+```luau
+ServeResponse.body: string,
+```
 
 ---
 
-ServeResponse.headers.cookies.http_version: `string?`
+### ServeResponse.headers.cookies.http_version
+
+```luau
+ServeResponse.headers.cookies.http_version: string?,
+```
 
 ---
 
-ServeResponse.headers.cookies.reason_phrase: `string?`
+### ServeResponse.headers.cookies.reason_phrase
+
+```luau
+ServeResponse.headers.cookies.reason_phrase: string?,
+```
 
 ---
 
-ServeResponse.headers.cookies.redirect_url: `string?`
+### ServeResponse.headers.cookies.redirect_url
+
+```luau
+ServeResponse.headers.cookies.redirect_url: string?
+```
 
 ---
 
-`export type` ServeConfig
+### `export type` ServeConfig
+
+```luau
+
+```
 
 ---
 
-ServeConfig.address: `string`
+### ServeConfig.address
+
+```luau
+ServeConfig.address: string,
+```
 
 ---
 
-ServeConfig.port: `string | number`
+### ServeConfig.port
+
+```luau
+ServeConfig.port: string | number,
+```
 
 ---
 
-ServeConfig.handler: `(ServeRequest) -> ServeResponse`
+### ServeConfig.handler
+
+```luau
+ServeConfig.handler: (ServeRequest) -> ServeResponse,
+```
 
 ---
 
-server.serve: `(config: ServeConfig)`
+### .config
+
+```luau
+`function` .configserver.serve: (config: ServeConfig)
+```
 
 <details>
 

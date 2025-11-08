@@ -7,7 +7,11 @@
 
 ---
 
-luau.eval: `(src: string, options: EvalOptions?) -> unknown | error`
+### luau.eval
+
+```luau
+luau.eval: (src: string, options: EvalOptions?) -> unknown | error,
+```
 
 <details>
 
@@ -55,7 +59,11 @@ end
 
 ---
 
-luau.eval_unsafe: `(src: string | buffer, options: EvalOptions?) -> unknown | error`
+### luau.eval_unsafe
+
+```luau
+luau.eval_unsafe: (src: string | buffer, options: EvalOptions?) -> unknown | error,
+```
 
 <details>
 
@@ -75,48 +83,88 @@ and *coredump*.
 
 ---
 
-luau.bytecode: `(src: string) -> buffer | error`
+### luau.bytecode
+
+```luau
+luau.bytecode: (src: string) -> buffer | error,
+```
 
 Compiles `src` to Luau bytecode.
 
 ---
 
-luau.require_resolver: `() -> {`
+### luau.require_resolver
+
+```luau
+luau.require_resolver: () -> {
+```
 
 Returns *seal*'s require resolver implementation used internally.
 
 ---
 
-luau.resolve: `(requested_path: string, requiring_file_path: string) -> { err: string, path: nil } | { path: string, err: nil }`
+### luau.resolve
+
+```luau
+luau.resolve: (requested_path: string, requiring_file_path: string) -> { err: string, path: nil } | { path: string, err: nil },
+```
 
  Resolve a Luau require alias (`requested_path`) relative to `requiring_file_path` to find its location on the filesystem.
 
 ---
 
-luau.get_aliases: `(requiring_file_path: string) -> ({ LuaurcAliases }?, string?)`
+### luau.get_aliases
+
+```luau
+luau.get_aliases: (requiring_file_path: string) -> ({ LuaurcAliases }?, string?),
+```
 
 ---
 
-luau.expand_aliases: `(requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?)`
+### luau.expand_aliases
+
+```luau
+luau.expand_aliases: (requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?),
+```
 
 ---
 
-`export type` EvalOptions
+### `export type` EvalOptions
+
+```luau
+
+```
 
 ---
 
-EvalOptions.name: `string?`
+### EvalOptions.name
+
+```luau
+EvalOptions.name: string?,
+```
 
 ---
 
-EvalOptions.stdlib: `("seal" | "safe" | "none")?`
+### EvalOptions.stdlib
+
+```luau
+EvalOptions.stdlib: ("seal" | "safe" | "none")?,
+```
 
 ---
 
-`export type` LuaurcAliases
+### `export type` LuaurcAliases
+
+```luau
+
+```
 
 ---
 
-LuaurcAliases.path: `string`
+### LuaurcAliases.path
+
+```luau
+LuaurcAliases.path: string,
+```
 
 ---

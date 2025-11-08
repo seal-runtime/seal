@@ -138,324 +138,608 @@ end
 
 ---
 
-args.parse: `(program: string, tagline: string, info: ProgramInfo?) -> {`
+### args.parse
+
+```luau
+args.parse: (program: string, tagline: string, info: ProgramInfo?) -> {
+```
 
 ---
 
-args.simple: `(self: any, ...Arg) -> Parsed`
+### args.simple
+
+```luau
+args.simple: (self: any, ...Arg) -> Parsed,
+```
 
  Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
 
 ---
 
-args.commands: `(self: any, ...Command) -> Parsed`
+### args.commands
+
+```luau
+args.commands: (self: any, ...Command) -> Parsed,
+```
 
  Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
  generate commands.
 
 ---
 
-args.positional: `(name: string, help: string) -> Positional`
+### args.positional
+
+```luau
+args.positional: (name: string, help: string) -> Positional,
+```
 
  Add a positional argument
 
 ---
 
-args.named: `(name: string, help: string) -> Named`
+### args.named
+
+```luau
+args.named: (name: string, help: string) -> Named,
+```
 
  Add a named argument `--name=value` (or when aliased to -n, `-n value`). Named arguments must start with `--`
 
 ---
 
-args.command: `(name: string, help: string) -> Command`
+### args.command
+
+```luau
+args.command: (name: string, help: string) -> Command,
+```
 
  Add a new top-level command, must be used with `args.parse(program, desc, info):commands(...)`
 
 ---
 
-args.flag: `(name: string, help: string) -> Flag`
+### args.flag
+
+```luau
+args.flag: (name: string, help: string) -> Flag,
+```
 
  Add a new flag argument like `--verbose` or `--override`. Flags must start with `--` and cannot be `--help` or `--commands`.
 
 ---
 
-args.list: `(name: string, help: string) -> ArgList`
+### args.list
+
+```luau
+args.list: (name: string, help: string) -> ArgList,
+```
 
  Add a new list (tail) argument that collects all remaining positional arguments into a `{ string }`
 
 ---
 
-args.default: `(...Arg) -> Command`
+### args.default
+
+```luau
+args.default: (...Arg) -> Command,
+```
 
  Add a default command.
 
 ---
 
-`export type` ProgramInfo
+### `export type` ProgramInfo
+
+```luau
+
+```
 
 ---
 
-ProgramInfo.description: `string?`
+### ProgramInfo.description
+
+```luau
+ProgramInfo.description: string?,
+```
 
  if provided, goes below program name/tagline in `--help`
 
 ---
 
-ProgramInfo.examples: `{ string }?`
+### ProgramInfo.examples
+
+```luau
+ProgramInfo.examples: { string }?,
+```
 
  examples of arguments *following* program and path (already pre-filled)
 
 ---
 
-ProgramInfo.footer: `string?`
+### ProgramInfo.footer
+
+```luau
+ProgramInfo.footer: string?
+```
 
  put authors and/or repository link here
 
 ---
 
-`export type` Command
+### `export type` Command
+
+```luau
+
+```
 
 ---
 
-Command.name: `string`
+### Command.name
+
+```luau
+Command.name: string,
+```
 
 ---
 
-Command.is: `"Command"`
+### Command.is
+
+```luau
+Command.is: "Command",
+```
 
 ---
 
-Command.help: `string`
+### Command.help
+
+```luau
+Command.help: string,
+```
 
 ---
 
-Command._args: `{ Arg }`
+### Command._args
+
+```luau
+Command._args: { Arg },
+```
 
 ---
 
-Command.args: `(self: Command, ...Arg) -> Command`
+### Command.args
+
+```luau
+Command.args: (self: Command, ...Arg) -> Command,
+```
 
 ---
 
-Command._aliases: `{ [string]: true? }`
+### Command._aliases
+
+```luau
+Command._aliases: { [string]: true? },
+```
 
 ---
 
-Command.aliases: `(self: Command, ...string) -> Command`
+### Command.aliases
+
+```luau
+Command.aliases: (self: Command, ...string) -> Command,
+```
 
  Aliases for your command, like `seal r -> seal run`
 
 ---
 
-`export type` Parsed
+### `export type` Parsed
+
+```luau
+
+```
 
 ---
 
-Parsed.command: `string | "default"`
+### Parsed.command
+
+```luau
+Parsed.command: string | "default",
+```
 
 ---
 
-Parsed.get: `<T>(self: Parsed, name: string, default: T?) -> T?`
+### Parsed.get
+
+```luau
+Parsed.get: <T>(self: Parsed, name: string, default: T?) -> T?,
+```
 
 ---
 
-Parsed.expect: `<T>(self: Parsed, name: string, assertion: string?) -> T`
+### Parsed.expect
+
+```luau
+Parsed.expect: <T>(self: Parsed, name: string, assertion: string?) -> T,
+```
 
 ---
 
-Parsed.help: `(self: Parsed) -> string`
+### Parsed.help
+
+```luau
+Parsed.help: (self: Parsed) -> string,
+```
 
 ---
 
-Parsed.flags: `{ [string]: true? }`
+### Parsed.flags
+
+```luau
+Parsed.flags: { [string]: true? },
+```
 
 ---
 
-`export type` ArgList
+### `export type` ArgList
+
+```luau
+
+```
 
 ---
 
-ArgList.name: `string`
+### ArgList.name
+
+```luau
+ArgList.name: string,
+```
 
 ---
 
-ArgList.is: `"ArgList"`
+### ArgList.is
+
+```luau
+ArgList.is: "ArgList",
+```
 
 ---
 
-ArgList.help: `string`
+### ArgList.help
+
+```luau
+ArgList.help: string,
+```
 
 ---
 
-ArgList.values: `{ string }?`
+### ArgList.values
+
+```luau
+ArgList.values: { string }?,
+```
 
 ---
 
-`export type` Validator
+### `export type` Validator
+
+```luau
+
+```
 
 ---
 
-`export type` Arg
+### `export type` Arg
+
+```luau
+
+```
 
 ---
 
-Arg: `| Positional`
+### Arg
+
+```luau
+| Positional
+```
 
 ---
 
-Arg: `| Flag`
+### Arg
+
+```luau
+| Flag
+```
 
 ---
 
-Arg: `| Named`
+### Arg
+
+```luau
+| Named
+```
 
 ---
 
-Arg: `| ArgList`
+### Arg
+
+```luau
+| ArgList
+```
 
 ---
 
-`export type` Positional
+### `export type` Positional
+
+```luau
+
+```
 
 ---
 
-Positional.name: `string`
+### Positional.name
+
+```luau
+Positional.name: string,
+```
 
 ---
 
-Positional.is: `"Positional"`
+### Positional.is
+
+```luau
+Positional.is: "Positional",
+```
 
 ---
 
-Positional.help: `string`
+### Positional.help
+
+```luau
+Positional.help: string,
+```
 
 ---
 
-Positional._default: `any`
+### Positional._default
+
+```luau
+Positional._default: any,
+```
 
 ---
 
-Positional.default: `(any) -> Positional`
+### Positional.default
+
+```luau
+Positional.default: (any) -> Positional,
+```
 
 ---
 
-Positional._optional: `boolean`
+### Positional._optional
+
+```luau
+Positional._optional: boolean,
+```
 
 ---
 
-Positional.optional: `(self: Positional) -> Positional`
+### Positional.optional
+
+```luau
+Positional.optional: (self: Positional) -> Positional,
+```
 
  call this to turn the positional argument into an optional positional argument
 
 ---
 
-Positional._validator: `Validator?`
+### Positional._validator
+
+```luau
+Positional._validator: Validator?,
+```
 
 ---
 
-Positional.validate: `(self: Positional, validator: Validator) -> Positional`
+### Positional.validate
+
+```luau
+Positional.validate: (self: Positional, validator: Validator) -> Positional,
+```
 
  validate the argument's input by passing a function that returns either the transformed
  validated input (such as converting input strings from p -> project) or an error object.
 
 ---
 
-Positional.value: `any`
+### Positional.value
+
+```luau
+Positional.value: any,
+```
 
 ---
 
-`export type` Flag
+### `export type` Flag
+
+```luau
+
+```
 
 ---
 
-Flag.name: `string`
+### Flag.name
+
+```luau
+Flag.name: string,
+```
 
  Must start with `--` and cannot be `--help` or `--commands`
 
 ---
 
-Flag.is: `"Flag"`
+### Flag.is
+
+```luau
+Flag.is: "Flag",
+```
 
 ---
 
-Flag.help: `string`
+### Flag.help
+
+```luau
+Flag.help: string,
+```
 
 ---
 
-Flag._aliases: `{ [string]: true? }`
+### Flag._aliases
+
+```luau
+Flag._aliases: { [string]: true? },
+```
 
 ---
 
-Flag.aliases: `(self: Flag, ...string) -> Flag`
+### Flag.aliases
+
+```luau
+Flag.aliases: (self: Flag, ...string) -> Flag,
+```
 
  flag aliases must start with `-` and cannot be `-h` (reserved for help)
 
 ---
 
-Flag._default: `boolean?`
+### Flag._default
+
+```luau
+Flag._default: boolean?,
+```
 
 ---
 
-Flag.default: `(self: Flag, boolean) -> Flag`
+### Flag.default
+
+```luau
+Flag.default: (self: Flag, boolean) -> Flag,
+```
 
 ---
 
-Flag.value: `boolean`
+### Flag.value
+
+```luau
+Flag.value: boolean,
+```
 
 ---
 
-`export type` Named
+### `export type` Named
+
+```luau
+
+```
 
 ---
 
-Named.name: `string`
+### Named.name
+
+```luau
+Named.name: string,
+```
 
  Must start with `--` and cannot be `--help` or `--commands`
 
 ---
 
-Named.is: `"Named"`
+### Named.is
+
+```luau
+Named.is: "Named",
+```
 
 ---
 
-Named.help: `string`
+### Named.help
+
+```luau
+Named.help: string,
+```
 
 ---
 
-Named._default: `any`
+### Named._default
+
+```luau
+Named._default: any,
+```
 
 ---
 
-Named.default: `(self: Named, any) -> Named`
+### Named.default
+
+```luau
+Named.default: (self: Named, any) -> Named,
+```
 
 ---
 
-Named._aliases: `{ [string]: true? }`
+### Named._aliases
+
+```luau
+Named._aliases: { [string]: true? },
+```
 
 ---
 
-Named.aliases: `(self: Named, ...string) -> Named`
+### Named.aliases
+
+```luau
+Named.aliases: (self: Named, ...string) -> Named,
+```
 
  aliases must start with `-` and cannot be `-h` (reserved for help)
 
 ---
 
-Named._required: `boolean`
+### Named._required
+
+```luau
+Named._required: boolean,
+```
 
 ---
 
-Named.required: `(self: Named) -> Named`
+### Named.required
+
+```luau
+Named.required: (self: Named) -> Named,
+```
 
 ---
 
-Named._validator: `Validator?`
+### Named._validator
+
+```luau
+Named._validator: Validator?,
+```
 
 ---
 
-Named.validate: `(self: Named, validator: Validator) -> Named`
+### Named.validate
+
+```luau
+Named.validate: (self: Named, validator: Validator) -> Named,
+```
 
 ---
 
-Named.value: `any`
+### Named.value
+
+```luau
+Named.value: any,
+```
 
 ---

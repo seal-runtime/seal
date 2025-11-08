@@ -7,19 +7,31 @@
 
 ---
 
-TreeBuilder.inner: `DirectoryTree`
+### TreeBuilder.inner
+
+```luau
+TreeBuilder.inner: DirectoryTree,
+```
 
  The `DirectoryTree` being constructed by the `TreeBuilder`.
 
 ---
 
-TreeBuilder.with_file: `(self: TreeBuilder, name: string, content: string) -> TreeBuilder`
+### TreeBuilder.with_file
+
+```luau
+TreeBuilder.with_file: (self: TreeBuilder, name: string, content: string) -> TreeBuilder,
+```
 
  Add a file to the DirectoryTree by `name` with `content`
 
 ---
 
-TreeBuilder.with_tree: `(self: TreeBuilder, name: string, builder: TreeBuilder) -> TreeBuilder`
+### TreeBuilder.with_tree
+
+```luau
+TreeBuilder.with_tree: (self: TreeBuilder, name: string, builder: TreeBuilder) -> TreeBuilder,
+```
 
 Add a new tree to the DirectoryTree; the second argument should be another `TreeBuilder` from `fs.tree()`
 
@@ -34,27 +46,47 @@ local dir = fs.tree()
 
 ---
 
-`export type` FileEntry
+### `export type` FileEntry
+
+```luau
+
+```
 
 ---
 
-FileEntry.name: `string`
+### FileEntry.name
+
+```luau
+FileEntry.name: string,
+```
 
  The name of the file; also called basename, filename, etc. Can also be obtained by calling `fs.path.child` on a path.
 
 ---
 
-FileEntry.path: `string`
+### FileEntry.path
+
+```luau
+FileEntry.path: string,
+```
 
  A filesystem path to the file; if the `FileEntry` was requested with an absolute path, then this path will be absolute, otherwise it'll be a relative path.
 
 ---
 
-FileEntry.type: `"File"`
+### FileEntry.type
+
+```luau
+FileEntry.type: "File",
+```
 
 ---
 
-FileEntry.read: `(self: FileEntry) -> string`
+### FileEntry.read
+
+```luau
+FileEntry.read: (self: FileEntry) -> string,
+```
 
 <details>
 
@@ -76,13 +108,21 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-FileEntry.size: `(self: FileEntry) -> number`
+### FileEntry.size
+
+```luau
+FileEntry.size: (self: FileEntry) -> number,
+```
 
  Returns the file's size (length) in bytes.
 
 ---
 
-FileEntry.readlines: `(self: FileEntry) -> () -> (number, string)`
+### FileEntry.readlines
+
+```luau
+FileEntry.readlines: (self: FileEntry) -> () -> (number, string),
+```
 
 Iterate over the lines of the file without reading the whole file into memory.
 
@@ -104,7 +144,11 @@ end
 
 ---
 
-FileEntry.readbytes: `(self: FileEntry, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer`
+### FileEntry.readbytes
+
+```luau
+FileEntry.readbytes: (self: FileEntry, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
+```
 
 <details>
 
@@ -136,7 +180,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-FileEntry.append: `(self: FileEntry, content: buffer | string) -> ()`
+### FileEntry.append
+
+```luau
+FileEntry.append: (self: FileEntry, content: buffer | string) -> (),
+```
 
 <details>
 
@@ -156,90 +204,158 @@ Like `fs.writefile`, `content` does not have to be a valid utf-8 encoded string 
 
 ---
 
-FileEntry.is_valid_utf8: `(self: FileEntry) -> boolean`
+### FileEntry.is_valid_utf8
+
+```luau
+FileEntry.is_valid_utf8: (self: FileEntry) -> boolean,
+```
 
 ---
 
-FileEntry.metadata: `(self: FileEntry) -> FsMetadata`
+### FileEntry.metadata
+
+```luau
+FileEntry.metadata: (self: FileEntry) -> FsMetadata,
+```
 
 Returns a `FsMetadata` table containing timestamps for creation, modified, and access times, as well as permissions (depends on your operating system)
 
 ---
 
-FileEntry.copy_to: `(self: FileEntry, to: string) -> ()`
+### FileEntry.copy_to
+
+```luau
+FileEntry.copy_to: (self: FileEntry, to: string) -> (),
+```
 
 ---
 
-FileEntry.move_to: `(self: FileEntry, to: string) -> ()`
+### FileEntry.move_to
+
+```luau
+FileEntry.move_to: (self: FileEntry, to: string) -> (),
+```
 
 ---
 
-FileEntry.rename: `(self: FileEntry, name: string) -> ()`
+### FileEntry.rename
+
+```luau
+FileEntry.rename: (self: FileEntry, name: string) -> (),
+```
 
 ---
 
-FileEntry.remove: `(self: FileEntry) -> ()`
+### FileEntry.remove
+
+```luau
+FileEntry.remove: (self: FileEntry) -> (),
+```
 
  Removes the file at `FileEntry.path`.
 
 ---
 
-`export type` DirectoryEntry
+### `export type` DirectoryEntry
+
+```luau
+
+```
 
 ---
 
-DirectoryEntry.name: `string`
+### DirectoryEntry.name
+
+```luau
+DirectoryEntry.name: string,
+```
 
  The name of the directory; also called basename, etc. Can also be obtained by calling `fs.path.child` on a path.
 
 ---
 
-DirectoryEntry.path: `string`
+### DirectoryEntry.path
+
+```luau
+DirectoryEntry.path: string,
+```
 
  A filesystem path to the directory; if the `DirectoryEntry` was requested with an absolute path, then this path will be absolute,
  otherwise it'll be a relative path.
 
 ---
 
-DirectoryEntry.type: `"Directory"`
+### DirectoryEntry.type
+
+```luau
+DirectoryEntry.type: "Directory",
+```
 
 ---
 
-DirectoryEntry.list: `(self: DirectoryEntry, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string }`
+### DirectoryEntry.list
+
+```luau
+DirectoryEntry.list: (self: DirectoryEntry, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
+```
 
  Returns an an array of basenames of the directory's entries; pass `true` as the second argument to list all files recursively.
  Pass a filter function to narrow the returned list (to search for specific file names, extensions, etc.)
 
 ---
 
-DirectoryEntry.join: `(self: DirectoryEntry, ...string) -> string`
+### DirectoryEntry.join
+
+```luau
+DirectoryEntry.join: (self: DirectoryEntry, ...string) -> string,
+```
 
  Join the `DirectoryEntry`'s path with multiple paths in a cross-platform-compliant manner.
  Basically a wrapper around `fs.path.join(entry.path, a, b, c, ...)`
 
 ---
 
-DirectoryEntry.find: `(self: DirectoryEntry, name: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult`
+### DirectoryEntry.find
+
+```luau
+DirectoryEntry.find: (self: DirectoryEntry, name: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
+```
 
 ---
 
-DirectoryEntry.entries: `(self: DirectoryEntry) -> { [string]: Entry }`
+### DirectoryEntry.entries
+
+```luau
+DirectoryEntry.entries: (self: DirectoryEntry) -> { [string]: Entry },
+```
 
 ---
 
-DirectoryEntry.expect_file: `(self: DirectoryEntry, name: string) -> FileEntry`
+### DirectoryEntry.expect_file
+
+```luau
+DirectoryEntry.expect_file: (self: DirectoryEntry, name: string) -> FileEntry,
+```
 
  Expect that the directory contains file `name`, returning its `FileEntry` or otherwise error.
 
 ---
 
-DirectoryEntry.expect_dir: `(self: DirectoryEntry, name: string) -> DirectoryEntry`
+### DirectoryEntry.expect_dir
+
+```luau
+DirectoryEntry.expect_dir: (self: DirectoryEntry, name: string) -> DirectoryEntry,
+```
 
  Expect that the directory contains directory `name`, returning its `DirectoryEntry` or otherwise error.
 
 ---
 
-DirectoryEntry.add_file: `(self: DirectoryEntry, name: string, content: string | buffer) -> DirectoryEntry`
+### DirectoryEntry.add_file
+
+```luau
+DirectoryEntry.add_file: (self: DirectoryEntry, name: string, content: string | buffer) -> DirectoryEntry,
+```
 
 <details>
 
@@ -264,7 +380,11 @@ local src = fs.dir.ensure("./src")
 
 ---
 
-DirectoryEntry.add_tree: `(self: DirectoryEntry, name: string, builder: TreeBuilder) -> DirectoryEntry`
+### DirectoryEntry.add_tree
+
+```luau
+DirectoryEntry.add_tree: (self: DirectoryEntry, name: string, builder: TreeBuilder) -> DirectoryEntry,
+```
 
 <details>
 
@@ -290,91 +410,159 @@ local src = fs.dir.ensure("./src")
 
 ---
 
-DirectoryEntry.metadata: `(self: DirectoryEntry) -> FsMetadata`
+### DirectoryEntry.metadata
+
+```luau
+DirectoryEntry.metadata: (self: DirectoryEntry) -> FsMetadata,
+```
 
 Returns a `FsMetadata` table containing timestamps for creation, modified, and access times, as well as permissions (depends on your operating system)
 
 ---
 
-DirectoryEntry.copy_to: `(self: DirectoryEntry, to: string) -> ()`
+### DirectoryEntry.copy_to
+
+```luau
+DirectoryEntry.copy_to: (self: DirectoryEntry, to: string) -> (),
+```
 
 ---
 
-DirectoryEntry.move_to: `(self: DirectoryEntry, to: string) -> ()`
+### DirectoryEntry.move_to
+
+```luau
+DirectoryEntry.move_to: (self: DirectoryEntry, to: string) -> (),
+```
 
 ---
 
-DirectoryEntry.rename: `(self: DirectoryEntry, name: string) -> ()`
+### DirectoryEntry.rename
+
+```luau
+DirectoryEntry.rename: (self: DirectoryEntry, name: string) -> (),
+```
 
 ---
 
-DirectoryEntry.remove: `(self: DirectoryEntry) -> ()`
+### DirectoryEntry.remove
+
+```luau
+DirectoryEntry.remove: (self: DirectoryEntry) -> (),
+```
 
  Removes the directory at `DirectoryEntry.path`, alongside all its contents.
 
 ---
 
-`export type` Entry
+### `export type` Entry
+
+```luau
+
+```
 
 ---
 
-`export type` FsMetadata
+### `export type` FsMetadata
+
+```luau
+
+```
 
 ---
 
-FsMetadata.created_at: `DateTime?`
+### FsMetadata.created_at
+
+```luau
+FsMetadata.created_at: DateTime?,
+```
 
  A UTC DateTime representing when the `Entry` was created.
  This field is optional because it might not be available on all platforms.
 
 ---
 
-FsMetadata.modified_at: `DateTime?`
+### FsMetadata.modified_at
+
+```luau
+FsMetadata.modified_at: DateTime?,
+```
 
  A UTC DateTime representing when the `Entry` was last modified.
  This field is optional because it might not be available on all platforms.
 
 ---
 
-FsMetadata.accessed_at: `DateTime?`
+### FsMetadata.accessed_at
+
+```luau
+FsMetadata.accessed_at: DateTime?,
+```
 
  A UTC DateTime representing when the `Entry` was last accessed.
  This field is optional because it might not be available on all platforms.
 
 ---
 
-FsMetadata.permissions.readonly: `boolean`
+### FsMetadata.permissions.readonly
+
+```luau
+FsMetadata.permissions.readonly: boolean,
+```
 
  Whether the `Entry` is read-only or not. Should be accessible on both Windows and Unix-like operating systems.
 
 ---
 
-FsMetadata.permissions.unix_mode: `number?`
+### FsMetadata.permissions.unix_mode
+
+```luau
+FsMetadata.permissions.unix_mode: number?,
+```
 
  Represents the numeric Unix permission bits for the `Entry`, combining read, write, and execute permissions
  for owner, group, and others. This field is optional because it's not available on Windows.
 
 ---
 
-`export type` FindResult
+### `export type` FindResult
+
+```luau
+
+```
 
 ---
 
-FindResult.ok: `boolean`
+### FindResult.ok
+
+```luau
+FindResult.ok: boolean,
+```
 
  `true` if the find operation succeeded ("File" | "Directory" | "Symlink"), otherwise `false` ("NotFound" | "PermissionDenied")
 
 ---
 
-FindResult.path: `string`
+### FindResult.path
+
+```luau
+FindResult.path: string,
+```
 
 ---
 
-FindResult.type: `"File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied"`
+### FindResult.type
+
+```luau
+FindResult.type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
+```
 
 ---
 
-FindResult.exists: `(self: FindResult) -> boolean`
+### FindResult.exists
+
+```luau
+FindResult.exists: (self: FindResult) -> boolean,
+```
 
 Checks if `FindResult.path` exists on the filesystem.
 
@@ -392,7 +580,11 @@ end
 
 ---
 
-FindResult.try_file: `(self: FindResult) -> FileEntry?`
+### FindResult.try_file
+
+```luau
+FindResult.try_file: (self: FindResult) -> FileEntry?,
+```
 
 Attempt to create a `FileEntry` from the `FindResult`, returning it or `nil` if unsuccessful.
 
@@ -407,7 +599,11 @@ end
 
 ---
 
-FindResult.try_dir: `(self: FindResult) -> DirectoryEntry?`
+### FindResult.try_dir
+
+```luau
+FindResult.try_dir: (self: FindResult) -> DirectoryEntry?,
+```
 
 Attempt to create a `DirectoryEntry` from the `FindResult`, returning it or `nil` if unsuccessful.
 
@@ -422,50 +618,94 @@ end
 
 ---
 
-FindResult.unwrap_file: `(self: FindResult) -> FileEntry`
+### FindResult.unwrap_file
+
+```luau
+FindResult.unwrap_file: (self: FindResult) -> FileEntry,
+```
 
  Create a `FileEntry` from the `FindResult`, erroring if the file doesn't exist.
 
 ---
 
-FindResult.unwrap_dir: `(self: FindResult) -> DirectoryEntry`
+### FindResult.unwrap_dir
+
+```luau
+FindResult.unwrap_dir: (self: FindResult) -> DirectoryEntry,
+```
 
  Create a `DirectoryEntry` from the `FindResult`, erroring if the directory doesn't exist.
 
 ---
 
-`export type` FileBuilder
+### `export type` FileBuilder
+
+```luau
+
+```
 
 ---
 
-FileBuilder.name: `string`
+### FileBuilder.name
+
+```luau
+FileBuilder.name: string,
+```
 
 ---
 
-FileBuilder.type: `"File"`
+### FileBuilder.type
+
+```luau
+FileBuilder.type: "File",
+```
 
 ---
 
-FileBuilder.content: `string`
+### FileBuilder.content
+
+```luau
+FileBuilder.content: string,
+```
 
 ---
 
-`export type` DirectoryBuilder
+### `export type` DirectoryBuilder
+
+```luau
+
+```
 
 ---
 
-DirectoryBuilder.name: `string`
+### DirectoryBuilder.name
+
+```luau
+DirectoryBuilder.name: string,
+```
 
 ---
 
-DirectoryBuilder.type: `"Directory"`
+### DirectoryBuilder.type
+
+```luau
+DirectoryBuilder.type: "Directory",
+```
 
 ---
 
-DirectoryBuilder.children: `DirectoryTree`
+### DirectoryBuilder.children
+
+```luau
+DirectoryBuilder.children: DirectoryTree,
+```
 
 ---
 
-`export type` DirectoryTree
+### `export type` DirectoryTree
+
+```luau
+
+```
 
 ---

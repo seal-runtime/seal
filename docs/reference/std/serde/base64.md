@@ -9,18 +9,34 @@ good for serving binary stuff in a digestable form for serving things on the int
 
 ---
 
-base64.encode: `(data: string | buffer) -> string`
+### base64.encode
+
+```luau
+base64.encode: (data: string | buffer) -> string,
+```
 
 ---
 
-base64.decode: `(data: string) -> buffer`
+### base64.decode
+
+```luau
+base64.decode: (data: string) -> buffer,
+```
 
 ---
 
-base64.urlsafe.encode: `(data: string | buffer) -> string`
+### base64.urlsafe.encode
+
+```luau
+base64.urlsafe.encode: (data: string | buffer) -> string,
+```
 
 ---
 
-base64.urlsafe.decode: `(data: string) -> buffer`
+### base64.urlsafe.decode
+
+```luau
+base64.urlsafe.decode: (data: string) -> buffer
+```
 
 ---

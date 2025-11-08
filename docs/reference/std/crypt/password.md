@@ -7,27 +7,51 @@
 
 ---
 
-HashedPassword.salt: `buffer`
+### HashedPassword.salt
+
+```luau
+HashedPassword.salt: buffer,
+```
 
 ---
 
-HashedPassword.hash: `buffer`
+### HashedPassword.hash
+
+```luau
+HashedPassword.hash: buffer,
+```
 
 ---
 
-`export type` PasswordVerifyOptions
+### `export type` PasswordVerifyOptions
+
+```luau
+
+```
 
 ---
 
-PasswordVerifyOptions.raw_password: `string`
+### PasswordVerifyOptions.raw_password
+
+```luau
+PasswordVerifyOptions.raw_password: string,
+```
 
 ---
 
-PasswordVerifyOptions.hashed_password: `HashedPassword`
+### PasswordVerifyOptions.hashed_password
+
+```luau
+PasswordVerifyOptions.hashed_password: HashedPassword,
+```
 
 ---
 
-`export type` Password
+### `export type` Password
+
+```luau
+
+```
 
 ## This is the password handling lib
 
@@ -35,7 +59,11 @@ Please use with caution.
 
 ---
 
-Password.hash: `(raw_password: string) -> HashedPassword`
+### Password.hash
+
+```luau
+Password.hash: (raw_password: string) -> HashedPassword,
+```
 
 <details>
 
@@ -72,7 +100,11 @@ end
 
 ---
 
-Password.verify: `(verify_options: PasswordVerifyOptions) -> boolean`
+### Password.verify
+
+```luau
+Password.verify: (verify_options: PasswordVerifyOptions) -> boolean
+```
 
 <details>
 

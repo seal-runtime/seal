@@ -7,26 +7,50 @@
 
 ---
 
-RsaKeys.public: `string`
+### RsaKeys.public
+
+```luau
+RsaKeys.public: string,
+```
 
 ---
 
-RsaKeys.private: `string`
+### RsaKeys.private
+
+```luau
+RsaKeys.private: string
+```
 
 ---
 
-`export type` Rsa
+### `export type` Rsa
+
+```luau
+
+```
 
 ---
 
-Rsa.generatekeys: `() -> RsaKeys`
+### Rsa.generatekeys
+
+```luau
+Rsa.generatekeys: () -> RsaKeys,
+```
 
 ---
 
-Rsa.encrypt: `(plaintext: string, public_key: string) -> string`
+### Rsa.encrypt
+
+```luau
+Rsa.encrypt: (plaintext: string, public_key: string) -> string,
+```
 
 ---
 
-Rsa.decrypt: `(ciphertext: string, private_key: string) -> string`
+### Rsa.decrypt
+
+```luau
+Rsa.decrypt: (ciphertext: string, private_key: string) -> string,
+```
 
 ---

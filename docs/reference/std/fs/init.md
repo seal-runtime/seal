@@ -7,7 +7,11 @@
 
 ---
 
-fs.readfile: `(path: string) -> string`
+### fs.readfile
+
+```luau
+fs.readfile: (path: string) -> string,
+```
 
 <details>
 
@@ -29,7 +33,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-fs.readbytes: `(path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer`
+### fs.readbytes
+
+```luau
+fs.readbytes: (path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
+```
 
 <details>
 
@@ -68,7 +76,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-fs.readlines: `(path: string) -> () -> (number, string)`
+### fs.readlines
+
+```luau
+fs.readlines: (path: string) -> () -> (number, string),
+```
 
 <details>
 
@@ -98,7 +110,11 @@ local _, line2 = nextline()
 
 ---
 
-fs.writefile: `(path: string, content: string | buffer) -> ()`
+### fs.writefile
+
+```luau
+fs.writefile: (path: string, content: string | buffer) -> (),
+```
 
 <details>
 
@@ -127,7 +143,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-fs.removefile: `(path: string) -> ()`
+### fs.removefile
+
+```luau
+fs.removefile: (path: string) -> (),
+```
 
 Removes a regular file at `path` without following symlinks.
 
@@ -141,7 +161,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-fs.is: `(path: string) -> PathIs`
+### fs.is
+
+```luau
+fs.is: (path: string) -> PathIs,
+```
 
 <details>
 
@@ -185,7 +209,11 @@ end
 
 ---
 
-fs.symlink: `(target: string, link: string) -> boolean`
+### fs.symlink
+
+```luau
+fs.symlink: (target: string, link: string) -> boolean,
+```
 
 <details>
 
@@ -205,7 +233,11 @@ If you're on Windows, you need to run this program with Administrator permission
 
 ---
 
-fs.unsymlink: `(link: string) -> boolean`
+### fs.unsymlink
+
+```luau
+fs.unsymlink: (link: string) -> boolean,
+```
 
 Removes the symlink at `link`.
 
@@ -220,7 +252,11 @@ Removes the symlink at `link`.
 
 ---
 
-fs.readlink: `(symlink: string) -> string`
+### fs.readlink
+
+```luau
+fs.readlink: (symlink: string) -> string,
+```
 
 Follows `symlink` and returns the *path* targeted by the symlink.
 
@@ -230,7 +266,11 @@ Follows `symlink` and returns the *path* targeted by the symlink.
 
 ---
 
-fs.watch: `(paths: string | { string }, options: WatchOptions?) -> () -> (WatchEventCategory, WatchEventInfo)`
+### fs.watch
+
+```luau
+fs.watch: (paths: string | { string }, options: WatchOptions?) -> () -> (WatchEventCategory, WatchEventInfo),
+```
 
 <details>
 
@@ -354,13 +394,21 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 
 ---
 
-fs.readtree: `(path: string) -> DirectoryTree`
+### fs.readtree
+
+```luau
+fs.readtree: (path: string) -> DirectoryTree,
+```
 
 Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
 
 ---
 
-fs.writetree: `(path: string, tree: TreeBuilder | DirectoryTree) -> ()`
+### fs.writetree
+
+```luau
+fs.writetree: (path: string, tree: TreeBuilder | DirectoryTree) -> (),
+```
 
 <details>
 
@@ -405,7 +453,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-fs.removetree: `(path: string) -> ()`
+### fs.removetree
+
+```luau
+fs.removetree: (path: string) -> (),
+```
 
 <details>
 
@@ -431,7 +483,11 @@ Please use this function carefully.
 
 ---
 
-fs.makedir: `(path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?) -> boolean`
+### fs.makedir
+
+```luau
+fs.makedir: (path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?) -> boolean,
+```
 
 <details>
 
@@ -467,7 +523,11 @@ fs.makedir(fs.path.join(fs.path.cwd(), "Config", "Editor", "Formatting"), {
 
 ---
 
-fs.listdir: `(path: string, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string }`
+### fs.listdir
+
+```luau
+fs.listdir: (path: string, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
+```
 
 <details>
 
@@ -502,7 +562,11 @@ end)
 
 ---
 
-fs.move: `(from: string, to: string) -> ()`
+### fs.move
+
+```luau
+fs.move: (from: string, to: string) -> (),
+```
 
 Move a regular file or directory `from` a path `to` a new path.
 
@@ -515,7 +579,11 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 ---
 
-fs.copy: `(source: string, destination: string) -> ()`
+### fs.copy
+
+```luau
+fs.copy: (source: string, destination: string) -> (),
+```
 
 Copy a regular file or directory from `source` to `destination`.
 
@@ -523,7 +591,11 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 ---
 
-fs.find: `(path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult`
+### fs.find
+
+```luau
+fs.find: (path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
+```
 
 <details>
 
@@ -573,7 +645,11 @@ end
 
 ---
 
-fs.entries: `(path: string) -> { [string]: Entry }`
+### fs.entries
+
+```luau
+fs.entries: (path: string) -> { [string]: Entry },
+```
 
 Returns a table mapping the paths of the directory at `path` with their `fs.Entry`s.
 
@@ -591,7 +667,11 @@ end
 
 ---
 
-fs.file: `filelib.FileLib`
+### fs.file
+
+```luau
+fs.file: filelib.FileLib,
+```
 
 A sublib for handling operations with files and `fs.FileEntry`s.
 
@@ -601,7 +681,11 @@ This library can be called as a function as a convenience alternative for `fs.fi
 
 ---
 
-fs.dir: `dirlib.DirLib`
+### fs.dir
+
+```luau
+fs.dir: dirlib.DirLib,
+```
 
 A sublib for handling operations with directories and `fs.DirectoryEntry`s.
 
@@ -609,7 +693,11 @@ This library can be called as a function as a convenience alternative to `fs.fin
 
 ---
 
-fs.path: `pathlib.PathLib`
+### fs.path
+
+```luau
+fs.path:  pathlib.PathLib,
+```
 
 A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
 
@@ -617,101 +705,197 @@ Commonly used `fs.path` functions include: `fs.path.join` for combining paths an
 
 ---
 
-fs.tree: `() -> TreeBuilder`
+### fs.tree
+
+```luau
+fs.tree: () -> TreeBuilder,
+```
 
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
 ---
 
-`export type` PathIs
+### `export type` PathIs
+
+```luau
+
+```
 
 ---
 
-PathIs: `| "File"`
+### PathIs
+
+```luau
+| "File"
+```
 
 ---
 
-PathIs: `| "Directory"`
+### PathIs
+
+```luau
+| "Directory"
+```
 
 ---
 
-PathIs: `| "Symlink"`
+### PathIs
+
+```luau
+| "Symlink"
+```
 
 ---
 
-PathIs: `| "UnixSocket"`
+### PathIs
+
+```luau
+| "UnixSocket"
+```
 
 ---
 
-PathIs: `| "UnixFifo"`
+### PathIs
+
+```luau
+| "UnixFifo"
+```
 
 ---
 
-PathIs: `| "UnixCharDevice"`
+### PathIs
+
+```luau
+| "UnixCharDevice"
+```
 
 ---
 
-PathIs: `| "UnixBlockDevice"`
+### PathIs
+
+```luau
+| "UnixBlockDevice"
+```
 
 ---
 
-PathIs: `| "WindowsReparsePoint"`
+### PathIs
+
+```luau
+| "WindowsReparsePoint"
+```
 
 ---
 
-PathIs: `| "Other"`
+### PathIs
+
+```luau
+| "Other"
+```
 
 ---
 
-PathIs: `| "NotFound"`
+### PathIs
+
+```luau
+| "NotFound"
+```
 
 ---
 
-PathIs: `| "PermissionDenied"`
+### PathIs
+
+```luau
+| "PermissionDenied"
+```
 
 ---
 
-`export type` DirectoryTree
+### `export type` DirectoryTree
+
+```luau
+
+```
 
 ---
 
-`export type` DirectoryBuilder
+### `export type` DirectoryBuilder
+
+```luau
+
+```
 
 ---
 
-`export type` TreeBuilder
+### `export type` TreeBuilder
+
+```luau
+
+```
 
 ---
 
-`export type` FindResult
+### `export type` FindResult
+
+```luau
+
+```
 
 ---
 
-`export type` Entry
+### `export type` Entry
+
+```luau
+
+```
 
 ---
 
-`export type` FileEntry
+### `export type` FileEntry
+
+```luau
+
+```
 
 ---
 
-`export type` DirectoryEntry
+### `export type` DirectoryEntry
+
+```luau
+
+```
 
 ---
 
-`export type` WatchOptions
+### `export type` WatchOptions
+
+```luau
+
+```
 
 ---
 
-WatchOptions.recursive: `boolean?`
+### WatchOptions.recursive
+
+```luau
+WatchOptions.recursive: boolean?,
+```
 
 ---
 
-WatchOptions.timeout_ms: `number?`
+### WatchOptions.timeout_ms
+
+```luau
+WatchOptions.timeout_ms: number?,
+```
 
 ---
 
-`export type` WatchEventCategory
+### `export type` WatchEventCategory
+
+```luau
+
+```
 
 <details>
 
@@ -729,81 +913,157 @@ Some usage notes:
 
 ---
 
-WatchEventCategory: `| "Read" -- note that Read ~= open for reading (which is in Open)`
+### WatchEventCategory
+
+```luau
+| "Read" -- note that Read ~= open for reading (which is in Open)
+```
 
 ---
 
-WatchEventCategory: `| "Execute"`
+### WatchEventCategory
+
+```luau
+| "Execute"
+```
 
 ---
 
-WatchEventCategory: `| "Open"`
+### WatchEventCategory
+
+```luau
+| "Open"
+```
 
 ---
 
-WatchEventCategory: `| "Close"`
+### WatchEventCategory
+
+```luau
+| "Close"
+```
 
 ---
 
-WatchEventCategory: `| "Access"`
+### WatchEventCategory
+
+```luau
+| "Access"
+```
 
 ---
 
-WatchEventCategory: `| "Create"`
+### WatchEventCategory
+
+```luau
+| "Create"
+```
 
 ---
 
-WatchEventCategory: `| "Rename"`
+### WatchEventCategory
+
+```luau
+| "Rename"
+```
 
 ---
 
-WatchEventCategory: `| "Modify::Data"`
+### WatchEventCategory
+
+```luau
+| "Modify::Data"
+```
 
 ---
 
-WatchEventCategory: `| "Modify::Metadata"`
+### WatchEventCategory
+
+```luau
+| "Modify::Metadata"
+```
 
 ---
 
-WatchEventCategory: `| "Modify::Other"`
+### WatchEventCategory
+
+```luau
+| "Modify::Other"
+```
 
 ---
 
-WatchEventCategory: `| "Remove"`
+### WatchEventCategory
+
+```luau
+| "Remove"
+```
 
 ---
 
-WatchEventCategory: `| "Other"`
+### WatchEventCategory
+
+```luau
+| "Other"
+```
 
 ---
 
-WatchEventCategory: `| "Unknown"`
+### WatchEventCategory
+
+```luau
+| "Unknown"
+```
 
 ---
 
-WatchEventCategory: `| "None"`
+### WatchEventCategory
+
+```luau
+| "None"
+```
 
 ---
 
-`export type` WatchEventInfo
+### `export type` WatchEventInfo
+
+```luau
+
+```
 
 ---
 
-WatchEventInfo.paths: `{ string }`
+### WatchEventInfo.paths
+
+```luau
+WatchEventInfo.paths: { string },
+```
 
 ---
 
-WatchEventInfo.kind: `WatchKind`
+### WatchEventInfo.kind
+
+```luau
+WatchEventInfo.kind: WatchKind,
+```
 
 ---
 
-WatchEventInfo.is_write: `boolean`
+### WatchEventInfo.is_write
+
+```luau
+WatchEventInfo.is_write: boolean,
+```
 
  if the event is *most likely* a write event (`Create::File` or `Modify::Data` or `Close::Write`)
 
 ---
 
-`export type` WatchKind
+### `export type` WatchKind
+
+```luau
+
+```
 
 <details>
 
@@ -824,170 +1084,338 @@ WatchEventInfo.is_write: `boolean`
 
 ---
 
-WatchKind: `| "Read"`
+### WatchKind
+
+```luau
+| "Read"
+```
 
 ---
 
-WatchKind: `| "Open::Execute"`
+### WatchKind
+
+```luau
+| "Open::Execute"
+```
 
 ---
 
-WatchKind: `| "Open::Read"`
+### WatchKind
+
+```luau
+| "Open::Read"
+```
 
 ---
 
-WatchKind: `| "Open::Write"`
+### WatchKind
+
+```luau
+| "Open::Write"
+```
 
 ---
 
-WatchKind: `| "Open::Other"`
+### WatchKind
+
+```luau
+| "Open::Other"
+```
 
 ---
 
-WatchKind: `| "Close::Execute"`
+### WatchKind
+
+```luau
+| "Close::Execute"
+```
 
 ---
 
-WatchKind: `| "Close::Read"`
+### WatchKind
+
+```luau
+| "Close::Read"
+```
 
 ---
 
-WatchKind: `| "Close::Write"`
+### WatchKind
+
+```luau
+| "Close::Write"
+```
 
 ---
 
-WatchKind: `| "Close::Other"`
+### WatchKind
+
+```luau
+| "Close::Other"
+```
 
 ---
 
-WatchKind: `| "Close::Any"`
+### WatchKind
+
+```luau
+| "Close::Any"
+```
 
 ---
 
-WatchKind: `| "Open::Any"`
+### WatchKind
+
+```luau
+| "Open::Any"
+```
 
 ---
 
-WatchKind: `| "Access::Any"`
+### WatchKind
+
+```luau
+| "Access::Any"
+```
 
 ---
 
-WatchKind: `| "Access::Other"`
+### WatchKind
+
+```luau
+| "Access::Other"
+```
 
 ---
 
-WatchKind: `| "Create::File"`
+### WatchKind
+
+```luau
+| "Create::File"
+```
 
 ---
 
-WatchKind: `| "Create::Directory" -- sent on macos and unixlike`
+### WatchKind
+
+```luau
+| "Create::Directory" -- sent on macos and unixlike
+```
 
 ---
 
-WatchKind: `| "Create::Other"`
+### WatchKind
+
+```luau
+| "Create::Other"
+```
 
 ---
 
-WatchKind: `| "Create::Any"`
+### WatchKind
+
+```luau
+| "Create::Any"
+```
 
 ---
 
-WatchKind: `| "Rename::Any"`
+### WatchKind
+
+```luau
+| "Rename::Any"
+```
 
 ---
 
-WatchKind: `| "Rename::From"`
+### WatchKind
+
+```luau
+| "Rename::From"
+```
 
 ---
 
-WatchKind: `| "Rename::To"`
+### WatchKind
+
+```luau
+| "Rename::To"
+```
 
 ---
 
-WatchKind: `| "Rename::Both"`
+### WatchKind
+
+```luau
+| "Rename::Both"
+```
 
 ---
 
-WatchKind: `| "Rename::Other"`
+### WatchKind
+
+```luau
+| "Rename::Other"
+```
 
 ---
 
-WatchKind: `| "Modify::Data" -- sent on unixlike`
+### WatchKind
+
+```luau
+| "Modify::Data" -- sent on unixlike
+```
 
 ---
 
-WatchKind: `| "Modify::Data::Content"`
+### WatchKind
+
+```luau
+| "Modify::Data::Content"
+```
 
 ---
 
-WatchKind: `| "Modify::Data::Size"`
+### WatchKind
+
+```luau
+| "Modify::Data::Size"
+```
 
 ---
 
-WatchKind: `| "Modify::Data::Other" -- sent on windows`
+### WatchKind
+
+```luau
+| "Modify::Data::Other" -- sent on windows
+```
 
 ---
 
-WatchKind: `| "Modify::Metadata::AccessTime"`
+### WatchKind
+
+```luau
+| "Modify::Metadata::AccessTime"
+```
 
 ---
 
-WatchKind: `| "Modify::Metadata::WriteTime"`
+### WatchKind
+
+```luau
+| "Modify::Metadata::WriteTime"
+```
 
 ---
 
-WatchKind: `| "Modify::Metadata::Ownership"`
+### WatchKind
+
+```luau
+| "Modify::Metadata::Ownership"
+```
 
 ---
 
-WatchKind: `| "Modify::Metadata::Permissions"`
+### WatchKind
+
+```luau
+| "Modify::Metadata::Permissions"
+```
 
 ---
 
-WatchKind: `| "Modify::Metadata::Extended"`
+### WatchKind
+
+```luau
+| "Modify::Metadata::Extended"
+```
 
 ---
 
-WatchKind: `| "Modify::Metadata::Other"`
+### WatchKind
+
+```luau
+| "Modify::Metadata::Other"
+```
 
 ---
 
-WatchKind: `| "Modify::Metadata::Any"`
+### WatchKind
+
+```luau
+| "Modify::Metadata::Any"
+```
 
 ---
 
-WatchKind: `| "Modify::Any"`
+### WatchKind
+
+```luau
+| "Modify::Any"
+```
 
 ---
 
-WatchKind: `| "Modify::Other"`
+### WatchKind
+
+```luau
+| "Modify::Other"
+```
 
 ---
 
-WatchKind: `| "Remove::File" -- sent on unixlike`
+### WatchKind
+
+```luau
+| "Remove::File" -- sent on unixlike
+```
 
 ---
 
-WatchKind: `| "Remove::Directory" -- sent on unixlike`
+### WatchKind
+
+```luau
+| "Remove::Directory" -- sent on unixlike
+```
 
 ---
 
-WatchKind: `| "Remove::Other"`
+### WatchKind
+
+```luau
+| "Remove::Other"
+```
 
 ---
 
-WatchKind: `| "Remove::Any" -- sent on Windows`
+### WatchKind
+
+```luau
+| "Remove::Any" -- sent on Windows
+```
 
 ---
 
-WatchKind: `| "Other"`
+### WatchKind
+
+```luau
+| "Other"
+```
 
 ---
 
-WatchKind: `| "Unknown"`
+### WatchKind
+
+```luau
+| "Unknown"
+```
 
 ---
 
-WatchKind: `| "None::Timeout"`
+### WatchKind
+
+```luau
+| "None::Timeout"
+```
 
 ---

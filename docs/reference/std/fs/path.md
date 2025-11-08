@@ -7,7 +7,11 @@
 
 ---
 
-PathLib.join: `(...string) -> string`
+### PathLib.join
+
+```luau
+PathLib.join: (...string) -> string,
+```
 
 <details>
 
@@ -33,7 +37,11 @@ local otherfile_in_script_dir = path.join(script:parent(), "otherfile.txt")
 
 ---
 
-PathLib.exists: `(path: string) -> boolean`
+### PathLib.exists
+
+```luau
+PathLib.exists: (path: string) -> boolean,
+```
 
 <details>
 
@@ -50,7 +58,11 @@ handle cases like `NotFound` and `PermissionDenied` without wrapping error-throw
 
 ---
 
-PathLib.canonicalize: `(path: string) -> string`
+### PathLib.canonicalize
+
+```luau
+PathLib.canonicalize: (path: string) -> string,
+```
 
 Returns the canonical (absolute) form of `path` using Rust's `std::fs::canonicalize`, resolving symlinks and intermediate components.
 
@@ -58,7 +70,11 @@ Errors if the requested path doesn't exist on the filesystem or is invalid.
 
 ---
 
-PathLib.absolutize: `(path: string) -> string`
+### PathLib.absolutize
+
+```luau
+PathLib.absolutize: (path: string) -> string,
+```
 
 Returns the absolute path of `path` without checking the filesystem.
 
@@ -66,7 +82,11 @@ Use this function if your path may or may not exist (yet).
 
 ---
 
-PathLib.normalize: `(path: string) -> string`
+### PathLib.normalize
+
+```luau
+PathLib.normalize: (path: string) -> string,
+```
 
 <details>
 
@@ -96,7 +116,11 @@ as well as UNC paths like `"\\network\share\text.txt"` or `"\\?\wsl\mnt\..."`.
 
 ---
 
-PathLib.parent: `(path: string, n: number?) -> string?`
+### PathLib.parent
+
+```luau
+PathLib.parent: (path: string, n: number?) -> string?,
+```
 
 Returns the path of the parent directory `n` (default = 1) parents to the left of `path`
 
@@ -113,19 +137,31 @@ local parent_dir = path.parent(cwd)
 
 ---
 
-PathLib.child: `(path: string) -> string?`
+### PathLib.child
+
+```luau
+PathLib.child: (path: string) -> string?,
+```
 
  the farthest child/leaf/node of the path, ex. `path.child("./src/main.luau") == "main.luau"`
 
 ---
 
-PathLib.home: `() -> string`
+### PathLib.home
+
+```luau
+PathLib.home: () -> string,
+```
 
  returns the user's home directory, also known as `~`
 
 ---
 
-PathLib.cwd: `() -> string`
+### PathLib.cwd
+
+```luau
+PathLib.cwd: () -> string,
+```
 
  returns the current working directory, errors if not found or invalid utf-8.
 
@@ -134,7 +170,11 @@ PathLib.cwd: `() -> string`
 
 ---
 
-PathLib.project: `(n: number?, script_path: string?) -> string?`
+### PathLib.project
+
+```luau
+PathLib.project: (n: number?, script_path: string?) -> string?
+```
 
 Returns the *seal* project directory `n` projects up, relative to `script_path` or the current `script:path()` if unspecified.
 
