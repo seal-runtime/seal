@@ -69,10 +69,8 @@ export type http = {
 
         ⚠️ Expect breaking changes. This API will be heavily modified in the future.
     ]=]
-    server: HttpServerLib,
+    server: typeof(require("@self/server")),
 }
-
-export type HttpServerLib = typeof(require("@self/server"))
 
 export type HttpResponse = ({
     ok: true,

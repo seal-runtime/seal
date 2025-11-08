@@ -115,7 +115,7 @@ end
 <h4>
 
 ```luau
-server: HttpServerLib,
+server: typeof(require("@self/server")),
 ```
 
 </h4>
@@ -123,10 +123,6 @@ server: HttpServerLib,
 Create a webserver that listens for incoming requests.
 
 ⚠️ Expect breaking changes. This API will be heavily modified in the future.
-
----
-
-## `export type` HttpServerLib
 
 ---
 
