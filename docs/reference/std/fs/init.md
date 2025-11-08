@@ -369,24 +369,24 @@ Writes a new directory tree at `path` (which includes the directory's name) from
 ## Usage
 
 ```luau
-        -- using TreeBuilders from fs.tree()
-        fs.writetree("./tests", fs.tree()
-            :with_file("run.luau", test_runner_src)
-            :with_tree("simple-tests", fs.tree()
-                :with_file("cats.spec.luau", cats_src)
-                :with_file("seals.spec.luau", seals_src)
-            )
-        )
-        -- or using a return from fs.readtree:
-        local all_tests = fs.readtree("./all_tests")
-        local applicable_tests: fs.DirectoryTree = {} do
-            for _, entry in all_tests do
-                if entry.type == "File" and string.find(entry.name, "spec%.luau$") then
-                    table.insert(applicable_tests, entry)
-                end
-            end
+-- using TreeBuilders from fs.tree()
+fs.writetree("./tests", fs.tree()
+    :with_file("run.luau", test_runner_src)
+    :with_tree("simple-tests", fs.tree()
+        :with_file("cats.spec.luau", cats_src)
+        :with_file("seals.spec.luau", seals_src)
+    )
+)
+-- or using a return from fs.readtree:
+local all_tests = fs.readtree("./all_tests")
+local applicable_tests: fs.DirectoryTree = {} do
+    for _, entry in all_tests do
+        if entry.type == "File" and string.find(entry.name, "spec%.luau$") then
+            table.insert(applicable_tests, entry)
         end
-        fs.writetree("./applicable_tests", applicable_tests)
+    end
+end
+fs.writetree("./applicable_tests", applicable_tests)
 ```
 
 ## Errors

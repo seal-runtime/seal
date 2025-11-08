@@ -71,10 +71,10 @@ All seal `DateTime`s are timezone aware, which prevents annoying and complex bug
 ## Usage
 
 ```luau
-    -- Parse a simple ISO 8601 timestamp that we're sure came from US/CST time.
-    local dt = datetime.parse("2025-01-02 05:00", "ISO_8601", "US/Central")
-    -- Parse an RFC 3339 timestamp that already has timezone offset info in it.
-    local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
+-- Parse a simple ISO 8601 timestamp that we're sure came from US/CST time.
+local dt = datetime.parse("2025-01-02 05:00", "ISO_8601", "US/Central")
+-- Parse an RFC 3339 timestamp that already has timezone offset info in it.
+local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
 ```
 
 </details>

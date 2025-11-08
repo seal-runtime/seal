@@ -48,9 +48,9 @@ Similar to `fs.makedir(path, { error_if_exists = false }); fs.dir.from(path)`
 ## Usage
 
 ```luau
-    -- doesn't replace .vscode if it already exists, but creates it if it doesn't
-    local dot_vscode = fs.dir.ensure(".vscode")
-    local settings_json = dot_vscode:find("settings.json"):try_file()
+-- doesn't replace .vscode if it already exists, but creates it if it doesn't
+local dot_vscode = fs.dir.ensure(".vscode")
+local settings_json = dot_vscode:find("settings.json"):try_file()
 ```
 
 </details>

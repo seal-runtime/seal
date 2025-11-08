@@ -111,7 +111,7 @@ for _, filepath in typedefs_paths do
             in_a_codeblock = false
             codeblock_preceding_whitespace = nil
         elseif in_docs and in_a_codeblock and last_line_started_codeblock then
-            codeblock_preceding_whitespace = string.match(line, "^([%s]+)[%w]+")
+            codeblock_preceding_whitespace = string.match(line, "^([%s]+)[%w%p]+")
             last_line_started_codeblock = false
         end
 
