@@ -24,7 +24,7 @@
 <h4>
 
 ```luau
-from: (path: string) -> DirectoryEntry,
+function (path: string) -> DirectoryEntry,
 ```
 
 </h4>
@@ -38,7 +38,7 @@ from: (path: string) -> DirectoryEntry,
 <h4>
 
 ```luau
-build: (name: string, tree: DirectoryTree) -> DirectoryBuilder,
+function (name: string, tree: DirectoryTree) -> DirectoryBuilder,
 ```
 
 </h4>
@@ -52,7 +52,7 @@ build: (name: string, tree: DirectoryTree) -> DirectoryBuilder,
 <h4>
 
 ```luau
-create: (path: string) -> DirectoryEntry,
+function (path: string) -> DirectoryEntry,
 ```
 
 </h4>
@@ -66,7 +66,7 @@ create: (path: string) -> DirectoryEntry,
 <h4>
 
 ```luau
-ensure: (path: string, create_missing: boolean?) -> DirectoryEntry,
+function (path: string, create_missing: boolean?) -> DirectoryEntry,
 ```
 
 </h4>
@@ -96,7 +96,7 @@ local settings_json = dot_vscode:find("settings.json"):try_file()
 <h4>
 
 ```luau
-try_remove: (path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?),
+function (path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?),
 ```
 
 </h4>
@@ -123,7 +123,7 @@ with result "Other", as well as an error kind string that describes what went wr
 <h4>
 
 ```luau
-home: () -> DirectoryEntry,
+function () -> DirectoryEntry,
 ```
 
 </h4>
@@ -147,7 +147,7 @@ local zip_downloads = fs.dir.home()
 <h4>
 
 ```luau
-cwd: () -> DirectoryEntry,
+function () -> DirectoryEntry,
 ```
 
 </h4>
@@ -164,7 +164,7 @@ where the user is when they execute your code.
 <h4>
 
 ```luau
-project: (n: number?) -> DirectoryEntry,
+function (n: number?) -> DirectoryEntry,
 ```
 
 </h4>
@@ -205,7 +205,7 @@ local input_files = fs.dir.project()
 
 
 ```luau
-__call: (self: any, path: string) -> DirectoryEntry?,
+function (self: any, path: string) -> DirectoryEntry?,
 ```
 
 </h4>

@@ -14,7 +14,7 @@ Serialize YAML files.
 <h4>
 
 ```luau
-encode: (t: YamlValue) -> string,
+function (t: YamlValue) -> string,
 ```
 
 </h4>
@@ -26,7 +26,7 @@ encode: (t: YamlValue) -> string,
 <h4>
 
 ```luau
-decode: (toml_data: string) -> YamlValue,
+function (toml_data: string) -> YamlValue,
 ```
 
 </h4>
@@ -38,7 +38,7 @@ decode: (toml_data: string) -> YamlValue,
 <h4>
 
 ```luau
-readfile: (path: string) -> YamlValue,
+function (path: string) -> YamlValue,
 ```
 
 </h4>
@@ -50,7 +50,7 @@ readfile: (path: string) -> YamlValue,
 <h4>
 
 ```luau
-writefile: (path: string, content: YamlValue) -> (),
+function (path: string, content: YamlValue) -> (),
 ```
 
 </h4>

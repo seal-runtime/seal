@@ -22,7 +22,7 @@ print(colors.blue("my blue text"))
 <h4>
 
 ```luau
-black: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -34,7 +34,7 @@ black: (text: string) -> string,
 <h4>
 
 ```luau
-red: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -46,7 +46,7 @@ red: (text: string) -> string,
 <h4>
 
 ```luau
-green: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -58,7 +58,7 @@ green: (text: string) -> string,
 <h4>
 
 ```luau
-yellow: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -70,7 +70,7 @@ yellow: (text: string) -> string,
 <h4>
 
 ```luau
-blue: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -82,7 +82,7 @@ blue: (text: string) -> string,
 <h4>
 
 ```luau
-magenta: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -94,7 +94,7 @@ magenta: (text: string) -> string,
 <h4>
 
 ```luau
-cyan: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -106,7 +106,7 @@ cyan: (text: string) -> string,
 <h4>
 
 ```luau
-white: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -118,7 +118,7 @@ white: (text: string) -> string,
 <h4>
 
 ```luau
-black: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -130,7 +130,7 @@ black: (text: string) -> string,
 <h4>
 
 ```luau
-red: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -142,7 +142,7 @@ red: (text: string) -> string,
 <h4>
 
 ```luau
-green: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -154,7 +154,7 @@ green: (text: string) -> string,
 <h4>
 
 ```luau
-yellow: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -166,7 +166,7 @@ yellow: (text: string) -> string,
 <h4>
 
 ```luau
-blue: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -178,7 +178,7 @@ blue: (text: string) -> string,
 <h4>
 
 ```luau
-magenta: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -190,7 +190,7 @@ magenta: (text: string) -> string,
 <h4>
 
 ```luau
-cyan: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -202,7 +202,7 @@ cyan: (text: string) -> string,
 <h4>
 
 ```luau
-white: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -214,7 +214,7 @@ white: (text: string) -> string,
 <h4>
 
 ```luau
-dim: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -226,7 +226,7 @@ dim: (text: string) -> string,
 <h4>
 
 ```luau
-bold: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>
@@ -238,7 +238,7 @@ bold: (text: string) -> string,
 <h4>
 
 ```luau
-underline: (text: string) -> string,
+function (text: string) -> string,
 ```
 
 </h4>

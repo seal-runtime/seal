@@ -14,7 +14,7 @@ Library for sending HTTP Requests.
 <h4>
 
 ```luau
-get: (config: GetConfig | string) -> HttpResponse,
+function (config: GetConfig | string) -> HttpResponse,
 ```
 
 </h4>
@@ -58,7 +58,7 @@ local cats = http.get {
 <h4>
 
 ```luau
-post: (config: PostConfig) -> HttpResponse,
+function (config: PostConfig) -> HttpResponse,
 ```
 
 </h4>
@@ -87,7 +87,7 @@ local response = http.post {
 <h4>
 
 ```luau
-request: (config: RequestConfig) -> HttpResponse,
+function (config: RequestConfig) -> HttpResponse,
 ```
 
 </h4>
@@ -175,7 +175,7 @@ body: string,
 <h4>
 
 ```luau
-decode: (self: HttpResponse) -> { [any]: any }
+function (self: HttpResponse) -> { [any]: any }
 ```
 
 </h4>
@@ -213,7 +213,7 @@ err: string,
 <h4>
 
 ```luau
-unwrap_json: (self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
+function (self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
 ```
 
 </h4>

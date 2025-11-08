@@ -12,7 +12,7 @@
 <h4>
 
 ```luau
-readfile: (path: string) -> string,
+function (path: string) -> string,
 ```
 
 </h4>
@@ -42,7 +42,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 <h4>
 
 ```luau
-readbytes: (path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
+function (path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
 ```
 
 </h4>
@@ -89,7 +89,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 <h4>
 
 ```luau
-readlines: (path: string) -> () -> (number, string),
+function (path: string) -> () -> (number, string),
 ```
 
 </h4>
@@ -127,7 +127,7 @@ local _, line2 = nextline()
 <h4>
 
 ```luau
-writefile: (path: string, content: string | buffer) -> (),
+function (path: string, content: string | buffer) -> (),
 ```
 
 </h4>
@@ -164,7 +164,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 <h4>
 
 ```luau
-removefile: (path: string) -> (),
+function (path: string) -> (),
 ```
 
 </h4>
@@ -186,7 +186,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 <h4>
 
 ```luau
-is: (path: string) -> PathIs,
+function (path: string) -> PathIs,
 ```
 
 </h4>
@@ -238,7 +238,7 @@ end
 <h4>
 
 ```luau
-symlink: (target: string, link: string) -> boolean,
+function (target: string, link: string) -> boolean,
 ```
 
 </h4>
@@ -266,7 +266,7 @@ If you're on Windows, you need to run this program with Administrator permission
 <h4>
 
 ```luau
-unsymlink: (link: string) -> boolean,
+function (link: string) -> boolean,
 ```
 
 </h4>
@@ -289,7 +289,7 @@ Removes the symlink at `link`.
 <h4>
 
 ```luau
-readlink: (symlink: string) -> string,
+function (symlink: string) -> string,
 ```
 
 </h4>
@@ -307,7 +307,7 @@ Follows `symlink` and returns the *path* targeted by the symlink.
 <h4>
 
 ```luau
-watch: (paths: string | { string }, options: WatchOptions?) -> () -> (WatchEventCategory, WatchEventInfo),
+function (paths: string | { string }, options: WatchOptions?) -> () -> (WatchEventCategory, WatchEventInfo),
 ```
 
 </h4>
@@ -439,7 +439,7 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 <h4>
 
 ```luau
-readtree: (path: string) -> DirectoryTree,
+function (path: string) -> DirectoryTree,
 ```
 
 </h4>
@@ -453,7 +453,7 @@ Recursively read contents of directory at `path` into a `fs.DirectoryTree` that 
 <h4>
 
 ```luau
-writetree: (path: string, tree: TreeBuilder | DirectoryTree) -> (),
+function (path: string, tree: TreeBuilder | DirectoryTree) -> (),
 ```
 
 </h4>
@@ -506,7 +506,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 <h4>
 
 ```luau
-removetree: (path: string) -> (),
+function (path: string) -> (),
 ```
 
 </h4>
@@ -540,7 +540,7 @@ Please use this function carefully.
 <h4>
 
 ```luau
-makedir: (path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?) -> boolean,
+function (path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?) -> boolean,
 ```
 
 </h4>
@@ -584,7 +584,7 @@ fs.makedir(fs.path.join(fs.path.cwd(), "Config", "Editor", "Formatting"), {
 <h4>
 
 ```luau
-listdir: (path: string, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
+function (path: string, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
 ```
 
 </h4>
@@ -627,7 +627,7 @@ end)
 <h4>
 
 ```luau
-move: (from: string, to: string) -> (),
+function (from: string, to: string) -> (),
 ```
 
 </h4>
@@ -648,7 +648,7 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 <h4>
 
 ```luau
-copy: (source: string, destination: string) -> (),
+function (source: string, destination: string) -> (),
 ```
 
 </h4>
@@ -664,7 +664,7 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 <h4>
 
 ```luau
-find: (path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
+function (path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
 ```
 
 </h4>
@@ -722,7 +722,7 @@ end
 <h4>
 
 ```luau
-entries: (path: string) -> { [string]: Entry },
+function (path: string) -> { [string]: Entry },
 ```
 
 </h4>
@@ -798,7 +798,7 @@ Commonly used `fs.path` functions include: `fs.path.join` for combining paths an
 <h4>
 
 ```luau
-tree: () -> TreeBuilder,
+function () -> TreeBuilder,
 ```
 
 </h4>

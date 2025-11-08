@@ -12,7 +12,7 @@
 <h4>
 
 ```luau
-join: (...string) -> string,
+function (...string) -> string,
 ```
 
 </h4>
@@ -46,7 +46,7 @@ local otherfile_in_script_dir = path.join(script:parent(), "otherfile.txt")
 <h4>
 
 ```luau
-exists: (path: string) -> boolean,
+function (path: string) -> boolean,
 ```
 
 </h4>
@@ -71,7 +71,7 @@ handle cases like `NotFound` and `PermissionDenied` without wrapping error-throw
 <h4>
 
 ```luau
-canonicalize: (path: string) -> string,
+function (path: string) -> string,
 ```
 
 </h4>
@@ -87,7 +87,7 @@ Errors if the requested path doesn't exist on the filesystem or is invalid.
 <h4>
 
 ```luau
-absolutize: (path: string) -> string,
+function (path: string) -> string,
 ```
 
 </h4>
@@ -103,7 +103,7 @@ Use this function if your path may or may not exist (yet).
 <h4>
 
 ```luau
-normalize: (path: string) -> string,
+function (path: string) -> string,
 ```
 
 </h4>
@@ -141,7 +141,7 @@ as well as UNC paths like `"\\network\share\text.txt"` or `"\\?\wsl\mnt\..."`.
 <h4>
 
 ```luau
-parent: (path: string, n: number?) -> string?,
+function (path: string, n: number?) -> string?,
 ```
 
 </h4>
@@ -166,7 +166,7 @@ local parent_dir = path.parent(cwd)
 <h4>
 
 ```luau
-child: (path: string) -> string?,
+function (path: string) -> string?,
 ```
 
 </h4>
@@ -180,7 +180,7 @@ child: (path: string) -> string?,
 <h4>
 
 ```luau
-home: () -> string,
+function () -> string,
 ```
 
 </h4>
@@ -194,7 +194,7 @@ home: () -> string,
 <h4>
 
 ```luau
-cwd: () -> string,
+function () -> string,
 ```
 
 </h4>
@@ -211,7 +211,7 @@ cwd: () -> string,
 <h4>
 
 ```luau
-project: (n: number?, script_path: string?) -> string?
+function (n: number?, script_path: string?) -> string?
 ```
 
 </h4>

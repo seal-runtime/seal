@@ -21,7 +21,7 @@ to be valid utf-8 encoded strings.
 <h4>
 
 ```luau
-endswith: (s: string, suffix: string): boolean
+function (s: string, suffix: string): boolean
 ```
 
 </h4>
@@ -35,7 +35,7 @@ endswith: (s: string, suffix: string): boolean
 <h4>
 
 ```luau
-starts: (s: string, ...: string): boolean
+function (s: string, ...: string): boolean
 ```
 
 </h4>
@@ -49,7 +49,7 @@ starts: (s: string, ...: string): boolean
 <h4>
 
 ```luau
-ends: (s: string, ...: string): boolean
+function (s: string, ...: string): boolean
 ```
 
 </h4>
@@ -63,7 +63,7 @@ ends: (s: string, ...: string): boolean
 <h4>
 
 ```luau
-trimfront: (s: string, ...: string): string
+function (s: string, ...: string): string
 ```
 
 </h4>
@@ -79,7 +79,7 @@ trimfront: (s: string, ...: string): string
 <h4>
 
 ```luau
-trimback: (s: string, ...: string): string
+function (s: string, ...: string): string
 ```
 
 </h4>
@@ -95,7 +95,7 @@ trimback: (s: string, ...: string): string
 <h4>
 
 ```luau
-trim: (s: string, ...: string): string
+function (s: string, ...: string): string
 ```
 
 </h4>
@@ -111,7 +111,7 @@ trim: (s: string, ...: string): string
 <h4>
 
 ```luau
-splitlines: (s: string, trim_trailing_whitespace: boolean?): { string }
+function (s: string, trim_trailing_whitespace: boolean?): { string }
 ```
 
 </h4>
@@ -126,7 +126,7 @@ splitlines: (s: string, trim_trailing_whitespace: boolean?): { string }
 <h4>
 
 ```luau
-len: (s: string): number
+function (s: string): number
 ```
 
 </h4>
@@ -140,7 +140,7 @@ len: (s: string): number
 <h4>
 
 ```luau
-width: (s: string): number
+function (s: string): number
 ```
 
 </h4>
@@ -203,7 +203,7 @@ end
 <h4>
 
 ```luau
-leftpad: (s: string, width: number, pad: string?): string
+function (s: string, width: number, pad: string?): string
 ```
 
 </h4>
@@ -217,7 +217,7 @@ leftpad: (s: string, width: number, pad: string?): string
 <h4>
 
 ```luau
-escape: (s: string): string
+function (s: string): string
 ```
 
 </h4>
@@ -231,7 +231,7 @@ escape: (s: string): string
 <h4>
 
 ```luau
-unescape: (s: string): string
+function (s: string): string
 ```
 
 </h4>
@@ -245,7 +245,7 @@ unescape: (s: string): string
 <h4>
 
 ```luau
-slice: (s: string, first: number, final: number)
+function (s: string, first: number, final: number)
 ```
 
 </h4>
@@ -259,7 +259,7 @@ slice: (s: string, first: number, final: number)
 <h4>
 
 ```luau
-indent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string
+function (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string
 ```
 
 </h4>
@@ -273,7 +273,7 @@ indent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n
 <h4>
 
 ```luau
-unindent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string
+function (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string
 ```
 
 </h4>
@@ -287,7 +287,7 @@ unindent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("
 <h4>
 
 ```luau
-split: (s: string, ...: string): { string }
+function (s: string, ...: string): { string }
 ```
 
 </h4>
@@ -335,7 +335,7 @@ local omit_hi = str.split("seals 🦭 say hi", " ", "hi")
 <h4>
 
 ```luau
-splitaround: (s: string, seps: string, ...: string): { string }
+function (s: string, seps: string, ...: string): { string }
 ```
 
 </h4>
@@ -370,7 +370,7 @@ local tokens = str.splitaround(line, " ", ".", "(", ":", ",", ")")
 <h4>
 
 ```luau
-splitbefore: (s: string, seps: string, ...: string): { string }
+function (s: string, seps: string, ...: string): { string }
 ```
 
 </h4>
@@ -405,7 +405,7 @@ print(splitted) -->
 <h4>
 
 ```luau
-splitafter: (s: string, seps: string, ...: string): { string }
+function (s: string, seps: string, ...: string): { string }
 ```
 
 </h4>
@@ -439,7 +439,7 @@ local splitted = str.splitafter(httpheaders, "\r\n") -->
 <h4>
 
 ```luau
-chars: (s: string): (...any) -> (number, string)
+function (s: string): (...any) -> (number, string)
 ```
 
 </h4>
@@ -455,7 +455,7 @@ This function counts by 'characters', whereas `str.graphemes` provides byte indi
 <h4>
 
 ```luau
-graphemes: (s: string): (...any) -> (number, string)
+function (s: string): (...any) -> (number, string)
 ```
 
 </h4>

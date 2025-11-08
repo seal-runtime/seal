@@ -376,7 +376,7 @@ port: string | number,
 <h4>
 
 ```luau
-handler: (ServeRequest) -> ServeResponse,
+function (ServeRequest) -> ServeResponse,
 ```
 
 </h4>
@@ -388,7 +388,7 @@ handler: (ServeRequest) -> ServeResponse,
 <h4>
 
 ```luau
-serve: (config: ServeConfig)
+function (config: ServeConfig)
 ```
 
 </h4>

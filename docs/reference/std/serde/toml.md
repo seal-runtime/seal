@@ -14,7 +14,7 @@ Serialize TOML files.
 <h4>
 
 ```luau
-encode: (t: TomlValue) -> string,
+function (t: TomlValue) -> string,
 ```
 
 </h4>
@@ -26,7 +26,7 @@ encode: (t: TomlValue) -> string,
 <h4>
 
 ```luau
-decode: (toml_data: string) -> TomlValue,
+function (toml_data: string) -> TomlValue,
 ```
 
 </h4>
@@ -38,7 +38,7 @@ decode: (toml_data: string) -> TomlValue,
 <h4>
 
 ```luau
-readfile: (path: string) -> TomlValue,
+function (path: string) -> TomlValue,
 ```
 
 </h4>
@@ -50,7 +50,7 @@ readfile: (path: string) -> TomlValue,
 <h4>
 
 ```luau
-writefile: (path: string, content: TomlValue) -> (),
+function (path: string, content: TomlValue) -> (),
 ```
 
 </h4>

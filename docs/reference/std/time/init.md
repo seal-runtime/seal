@@ -14,7 +14,7 @@ A time library with `time.wait` and functions for creating `Duration` objects.
 <h4>
 
 ```luau
-wait: (seconds: number) -> true,
+function (seconds: number) -> true,
 ```
 
 </h4>
@@ -43,7 +43,7 @@ datetime: typeof(require("@self/datetime")),
 <h4>
 
 ```luau
-years: (y: number) -> Duration,
+function (y: number) -> Duration,
 ```
 
 </h4>
@@ -57,7 +57,7 @@ years: (y: number) -> Duration,
 <h4>
 
 ```luau
-months: (months: number) -> Duration,
+function (months: number) -> Duration,
 ```
 
 </h4>
@@ -72,7 +72,7 @@ months: (months: number) -> Duration,
 <h4>
 
 ```luau
-days: (d: number) -> Duration,
+function (d: number) -> Duration,
 ```
 
 </h4>
@@ -86,7 +86,7 @@ days: (d: number) -> Duration,
 <h4>
 
 ```luau
-hours: (h: number) -> Duration,
+function (h: number) -> Duration,
 ```
 
 </h4>
@@ -100,7 +100,7 @@ hours: (h: number) -> Duration,
 <h4>
 
 ```luau
-minutes: (m: number) -> Duration,
+function (m: number) -> Duration,
 ```
 
 </h4>
@@ -114,7 +114,7 @@ minutes: (m: number) -> Duration,
 <h4>
 
 ```luau
-seconds: (s: number) -> Duration,
+function (s: number) -> Duration,
 ```
 
 </h4>
@@ -128,7 +128,7 @@ seconds: (s: number) -> Duration,
 <h4>
 
 ```luau
-milliseconds: (ms: number) -> Duration,
+function (ms: number) -> Duration,
 ```
 
 </h4>
@@ -142,7 +142,7 @@ milliseconds: (ms: number) -> Duration,
 <h4>
 
 ```luau
-microseconds: (us: number) -> Duration,
+function (us: number) -> Duration,
 ```
 
 </h4>
@@ -156,7 +156,7 @@ microseconds: (us: number) -> Duration,
 <h4>
 
 ```luau
-nanoseconds: (n: number) -> Duration,
+function (n: number) -> Duration,
 ```
 
 </h4>
