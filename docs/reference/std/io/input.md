@@ -10,10 +10,10 @@
 
 ---
 
-### .stream
+### io.input.tty
 
 ```luau
-`function` .streaminput.tty: (stream: "Stdout" | "Stderr" | "Stdin"?) -> boolean
+io.input.tty: (stream: "Stdout" | "Stderr" | "Stdin"?): boolean
 ```
 
 <details>
@@ -33,10 +33,10 @@ If *seal* is being run in a child process, this will almost always return `false
 
 ---
 
-### .prompt
+### io.input.rawline
 
 ```luau
-`function` .promptinput.rawline: (prompt: string?) -> string
+io.input.rawline: (prompt: string?): string
 ```
 
 Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
@@ -45,10 +45,10 @@ But works with stdin in a child process/works while piped, making it a fallback 
 
 ---
 
-### .prompt
+### io.input.readline
 
 ```luau
-`function` .promptinput.readline: (prompt: string) -> string | interrupt | error
+io.input.readline: (prompt: string): string | interrupt | error
 ```
 
 <details>
@@ -93,20 +93,20 @@ end
 
 ---
 
-### .key
+### io.input.interrupt
 
 ```luau
-`function` .keyinput.interrupt: (key: "CtrlC" | "CtrlD") -> interrupt
+io.input.interrupt: (key: "CtrlC" | "CtrlD"): interrupt
 ```
 
 Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 ---
 
-### .enabled
+### io.input.rawmode
 
 ```luau
-`function` .enabledinput.rawmode: (enabled: boolean)
+io.input.rawmode: (enabled: boolean)
 ```
 
 <details>
@@ -127,40 +127,40 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 ---
 
-### .mouse
+### io.input.mouse
 
 ```luau
-`function` .mousemouse: : (enabled: boolean) -> (),
+io.input.mouse: (enabled: boolean) -> (),
 ```
 
  Allows `MouseEvents` to be reported by `input.events()`.
 
 ---
 
-### .focus
+### io.input.focus
 
 ```luau
-`function` .focusfocus: : (enabled: boolean) -> (),
+io.input.focus: (enabled: boolean) -> (),
 ```
 
  Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
 
 ---
 
-### .paste
+### io.input.paste
 
 ```luau
-`function` .pastepaste: : (enabled: boolean) -> (),
+io.input.paste: (enabled: boolean) -> (),
 ```
 
  Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
 
 ---
 
-### .poll
+### io.input.events
 
 ```luau
-`function` .pollinput.events: (poll: Duration) -> () -> TerminalEvent
+io.input.events: (poll: Duration): () -> TerminalEvent
 ```
 
 <details>
@@ -419,15 +419,11 @@ Empty.is: "Empty",
 
 ---
 
-### TerminalEvent
-
 ```luau
 | KeyEvent
 ```
 
 ---
-
-### TerminalEvent
 
 ```luau
 | MouseEvent
@@ -435,15 +431,11 @@ Empty.is: "Empty",
 
 ---
 
-### TerminalEvent
-
 ```luau
 | ResizeEvent
 ```
 
 ---
-
-### TerminalEvent
 
 ```luau
 | PasteEvent
@@ -451,15 +443,11 @@ Empty.is: "Empty",
 
 ---
 
-### TerminalEvent
-
 ```luau
 | FocusGained | FocusLost
 ```
 
 ---
-
-### TerminalEvent
 
 ```luau
 | Empty

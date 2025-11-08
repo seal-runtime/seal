@@ -7,15 +7,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "200 OK"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "201 Created"
@@ -23,15 +19,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "204 No Content"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "301 Moved Permanently"
@@ -39,15 +31,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "302 Found"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "304 Not Modified"
@@ -55,15 +43,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "307 Temporary Redirect"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "308 Permanent Redirect"
@@ -71,15 +55,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "400 Bad Request"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "401 Unauthorized"
@@ -87,15 +67,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "403 Forbidden"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "404 Not Found"
@@ -103,15 +79,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "405 Method Not Allowed"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "409 Conflict"
@@ -119,15 +91,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "410 Gone"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "412 Precondition Failed"
@@ -135,15 +103,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "415 Unsupported Media Type"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "429 Too Many Requests"
@@ -151,15 +115,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "500 Internal Server Error"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "501 Not Implemented"
@@ -167,15 +127,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "502 Bad Gateway"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "503 Service Unavailable"
@@ -183,15 +139,11 @@
 
 ---
 
-### StatusCode
-
 ```luau
 | "504 Gateway Timeout"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "505 HTTP Version Not Supported"
@@ -203,15 +155,11 @@
 
 ---
 
-### ContentType
-
 ```luau
 | "Text"
 ```
 
 ---
-
-### ContentType
 
 ```luau
 | "HTML"
@@ -219,15 +167,11 @@
 
 ---
 
-### ContentType
-
 ```luau
 | "JSON"
 ```
 
 ---
-
-### ContentType
 
 ```luau
 | "XML"
@@ -235,15 +179,11 @@
 
 ---
 
-### ContentType
-
 ```luau
 | "CSS"
 ```
 
 ---
-
-### ContentType
 
 ```luau
 | "JavaScript"
@@ -251,15 +191,11 @@
 
 ---
 
-### ContentType
-
 ```luau
 | "Binary"
 ```
 
 ---
-
-### ContentType
 
 ```luau
 | string
@@ -391,10 +327,10 @@ ServeConfig.handler: (ServeRequest) -> ServeResponse,
 
 ---
 
-### .config
+### net.http.server.serve
 
 ```luau
-`function` .configserver.serve: (config: ServeConfig)
+net.http.server.serve: (config: ServeConfig)
 ```
 
 <details>

@@ -719,15 +719,11 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ---
 
-### PathIs
-
 ```luau
 | "File"
 ```
 
 ---
-
-### PathIs
 
 ```luau
 | "Directory"
@@ -735,15 +731,11 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ---
 
-### PathIs
-
 ```luau
 | "Symlink"
 ```
 
 ---
-
-### PathIs
 
 ```luau
 | "UnixSocket"
@@ -751,15 +743,11 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ---
 
-### PathIs
-
 ```luau
 | "UnixFifo"
 ```
 
 ---
-
-### PathIs
 
 ```luau
 | "UnixCharDevice"
@@ -767,15 +755,11 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ---
 
-### PathIs
-
 ```luau
 | "UnixBlockDevice"
 ```
 
 ---
-
-### PathIs
 
 ```luau
 | "WindowsReparsePoint"
@@ -783,23 +767,17 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ---
 
-### PathIs
-
 ```luau
 | "Other"
 ```
 
 ---
 
-### PathIs
-
 ```luau
 | "NotFound"
 ```
 
 ---
-
-### PathIs
 
 ```luau
 | "PermissionDenied"
@@ -873,15 +851,11 @@ Some usage notes:
 
 ---
 
-### WatchEventCategory
-
 ```luau
 | "Read" -- note that Read ~= open for reading (which is in Open)
 ```
 
 ---
-
-### WatchEventCategory
 
 ```luau
 | "Execute"
@@ -889,15 +863,11 @@ Some usage notes:
 
 ---
 
-### WatchEventCategory
-
 ```luau
 | "Open"
 ```
 
 ---
-
-### WatchEventCategory
 
 ```luau
 | "Close"
@@ -905,15 +875,11 @@ Some usage notes:
 
 ---
 
-### WatchEventCategory
-
 ```luau
 | "Access"
 ```
 
 ---
-
-### WatchEventCategory
 
 ```luau
 | "Create"
@@ -921,15 +887,11 @@ Some usage notes:
 
 ---
 
-### WatchEventCategory
-
 ```luau
 | "Rename"
 ```
 
 ---
-
-### WatchEventCategory
 
 ```luau
 | "Modify::Data"
@@ -937,15 +899,11 @@ Some usage notes:
 
 ---
 
-### WatchEventCategory
-
 ```luau
 | "Modify::Metadata"
 ```
 
 ---
-
-### WatchEventCategory
 
 ```luau
 | "Modify::Other"
@@ -953,15 +911,11 @@ Some usage notes:
 
 ---
 
-### WatchEventCategory
-
 ```luau
 | "Remove"
 ```
 
 ---
-
-### WatchEventCategory
 
 ```luau
 | "Other"
@@ -969,15 +923,11 @@ Some usage notes:
 
 ---
 
-### WatchEventCategory
-
 ```luau
 | "Unknown"
 ```
 
 ---
-
-### WatchEventCategory
 
 ```luau
 | "None"
@@ -1036,15 +986,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Read"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Open::Execute"
@@ -1052,15 +998,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Open::Read"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Open::Write"
@@ -1068,15 +1010,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Open::Other"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Close::Execute"
@@ -1084,15 +1022,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Close::Read"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Close::Write"
@@ -1100,15 +1034,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Close::Other"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Close::Any"
@@ -1116,15 +1046,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Open::Any"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Access::Any"
@@ -1132,15 +1058,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Access::Other"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Create::File"
@@ -1148,15 +1070,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Create::Directory" -- sent on macos and unixlike
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Create::Other"
@@ -1164,15 +1082,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Create::Any"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Rename::Any"
@@ -1180,15 +1094,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Rename::From"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Rename::To"
@@ -1196,15 +1106,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Rename::Both"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Rename::Other"
@@ -1212,15 +1118,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Modify::Data" -- sent on unixlike
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Modify::Data::Content"
@@ -1228,15 +1130,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Modify::Data::Size"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Modify::Data::Other" -- sent on windows
@@ -1244,15 +1142,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Modify::Metadata::AccessTime"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Modify::Metadata::WriteTime"
@@ -1260,15 +1154,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Modify::Metadata::Ownership"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Modify::Metadata::Permissions"
@@ -1276,15 +1166,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Modify::Metadata::Extended"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Modify::Metadata::Other"
@@ -1292,15 +1178,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Modify::Metadata::Any"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Modify::Any"
@@ -1308,15 +1190,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Modify::Other"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Remove::File" -- sent on unixlike
@@ -1324,15 +1202,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Remove::Directory" -- sent on unixlike
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Remove::Other"
@@ -1340,15 +1214,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Remove::Any" -- sent on Windows
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "Other"
@@ -1356,15 +1226,11 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
-### WatchKind
-
 ```luau
 | "Unknown"
 ```
 
 ---
-
-### WatchKind
 
 ```luau
 | "None::Timeout"

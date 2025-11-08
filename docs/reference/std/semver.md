@@ -101,10 +101,10 @@ SemverFields.metadata.release_candidate.build: string?,
 
 ---
 
-### Semver.s
+### Semver.from
 
 ```luau
-`function` Semver.ssemver.from: (s: string) -> Semver
+Semver.from: (s: string): Semver
 ```
 
 ---
@@ -137,15 +137,11 @@ Semver.FIXME: not optional fields not qualifying as optionals
 
 ---
 
-### SemverVals
-
 ```luau
 | "AND UP"
 ```
 
 ---
-
-### SemverVals
 
 ```luau
 | "EXACTLY EQUAL"
@@ -153,15 +149,11 @@ Semver.FIXME: not optional fields not qualifying as optionals
 
 ---
 
-### SemverVals
-
 ```luau
 | "LESS THAN OR EQUAL"
 ```
 
 ---
-
-### SemverVals
 
 ```luau
 | "LESS THAN"
@@ -169,18 +161,16 @@ Semver.FIXME: not optional fields not qualifying as optionals
 
 ---
 
-### SemverVals
-
 ```luau
 | "GREATER THAN NOT INCLUDING"
 ```
 
 ---
 
-### SemverVals.self
+### SemverVals.satisfies
 
 ```luau
-`function` SemverVals.selfsemver.satisfies: (self: Semver, semver_range: string) -> boolean
+SemverVals.satisfies: (self: Semver, semver_range: string): boolean
 ```
 
 <details>
@@ -218,34 +208,34 @@ end
 
 ---
 
-### SemverVals.self
+### SemverVals.__eq
 
 ```luau
-`function` SemverVals.selfsemver.__eq: (self: Semver, other: Semver) -> boolean
+SemverVals.__eq: (self: Semver, other: Semver): boolean
 ```
 
 ---
 
-### SemverVals.self
+### SemverVals.__lt
 
 ```luau
-`function` SemverVals.selfsemver.__lt: (self: Semver, other: Semver) -> boolean
+SemverVals.__lt: (self: Semver, other: Semver): boolean
 ```
 
 ---
 
-### SemverVals.self
+### SemverVals.__le
 
 ```luau
-`function` SemverVals.selfsemver.__le: (self: Semver, other: Semver) -> boolean
+SemverVals.__le: (self: Semver, other: Semver): boolean
 ```
 
 ---
 
-### SemverVals.self
+### SemverVals.__tostring
 
 ```luau
-`function` SemverVals.selfsemver.__tostring: (self: Semver) -> string
+SemverVals.__tostring: (self: Semver): string
 ```
 
 ---

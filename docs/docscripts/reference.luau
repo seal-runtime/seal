@@ -166,6 +166,10 @@ for _, filepath in typedefs_paths do
             continue -- is comment
         end
 
+        if str.startswith(trimmed_line, "function") then
+            trimmed_line = str.trimfront(trimmed_line, "function"):gsub("%(", ": (", 1)
+        end
+
         if string.match(line, "^%s*|") then -- enum-like types
             local found_name = current_names[1]
             local new_api: Api = {
@@ -178,6 +182,7 @@ for _, filepath in typedefs_paths do
             table.clear(current_docs)
         elseif string.match(line, "[%w_]+: ") then
             local front_name = table.concat(current_names, ".")
+            if #front_name == 0 then front_name = library_name end
             if str.startswith(trimmed_line, "local ") then
                 continue
             end
@@ -187,18 +192,8 @@ for _, filepath in typedefs_paths do
 
             local name = front_name .. "." .. property_name
 
-            local is = 
-                if #front_name == 0 or str.startswith(trimmed_line, "function") then
-                    "Function"
-                else
-                    "Property"
-            local defs =
-                if is == "Function" then
-                    str.trimfront(trimmed_line, "function ")
-                        :gsub("%(", ": (", 1)
-                        :gsub("%): ", ") -> ")
-                else
-                    `: {rest}`
+            local is = "Property"
+            local defs = ": " .. rest
 
             local new_api: Api = {
                 name = name,
@@ -256,10 +251,19 @@ for _, library in libraries do
             continue
         end
 
-        local name = if api.is == "Type" then `\`export type\` {api.name}` else api.name
-        local defs = if api.is == "Function" then `\`function\` {api.defs}` else api.defs
+        local name = 
+            if api.is == "Type" then 
+                `\`export type\` {api.name}`
+            elseif api.is == "Function" then
+                `\`function\` {api.name}`
+            elseif api.is == "Enum" then
+                `\`enum\` {api.name}`
+            else api.name
+        local defs = api.defs
 
-        push(`### {name}`)
+        if api.is ~= "Enum" then
+            push(`### {name}`)
+        end
         if #api.defs > 0 then
             push("```luau", 0)
             push(defs, 0)

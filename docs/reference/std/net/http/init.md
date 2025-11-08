@@ -260,15 +260,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "200 OK"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "201 Created"
@@ -276,15 +272,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "204 No Content"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "301 Moved Permanently"
@@ -292,15 +284,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "302 Found"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "304 Not Modified"
@@ -308,15 +296,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "307 Temporary Redirect"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "308 Permanent Redirect"
@@ -324,15 +308,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "400 Bad Request"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "401 Unauthorized"
@@ -340,15 +320,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "403 Forbidden"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "404 Not Found"
@@ -356,15 +332,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "405 Method Not Allowed"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "409 Conflict"
@@ -372,15 +344,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "410 Gone"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "412 Precondition Failed"
@@ -388,15 +356,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "415 Unsupported Media Type"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "429 Too Many Requests"
@@ -404,15 +368,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "500 Internal Server Error"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "501 Not Implemented"
@@ -420,15 +380,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "502 Bad Gateway"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "503 Service Unavailable"
@@ -436,15 +392,11 @@ PostConfig.headers.body: string | {
 
 ---
 
-### StatusCode
-
 ```luau
 | "504 Gateway Timeout"
 ```
 
 ---
-
-### StatusCode
 
 ```luau
 | "505 HTTP Version Not Supported"

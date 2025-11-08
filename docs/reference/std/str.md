@@ -16,40 +16,40 @@ to be valid utf-8 encoded strings.
 
 ---
 
-### .s
+### str.endswith
 
 ```luau
-`function` .sstr.endswith: (s: string, suffix: string) -> boolean
+str.endswith: (s: string, suffix: string): boolean
 ```
 
  check if a string ends with `suffix`
 
 ---
 
-### .s
+### str.starts
 
 ```luau
-`function` .sstr.starts: (s: string, ...: string) -> boolean
+str.starts: (s: string, ...: string): boolean
 ```
 
  like str.startswith, but accepts multiple prefixes
 
 ---
 
-### .s
+### str.ends
 
 ```luau
-`function` .sstr.ends: (s: string, ...: string) -> boolean
+str.ends: (s: string, ...: string): boolean
 ```
 
  like str.endswith, but accepts multiple suffixes
 
 ---
 
-### .s
+### str.trimfront
 
 ```luau
-`function` .sstr.trimfront: (s: string, ...: string) -> string
+str.trimfront: (s: string, ...: string): string
 ```
 
  trims any of the provided strings/characters from the front of the string `s`
@@ -58,10 +58,10 @@ to be valid utf-8 encoded strings.
 
 ---
 
-### .s
+### str.trimback
 
 ```luau
-`function` .sstr.trimback: (s: string, ...: string) -> string
+str.trimback: (s: string, ...: string): string
 ```
 
  trims any of the provided strings/characters/patterns from the back of the string `s`
@@ -70,10 +70,10 @@ to be valid utf-8 encoded strings.
 
 ---
 
-### .s
+### str.trim
 
 ```luau
-`function` .sstr.trim: (s: string, ...: string) -> string
+str.trim: (s: string, ...: string): string
 ```
 
  trims one or many strings/characters/patterns from both front and back of string `s`
@@ -82,10 +82,10 @@ to be valid utf-8 encoded strings.
 
 ---
 
-### .s
+### str.splitlines
 
 ```luau
-`function` .sstr.splitlines: (s: string, trim_trailing_whitespace: boolean?) -> { string }
+str.splitlines: (s: string, trim_trailing_whitespace: boolean?): { string }
 ```
 
  splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
@@ -93,20 +93,20 @@ to be valid utf-8 encoded strings.
 
 ---
 
-### .s
+### str.len
 
 ```luau
-`function` .sstr.len: (s: string) -> number
+str.len: (s: string): number
 ```
 
  returns the utf-8 length if `s` is utf-8 or the regular string length #
 
 ---
 
-### .s
+### str.width
 
 ```luau
-`function` .sstr.width: (s: string) -> number
+str.width: (s: string): number
 ```
 
 <details>
@@ -162,70 +162,70 @@ end
 
 ---
 
-### .s
+### str.leftpad
 
 ```luau
-`function` .sstr.leftpad: (s: string, width: number, pad: string?) -> string
+str.leftpad: (s: string, width: number, pad: string?): string
 ```
 
  left pads `s` to make it at least `width` characters long, using `pad` as the padding character.
 
 ---
 
-### .s
+### str.escape
 
 ```luau
-`function` .sstr.escape: (s: string) -> string
+str.escape: (s: string): string
 ```
 
  escapes special characters like `\n`, `\t`, `\\` for easier debugging
 
 ---
 
-### .s
+### str.unescape
 
 ```luau
-`function` .sstr.unescape: (s: string) -> string
+str.unescape: (s: string): string
 ```
 
  reverts `str.escape`
 
 ---
 
-### .s
+### str.slice
 
 ```luau
-`function` .sstr.slice: (s: string, first: number, final: number)
+str.slice: (s: string, first: number, final: number)
 ```
 
  alias for string.sub
 
 ---
 
-### .s
+### str.indent
 
 ```luau
-`function` .sstr.indent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?) -> string
+str.indent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string
 ```
 
  indents multiline string `count` characters; lines separated by `sep` (default "\n")
 
 ---
 
-### .s
+### str.unindent
 
 ```luau
-`function` .sstr.unindent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?) -> string
+str.unindent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string
 ```
 
  unindents multiline string by `count` characters; lines separated by `sep` (default "\n")
 
 ---
 
-### .s
+### str.s
 
 ```luau
-`function` .sstr.split = internal.split :: : (s: string, ...string) -> { string }
+str.s: string, ...string) -> { string }
 ```
 
 <details>
@@ -266,10 +266,10 @@ local omit_hi = str.split("seals 🦭 say hi", " ", "hi")
 
 ---
 
-### .s
+### str.s
 
 ```luau
-`function` .sstr.splitaround = internal.splitaround :: : (s: string, seps: string, ...string) -> { string }
+str.s: string, seps: string, ...string) -> { string }
 ```
 
 <details>
@@ -297,10 +297,10 @@ local tokens = str.splitaround(line, " ", ".", "(", ":", ",", ")")
 
 ---
 
-### .s
+### str.s
 
 ```luau
-`function` .sstr.splitbefore = internal.splitbefore :: : (s: string, seps: string, ...string) -> { string }
+str.s: string, seps: string, ...string) -> { string }
 ```
 
 <details>
@@ -328,10 +328,10 @@ print(splitted) -->
 
 ---
 
-### .s
+### str.s
 
 ```luau
-`function` .sstr.splitafter = internal.splitafter :: : (s: string, seps: string, ...string) -> { string }
+str.s: string, seps: string, ...string) -> { string }
 ```
 
 <details>
@@ -358,10 +358,10 @@ local splitted = str.splitafter(httpheaders, "\r\n") -->
 
 ---
 
-### .s
+### str.chars
 
 ```luau
-`function` .sstr.chars: (s: string) -> (...any) -> (number, string)
+str.chars: (s: string): (...any) -> (number, string)
 ```
 
 Iterate over the human-readable characters (graphemes) of a string
@@ -370,10 +370,10 @@ This function counts by 'characters', whereas `str.graphemes` provides byte indi
 
 ---
 
-### .s
+### str.s
 
 ```luau
-`function` .sstr.graphemes = internal.graphemes :: : (s: string) -> (...any) -> (number, string)
+str.s: string) -> (...any) -> (number, string)
 ```
 
 <details>

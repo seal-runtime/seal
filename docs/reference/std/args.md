@@ -411,15 +411,11 @@ ArgList.values: { string }?,
 
 ---
 
-### Arg
-
 ```luau
 | Positional
 ```
 
 ---
-
-### Arg
 
 ```luau
 | Flag
@@ -427,15 +423,11 @@ ArgList.values: { string }?,
 
 ---
 
-### Arg
-
 ```luau
 | Named
 ```
 
 ---
-
-### Arg
 
 ```luau
 | ArgList
