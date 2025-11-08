@@ -40,7 +40,7 @@ end
 <h4>
 
 ```luau
-function (options: RunOptions) -> RunResult,
+run: (options: RunOptions) -> RunResult,
 ```
 
 </h4>
@@ -91,7 +91,7 @@ end
 <h4>
 
 ```luau
-function (command: string) -> RunResult,
+shell: (command: string) -> RunResult,
 ```
 
 </h4>
@@ -132,7 +132,7 @@ print(file_stuff)
 <h4>
 
 ```luau
-function (options: SpawnOptions) -> ChildProcess,
+spawn: (options: SpawnOptions) -> ChildProcess,
 ```
 
 </h4>
@@ -167,7 +167,7 @@ end
 <h4>
 
 ```luau
-function ((number) -> ()) -> (),
+setexitcallback: ((number) -> ()) -> (),
 ```
 
 </h4>
@@ -181,7 +181,7 @@ Doesn't work.
 <h4>
 
 ```luau
-function (code: number?) -> never,
+exit: (code: number?) -> never,
 ```
 
 </h4>
@@ -201,7 +201,7 @@ Typically exit code 0 means success and exit code 1 means failure.
 <h4>
 
 ```luau
-function (self: RunResult) -> string,
+unwrap: (self: RunResult) -> string,
 ```
 
 </h4>
@@ -216,7 +216,7 @@ function (self: RunResult) -> string,
 <h4>
 
 ```luau
-function (self: RunResult, default: string | (result: RunResult) -> string) -> string
+unwrap_or: (self: RunResult, default: string | (result: RunResult) -> string) -> string
 ```
 
 </h4>
@@ -237,7 +237,7 @@ If you provide a `default` function, `:unwrap_or` will return what it returns.
 <h4>
 
 ```luau
-true,
+ok: true,
 ```
 
 </h4>
@@ -249,7 +249,7 @@ true,
 <h4>
 
 ```luau
-string,
+out: string,
 ```
 
 </h4>
@@ -263,7 +263,7 @@ string,
 <h4>
 
 ```luau
-string,
+stdout: string,
 ```
 
 </h4>
@@ -277,7 +277,7 @@ string,
 <h4>
 
 ```luau
-string,
+stderr: string,
 ```
 
 </h4>
@@ -295,7 +295,7 @@ string,
 <h4>
 
 ```luau
-false,
+ok: false,
 ```
 
 </h4>
@@ -307,7 +307,7 @@ false,
 <h4>
 
 ```luau
-string,
+err: string,
 ```
 
 </h4>
@@ -319,7 +319,7 @@ string,
 <h4>
 
 ```luau
-string,
+stdout: string,
 ```
 
 </h4>
@@ -331,7 +331,7 @@ string,
 <h4>
 
 ```luau
-string,
+stderr: string,
 ```
 
 </h4>
@@ -347,7 +347,7 @@ string,
 <h4>
 
 ```luau
-string,
+program: string,
 ```
 
 </h4>
@@ -359,7 +359,7 @@ string,
 <h4>
 
 ```luau
-{ string }?,
+args: { string }?,
 ```
 
 </h4>
@@ -373,7 +373,7 @@ string,
 <h4>
 
 ```luau
-string?,
+shell: string?,
 ```
 
 </h4>
@@ -387,7 +387,7 @@ string?,
 <h4>
 
 ```luau
-string?,
+cwd: string?,
 ```
 
 </h4>
@@ -405,7 +405,7 @@ string?,
 <h4>
 
 ```luau
-string,
+program: string,
 ```
 
 </h4>
@@ -419,7 +419,7 @@ string,
 <h4>
 
 ```luau
-{ string }?,
+args: { string }?,
 ```
 
 </h4>
@@ -433,7 +433,7 @@ string,
 <h4>
 
 ```luau
-string?,
+shell: string?,
 ```
 
 </h4>
@@ -445,7 +445,7 @@ string?,
 <h4>
 
 ```luau
-string?,
+cwd: string?,
 ```
 
 </h4>
@@ -459,7 +459,7 @@ string?,
 <h4>
 
 ```luau
-number?,
+stdout_capacity: number?,
 ```
 
 </h4>
@@ -504,7 +504,7 @@ By default, seal truncates bytes from the front of inner, causing old data to be
 <h4>
 
 ```luau
-number?,
+stderr_capacity: number?,
 ```
 
 </h4>
@@ -518,7 +518,7 @@ number?,
 <h4>
 
 ```luau
-function ("front" | "back")?,
+stdout_truncate: ("front" | "back")?,
 ```
 
 </h4>
@@ -532,7 +532,7 @@ function ("front" | "back")?,
 <h4>
 
 ```luau
-function ("front" | "back")?,
+stderr_truncate: ("front" | "back")?,
 ```
 
 </h4>
@@ -553,7 +553,7 @@ function ("front" | "back")?,
 <h4>
 
 ```luau
-function (self: ChildProcessStream, count: number?, timeout: number?) -> string?,
+read: (self: ChildProcessStream, count: number?, timeout: number?) -> string?,
 ```
 
 </h4>
@@ -611,7 +611,7 @@ local current_data = child.stdout:read(nil, 0.0)
 <h4>
 
 ```luau
-function (self: ChildProcessStream, count: number, timeout: number?) -> string?,
+read_exact: (self: ChildProcessStream, count: number, timeout: number?) -> string?,
 ```
 
 </h4>
@@ -671,7 +671,7 @@ end
 <h4>
 
 ```luau
-function (self: ChildProcessStream, term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?,
+read_to: (self: ChildProcessStream, term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?,
 ```
 
 </h4>
@@ -708,7 +708,7 @@ Blocks the current VM until `term` is found, `timeout` seconds elapse, or the re
 <h4>
 
 ```luau
-function (self: ChildProcessStream, target: buffer, target_offset: number?, timeout: number?) -> number,
+fill: (self: ChildProcessStream, target: buffer, target_offset: number?, timeout: number?) -> number,
 ```
 
 </h4>
@@ -754,7 +754,7 @@ end
 <h4>
 
 ```luau
-function (self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean,
+fill_exact: (self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean,
 ```
 
 </h4>
@@ -790,7 +790,7 @@ Pass a `timeout` of `0` seconds to prevent this function from blocking!
 <h4>
 
 ```luau
-function (self: ChildProcessStream) -> number,
+len: (self: ChildProcessStream) -> number,
 ```
 
 </h4>
@@ -804,7 +804,7 @@ function (self: ChildProcessStream) -> number,
 <h4>
 
 ```luau
-function (self: ChildProcessStream) -> number,
+capacity: (self: ChildProcessStream) -> number,
 ```
 
 </h4>
@@ -818,7 +818,7 @@ function (self: ChildProcessStream) -> number,
 <h4>
 
 ```luau
-function (self: ChildProcessStream, timeout: number?) -> (() -> string),
+lines: (self: ChildProcessStream, timeout: number?) -> (() -> string),
 ```
 
 </h4>
@@ -874,7 +874,7 @@ local second_line = next_line()
 <h4>
 
 ```luau
-function (self: ChildProcessStream, timeout: number?, write_delay_ms: number?) -> () -> string,
+iter: (self: ChildProcessStream, timeout: number?, write_delay_ms: number?) -> () -> string,
 ```
 
 </h4>
@@ -903,7 +903,7 @@ This function does *not* strip preceding '\r's and trailing '\n's (unlike `:line
 <h4>
 
 ```luau
-function (self: ChildProcessStream) -> () -> string,
+__iter: (self: ChildProcessStream) -> () -> string,
 ```
 
 </h4>
@@ -923,7 +923,7 @@ Basically equivalent to `ChildProcessStream:lines()` except with generalized ite
 <h4>
 
 ```luau
-function (self: ChildProcessStdin, data: string) -> error?,
+write: (self: ChildProcessStdin, data: string) -> error?,
 ```
 
 </h4>
@@ -937,7 +937,7 @@ Attempts to write to the child process' stdin; if an error occurs (usually a bro
 <h4>
 
 ```luau
-function (self: ChildProcessStdin) -> (),
+close: (self: ChildProcessStdin) -> (),
 ```
 
 </h4>
@@ -968,7 +968,7 @@ child.stdin:close()
 <h4>
 
 ```luau
-number,
+id: number,
 ```
 
 </h4>
@@ -980,7 +980,7 @@ number,
 <h4>
 
 ```luau
-function (self: ChildProcess) -> boolean,
+alive: (self: ChildProcess) -> boolean,
 ```
 
 </h4>
@@ -992,7 +992,7 @@ function (self: ChildProcess) -> boolean,
 <h4>
 
 ```luau
-function (self: ChildProcess) -> (),
+kill: (self: ChildProcess) -> (),
 ```
 
 </h4>
@@ -1004,7 +1004,7 @@ function (self: ChildProcess) -> (),
 <h4>
 
 ```luau
-ChildProcessStream,
+stdout: ChildProcessStream,
 ```
 
 </h4>
@@ -1016,7 +1016,7 @@ ChildProcessStream,
 <h4>
 
 ```luau
-ChildProcessStream,
+stderr: ChildProcessStream,
 ```
 
 </h4>
@@ -1028,7 +1028,7 @@ ChildProcessStream,
 <h4>
 
 ```luau
-ChildProcessStdin,
+stdin: ChildProcessStdin,
 ```
 
 </h4>

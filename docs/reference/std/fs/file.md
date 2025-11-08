@@ -20,7 +20,7 @@
 <h4>
 
 ```luau
-function (path: string) -> FileEntry,
+from: (path: string) -> FileEntry,
 ```
 
 </h4>
@@ -34,7 +34,7 @@ Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if 
 <h4>
 
 ```luau
-function (name: string, content: string) -> FileBuilder,
+build: (name: string, content: string) -> FileBuilder,
 ```
 
 </h4>
@@ -48,7 +48,7 @@ function (name: string, content: string) -> FileBuilder,
 <h4>
 
 ```luau
-function (path: string) -> FileEntry,
+create: (path: string) -> FileEntry,
 ```
 
 </h4>
@@ -62,7 +62,7 @@ function (path: string) -> FileEntry,
 <h4>
 
 ```luau
-function (path: string) -> (string?, "Ok" | "NotFound" | "PermissionDenied"),
+try_read: (path: string) -> (string?, "Ok" | "NotFound" | "PermissionDenied"),
 ```
 
 </h4>
@@ -98,7 +98,7 @@ end
 <h4>
 
 ```luau
-function (path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> (buffer?, "Ok" | "NotFound" | "PermissionDenied"),
+try_readbytes: (path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> (buffer?, "Ok" | "NotFound" | "PermissionDenied"),
 ```
 
 </h4>
@@ -140,7 +140,7 @@ end
 <h4>
 
 ```luau
-function (path: string, content: string | buffer) -> (boolean, "Ok" | "PermissionDenied"),
+try_write: (path: string, content: string | buffer) -> (boolean, "Ok" | "PermissionDenied"),
 ```
 
 </h4>
@@ -171,7 +171,7 @@ end
 <h4>
 
 ```luau
-function (path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "IsADirectory")
+try_remove: (path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "IsADirectory")
 ```
 
 </h4>
@@ -191,7 +191,7 @@ Doesn't follow symlinks.
 <h4>
 
 ```luau
-function (self: any, path: string) -> FileEntry?,
+__call: (self: any, path: string) -> FileEntry?,
 ```
 
 </h4>

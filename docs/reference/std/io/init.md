@@ -22,7 +22,7 @@ libraries as you need them instead.
 <h4>
 
 ```luau
-typeof(require("@self/input")),
+input: typeof(require("@self/input")),
 ```
 
 </h4>
@@ -34,7 +34,7 @@ typeof(require("@self/input")),
 <h4>
 
 ```luau
-typeof(require("@self/output")),
+output: typeof(require("@self/output")),
 ```
 
 </h4>
@@ -46,7 +46,7 @@ typeof(require("@self/output")),
 <h4>
 
 ```luau
-typeof(require("@self/colors")),
+colors: typeof(require("@self/colors")),
 ```
 
 </h4>
@@ -58,7 +58,7 @@ typeof(require("@self/colors")),
 <h4>
 
 ```luau
-typeof(require("@self/format")),
+format: typeof(require("@self/format")),
 ```
 
 </h4>
@@ -70,7 +70,7 @@ typeof(require("@self/format")),
 <h4>
 
 ```luau
-typeof(require("@self/prompt")),
+prompt: typeof(require("@self/prompt")),
 ```
 
 </h4>

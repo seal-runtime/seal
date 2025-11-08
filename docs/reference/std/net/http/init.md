@@ -14,7 +14,7 @@ Library for sending HTTP Requests.
 <h4>
 
 ```luau
-function (config: GetConfig | string) -> HttpResponse,
+get: (config: GetConfig | string) -> HttpResponse,
 ```
 
 </h4>
@@ -58,7 +58,7 @@ local cats = http.get {
 <h4>
 
 ```luau
-function (config: PostConfig) -> HttpResponse,
+post: (config: PostConfig) -> HttpResponse,
 ```
 
 </h4>
@@ -87,7 +87,7 @@ local response = http.post {
 <h4>
 
 ```luau
-function (config: RequestConfig) -> HttpResponse,
+request: (config: RequestConfig) -> HttpResponse,
 ```
 
 </h4>
@@ -115,7 +115,7 @@ end
 <h4>
 
 ```luau
-HttpServerLib,
+server: HttpServerLib,
 ```
 
 </h4>
@@ -139,7 +139,7 @@ Create a webserver that listens for incoming requests.
 <h4>
 
 ```luau
-true,
+ok: true,
 ```
 
 </h4>
@@ -151,7 +151,7 @@ true,
 <h4>
 
 ```luau
-StatusCode,
+status_code: StatusCode,
 ```
 
 </h4>
@@ -163,7 +163,7 @@ StatusCode,
 <h4>
 
 ```luau
-string,
+body: string,
 ```
 
 </h4>
@@ -175,7 +175,7 @@ string,
 <h4>
 
 ```luau
-function (self: HttpResponse) -> { [any]: any }
+decode: (self: HttpResponse) -> { [any]: any }
 ```
 
 </h4>
@@ -189,7 +189,7 @@ function (self: HttpResponse) -> { [any]: any }
 <h4>
 
 ```luau
-false,
+ok: false,
 ```
 
 </h4>
@@ -201,7 +201,7 @@ false,
 <h4>
 
 ```luau
-string,
+err: string,
 ```
 
 </h4>
@@ -213,7 +213,7 @@ string,
 <h4>
 
 ```luau
-function (self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
+unwrap_json: (self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
 ```
 
 </h4>
@@ -231,7 +231,7 @@ function (self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
 <h4>
 
 ```luau
-"GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 ```
 
 </h4>
@@ -243,7 +243,7 @@ function (self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
 <h4>
 
 ```luau
-string,
+url: string,
 ```
 
 </h4>
@@ -255,7 +255,7 @@ string,
 <h4>
 
 ```luau
-{ [string]: string }?,
+headers: { [string]: string }?,
 ```
 
 </h4>
@@ -267,7 +267,7 @@ string,
 <h4>
 
 ```luau
-{ [string]: string }?,
+params: { [string]: string }?,
 ```
 
 </h4>
@@ -283,7 +283,7 @@ string,
 <h4>
 
 ```luau
-string,
+url: string,
 ```
 
 </h4>
@@ -295,7 +295,7 @@ string,
 <h4>
 
 ```luau
-{ [string]: string }?,
+headers: { [string]: string }?,
 ```
 
 </h4>
@@ -313,7 +313,7 @@ string,
 <h4>
 
 ```luau
-string,
+url: string,
 ```
 
 </h4>
@@ -325,7 +325,7 @@ string,
 <h4>
 
 ```luau
-string | {
+body: string | {
 ```
 
 </h4>

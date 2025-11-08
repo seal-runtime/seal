@@ -50,7 +50,7 @@ assert(first_version < second_version)
 <h4>
 
 ```luau
-number,
+major: number,
 ```
 
 </h4>
@@ -62,7 +62,7 @@ number,
 <h4>
 
 ```luau
-number,
+minor: number,
 ```
 
 </h4>
@@ -74,7 +74,7 @@ number,
 <h4>
 
 ```luau
-number,
+patch: number,
 ```
 
 </h4>
@@ -86,7 +86,7 @@ number,
 <h4>
 
 ```luau
-string,
+tag: string,
 ```
 
 </h4>
@@ -98,7 +98,7 @@ string,
 <h4>
 
 ```luau
-number,
+ver: number,
 ```
 
 </h4>
@@ -110,7 +110,7 @@ number,
 <h4>
 
 ```luau
-string?,
+build: string?,
 ```
 
 </h4>
@@ -130,7 +130,7 @@ string?,
 <h4>
 
 ```luau
-function (s: string): Semver
+from: (s: string): Semver
 ```
 
 </h4>
@@ -142,7 +142,7 @@ function (s: string): Semver
 <h4>
 
 ```luau
-" .. s)
+string: " .. s)
 ```
 
 </h4>
@@ -154,7 +154,7 @@ function (s: string): Semver
 <h4>
 
 ```luau
-{s}`)
+string: {s}`)
 ```
 
 </h4>
@@ -166,7 +166,7 @@ function (s: string): Semver
 <h4>
 
 ```luau
-not optional fields not qualifying as optionals
+FIXME: not optional fields not qualifying as optionals
 ```
 
 </h4>
@@ -212,7 +212,7 @@ not optional fields not qualifying as optionals
 <h4>
 
 ```luau
-function (self: Semver, semver_range: string): boolean
+satisfies: (self: Semver, semver_range: string): boolean
 ```
 
 </h4>
@@ -257,7 +257,7 @@ end
 <h4>
 
 ```luau
-function (self: Semver, other: Semver): boolean
+__eq: (self: Semver, other: Semver): boolean
 ```
 
 </h4>
@@ -269,7 +269,7 @@ function (self: Semver, other: Semver): boolean
 <h4>
 
 ```luau
-function (self: Semver, other: Semver): boolean
+__lt: (self: Semver, other: Semver): boolean
 ```
 
 </h4>
@@ -281,7 +281,7 @@ function (self: Semver, other: Semver): boolean
 <h4>
 
 ```luau
-function (self: Semver, other: Semver): boolean
+__le: (self: Semver, other: Semver): boolean
 ```
 
 </h4>
@@ -293,7 +293,7 @@ function (self: Semver, other: Semver): boolean
 <h4>
 
 ```luau
-function (self: Semver): string
+__tostring: (self: Semver): string
 ```
 
 </h4>

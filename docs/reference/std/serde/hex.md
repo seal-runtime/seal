@@ -14,7 +14,7 @@ Deal with hex data.
 <h4>
 
 ```luau
-function (data: buffer | string) -> string,
+encode: (data: buffer | string) -> string,
 ```
 
 </h4>
@@ -26,7 +26,7 @@ function (data: buffer | string) -> string,
 <h4>
 
 ```luau
-function (encoded: string) -> buffer,
+decode: (encoded: string) -> buffer,
 ```
 
 </h4>

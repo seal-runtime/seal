@@ -212,7 +212,7 @@
 <h4>
 
 ```luau
-string,
+peer_address: string,
 ```
 
 </h4>
@@ -224,7 +224,7 @@ string,
 <h4>
 
 ```luau
-"GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 ```
 
 </h4>
@@ -236,7 +236,7 @@ string,
 <h4>
 
 ```luau
-string,
+path: string,
 ```
 
 </h4>
@@ -248,7 +248,7 @@ string,
 <h4>
 
 ```luau
-string,
+raw_text: string,
 ```
 
 </h4>
@@ -260,7 +260,7 @@ string,
 <h4>
 
 ```luau
-string,
+body: string,
 ```
 
 </h4>
@@ -276,7 +276,7 @@ string,
 <h4>
 
 ```luau
-StatusCode,
+status_code: StatusCode,
 ```
 
 </h4>
@@ -288,7 +288,7 @@ StatusCode,
 <h4>
 
 ```luau
-ContentType,
+content_type: ContentType,
 ```
 
 </h4>
@@ -300,7 +300,7 @@ ContentType,
 <h4>
 
 ```luau
-string,
+body: string,
 ```
 
 </h4>
@@ -312,7 +312,7 @@ string,
 <h4>
 
 ```luau
-string?,
+http_version: string?,
 ```
 
 </h4>
@@ -324,7 +324,7 @@ string?,
 <h4>
 
 ```luau
-string?,
+reason_phrase: string?,
 ```
 
 </h4>
@@ -336,7 +336,7 @@ string?,
 <h4>
 
 ```luau
-string?
+redirect_url: string?
 ```
 
 </h4>
@@ -352,7 +352,7 @@ string?
 <h4>
 
 ```luau
-string,
+address: string,
 ```
 
 </h4>
@@ -364,7 +364,7 @@ string,
 <h4>
 
 ```luau
-string | number,
+port: string | number,
 ```
 
 </h4>
@@ -376,7 +376,7 @@ string | number,
 <h4>
 
 ```luau
-function (ServeRequest) -> ServeResponse,
+handler: (ServeRequest) -> ServeResponse,
 ```
 
 </h4>
@@ -388,7 +388,7 @@ function (ServeRequest) -> ServeResponse,
 <h4>
 
 ```luau
-function (config: ServeConfig)
+serve: (config: ServeConfig)
 ```
 
 </h4>

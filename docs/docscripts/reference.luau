@@ -194,9 +194,11 @@ for _, filepath in typedefs_paths do
 
             local is = "Property"
             local defs = rest
-            if str.startswith(rest, "(") then
+            if str.starts(rest, "%(", "<T") then
                 defs = `function {rest}`
                 is = "Function"
+            else
+                defs = `{property_name}: {rest}`
             end
 
             local new_api: Api = {

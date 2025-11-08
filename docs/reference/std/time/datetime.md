@@ -22,7 +22,7 @@
 <h4>
 
 ```luau
-function (source: string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime
+parse: (source: string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime
 ```
 
 </h4>
@@ -56,7 +56,7 @@ local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AU
 <h4>
 
 ```luau
-function (years: number, relative_to: DateTime?): TimeSpan
+years: (years: number, relative_to: DateTime?): TimeSpan
 ```
 
 </h4>
@@ -95,7 +95,7 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 <h4>
 
 ```luau
-function (months: number, relative_to: DateTime?): TimeSpan
+months: (months: number, relative_to: DateTime?): TimeSpan
 ```
 
 </h4>
@@ -134,7 +134,7 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 <h4>
 
 ```luau
-function (days: number): TimeSpan
+days: (days: number): TimeSpan
 ```
 
 </h4>
@@ -148,7 +148,7 @@ function (days: number): TimeSpan
 <h4>
 
 ```luau
-function (hours: number): TimeSpan
+hours: (hours: number): TimeSpan
 ```
 
 </h4>
@@ -162,7 +162,7 @@ function (hours: number): TimeSpan
 <h4>
 
 ```luau
-function (minutes: number): TimeSpan
+minutes: (minutes: number): TimeSpan
 ```
 
 </h4>
@@ -176,7 +176,7 @@ function (minutes: number): TimeSpan
 <h4>
 
 ```luau
-function (seconds: number): TimeSpan
+seconds: (seconds: number): TimeSpan
 ```
 
 </h4>
@@ -190,7 +190,7 @@ function (seconds: number): TimeSpan
 <h4>
 
 ```luau
-function (milliseconds: number): TimeSpan
+milliseconds: (milliseconds: number): TimeSpan
 ```
 
 </h4>

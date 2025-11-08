@@ -22,7 +22,7 @@ print(colors.blue("my blue text"))
 <h4>
 
 ```luau
-function (text: string) -> string,
+black: (text: string) -> string,
 ```
 
 </h4>
@@ -34,7 +34,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+red: (text: string) -> string,
 ```
 
 </h4>
@@ -46,7 +46,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+green: (text: string) -> string,
 ```
 
 </h4>
@@ -58,7 +58,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+yellow: (text: string) -> string,
 ```
 
 </h4>
@@ -70,7 +70,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+blue: (text: string) -> string,
 ```
 
 </h4>
@@ -82,7 +82,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+magenta: (text: string) -> string,
 ```
 
 </h4>
@@ -94,7 +94,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+cyan: (text: string) -> string,
 ```
 
 </h4>
@@ -106,7 +106,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+white: (text: string) -> string,
 ```
 
 </h4>
@@ -118,7 +118,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+black: (text: string) -> string,
 ```
 
 </h4>
@@ -130,7 +130,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+red: (text: string) -> string,
 ```
 
 </h4>
@@ -142,7 +142,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+green: (text: string) -> string,
 ```
 
 </h4>
@@ -154,7 +154,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+yellow: (text: string) -> string,
 ```
 
 </h4>
@@ -166,7 +166,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+blue: (text: string) -> string,
 ```
 
 </h4>
@@ -178,7 +178,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+magenta: (text: string) -> string,
 ```
 
 </h4>
@@ -190,7 +190,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+cyan: (text: string) -> string,
 ```
 
 </h4>
@@ -202,7 +202,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+white: (text: string) -> string,
 ```
 
 </h4>
@@ -214,7 +214,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+dim: (text: string) -> string,
 ```
 
 </h4>
@@ -226,7 +226,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+bold: (text: string) -> string,
 ```
 
 </h4>
@@ -238,7 +238,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+underline: (text: string) -> string,
 ```
 
 </h4>
@@ -250,7 +250,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[0m",
+RESET: "\x1b[0m",
 ```
 
 </h4>
@@ -262,7 +262,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[30m",
+BLACK: "\x1b[30m",
 ```
 
 </h4>
@@ -274,7 +274,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[31m",
+RED: "\x1b[31m",
 ```
 
 </h4>
@@ -286,7 +286,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[32m",
+GREEN: "\x1b[32m",
 ```
 
 </h4>
@@ -298,7 +298,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[33m",
+YELLOW: "\x1b[33m",
 ```
 
 </h4>
@@ -310,7 +310,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[34m",
+BLUE: "\x1b[34m",
 ```
 
 </h4>
@@ -322,7 +322,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[35m",
+MAGENTA: "\x1b[35m",
 ```
 
 </h4>
@@ -334,7 +334,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[36m",
+CYAN: "\x1b[36m",
 ```
 
 </h4>
@@ -346,7 +346,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[37m",
+WHITE: "\x1b[37m",
 ```
 
 </h4>
@@ -358,7 +358,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[1;30m",
+BOLD_BLACK: "\x1b[1;30m",
 ```
 
 </h4>
@@ -370,7 +370,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[1;31m",
+BOLD_RED: "\x1b[1;31m",
 ```
 
 </h4>
@@ -382,7 +382,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[1;32m",
+BOLD_GREEN: "\x1b[1;32m",
 ```
 
 </h4>
@@ -394,7 +394,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[1;33m",
+BOLD_YELLOW: "\x1b[1;33m",
 ```
 
 </h4>
@@ -406,7 +406,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[1;34m",
+BOLD_BLUE: "\x1b[1;34m",
 ```
 
 </h4>
@@ -418,7 +418,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[1;35m",
+BOLD_MAGENTA: "\x1b[1;35m",
 ```
 
 </h4>
@@ -430,7 +430,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[1;36m",
+BOLD_CYAN: "\x1b[1;36m",
 ```
 
 </h4>
@@ -442,7 +442,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[1;37m",
+BOLD_WHITE: "\x1b[1;37m",
 ```
 
 </h4>
@@ -454,7 +454,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[90m",
+BRIGHT_BLACK: "\x1b[90m",
 ```
 
 </h4>
@@ -466,7 +466,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[91m",
+BRIGHT_RED: "\x1b[91m",
 ```
 
 </h4>
@@ -478,7 +478,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[92m",
+BRIGHT_GREEN: "\x1b[92m",
 ```
 
 </h4>
@@ -490,7 +490,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[93m",
+BRIGHT_YELLOW: "\x1b[93m",
 ```
 
 </h4>
@@ -502,7 +502,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[94m",
+BRIGHT_BLUE: "\x1b[94m",
 ```
 
 </h4>
@@ -514,7 +514,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[95m",
+BRIGHT_MAGENTA: "\x1b[95m",
 ```
 
 </h4>
@@ -526,7 +526,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[96m",
+BRIGHT_CYAN: "\x1b[96m",
 ```
 
 </h4>
@@ -538,7 +538,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[97m",
+BRIGHT_WHITE: "\x1b[97m",
 ```
 
 </h4>
@@ -550,7 +550,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[40m",
+BLACK_BG: "\x1b[40m",
 ```
 
 </h4>
@@ -562,7 +562,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[41m",
+RED_BG: "\x1b[41m",
 ```
 
 </h4>
@@ -574,7 +574,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[42m",
+GREEN_BG: "\x1b[42m",
 ```
 
 </h4>
@@ -586,7 +586,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[43m",
+YELLOW_BG: "\x1b[43m",
 ```
 
 </h4>
@@ -598,7 +598,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[44m",
+BLUE_BG: "\x1b[44m",
 ```
 
 </h4>
@@ -610,7 +610,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[45m",
+MAGENTA_BG: "\x1b[45m",
 ```
 
 </h4>
@@ -622,7 +622,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[46m",
+CYAN_BG: "\x1b[46m",
 ```
 
 </h4>
@@ -634,7 +634,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[47m",
+WHITE_BG: "\x1b[47m",
 ```
 
 </h4>
@@ -646,7 +646,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[100m",
+BRIGHT_BLACK_BG: "\x1b[100m",
 ```
 
 </h4>
@@ -658,7 +658,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[101m",
+BRIGHT_RED_BG: "\x1b[101m",
 ```
 
 </h4>
@@ -670,7 +670,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[102m",
+BRIGHT_GREEN_BG: "\x1b[102m",
 ```
 
 </h4>
@@ -682,7 +682,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[103m",
+BRIGHT_YELLOW_BG: "\x1b[103m",
 ```
 
 </h4>
@@ -694,7 +694,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[104m",
+BRIGHT_BLUE_BG: "\x1b[104m",
 ```
 
 </h4>
@@ -706,7 +706,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[105m",
+BRIGHT_MAGENTA_BG: "\x1b[105m",
 ```
 
 </h4>
@@ -718,7 +718,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[106m",
+BRIGHT_CYAN_BG: "\x1b[106m",
 ```
 
 </h4>
@@ -730,7 +730,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[107m",
+BRIGHT_WHITE_BG: "\x1b[107m",
 ```
 
 </h4>
@@ -742,7 +742,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[1m",
+BOLD: "\x1b[1m",
 ```
 
 </h4>
@@ -754,7 +754,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[2m",
+DIM: "\x1b[2m",
 ```
 
 </h4>
@@ -766,7 +766,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-"\x1b[4m",
+UNDERLINE: "\x1b[4m",
 ```
 
 </h4>

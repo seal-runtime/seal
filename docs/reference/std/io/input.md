@@ -15,7 +15,7 @@
 <h4>
 
 ```luau
-function (stream: "Stdout" | "Stderr" | "Stdin"?): boolean
+tty: (stream: "Stdout" | "Stderr" | "Stdin"?): boolean
 ```
 
 </h4>
@@ -42,7 +42,7 @@ If *seal* is being run in a child process, this will almost always return `false
 <h4>
 
 ```luau
-function (prompt: string?): string
+rawline: (prompt: string?): string
 ```
 
 </h4>
@@ -58,7 +58,7 @@ But works with stdin in a child process/works while piped, making it a fallback 
 <h4>
 
 ```luau
-function (prompt: string): string | interrupt | error
+readline: (prompt: string): string | interrupt | error
 ```
 
 </h4>
@@ -110,7 +110,7 @@ end
 <h4>
 
 ```luau
-function (key: "CtrlC" | "CtrlD"): interrupt
+interrupt: (key: "CtrlC" | "CtrlD"): interrupt
 ```
 
 </h4>
@@ -124,7 +124,7 @@ Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 <h4>
 
 ```luau
-function (enabled: boolean)
+rawmode: (enabled: boolean)
 ```
 
 </h4>
@@ -152,7 +152,7 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 <h4>
 
 ```luau
-function (enabled: boolean) -> (),
+mouse: (enabled: boolean) -> (),
 ```
 
 </h4>
@@ -166,7 +166,7 @@ function (enabled: boolean) -> (),
 <h4>
 
 ```luau
-function (enabled: boolean) -> (),
+focus: (enabled: boolean) -> (),
 ```
 
 </h4>
@@ -180,7 +180,7 @@ function (enabled: boolean) -> (),
 <h4>
 
 ```luau
-function (enabled: boolean) -> (),
+paste: (enabled: boolean) -> (),
 ```
 
 </h4>
@@ -194,7 +194,7 @@ function (enabled: boolean) -> (),
 <h4>
 
 ```luau
-function (poll: Duration): () -> TerminalEvent
+events: (poll: Duration): () -> TerminalEvent
 ```
 
 </h4>
@@ -276,7 +276,7 @@ end
 <h4>
 
 ```luau
-boolean,
+ctrl: boolean,
 ```
 
 </h4>
@@ -288,7 +288,7 @@ boolean,
 <h4>
 
 ```luau
-boolean,
+shift: boolean,
 ```
 
 </h4>
@@ -300,7 +300,7 @@ boolean,
 <h4>
 
 ```luau
-boolean,
+alt: boolean,
 ```
 
 </h4>
@@ -316,7 +316,7 @@ boolean,
 <h4>
 
 ```luau
-"Key",
+is: "Key",
 ```
 
 </h4>
@@ -328,7 +328,7 @@ boolean,
 <h4>
 
 ```luau
-string,
+key: string,
 ```
 
 </h4>
@@ -340,7 +340,7 @@ string,
 <h4>
 
 ```luau
-KeyModifiers,
+modifiers: KeyModifiers,
 ```
 
 </h4>
@@ -356,7 +356,7 @@ KeyModifiers,
 <h4>
 
 ```luau
-"Mouse",
+is: "Mouse",
 ```
 
 </h4>
@@ -368,7 +368,7 @@ KeyModifiers,
 <h4>
 
 ```luau
-string,
+kind: string,
 ```
 
 </h4>
@@ -380,7 +380,7 @@ string,
 <h4>
 
 ```luau
-number,
+column: number,
 ```
 
 </h4>
@@ -392,7 +392,7 @@ number,
 <h4>
 
 ```luau
-number,
+row: number,
 ```
 
 </h4>
@@ -404,7 +404,7 @@ number,
 <h4>
 
 ```luau
-KeyModifiers,
+modifiers: KeyModifiers,
 ```
 
 </h4>
@@ -420,7 +420,7 @@ KeyModifiers,
 <h4>
 
 ```luau
-"Resize",
+is: "Resize",
 ```
 
 </h4>
@@ -432,7 +432,7 @@ KeyModifiers,
 <h4>
 
 ```luau
-number,
+columns: number,
 ```
 
 </h4>
@@ -444,7 +444,7 @@ number,
 <h4>
 
 ```luau
-number,
+rows: number,
 ```
 
 </h4>
@@ -460,7 +460,7 @@ number,
 <h4>
 
 ```luau
-"FocusGained",
+is: "FocusGained",
 ```
 
 </h4>
@@ -476,7 +476,7 @@ number,
 <h4>
 
 ```luau
-"FocusLost",
+is: "FocusLost",
 ```
 
 </h4>
@@ -492,7 +492,7 @@ number,
 <h4>
 
 ```luau
-"Paste",
+is: "Paste",
 ```
 
 </h4>
@@ -504,7 +504,7 @@ number,
 <h4>
 
 ```luau
-string,
+contents: string,
 ```
 
 </h4>
@@ -520,7 +520,7 @@ string,
 <h4>
 
 ```luau
-"Empty",
+is: "Empty",
 ```
 
 </h4>

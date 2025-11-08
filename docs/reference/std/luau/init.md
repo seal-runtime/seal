@@ -12,7 +12,7 @@
 <h4>
 
 ```luau
-function (src: string, options: EvalOptions?) -> unknown | error,
+eval: (src: string, options: EvalOptions?) -> unknown | error,
 ```
 
 </h4>
@@ -68,7 +68,7 @@ end
 <h4>
 
 ```luau
-function (src: string | buffer, options: EvalOptions?) -> unknown | error,
+eval_unsafe: (src: string | buffer, options: EvalOptions?) -> unknown | error,
 ```
 
 </h4>
@@ -96,7 +96,7 @@ and *coredump*.
 <h4>
 
 ```luau
-function (src: string) -> buffer | error,
+bytecode: (src: string) -> buffer | error,
 ```
 
 </h4>
@@ -110,7 +110,7 @@ Compiles `src` to Luau bytecode.
 <h4>
 
 ```luau
-function () -> {
+require_resolver: () -> {
 ```
 
 </h4>
@@ -124,7 +124,7 @@ Returns *seal*'s require resolver implementation used internally.
 <h4>
 
 ```luau
-function (requested_path: string, requiring_file_path: string) -> { err: string, path: nil } | { path: string, err: nil },
+resolve: (requested_path: string, requiring_file_path: string) -> { err: string, path: nil } | { path: string, err: nil },
 ```
 
 </h4>
@@ -138,7 +138,7 @@ function (requested_path: string, requiring_file_path: string) -> { err: string,
 <h4>
 
 ```luau
-function (requiring_file_path: string) -> ({ LuaurcAliases }?, string?),
+get_aliases: (requiring_file_path: string) -> ({ LuaurcAliases }?, string?),
 ```
 
 </h4>
@@ -150,7 +150,7 @@ function (requiring_file_path: string) -> ({ LuaurcAliases }?, string?),
 <h4>
 
 ```luau
-function (requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?),
+expand_aliases: (requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?),
 ```
 
 </h4>
@@ -166,7 +166,7 @@ function (requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (stri
 <h4>
 
 ```luau
-string?,
+name: string?,
 ```
 
 </h4>
@@ -178,7 +178,7 @@ string?,
 <h4>
 
 ```luau
-function ("seal" | "safe" | "none")?,
+stdlib: ("seal" | "safe" | "none")?,
 ```
 
 </h4>
@@ -194,7 +194,7 @@ function ("seal" | "safe" | "none")?,
 <h4>
 
 ```luau
-string,
+path: string,
 ```
 
 </h4>
