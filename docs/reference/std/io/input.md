@@ -231,10 +231,6 @@ end
 
 ### `export type` KeyModifiers
 
-```luau
-
-```
-
  Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
 
 ---
@@ -265,10 +261,6 @@ KeyModifiers.alt: boolean,
 
 ### `export type` KeyEvent
 
-```luau
-
-```
-
 ---
 
 ### KeyEvent.is
@@ -296,10 +288,6 @@ KeyEvent.modifiers: KeyModifiers,
 ---
 
 ### `export type` MouseEvent
-
-```luau
-
-```
 
 ---
 
@@ -345,10 +333,6 @@ MouseEvent.modifiers: KeyModifiers,
 
 ### `export type` ResizeEvent
 
-```luau
-
-```
-
 ---
 
 ### ResizeEvent.is
@@ -377,10 +361,6 @@ ResizeEvent.rows: number,
 
 ### `export type` FocusGained
 
-```luau
-
-```
-
 ---
 
 ### FocusGained.is
@@ -393,10 +373,6 @@ FocusGained.is: "FocusGained",
 
 ### `export type` FocusLost
 
-```luau
-
-```
-
 ---
 
 ### FocusLost.is
@@ -408,10 +384,6 @@ FocusLost.is: "FocusLost",
 ---
 
 ### `export type` PasteEvent
-
-```luau
-
-```
 
 ---
 
@@ -433,10 +405,6 @@ PasteEvent.contents: string,
 
 ### `export type` Empty
 
-```luau
-
-```
-
 ---
 
 ### Empty.is
@@ -448,10 +416,6 @@ Empty.is: "Empty",
 ---
 
 ### `export type` TerminalEvent
-
-```luau
-
-```
 
 ---
 
@@ -504,9 +468,5 @@ Empty.is: "Empty",
 ---
 
 ### `export type` input
-
-```luau
-
-```
 
 ---

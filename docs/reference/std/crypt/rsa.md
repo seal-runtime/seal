@@ -25,10 +25,6 @@ RsaKeys.private: string
 
 ### `export type` Rsa
 
-```luau
-
-```
-
 ---
 
 ### Rsa.generatekeys

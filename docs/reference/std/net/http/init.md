@@ -112,17 +112,9 @@ Create a webserver that listens for incoming requests.
 
 ### `export type` HttpServerLib
 
-```luau
-
-```
-
 ---
 
 ### `export type` HttpResponse
-
-```luau
-
-```
 
 ---
 
@@ -188,10 +180,6 @@ HttpResponse.unwrap_json: (self: HttpResponse, default: { [any]: any }?) -> { [a
 
 ### `export type` RequestConfig
 
-```luau
-
-```
-
 ---
 
 ### RequestConfig.method
@@ -228,10 +216,6 @@ RequestConfig.params: { [string]: string }?,
 
 ### `export type` GetConfig
 
-```luau
-
-```
-
 ---
 
 ### GetConfig.url
@@ -251,10 +235,6 @@ GetConfig.headers: { [string]: string }?,
 ---
 
 ### `export type` PostConfig
-
-```luau
-
-```
 
  Query parameters to append to the url string
 
@@ -277,10 +257,6 @@ PostConfig.headers.body: string | {
 ---
 
 ### `export type` StatusCode
-
-```luau
-
-```
 
 ---
 

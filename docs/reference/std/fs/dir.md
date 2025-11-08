@@ -9,25 +9,13 @@
 
 ### `export type` DirectoryEntry
 
-```luau
-
-```
-
 ---
 
 ### `export type` DirectoryBuilder
 
-```luau
-
-```
-
 ---
 
 ### `export type` DirLib
-
-```luau
-
-```
 
 ---
 

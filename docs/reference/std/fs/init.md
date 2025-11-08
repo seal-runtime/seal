@@ -717,10 +717,6 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ### `export type` PathIs
 
-```luau
-
-```
-
 ---
 
 ### PathIs
@@ -813,65 +809,33 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ### `export type` DirectoryTree
 
-```luau
-
-```
-
 ---
 
 ### `export type` DirectoryBuilder
-
-```luau
-
-```
 
 ---
 
 ### `export type` TreeBuilder
 
-```luau
-
-```
-
 ---
 
 ### `export type` FindResult
-
-```luau
-
-```
 
 ---
 
 ### `export type` Entry
 
-```luau
-
-```
-
 ---
 
 ### `export type` FileEntry
-
-```luau
-
-```
 
 ---
 
 ### `export type` DirectoryEntry
 
-```luau
-
-```
-
 ---
 
 ### `export type` WatchOptions
-
-```luau
-
-```
 
 ---
 
@@ -892,10 +856,6 @@ WatchOptions.timeout_ms: number?,
 ---
 
 ### `export type` WatchEventCategory
-
-```luau
-
-```
 
 <details>
 
@@ -1027,10 +987,6 @@ Some usage notes:
 
 ### `export type` WatchEventInfo
 
-```luau
-
-```
-
 ---
 
 ### WatchEventInfo.paths
@@ -1060,10 +1016,6 @@ WatchEventInfo.is_write: boolean,
 ---
 
 ### `export type` WatchKind
-
-```luau
-
-```
 
 <details>
 

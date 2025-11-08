@@ -43,8 +43,4 @@ toml.writefile: (path: string, content: TomlValue) -> (),
 
 ### `export type` TomlValue
 
-```luau
-
-```
-
 ---

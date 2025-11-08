@@ -43,8 +43,4 @@ yaml.writefile: (path: string, content: YamlValue) -> (),
 
 ### `export type` YamlValue
 
-```luau
-
-```
-
 ---

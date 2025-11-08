@@ -95,17 +95,9 @@ SemverFields.metadata.release_candidate.build: string?,
 
 ### `export type` SemverImpl
 
-```luau
-
-```
-
 ---
 
 ### `export type` Semver
-
-```luau
-
-```
 
 ---
 
@@ -142,10 +134,6 @@ Semver.FIXME: not optional fields not qualifying as optionals
 ---
 
 ### `export type` SemverVals
-
-```luau
-
-```
 
 ---
 

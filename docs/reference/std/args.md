@@ -229,10 +229,6 @@ args.default: (...Arg) -> Command,
 
 ### `export type` ProgramInfo
 
-```luau
-
-```
-
 ---
 
 ### ProgramInfo.description
@@ -266,10 +262,6 @@ ProgramInfo.footer: string?
 ---
 
 ### `export type` Command
-
-```luau
-
-```
 
 ---
 
@@ -333,10 +325,6 @@ Command.aliases: (self: Command, ...string) -> Command,
 
 ### `export type` Parsed
 
-```luau
-
-```
-
 ---
 
 ### Parsed.command
@@ -381,10 +369,6 @@ Parsed.flags: { [string]: true? },
 
 ### `export type` ArgList
 
-```luau
-
-```
-
 ---
 
 ### ArgList.name
@@ -421,17 +405,9 @@ ArgList.values: { string }?,
 
 ### `export type` Validator
 
-```luau
-
-```
-
 ---
 
 ### `export type` Arg
-
-```luau
-
-```
 
 ---
 
@@ -468,10 +444,6 @@ ArgList.values: { string }?,
 ---
 
 ### `export type` Positional
-
-```luau
-
-```
 
 ---
 
@@ -562,10 +534,6 @@ Positional.value: any,
 
 ### `export type` Flag
 
-```luau
-
-```
-
 ---
 
 ### Flag.name
@@ -637,10 +605,6 @@ Flag.value: boolean,
 ---
 
 ### `export type` Named
-
-```luau
-
-```
 
 ---
 

@@ -136,17 +136,9 @@ Literally the same as `time.wait`, except in milliseconds.
 
 ### `export type` JsonSerializableTable
 
-```luau
-
-```
-
 ---
 
 ### `export type` ThreadHandle
-
-```luau
-
-```
 
 ---
 
@@ -301,10 +293,6 @@ Errors if the channel has somehow become disconnected.
 ---
 
 ### `export type` ThreadSpawnOptions
-
-```luau
-
-```
 
 ---
 

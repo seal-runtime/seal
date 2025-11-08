@@ -174,10 +174,6 @@ Typically exit code 0 means success and exit code 1 means failure.
 
 ### `export type` RunResult
 
-```luau
-
-```
-
 ---
 
 ### RunResult.unwrap
@@ -205,10 +201,6 @@ If you provide a `default` function, `:unwrap_or` will return what it returns.
 ---
 
 ### `export type` RunResultOk
-
-```luau
-
-```
 
 ---
 
@@ -252,10 +244,6 @@ RunResultOk.stderr: string,
 
 ### `export type` RunResultErr
 
-```luau
-
-```
-
 ---
 
 ### RunResultErr.ok
@@ -291,10 +279,6 @@ RunResultErr.stderr: string,
 ---
 
 ### `export type` RunOptions
-
-```luau
-
-```
 
 ---
 
@@ -337,10 +321,6 @@ RunOptions.cwd: string?,
 ---
 
 ### `export type` SpawnOptions
-
-```luau
-
-```
 
 ---
 
@@ -454,10 +434,6 @@ SpawnOptions.stream.stderr_truncate: ("front" | "back")?,
 ---
 
 ### `export type` ChildProcessStream
-
-```luau
-
-```
 
  Represents the stdout and stderr streams of a `ChildProcess`, both ran in parallel threads
  and streamed for nonblocking behavior.
@@ -792,10 +768,6 @@ Basically equivalent to `ChildProcessStream:lines()` except with generalized ite
 
 ### `export type` ChildProcessStdin
 
-```luau
-
-```
-
 ---
 
 ### ChildProcessStdin.write
@@ -832,10 +804,6 @@ child.stdin:close()
 ---
 
 ### `export type` ChildProcess
-
-```luau
-
-```
 
 ---
 

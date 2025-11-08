@@ -131,10 +131,6 @@ luau.expand_aliases: (requested_path: string, aliases_by_luaurc: { LuaurcAliases
 
 ### `export type` EvalOptions
 
-```luau
-
-```
-
 ---
 
 ### EvalOptions.name
@@ -154,10 +150,6 @@ EvalOptions.stdlib: ("seal" | "safe" | "none")?,
 ---
 
 ### `export type` LuaurcAliases
-
-```luau
-
-```
 
 ---
 

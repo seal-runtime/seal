@@ -15,10 +15,6 @@
 
 ### `export type` CommonFormatKeys
 
-```luau
-
-```
-
 ---
 
 ### CommonFormatKeys.source
@@ -172,10 +168,6 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 ---
 
 ### `export type` IanaTimezone
-
-```luau
-
-```
 
 ---
 

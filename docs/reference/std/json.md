@@ -94,10 +94,6 @@ json.array: <T>(t: { T }?) -> { T }
 
 ### `export type` EncodeOptions
 
-```luau
-
-```
-
 ---
 
 ### EncodeOptions.pretty
@@ -121,9 +117,5 @@ EncodeOptions.sorted: boolean?,
 ---
 
 ### `export type` JsonData
-
-```luau
-
-```
 
 ---

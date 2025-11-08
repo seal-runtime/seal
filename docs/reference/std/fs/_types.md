@@ -48,10 +48,6 @@ local dir = fs.tree()
 
 ### `export type` FileEntry
 
-```luau
-
-```
-
 ---
 
 ### FileEntry.name
@@ -258,10 +254,6 @@ FileEntry.remove: (self: FileEntry) -> (),
 
 ### `export type` DirectoryEntry
 
-```luau
-
-```
-
 ---
 
 ### DirectoryEntry.name
@@ -456,17 +448,9 @@ DirectoryEntry.remove: (self: DirectoryEntry) -> (),
 
 ### `export type` Entry
 
-```luau
-
-```
-
 ---
 
 ### `export type` FsMetadata
-
-```luau
-
-```
 
 ---
 
@@ -525,10 +509,6 @@ FsMetadata.permissions.unix_mode: number?,
 ---
 
 ### `export type` FindResult
-
-```luau
-
-```
 
 ---
 
@@ -640,10 +620,6 @@ FindResult.unwrap_dir: (self: FindResult) -> DirectoryEntry,
 
 ### `export type` FileBuilder
 
-```luau
-
-```
-
 ---
 
 ### FileBuilder.name
@@ -672,10 +648,6 @@ FileBuilder.content: string,
 
 ### `export type` DirectoryBuilder
 
-```luau
-
-```
-
 ---
 
 ### DirectoryBuilder.name
@@ -703,9 +675,5 @@ DirectoryBuilder.children: DirectoryTree,
 ---
 
 ### `export type` DirectoryTree
-
-```luau
-
-```
 
 ---

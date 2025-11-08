@@ -9,17 +9,9 @@
 
 ### `export type` FileBuilder
 
-```luau
-
-```
-
 ---
 
 ### `export type` FileLib
-
-```luau
-
-```
 
 ---
 

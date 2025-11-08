@@ -201,10 +201,6 @@
 
 ### `export type` ContentType
 
-```luau
-
-```
-
 ---
 
 ### ContentType
@@ -273,10 +269,6 @@
 
 ### `export type` ServeRequest
 
-```luau
-
-```
-
 ---
 
 ### ServeRequest.peer_address
@@ -320,10 +312,6 @@ ServeRequest.body: string,
 ---
 
 ### `export type` ServeResponse
-
-```luau
-
-```
 
 ---
 
@@ -376,10 +364,6 @@ ServeResponse.headers.cookies.redirect_url: string?
 ---
 
 ### `export type` ServeConfig
-
-```luau
-
-```
 
 ---
 

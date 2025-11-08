@@ -25,10 +25,6 @@ HashedPassword.hash: buffer,
 
 ### `export type` PasswordVerifyOptions
 
-```luau
-
-```
-
 ---
 
 ### PasswordVerifyOptions.raw_password
@@ -48,10 +44,6 @@ PasswordVerifyOptions.hashed_password: HashedPassword,
 ---
 
 ### `export type` Password
-
-```luau
-
-```
 
 ## This is the password handling lib
 

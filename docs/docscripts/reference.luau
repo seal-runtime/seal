@@ -255,27 +255,16 @@ for _, library in libraries do
             push("---")
             continue
         end
-        -- -- local split_name = str.splitafter(api.name, ":")
-        -- -- local name, defs = table.remove(split_name, 1), str.trim(table.concat(split_name, ""))
-        -- if name and defs then
-        --     defs = str.trimback(defs, ",")
-        --     if api.is == "Type" then
-        --         name = "`export type` " .. name
-        --     end
 
-        --     if #defs > 0 then
-        --         push(`{name} \`{defs}\``)
-        --     else
-        --         push(name)
-        --     end
-        -- end
         local name = if api.is == "Type" then `\`export type\` {api.name}` else api.name
         local defs = if api.is == "Function" then `\`function\` {api.defs}` else api.defs
 
         push(`### {name}`)
-        push("```luau", 0)
-        push(defs, 0)
-        push("```")
+        if #api.defs > 0 then
+            push("```luau", 0)
+            push(defs, 0)
+            push("```")
+        end
 
         if #api.docs > 1 and #api.docs < 340 then
             push(api.docs)
