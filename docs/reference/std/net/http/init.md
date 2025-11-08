@@ -14,7 +14,7 @@ Library for sending HTTP Requests.
 <h4>
 
 ```luau
-http.get: (config: GetConfig | string) -> HttpResponse,
+function (config: GetConfig | string) -> HttpResponse,
 ```
 
 </h4>
@@ -58,7 +58,7 @@ local cats = http.get {
 <h4>
 
 ```luau
-http.post: (config: PostConfig) -> HttpResponse,
+function (config: PostConfig) -> HttpResponse,
 ```
 
 </h4>
@@ -87,7 +87,7 @@ local response = http.post {
 <h4>
 
 ```luau
-http.request: (config: RequestConfig) -> HttpResponse,
+function (config: RequestConfig) -> HttpResponse,
 ```
 
 </h4>
@@ -115,7 +115,7 @@ end
 <h4>
 
 ```luau
-http.server: HttpServerLib,
+HttpServerLib,
 ```
 
 </h4>
@@ -139,7 +139,7 @@ Create a webserver that listens for incoming requests.
 <h4>
 
 ```luau
-HttpResponse.ok: true,
+true,
 ```
 
 </h4>
@@ -151,7 +151,7 @@ HttpResponse.ok: true,
 <h4>
 
 ```luau
-HttpResponse.status_code: StatusCode,
+StatusCode,
 ```
 
 </h4>
@@ -163,7 +163,7 @@ HttpResponse.status_code: StatusCode,
 <h4>
 
 ```luau
-HttpResponse.body: string,
+string,
 ```
 
 </h4>
@@ -175,7 +175,7 @@ HttpResponse.body: string,
 <h4>
 
 ```luau
-HttpResponse.decode: (self: HttpResponse) -> { [any]: any }
+function (self: HttpResponse) -> { [any]: any }
 ```
 
 </h4>
@@ -189,7 +189,7 @@ HttpResponse.decode: (self: HttpResponse) -> { [any]: any }
 <h4>
 
 ```luau
-HttpResponse.ok: false,
+false,
 ```
 
 </h4>
@@ -201,7 +201,7 @@ HttpResponse.ok: false,
 <h4>
 
 ```luau
-HttpResponse.err: string,
+string,
 ```
 
 </h4>
@@ -213,7 +213,7 @@ HttpResponse.err: string,
 <h4>
 
 ```luau
-HttpResponse.unwrap_json: (self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
+function (self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
 ```
 
 </h4>
@@ -231,7 +231,7 @@ HttpResponse.unwrap_json: (self: HttpResponse, default: { [any]: any }?) -> { [a
 <h4>
 
 ```luau
-RequestConfig.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+"GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 ```
 
 </h4>
@@ -243,7 +243,7 @@ RequestConfig.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 <h4>
 
 ```luau
-RequestConfig.url: string,
+string,
 ```
 
 </h4>
@@ -255,7 +255,7 @@ RequestConfig.url: string,
 <h4>
 
 ```luau
-RequestConfig.headers: { [string]: string }?,
+{ [string]: string }?,
 ```
 
 </h4>
@@ -267,7 +267,7 @@ RequestConfig.headers: { [string]: string }?,
 <h4>
 
 ```luau
-RequestConfig.params: { [string]: string }?,
+{ [string]: string }?,
 ```
 
 </h4>
@@ -283,7 +283,7 @@ RequestConfig.params: { [string]: string }?,
 <h4>
 
 ```luau
-GetConfig.url: string,
+string,
 ```
 
 </h4>
@@ -295,7 +295,7 @@ GetConfig.url: string,
 <h4>
 
 ```luau
-GetConfig.headers: { [string]: string }?,
+{ [string]: string }?,
 ```
 
 </h4>
@@ -313,7 +313,7 @@ GetConfig.headers: { [string]: string }?,
 <h4>
 
 ```luau
-PostConfig.url: string,
+string,
 ```
 
 </h4>
@@ -325,7 +325,7 @@ PostConfig.url: string,
 <h4>
 
 ```luau
-PostConfig.headers.body: string | {
+string | {
 ```
 
 </h4>

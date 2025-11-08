@@ -50,7 +50,7 @@ assert(first_version < second_version)
 <h4>
 
 ```luau
-SemverFields.major: number,
+number,
 ```
 
 </h4>
@@ -62,7 +62,7 @@ SemverFields.major: number,
 <h4>
 
 ```luau
-SemverFields.minor: number,
+number,
 ```
 
 </h4>
@@ -74,7 +74,7 @@ SemverFields.minor: number,
 <h4>
 
 ```luau
-SemverFields.patch: number,
+number,
 ```
 
 </h4>
@@ -86,7 +86,7 @@ SemverFields.patch: number,
 <h4>
 
 ```luau
-SemverFields.metadata.release_candidate.tag: string,
+string,
 ```
 
 </h4>
@@ -98,7 +98,7 @@ SemverFields.metadata.release_candidate.tag: string,
 <h4>
 
 ```luau
-SemverFields.metadata.release_candidate.ver: number,
+number,
 ```
 
 </h4>
@@ -110,7 +110,7 @@ SemverFields.metadata.release_candidate.ver: number,
 <h4>
 
 ```luau
-SemverFields.metadata.release_candidate.build: string?,
+string?,
 ```
 
 </h4>
@@ -130,7 +130,7 @@ SemverFields.metadata.release_candidate.build: string?,
 <h4>
 
 ```luau
-Semver.from: (s: string): Semver
+function (s: string): Semver
 ```
 
 </h4>
@@ -142,7 +142,7 @@ Semver.from: (s: string): Semver
 <h4>
 
 ```luau
-Semver.string: " .. s)
+" .. s)
 ```
 
 </h4>
@@ -154,7 +154,7 @@ Semver.string: " .. s)
 <h4>
 
 ```luau
-Semver.string: {s}`)
+{s}`)
 ```
 
 </h4>
@@ -166,7 +166,7 @@ Semver.string: {s}`)
 <h4>
 
 ```luau
-Semver.FIXME: not optional fields not qualifying as optionals
+not optional fields not qualifying as optionals
 ```
 
 </h4>
@@ -212,7 +212,7 @@ Semver.FIXME: not optional fields not qualifying as optionals
 <h4>
 
 ```luau
-SemverVals.satisfies: (self: Semver, semver_range: string): boolean
+function (self: Semver, semver_range: string): boolean
 ```
 
 </h4>
@@ -257,7 +257,7 @@ end
 <h4>
 
 ```luau
-SemverVals.__eq: (self: Semver, other: Semver): boolean
+function (self: Semver, other: Semver): boolean
 ```
 
 </h4>
@@ -269,7 +269,7 @@ SemverVals.__eq: (self: Semver, other: Semver): boolean
 <h4>
 
 ```luau
-SemverVals.__lt: (self: Semver, other: Semver): boolean
+function (self: Semver, other: Semver): boolean
 ```
 
 </h4>
@@ -281,7 +281,7 @@ SemverVals.__lt: (self: Semver, other: Semver): boolean
 <h4>
 
 ```luau
-SemverVals.__le: (self: Semver, other: Semver): boolean
+function (self: Semver, other: Semver): boolean
 ```
 
 </h4>
@@ -293,7 +293,7 @@ SemverVals.__le: (self: Semver, other: Semver): boolean
 <h4>
 
 ```luau
-SemverVals.__tostring: (self: Semver): string
+function (self: Semver): string
 ```
 
 </h4>

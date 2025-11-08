@@ -12,7 +12,7 @@
 <h4>
 
 ```luau
-Aes.generatekey: () -> string,
+function () -> string,
 ```
 
 </h4>
@@ -24,7 +24,7 @@ Aes.generatekey: () -> string,
 <h4>
 
 ```luau
-Aes.encrypt: (plaintext: string, key: string) -> string,
+function (plaintext: string, key: string) -> string,
 ```
 
 </h4>
@@ -36,7 +36,7 @@ Aes.encrypt: (plaintext: string, key: string) -> string,
 <h4>
 
 ```luau
-Aes.decrypt: (ciphertext: string, key: string) -> string,
+function (ciphertext: string, key: string) -> string,
 ```
 
 </h4>

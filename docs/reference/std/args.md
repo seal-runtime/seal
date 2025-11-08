@@ -143,7 +143,7 @@ end
 <h4>
 
 ```luau
-args.parse: (program: string, tagline: string, info: ProgramInfo?) -> {
+function (program: string, tagline: string, info: ProgramInfo?) -> {
 ```
 
 </h4>
@@ -155,7 +155,7 @@ args.parse: (program: string, tagline: string, info: ProgramInfo?) -> {
 <h4>
 
 ```luau
-args.simple: (self: any, ...Arg) -> Parsed,
+function (self: any, ...Arg) -> Parsed,
 ```
 
 </h4>
@@ -169,7 +169,7 @@ args.simple: (self: any, ...Arg) -> Parsed,
 <h4>
 
 ```luau
-args.commands: (self: any, ...Command) -> Parsed,
+function (self: any, ...Command) -> Parsed,
 ```
 
 </h4>
@@ -184,7 +184,7 @@ args.commands: (self: any, ...Command) -> Parsed,
 <h4>
 
 ```luau
-args.positional: (name: string, help: string) -> Positional,
+function (name: string, help: string) -> Positional,
 ```
 
 </h4>
@@ -198,7 +198,7 @@ args.positional: (name: string, help: string) -> Positional,
 <h4>
 
 ```luau
-args.named: (name: string, help: string) -> Named,
+function (name: string, help: string) -> Named,
 ```
 
 </h4>
@@ -212,7 +212,7 @@ args.named: (name: string, help: string) -> Named,
 <h4>
 
 ```luau
-args.command: (name: string, help: string) -> Command,
+function (name: string, help: string) -> Command,
 ```
 
 </h4>
@@ -226,7 +226,7 @@ args.command: (name: string, help: string) -> Command,
 <h4>
 
 ```luau
-args.flag: (name: string, help: string) -> Flag,
+function (name: string, help: string) -> Flag,
 ```
 
 </h4>
@@ -240,7 +240,7 @@ args.flag: (name: string, help: string) -> Flag,
 <h4>
 
 ```luau
-args.list: (name: string, help: string) -> ArgList,
+function (name: string, help: string) -> ArgList,
 ```
 
 </h4>
@@ -254,7 +254,7 @@ args.list: (name: string, help: string) -> ArgList,
 <h4>
 
 ```luau
-args.default: (...Arg) -> Command,
+function (...Arg) -> Command,
 ```
 
 </h4>
@@ -272,7 +272,7 @@ args.default: (...Arg) -> Command,
 <h4>
 
 ```luau
-ProgramInfo.description: string?,
+string?,
 ```
 
 </h4>
@@ -286,7 +286,7 @@ ProgramInfo.description: string?,
 <h4>
 
 ```luau
-ProgramInfo.examples: { string }?,
+{ string }?,
 ```
 
 </h4>
@@ -300,7 +300,7 @@ ProgramInfo.examples: { string }?,
 <h4>
 
 ```luau
-ProgramInfo.footer: string?
+string?
 ```
 
 </h4>
@@ -318,7 +318,7 @@ ProgramInfo.footer: string?
 <h4>
 
 ```luau
-Command.name: string,
+string,
 ```
 
 </h4>
@@ -330,7 +330,7 @@ Command.name: string,
 <h4>
 
 ```luau
-Command.is: "Command",
+"Command",
 ```
 
 </h4>
@@ -342,7 +342,7 @@ Command.is: "Command",
 <h4>
 
 ```luau
-Command.help: string,
+string,
 ```
 
 </h4>
@@ -354,7 +354,7 @@ Command.help: string,
 <h4>
 
 ```luau
-Command._args: { Arg },
+{ Arg },
 ```
 
 </h4>
@@ -366,7 +366,7 @@ Command._args: { Arg },
 <h4>
 
 ```luau
-Command.args: (self: Command, ...Arg) -> Command,
+function (self: Command, ...Arg) -> Command,
 ```
 
 </h4>
@@ -378,7 +378,7 @@ Command.args: (self: Command, ...Arg) -> Command,
 <h4>
 
 ```luau
-Command._aliases: { [string]: true? },
+{ [string]: true? },
 ```
 
 </h4>
@@ -390,7 +390,7 @@ Command._aliases: { [string]: true? },
 <h4>
 
 ```luau
-Command.aliases: (self: Command, ...string) -> Command,
+function (self: Command, ...string) -> Command,
 ```
 
 </h4>
@@ -408,7 +408,7 @@ Command.aliases: (self: Command, ...string) -> Command,
 <h4>
 
 ```luau
-Parsed.command: string | "default",
+string | "default",
 ```
 
 </h4>
@@ -420,7 +420,7 @@ Parsed.command: string | "default",
 <h4>
 
 ```luau
-Parsed.get: <T>(self: Parsed, name: string, default: T?) -> T?,
+<T>(self: Parsed, name: string, default: T?) -> T?,
 ```
 
 </h4>
@@ -432,7 +432,7 @@ Parsed.get: <T>(self: Parsed, name: string, default: T?) -> T?,
 <h4>
 
 ```luau
-Parsed.expect: <T>(self: Parsed, name: string, assertion: string?) -> T,
+<T>(self: Parsed, name: string, assertion: string?) -> T,
 ```
 
 </h4>
@@ -444,7 +444,7 @@ Parsed.expect: <T>(self: Parsed, name: string, assertion: string?) -> T,
 <h4>
 
 ```luau
-Parsed.help: (self: Parsed) -> string,
+function (self: Parsed) -> string,
 ```
 
 </h4>
@@ -456,7 +456,7 @@ Parsed.help: (self: Parsed) -> string,
 <h4>
 
 ```luau
-Parsed.flags: { [string]: true? },
+{ [string]: true? },
 ```
 
 </h4>
@@ -472,7 +472,7 @@ Parsed.flags: { [string]: true? },
 <h4>
 
 ```luau
-ArgList.name: string,
+string,
 ```
 
 </h4>
@@ -484,7 +484,7 @@ ArgList.name: string,
 <h4>
 
 ```luau
-ArgList.is: "ArgList",
+"ArgList",
 ```
 
 </h4>
@@ -496,7 +496,7 @@ ArgList.is: "ArgList",
 <h4>
 
 ```luau
-ArgList.help: string,
+string,
 ```
 
 </h4>
@@ -508,7 +508,7 @@ ArgList.help: string,
 <h4>
 
 ```luau
-ArgList.values: { string }?,
+{ string }?,
 ```
 
 </h4>
@@ -556,7 +556,7 @@ ArgList.values: { string }?,
 <h4>
 
 ```luau
-Positional.name: string,
+string,
 ```
 
 </h4>
@@ -568,7 +568,7 @@ Positional.name: string,
 <h4>
 
 ```luau
-Positional.is: "Positional",
+"Positional",
 ```
 
 </h4>
@@ -580,7 +580,7 @@ Positional.is: "Positional",
 <h4>
 
 ```luau
-Positional.help: string,
+string,
 ```
 
 </h4>
@@ -592,7 +592,7 @@ Positional.help: string,
 <h4>
 
 ```luau
-Positional._default: any,
+any,
 ```
 
 </h4>
@@ -604,7 +604,7 @@ Positional._default: any,
 <h4>
 
 ```luau
-Positional.default: (any) -> Positional,
+function (any) -> Positional,
 ```
 
 </h4>
@@ -616,7 +616,7 @@ Positional.default: (any) -> Positional,
 <h4>
 
 ```luau
-Positional._optional: boolean,
+boolean,
 ```
 
 </h4>
@@ -628,7 +628,7 @@ Positional._optional: boolean,
 <h4>
 
 ```luau
-Positional.optional: (self: Positional) -> Positional,
+function (self: Positional) -> Positional,
 ```
 
 </h4>
@@ -642,7 +642,7 @@ Positional.optional: (self: Positional) -> Positional,
 <h4>
 
 ```luau
-Positional._validator: Validator?,
+Validator?,
 ```
 
 </h4>
@@ -654,7 +654,7 @@ Positional._validator: Validator?,
 <h4>
 
 ```luau
-Positional.validate: (self: Positional, validator: Validator) -> Positional,
+function (self: Positional, validator: Validator) -> Positional,
 ```
 
 </h4>
@@ -669,7 +669,7 @@ Positional.validate: (self: Positional, validator: Validator) -> Positional,
 <h4>
 
 ```luau
-Positional.value: any,
+any,
 ```
 
 </h4>
@@ -685,7 +685,7 @@ Positional.value: any,
 <h4>
 
 ```luau
-Flag.name: string,
+string,
 ```
 
 </h4>
@@ -699,7 +699,7 @@ Flag.name: string,
 <h4>
 
 ```luau
-Flag.is: "Flag",
+"Flag",
 ```
 
 </h4>
@@ -711,7 +711,7 @@ Flag.is: "Flag",
 <h4>
 
 ```luau
-Flag.help: string,
+string,
 ```
 
 </h4>
@@ -723,7 +723,7 @@ Flag.help: string,
 <h4>
 
 ```luau
-Flag._aliases: { [string]: true? },
+{ [string]: true? },
 ```
 
 </h4>
@@ -735,7 +735,7 @@ Flag._aliases: { [string]: true? },
 <h4>
 
 ```luau
-Flag.aliases: (self: Flag, ...string) -> Flag,
+function (self: Flag, ...string) -> Flag,
 ```
 
 </h4>
@@ -749,7 +749,7 @@ Flag.aliases: (self: Flag, ...string) -> Flag,
 <h4>
 
 ```luau
-Flag._default: boolean?,
+boolean?,
 ```
 
 </h4>
@@ -761,7 +761,7 @@ Flag._default: boolean?,
 <h4>
 
 ```luau
-Flag.default: (self: Flag, boolean) -> Flag,
+function (self: Flag, boolean) -> Flag,
 ```
 
 </h4>
@@ -773,7 +773,7 @@ Flag.default: (self: Flag, boolean) -> Flag,
 <h4>
 
 ```luau
-Flag.value: boolean,
+boolean,
 ```
 
 </h4>
@@ -789,7 +789,7 @@ Flag.value: boolean,
 <h4>
 
 ```luau
-Named.name: string,
+string,
 ```
 
 </h4>
@@ -803,7 +803,7 @@ Named.name: string,
 <h4>
 
 ```luau
-Named.is: "Named",
+"Named",
 ```
 
 </h4>
@@ -815,7 +815,7 @@ Named.is: "Named",
 <h4>
 
 ```luau
-Named.help: string,
+string,
 ```
 
 </h4>
@@ -827,7 +827,7 @@ Named.help: string,
 <h4>
 
 ```luau
-Named._default: any,
+any,
 ```
 
 </h4>
@@ -839,7 +839,7 @@ Named._default: any,
 <h4>
 
 ```luau
-Named.default: (self: Named, any) -> Named,
+function (self: Named, any) -> Named,
 ```
 
 </h4>
@@ -851,7 +851,7 @@ Named.default: (self: Named, any) -> Named,
 <h4>
 
 ```luau
-Named._aliases: { [string]: true? },
+{ [string]: true? },
 ```
 
 </h4>
@@ -863,7 +863,7 @@ Named._aliases: { [string]: true? },
 <h4>
 
 ```luau
-Named.aliases: (self: Named, ...string) -> Named,
+function (self: Named, ...string) -> Named,
 ```
 
 </h4>
@@ -877,7 +877,7 @@ Named.aliases: (self: Named, ...string) -> Named,
 <h4>
 
 ```luau
-Named._required: boolean,
+boolean,
 ```
 
 </h4>
@@ -889,7 +889,7 @@ Named._required: boolean,
 <h4>
 
 ```luau
-Named.required: (self: Named) -> Named,
+function (self: Named) -> Named,
 ```
 
 </h4>
@@ -901,7 +901,7 @@ Named.required: (self: Named) -> Named,
 <h4>
 
 ```luau
-Named._validator: Validator?,
+Validator?,
 ```
 
 </h4>
@@ -913,7 +913,7 @@ Named._validator: Validator?,
 <h4>
 
 ```luau
-Named.validate: (self: Named, validator: Validator) -> Named,
+function (self: Named, validator: Validator) -> Named,
 ```
 
 </h4>
@@ -925,7 +925,7 @@ Named.validate: (self: Named, validator: Validator) -> Named,
 <h4>
 
 ```luau
-Named.value: any,
+any,
 ```
 
 </h4>

@@ -14,7 +14,7 @@ A stdlib to interact with the script's running environment.
 <h4>
 
 ```luau
-env.args: {string},
+{string},
 ```
 
 </h4>
@@ -28,7 +28,7 @@ env.args: {string},
 <h4>
 
 ```luau
-env.os: "Windows" | "Linux" | "Android" | "MacOS" | "Other",
+"Windows" | "Linux" | "Android" | "MacOS" | "Other",
 ```
 
 </h4>
@@ -42,7 +42,7 @@ env.os: "Windows" | "Linux" | "Android" | "MacOS" | "Other",
 <h4>
 
 ```luau
-env.executable_path: string,
+string,
 ```
 
 </h4>
@@ -56,7 +56,7 @@ env.executable_path: string,
 <h4>
 
 ```luau
-env.cwd: () -> string,
+function () -> string,
 ```
 
 </h4>
@@ -72,7 +72,7 @@ Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission deni
 <h4>
 
 ```luau
-env.getvar: (key: string) -> string?,
+function (key: string) -> string?,
 ```
 
 </h4>
@@ -86,7 +86,7 @@ Gets an environment variable in the current process.
 <h4>
 
 ```luau
-env.setvar: (key: string, value: string) -> string,
+function (key: string, value: string) -> string,
 ```
 
 </h4>
@@ -102,7 +102,7 @@ Note, this function is **unsafe** in multithreaded contexts on Linux.
 <h4>
 
 ```luau
-env.removevar: (key: string) -> nil,
+function (key: string) -> nil,
 ```
 
 </h4>

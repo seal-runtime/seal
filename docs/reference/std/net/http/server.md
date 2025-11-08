@@ -212,7 +212,7 @@
 <h4>
 
 ```luau
-ServeRequest.peer_address: string,
+string,
 ```
 
 </h4>
@@ -224,7 +224,7 @@ ServeRequest.peer_address: string,
 <h4>
 
 ```luau
-ServeRequest.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+"GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 ```
 
 </h4>
@@ -236,7 +236,7 @@ ServeRequest.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 <h4>
 
 ```luau
-ServeRequest.path: string,
+string,
 ```
 
 </h4>
@@ -248,7 +248,7 @@ ServeRequest.path: string,
 <h4>
 
 ```luau
-ServeRequest.raw_text: string,
+string,
 ```
 
 </h4>
@@ -260,7 +260,7 @@ ServeRequest.raw_text: string,
 <h4>
 
 ```luau
-ServeRequest.body: string,
+string,
 ```
 
 </h4>
@@ -276,7 +276,7 @@ ServeRequest.body: string,
 <h4>
 
 ```luau
-ServeResponse.status_code: StatusCode,
+StatusCode,
 ```
 
 </h4>
@@ -288,7 +288,7 @@ ServeResponse.status_code: StatusCode,
 <h4>
 
 ```luau
-ServeResponse.content_type: ContentType,
+ContentType,
 ```
 
 </h4>
@@ -300,7 +300,7 @@ ServeResponse.content_type: ContentType,
 <h4>
 
 ```luau
-ServeResponse.body: string,
+string,
 ```
 
 </h4>
@@ -312,7 +312,7 @@ ServeResponse.body: string,
 <h4>
 
 ```luau
-ServeResponse.headers.cookies.http_version: string?,
+string?,
 ```
 
 </h4>
@@ -324,7 +324,7 @@ ServeResponse.headers.cookies.http_version: string?,
 <h4>
 
 ```luau
-ServeResponse.headers.cookies.reason_phrase: string?,
+string?,
 ```
 
 </h4>
@@ -336,7 +336,7 @@ ServeResponse.headers.cookies.reason_phrase: string?,
 <h4>
 
 ```luau
-ServeResponse.headers.cookies.redirect_url: string?
+string?
 ```
 
 </h4>
@@ -352,7 +352,7 @@ ServeResponse.headers.cookies.redirect_url: string?
 <h4>
 
 ```luau
-ServeConfig.address: string,
+string,
 ```
 
 </h4>
@@ -364,7 +364,7 @@ ServeConfig.address: string,
 <h4>
 
 ```luau
-ServeConfig.port: string | number,
+string | number,
 ```
 
 </h4>
@@ -376,7 +376,7 @@ ServeConfig.port: string | number,
 <h4>
 
 ```luau
-ServeConfig.handler: (ServeRequest) -> ServeResponse,
+function (ServeRequest) -> ServeResponse,
 ```
 
 </h4>
@@ -388,7 +388,7 @@ ServeConfig.handler: (ServeRequest) -> ServeResponse,
 <h4>
 
 ```luau
-net.http.server.serve: (config: ServeConfig)
+function (config: ServeConfig)
 ```
 
 </h4>

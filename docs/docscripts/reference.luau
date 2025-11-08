@@ -193,11 +193,15 @@ for _, filepath in typedefs_paths do
             local name = front_name .. "." .. property_name
 
             local is = "Property"
-            local defs = ": " .. rest
+            local defs = rest
+            if str.startswith(rest, "(") then
+                defs = `function {rest}`
+                is = "Function"
+            end
 
             local new_api: Api = {
                 name = name,
-                defs = name .. defs,
+                defs = defs,
                 docs = table.concat(current_docs, "\n"),
                 is = is,
             }
@@ -254,8 +258,8 @@ for _, library in libraries do
         local name = 
             if api.is == "Type" then 
                 `\`export type\` {api.name}`
-            elseif api.is == "Function" then
-                `\`function\` {api.name}`
+            -- elseif api.is == "Function" then
+            --     `\`function\` {api.name}`
             elseif api.is == "Enum" then
                 `\`enum\` {api.name}`
             else api.name

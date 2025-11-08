@@ -15,7 +15,7 @@
 <h4>
 
 ```luau
-io.input.tty: (stream: "Stdout" | "Stderr" | "Stdin"?): boolean
+function (stream: "Stdout" | "Stderr" | "Stdin"?): boolean
 ```
 
 </h4>
@@ -42,7 +42,7 @@ If *seal* is being run in a child process, this will almost always return `false
 <h4>
 
 ```luau
-io.input.rawline: (prompt: string?): string
+function (prompt: string?): string
 ```
 
 </h4>
@@ -58,7 +58,7 @@ But works with stdin in a child process/works while piped, making it a fallback 
 <h4>
 
 ```luau
-io.input.readline: (prompt: string): string | interrupt | error
+function (prompt: string): string | interrupt | error
 ```
 
 </h4>
@@ -110,7 +110,7 @@ end
 <h4>
 
 ```luau
-io.input.interrupt: (key: "CtrlC" | "CtrlD"): interrupt
+function (key: "CtrlC" | "CtrlD"): interrupt
 ```
 
 </h4>
@@ -124,7 +124,7 @@ Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 <h4>
 
 ```luau
-io.input.rawmode: (enabled: boolean)
+function (enabled: boolean)
 ```
 
 </h4>
@@ -152,7 +152,7 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 <h4>
 
 ```luau
-io.input.mouse: (enabled: boolean) -> (),
+function (enabled: boolean) -> (),
 ```
 
 </h4>
@@ -166,7 +166,7 @@ io.input.mouse: (enabled: boolean) -> (),
 <h4>
 
 ```luau
-io.input.focus: (enabled: boolean) -> (),
+function (enabled: boolean) -> (),
 ```
 
 </h4>
@@ -180,7 +180,7 @@ io.input.focus: (enabled: boolean) -> (),
 <h4>
 
 ```luau
-io.input.paste: (enabled: boolean) -> (),
+function (enabled: boolean) -> (),
 ```
 
 </h4>
@@ -194,7 +194,7 @@ io.input.paste: (enabled: boolean) -> (),
 <h4>
 
 ```luau
-io.input.events: (poll: Duration): () -> TerminalEvent
+function (poll: Duration): () -> TerminalEvent
 ```
 
 </h4>
@@ -276,7 +276,7 @@ end
 <h4>
 
 ```luau
-KeyModifiers.ctrl: boolean,
+boolean,
 ```
 
 </h4>
@@ -288,7 +288,7 @@ KeyModifiers.ctrl: boolean,
 <h4>
 
 ```luau
-KeyModifiers.shift: boolean,
+boolean,
 ```
 
 </h4>
@@ -300,7 +300,7 @@ KeyModifiers.shift: boolean,
 <h4>
 
 ```luau
-KeyModifiers.alt: boolean,
+boolean,
 ```
 
 </h4>
@@ -316,7 +316,7 @@ KeyModifiers.alt: boolean,
 <h4>
 
 ```luau
-KeyEvent.is: "Key",
+"Key",
 ```
 
 </h4>
@@ -328,7 +328,7 @@ KeyEvent.is: "Key",
 <h4>
 
 ```luau
-KeyEvent.key: string,
+string,
 ```
 
 </h4>
@@ -340,7 +340,7 @@ KeyEvent.key: string,
 <h4>
 
 ```luau
-KeyEvent.modifiers: KeyModifiers,
+KeyModifiers,
 ```
 
 </h4>
@@ -356,7 +356,7 @@ KeyEvent.modifiers: KeyModifiers,
 <h4>
 
 ```luau
-MouseEvent.is: "Mouse",
+"Mouse",
 ```
 
 </h4>
@@ -368,7 +368,7 @@ MouseEvent.is: "Mouse",
 <h4>
 
 ```luau
-MouseEvent.kind: string,
+string,
 ```
 
 </h4>
@@ -380,7 +380,7 @@ MouseEvent.kind: string,
 <h4>
 
 ```luau
-MouseEvent.column: number,
+number,
 ```
 
 </h4>
@@ -392,7 +392,7 @@ MouseEvent.column: number,
 <h4>
 
 ```luau
-MouseEvent.row: number,
+number,
 ```
 
 </h4>
@@ -404,7 +404,7 @@ MouseEvent.row: number,
 <h4>
 
 ```luau
-MouseEvent.modifiers: KeyModifiers,
+KeyModifiers,
 ```
 
 </h4>
@@ -420,7 +420,7 @@ MouseEvent.modifiers: KeyModifiers,
 <h4>
 
 ```luau
-ResizeEvent.is: "Resize",
+"Resize",
 ```
 
 </h4>
@@ -432,7 +432,7 @@ ResizeEvent.is: "Resize",
 <h4>
 
 ```luau
-ResizeEvent.columns: number,
+number,
 ```
 
 </h4>
@@ -444,7 +444,7 @@ ResizeEvent.columns: number,
 <h4>
 
 ```luau
-ResizeEvent.rows: number,
+number,
 ```
 
 </h4>
@@ -460,7 +460,7 @@ ResizeEvent.rows: number,
 <h4>
 
 ```luau
-FocusGained.is: "FocusGained",
+"FocusGained",
 ```
 
 </h4>
@@ -476,7 +476,7 @@ FocusGained.is: "FocusGained",
 <h4>
 
 ```luau
-FocusLost.is: "FocusLost",
+"FocusLost",
 ```
 
 </h4>
@@ -492,7 +492,7 @@ FocusLost.is: "FocusLost",
 <h4>
 
 ```luau
-PasteEvent.is: "Paste",
+"Paste",
 ```
 
 </h4>
@@ -504,7 +504,7 @@ PasteEvent.is: "Paste",
 <h4>
 
 ```luau
-PasteEvent.contents: string,
+string,
 ```
 
 </h4>
@@ -520,7 +520,7 @@ PasteEvent.contents: string,
 <h4>
 
 ```luau
-Empty.is: "Empty",
+"Empty",
 ```
 
 </h4>

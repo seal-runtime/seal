@@ -12,7 +12,7 @@
 <h4>
 
 ```luau
-luau.eval: (src: string, options: EvalOptions?) -> unknown | error,
+function (src: string, options: EvalOptions?) -> unknown | error,
 ```
 
 </h4>
@@ -68,7 +68,7 @@ end
 <h4>
 
 ```luau
-luau.eval_unsafe: (src: string | buffer, options: EvalOptions?) -> unknown | error,
+function (src: string | buffer, options: EvalOptions?) -> unknown | error,
 ```
 
 </h4>
@@ -96,7 +96,7 @@ and *coredump*.
 <h4>
 
 ```luau
-luau.bytecode: (src: string) -> buffer | error,
+function (src: string) -> buffer | error,
 ```
 
 </h4>
@@ -110,7 +110,7 @@ Compiles `src` to Luau bytecode.
 <h4>
 
 ```luau
-luau.require_resolver: () -> {
+function () -> {
 ```
 
 </h4>
@@ -124,7 +124,7 @@ Returns *seal*'s require resolver implementation used internally.
 <h4>
 
 ```luau
-luau.resolve: (requested_path: string, requiring_file_path: string) -> { err: string, path: nil } | { path: string, err: nil },
+function (requested_path: string, requiring_file_path: string) -> { err: string, path: nil } | { path: string, err: nil },
 ```
 
 </h4>
@@ -138,7 +138,7 @@ luau.resolve: (requested_path: string, requiring_file_path: string) -> { err: st
 <h4>
 
 ```luau
-luau.get_aliases: (requiring_file_path: string) -> ({ LuaurcAliases }?, string?),
+function (requiring_file_path: string) -> ({ LuaurcAliases }?, string?),
 ```
 
 </h4>
@@ -150,7 +150,7 @@ luau.get_aliases: (requiring_file_path: string) -> ({ LuaurcAliases }?, string?)
 <h4>
 
 ```luau
-luau.expand_aliases: (requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?),
+function (requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?),
 ```
 
 </h4>
@@ -166,7 +166,7 @@ luau.expand_aliases: (requested_path: string, aliases_by_luaurc: { LuaurcAliases
 <h4>
 
 ```luau
-EvalOptions.name: string?,
+string?,
 ```
 
 </h4>
@@ -178,7 +178,7 @@ EvalOptions.name: string?,
 <h4>
 
 ```luau
-EvalOptions.stdlib: ("seal" | "safe" | "none")?,
+function ("seal" | "safe" | "none")?,
 ```
 
 </h4>
@@ -194,7 +194,7 @@ EvalOptions.stdlib: ("seal" | "safe" | "none")?,
 <h4>
 
 ```luau
-LuaurcAliases.path: string,
+string,
 ```
 
 </h4>

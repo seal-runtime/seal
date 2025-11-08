@@ -12,7 +12,7 @@
 <h4>
 
 ```luau
-RsaKeys.public: string,
+string,
 ```
 
 </h4>
@@ -24,7 +24,7 @@ RsaKeys.public: string,
 <h4>
 
 ```luau
-RsaKeys.private: string
+string
 ```
 
 </h4>
@@ -40,7 +40,7 @@ RsaKeys.private: string
 <h4>
 
 ```luau
-Rsa.generatekeys: () -> RsaKeys,
+function () -> RsaKeys,
 ```
 
 </h4>
@@ -52,7 +52,7 @@ Rsa.generatekeys: () -> RsaKeys,
 <h4>
 
 ```luau
-Rsa.encrypt: (plaintext: string, public_key: string) -> string,
+function (plaintext: string, public_key: string) -> string,
 ```
 
 </h4>
@@ -64,7 +64,7 @@ Rsa.encrypt: (plaintext: string, public_key: string) -> string,
 <h4>
 
 ```luau
-Rsa.decrypt: (ciphertext: string, private_key: string) -> string,
+function (ciphertext: string, private_key: string) -> string,
 ```
 
 </h4>

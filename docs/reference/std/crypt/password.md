@@ -12,7 +12,7 @@
 <h4>
 
 ```luau
-HashedPassword.salt: buffer,
+buffer,
 ```
 
 </h4>
@@ -24,7 +24,7 @@ HashedPassword.salt: buffer,
 <h4>
 
 ```luau
-HashedPassword.hash: buffer,
+buffer,
 ```
 
 </h4>
@@ -40,7 +40,7 @@ HashedPassword.hash: buffer,
 <h4>
 
 ```luau
-PasswordVerifyOptions.raw_password: string,
+string,
 ```
 
 </h4>
@@ -52,7 +52,7 @@ PasswordVerifyOptions.raw_password: string,
 <h4>
 
 ```luau
-PasswordVerifyOptions.hashed_password: HashedPassword,
+HashedPassword,
 ```
 
 </h4>
@@ -72,7 +72,7 @@ Please use with caution.
 <h4>
 
 ```luau
-Password.hash: (raw_password: string) -> HashedPassword,
+function (raw_password: string) -> HashedPassword,
 ```
 
 </h4>
@@ -117,7 +117,7 @@ end
 <h4>
 
 ```luau
-Password.verify: (verify_options: PasswordVerifyOptions) -> boolean
+function (verify_options: PasswordVerifyOptions) -> boolean
 ```
 
 </h4>

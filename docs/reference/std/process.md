@@ -40,7 +40,7 @@ end
 <h4>
 
 ```luau
-process.run: (options: RunOptions) -> RunResult,
+function (options: RunOptions) -> RunResult,
 ```
 
 </h4>
@@ -91,7 +91,7 @@ end
 <h4>
 
 ```luau
-process.shell: (command: string) -> RunResult,
+function (command: string) -> RunResult,
 ```
 
 </h4>
@@ -132,7 +132,7 @@ print(file_stuff)
 <h4>
 
 ```luau
-process.spawn: (options: SpawnOptions) -> ChildProcess,
+function (options: SpawnOptions) -> ChildProcess,
 ```
 
 </h4>
@@ -167,7 +167,7 @@ end
 <h4>
 
 ```luau
-process.setexitcallback: ((number) -> ()) -> (),
+function ((number) -> ()) -> (),
 ```
 
 </h4>
@@ -181,7 +181,7 @@ Doesn't work.
 <h4>
 
 ```luau
-process.exit: (code: number?) -> never,
+function (code: number?) -> never,
 ```
 
 </h4>
@@ -201,7 +201,7 @@ Typically exit code 0 means success and exit code 1 means failure.
 <h4>
 
 ```luau
-RunResult.unwrap: (self: RunResult) -> string,
+function (self: RunResult) -> string,
 ```
 
 </h4>
@@ -216,7 +216,7 @@ RunResult.unwrap: (self: RunResult) -> string,
 <h4>
 
 ```luau
-RunResult.unwrap_or: (self: RunResult, default: string | (result: RunResult) -> string) -> string
+function (self: RunResult, default: string | (result: RunResult) -> string) -> string
 ```
 
 </h4>
@@ -237,7 +237,7 @@ If you provide a `default` function, `:unwrap_or` will return what it returns.
 <h4>
 
 ```luau
-RunResultOk.ok: true,
+true,
 ```
 
 </h4>
@@ -249,7 +249,7 @@ RunResultOk.ok: true,
 <h4>
 
 ```luau
-RunResultOk.out: string,
+string,
 ```
 
 </h4>
@@ -263,7 +263,7 @@ RunResultOk.out: string,
 <h4>
 
 ```luau
-RunResultOk.stdout: string,
+string,
 ```
 
 </h4>
@@ -277,7 +277,7 @@ RunResultOk.stdout: string,
 <h4>
 
 ```luau
-RunResultOk.stderr: string,
+string,
 ```
 
 </h4>
@@ -295,7 +295,7 @@ RunResultOk.stderr: string,
 <h4>
 
 ```luau
-RunResultErr.ok: false,
+false,
 ```
 
 </h4>
@@ -307,7 +307,7 @@ RunResultErr.ok: false,
 <h4>
 
 ```luau
-RunResultErr.err: string,
+string,
 ```
 
 </h4>
@@ -319,7 +319,7 @@ RunResultErr.err: string,
 <h4>
 
 ```luau
-RunResultErr.stdout: string,
+string,
 ```
 
 </h4>
@@ -331,7 +331,7 @@ RunResultErr.stdout: string,
 <h4>
 
 ```luau
-RunResultErr.stderr: string,
+string,
 ```
 
 </h4>
@@ -347,7 +347,7 @@ RunResultErr.stderr: string,
 <h4>
 
 ```luau
-RunOptions.program: string,
+string,
 ```
 
 </h4>
@@ -359,7 +359,7 @@ RunOptions.program: string,
 <h4>
 
 ```luau
-RunOptions.args: { string }?,
+{ string }?,
 ```
 
 </h4>
@@ -373,7 +373,7 @@ RunOptions.args: { string }?,
 <h4>
 
 ```luau
-RunOptions.shell: string?,
+string?,
 ```
 
 </h4>
@@ -387,7 +387,7 @@ RunOptions.shell: string?,
 <h4>
 
 ```luau
-RunOptions.cwd: string?,
+string?,
 ```
 
 </h4>
@@ -405,7 +405,7 @@ RunOptions.cwd: string?,
 <h4>
 
 ```luau
-SpawnOptions.program: string,
+string,
 ```
 
 </h4>
@@ -419,7 +419,7 @@ SpawnOptions.program: string,
 <h4>
 
 ```luau
-SpawnOptions.args: { string }?,
+{ string }?,
 ```
 
 </h4>
@@ -433,7 +433,7 @@ SpawnOptions.args: { string }?,
 <h4>
 
 ```luau
-SpawnOptions.shell: string?,
+string?,
 ```
 
 </h4>
@@ -445,7 +445,7 @@ SpawnOptions.shell: string?,
 <h4>
 
 ```luau
-SpawnOptions.cwd: string?,
+string?,
 ```
 
 </h4>
@@ -459,7 +459,7 @@ SpawnOptions.cwd: string?,
 <h4>
 
 ```luau
-SpawnOptions.stream.stdout_capacity: number?,
+number?,
 ```
 
 </h4>
@@ -504,7 +504,7 @@ By default, seal truncates bytes from the front of inner, causing old data to be
 <h4>
 
 ```luau
-SpawnOptions.stream.stderr_capacity: number?,
+number?,
 ```
 
 </h4>
@@ -518,7 +518,7 @@ SpawnOptions.stream.stderr_capacity: number?,
 <h4>
 
 ```luau
-SpawnOptions.stream.stdout_truncate: ("front" | "back")?,
+function ("front" | "back")?,
 ```
 
 </h4>
@@ -532,7 +532,7 @@ SpawnOptions.stream.stdout_truncate: ("front" | "back")?,
 <h4>
 
 ```luau
-SpawnOptions.stream.stderr_truncate: ("front" | "back")?,
+function ("front" | "back")?,
 ```
 
 </h4>
@@ -553,7 +553,7 @@ SpawnOptions.stream.stderr_truncate: ("front" | "back")?,
 <h4>
 
 ```luau
-ChildProcessStream.read: (self: ChildProcessStream, count: number?, timeout: number?) -> string?,
+function (self: ChildProcessStream, count: number?, timeout: number?) -> string?,
 ```
 
 </h4>
@@ -611,7 +611,7 @@ local current_data = child.stdout:read(nil, 0.0)
 <h4>
 
 ```luau
-ChildProcessStream.read_exact: (self: ChildProcessStream, count: number, timeout: number?) -> string?,
+function (self: ChildProcessStream, count: number, timeout: number?) -> string?,
 ```
 
 </h4>
@@ -671,7 +671,7 @@ end
 <h4>
 
 ```luau
-ChildProcessStream.read_to: (self: ChildProcessStream, term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?,
+function (self: ChildProcessStream, term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?,
 ```
 
 </h4>
@@ -708,7 +708,7 @@ Blocks the current VM until `term` is found, `timeout` seconds elapse, or the re
 <h4>
 
 ```luau
-ChildProcessStream.fill: (self: ChildProcessStream, target: buffer, target_offset: number?, timeout: number?) -> number,
+function (self: ChildProcessStream, target: buffer, target_offset: number?, timeout: number?) -> number,
 ```
 
 </h4>
@@ -754,7 +754,7 @@ end
 <h4>
 
 ```luau
-ChildProcessStream.fill_exact: (self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean,
+function (self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean,
 ```
 
 </h4>
@@ -790,7 +790,7 @@ Pass a `timeout` of `0` seconds to prevent this function from blocking!
 <h4>
 
 ```luau
-ChildProcessStream.len: (self: ChildProcessStream) -> number,
+function (self: ChildProcessStream) -> number,
 ```
 
 </h4>
@@ -804,7 +804,7 @@ ChildProcessStream.len: (self: ChildProcessStream) -> number,
 <h4>
 
 ```luau
-ChildProcessStream.capacity: (self: ChildProcessStream) -> number,
+function (self: ChildProcessStream) -> number,
 ```
 
 </h4>
@@ -818,7 +818,7 @@ ChildProcessStream.capacity: (self: ChildProcessStream) -> number,
 <h4>
 
 ```luau
-ChildProcessStream.lines: (self: ChildProcessStream, timeout: number?) -> (() -> string),
+function (self: ChildProcessStream, timeout: number?) -> (() -> string),
 ```
 
 </h4>
@@ -874,7 +874,7 @@ local second_line = next_line()
 <h4>
 
 ```luau
-ChildProcessStream.iter: (self: ChildProcessStream, timeout: number?, write_delay_ms: number?) -> () -> string,
+function (self: ChildProcessStream, timeout: number?, write_delay_ms: number?) -> () -> string,
 ```
 
 </h4>
@@ -903,7 +903,7 @@ This function does *not* strip preceding '\r's and trailing '\n's (unlike `:line
 <h4>
 
 ```luau
-ChildProcessStream.__iter: (self: ChildProcessStream) -> () -> string,
+function (self: ChildProcessStream) -> () -> string,
 ```
 
 </h4>
@@ -923,7 +923,7 @@ Basically equivalent to `ChildProcessStream:lines()` except with generalized ite
 <h4>
 
 ```luau
-ChildProcessStdin.write: (self: ChildProcessStdin, data: string) -> error?,
+function (self: ChildProcessStdin, data: string) -> error?,
 ```
 
 </h4>
@@ -937,7 +937,7 @@ Attempts to write to the child process' stdin; if an error occurs (usually a bro
 <h4>
 
 ```luau
-ChildProcessStdin.close: (self: ChildProcessStdin) -> (),
+function (self: ChildProcessStdin) -> (),
 ```
 
 </h4>
@@ -968,7 +968,7 @@ child.stdin:close()
 <h4>
 
 ```luau
-ChildProcess.id: number,
+number,
 ```
 
 </h4>
@@ -980,7 +980,7 @@ ChildProcess.id: number,
 <h4>
 
 ```luau
-ChildProcess.alive: (self: ChildProcess) -> boolean,
+function (self: ChildProcess) -> boolean,
 ```
 
 </h4>
@@ -992,7 +992,7 @@ ChildProcess.alive: (self: ChildProcess) -> boolean,
 <h4>
 
 ```luau
-ChildProcess.kill: (self: ChildProcess) -> (),
+function (self: ChildProcess) -> (),
 ```
 
 </h4>
@@ -1004,7 +1004,7 @@ ChildProcess.kill: (self: ChildProcess) -> (),
 <h4>
 
 ```luau
-ChildProcess.stdout: ChildProcessStream,
+ChildProcessStream,
 ```
 
 </h4>
@@ -1016,7 +1016,7 @@ ChildProcess.stdout: ChildProcessStream,
 <h4>
 
 ```luau
-ChildProcess.stderr: ChildProcessStream,
+ChildProcessStream,
 ```
 
 </h4>
@@ -1028,7 +1028,7 @@ ChildProcess.stderr: ChildProcessStream,
 <h4>
 
 ```luau
-ChildProcess.stdin: ChildProcessStdin,
+ChildProcessStdin,
 ```
 
 </h4>

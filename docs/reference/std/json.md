@@ -23,7 +23,7 @@ json.writefile("./animals.json", data)
 <h4>
 
 ```luau
-json.encode: (t: JsonData, options: EncodeOptions?) -> string,
+function (t: JsonData, options: EncodeOptions?) -> string,
 ```
 
 </h4>
@@ -37,7 +37,7 @@ json.encode: (t: JsonData, options: EncodeOptions?) -> string,
 <h4>
 
 ```luau
-json.raw: (t: JsonData) -> string,
+function (t: JsonData) -> string,
 ```
 
 </h4>
@@ -51,7 +51,7 @@ json.raw: (t: JsonData) -> string,
 <h4>
 
 ```luau
-json.decode: (json: string) -> JsonData,
+function (json: string) -> JsonData,
 ```
 
 </h4>
@@ -63,7 +63,7 @@ json.decode: (json: string) -> JsonData,
 <h4>
 
 ```luau
-json.readfile: (path: string) -> JsonData,
+function (path: string) -> JsonData,
 ```
 
 </h4>
@@ -75,7 +75,7 @@ json.readfile: (path: string) -> JsonData,
 <h4>
 
 ```luau
-json.writefile: (path: string, data: JsonData, options: EncodeOptions?) -> (),
+function (path: string, data: JsonData, options: EncodeOptions?) -> (),
 ```
 
 </h4>
@@ -87,7 +87,7 @@ json.writefile: (path: string, data: JsonData, options: EncodeOptions?) -> (),
 <h4>
 
 ```luau
-json.writefile_raw: (path: string, data: JsonData) -> (),
+function (path: string, data: JsonData) -> (),
 ```
 
 </h4>
@@ -99,7 +99,7 @@ json.writefile_raw: (path: string, data: JsonData) -> (),
 <h4>
 
 ```luau
-json.null: () -> any,
+function () -> any,
 ```
 
 </h4>
@@ -113,7 +113,7 @@ json.null: () -> any,
 <h4>
 
 ```luau
-json.array: <T>(t: { T }?) -> { T }
+<T>(t: { T }?) -> { T }
 ```
 
 </h4>
@@ -133,7 +133,7 @@ json.array: <T>(t: { T }?) -> { T }
 <h4>
 
 ```luau
-EncodeOptions.pretty: boolean?,
+boolean?,
 ```
 
 </h4>
@@ -147,7 +147,7 @@ EncodeOptions.pretty: boolean?,
 <h4>
 
 ```luau
-EncodeOptions.sorted: boolean?,
+boolean?,
 ```
 
 </h4>

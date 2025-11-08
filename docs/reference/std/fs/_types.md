@@ -12,7 +12,7 @@
 <h4>
 
 ```luau
-TreeBuilder.inner: DirectoryTree,
+DirectoryTree,
 ```
 
 </h4>
@@ -26,7 +26,7 @@ TreeBuilder.inner: DirectoryTree,
 <h4>
 
 ```luau
-TreeBuilder.with_file: (self: TreeBuilder, name: string, content: string) -> TreeBuilder,
+function (self: TreeBuilder, name: string, content: string) -> TreeBuilder,
 ```
 
 </h4>
@@ -40,7 +40,7 @@ TreeBuilder.with_file: (self: TreeBuilder, name: string, content: string) -> Tre
 <h4>
 
 ```luau
-TreeBuilder.with_tree: (self: TreeBuilder, name: string, builder: TreeBuilder) -> TreeBuilder,
+function (self: TreeBuilder, name: string, builder: TreeBuilder) -> TreeBuilder,
 ```
 
 </h4>
@@ -67,7 +67,7 @@ local dir = fs.tree()
 <h4>
 
 ```luau
-FileEntry.name: string,
+string,
 ```
 
 </h4>
@@ -81,7 +81,7 @@ FileEntry.name: string,
 <h4>
 
 ```luau
-FileEntry.path: string,
+string,
 ```
 
 </h4>
@@ -95,7 +95,7 @@ FileEntry.path: string,
 <h4>
 
 ```luau
-FileEntry.type: "File",
+"File",
 ```
 
 </h4>
@@ -107,7 +107,7 @@ FileEntry.type: "File",
 <h4>
 
 ```luau
-FileEntry.read: (self: FileEntry) -> string,
+function (self: FileEntry) -> string,
 ```
 
 </h4>
@@ -137,7 +137,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 <h4>
 
 ```luau
-FileEntry.size: (self: FileEntry) -> number,
+function (self: FileEntry) -> number,
 ```
 
 </h4>
@@ -151,7 +151,7 @@ FileEntry.size: (self: FileEntry) -> number,
 <h4>
 
 ```luau
-FileEntry.readlines: (self: FileEntry) -> () -> (number, string),
+function (self: FileEntry) -> () -> (number, string),
 ```
 
 </h4>
@@ -181,7 +181,7 @@ end
 <h4>
 
 ```luau
-FileEntry.readbytes: (self: FileEntry, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
+function (self: FileEntry, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
 ```
 
 </h4>
@@ -221,7 +221,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 <h4>
 
 ```luau
-FileEntry.append: (self: FileEntry, content: buffer | string) -> (),
+function (self: FileEntry, content: buffer | string) -> (),
 ```
 
 </h4>
@@ -249,7 +249,7 @@ Like `fs.writefile`, `content` does not have to be a valid utf-8 encoded string 
 <h4>
 
 ```luau
-FileEntry.is_valid_utf8: (self: FileEntry) -> boolean,
+function (self: FileEntry) -> boolean,
 ```
 
 </h4>
@@ -261,7 +261,7 @@ FileEntry.is_valid_utf8: (self: FileEntry) -> boolean,
 <h4>
 
 ```luau
-FileEntry.metadata: (self: FileEntry) -> FsMetadata,
+function (self: FileEntry) -> FsMetadata,
 ```
 
 </h4>
@@ -275,7 +275,7 @@ Returns a `FsMetadata` table containing timestamps for creation, modified, and a
 <h4>
 
 ```luau
-FileEntry.copy_to: (self: FileEntry, to: string) -> (),
+function (self: FileEntry, to: string) -> (),
 ```
 
 </h4>
@@ -287,7 +287,7 @@ FileEntry.copy_to: (self: FileEntry, to: string) -> (),
 <h4>
 
 ```luau
-FileEntry.move_to: (self: FileEntry, to: string) -> (),
+function (self: FileEntry, to: string) -> (),
 ```
 
 </h4>
@@ -299,7 +299,7 @@ FileEntry.move_to: (self: FileEntry, to: string) -> (),
 <h4>
 
 ```luau
-FileEntry.rename: (self: FileEntry, name: string) -> (),
+function (self: FileEntry, name: string) -> (),
 ```
 
 </h4>
@@ -311,7 +311,7 @@ FileEntry.rename: (self: FileEntry, name: string) -> (),
 <h4>
 
 ```luau
-FileEntry.remove: (self: FileEntry) -> (),
+function (self: FileEntry) -> (),
 ```
 
 </h4>
@@ -329,7 +329,7 @@ FileEntry.remove: (self: FileEntry) -> (),
 <h4>
 
 ```luau
-DirectoryEntry.name: string,
+string,
 ```
 
 </h4>
@@ -343,7 +343,7 @@ DirectoryEntry.name: string,
 <h4>
 
 ```luau
-DirectoryEntry.path: string,
+string,
 ```
 
 </h4>
@@ -358,7 +358,7 @@ DirectoryEntry.path: string,
 <h4>
 
 ```luau
-DirectoryEntry.type: "Directory",
+"Directory",
 ```
 
 </h4>
@@ -370,7 +370,7 @@ DirectoryEntry.type: "Directory",
 <h4>
 
 ```luau
-DirectoryEntry.list: (self: DirectoryEntry, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
+function (self: DirectoryEntry, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
 ```
 
 </h4>
@@ -385,7 +385,7 @@ DirectoryEntry.list: (self: DirectoryEntry, recursive: boolean?, filter: ((path:
 <h4>
 
 ```luau
-DirectoryEntry.join: (self: DirectoryEntry, ...string) -> string,
+function (self: DirectoryEntry, ...string) -> string,
 ```
 
 </h4>
@@ -400,7 +400,7 @@ DirectoryEntry.join: (self: DirectoryEntry, ...string) -> string,
 <h4>
 
 ```luau
-DirectoryEntry.find: (self: DirectoryEntry, name: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
+function (self: DirectoryEntry, name: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
 ```
 
 </h4>
@@ -412,7 +412,7 @@ DirectoryEntry.find: (self: DirectoryEntry, name: string, options: { follow_syml
 <h4>
 
 ```luau
-DirectoryEntry.entries: (self: DirectoryEntry) -> { [string]: Entry },
+function (self: DirectoryEntry) -> { [string]: Entry },
 ```
 
 </h4>
@@ -424,7 +424,7 @@ DirectoryEntry.entries: (self: DirectoryEntry) -> { [string]: Entry },
 <h4>
 
 ```luau
-DirectoryEntry.expect_file: (self: DirectoryEntry, name: string) -> FileEntry,
+function (self: DirectoryEntry, name: string) -> FileEntry,
 ```
 
 </h4>
@@ -438,7 +438,7 @@ DirectoryEntry.expect_file: (self: DirectoryEntry, name: string) -> FileEntry,
 <h4>
 
 ```luau
-DirectoryEntry.expect_dir: (self: DirectoryEntry, name: string) -> DirectoryEntry,
+function (self: DirectoryEntry, name: string) -> DirectoryEntry,
 ```
 
 </h4>
@@ -452,7 +452,7 @@ DirectoryEntry.expect_dir: (self: DirectoryEntry, name: string) -> DirectoryEntr
 <h4>
 
 ```luau
-DirectoryEntry.add_file: (self: DirectoryEntry, name: string, content: string | buffer) -> DirectoryEntry,
+function (self: DirectoryEntry, name: string, content: string | buffer) -> DirectoryEntry,
 ```
 
 </h4>
@@ -485,7 +485,7 @@ local src = fs.dir.ensure("./src")
 <h4>
 
 ```luau
-DirectoryEntry.add_tree: (self: DirectoryEntry, name: string, builder: TreeBuilder) -> DirectoryEntry,
+function (self: DirectoryEntry, name: string, builder: TreeBuilder) -> DirectoryEntry,
 ```
 
 </h4>
@@ -519,7 +519,7 @@ local src = fs.dir.ensure("./src")
 <h4>
 
 ```luau
-DirectoryEntry.metadata: (self: DirectoryEntry) -> FsMetadata,
+function (self: DirectoryEntry) -> FsMetadata,
 ```
 
 </h4>
@@ -533,7 +533,7 @@ Returns a `FsMetadata` table containing timestamps for creation, modified, and a
 <h4>
 
 ```luau
-DirectoryEntry.copy_to: (self: DirectoryEntry, to: string) -> (),
+function (self: DirectoryEntry, to: string) -> (),
 ```
 
 </h4>
@@ -545,7 +545,7 @@ DirectoryEntry.copy_to: (self: DirectoryEntry, to: string) -> (),
 <h4>
 
 ```luau
-DirectoryEntry.move_to: (self: DirectoryEntry, to: string) -> (),
+function (self: DirectoryEntry, to: string) -> (),
 ```
 
 </h4>
@@ -557,7 +557,7 @@ DirectoryEntry.move_to: (self: DirectoryEntry, to: string) -> (),
 <h4>
 
 ```luau
-DirectoryEntry.rename: (self: DirectoryEntry, name: string) -> (),
+function (self: DirectoryEntry, name: string) -> (),
 ```
 
 </h4>
@@ -569,7 +569,7 @@ DirectoryEntry.rename: (self: DirectoryEntry, name: string) -> (),
 <h4>
 
 ```luau
-DirectoryEntry.remove: (self: DirectoryEntry) -> (),
+function (self: DirectoryEntry) -> (),
 ```
 
 </h4>
@@ -591,7 +591,7 @@ DirectoryEntry.remove: (self: DirectoryEntry) -> (),
 <h4>
 
 ```luau
-FsMetadata.created_at: DateTime?,
+DateTime?,
 ```
 
 </h4>
@@ -606,7 +606,7 @@ FsMetadata.created_at: DateTime?,
 <h4>
 
 ```luau
-FsMetadata.modified_at: DateTime?,
+DateTime?,
 ```
 
 </h4>
@@ -621,7 +621,7 @@ FsMetadata.modified_at: DateTime?,
 <h4>
 
 ```luau
-FsMetadata.accessed_at: DateTime?,
+DateTime?,
 ```
 
 </h4>
@@ -636,7 +636,7 @@ FsMetadata.accessed_at: DateTime?,
 <h4>
 
 ```luau
-FsMetadata.permissions.readonly: boolean,
+boolean,
 ```
 
 </h4>
@@ -650,7 +650,7 @@ FsMetadata.permissions.readonly: boolean,
 <h4>
 
 ```luau
-FsMetadata.permissions.unix_mode: number?,
+number?,
 ```
 
 </h4>
@@ -669,7 +669,7 @@ FsMetadata.permissions.unix_mode: number?,
 <h4>
 
 ```luau
-FindResult.ok: boolean,
+boolean,
 ```
 
 </h4>
@@ -683,7 +683,7 @@ FindResult.ok: boolean,
 <h4>
 
 ```luau
-FindResult.path: string,
+string,
 ```
 
 </h4>
@@ -695,7 +695,7 @@ FindResult.path: string,
 <h4>
 
 ```luau
-FindResult.type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
+"File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
 ```
 
 </h4>
@@ -707,7 +707,7 @@ FindResult.type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDeni
 <h4>
 
 ```luau
-FindResult.exists: (self: FindResult) -> boolean,
+function (self: FindResult) -> boolean,
 ```
 
 </h4>
@@ -733,7 +733,7 @@ end
 <h4>
 
 ```luau
-FindResult.try_file: (self: FindResult) -> FileEntry?,
+function (self: FindResult) -> FileEntry?,
 ```
 
 </h4>
@@ -756,7 +756,7 @@ end
 <h4>
 
 ```luau
-FindResult.try_dir: (self: FindResult) -> DirectoryEntry?,
+function (self: FindResult) -> DirectoryEntry?,
 ```
 
 </h4>
@@ -779,7 +779,7 @@ end
 <h4>
 
 ```luau
-FindResult.unwrap_file: (self: FindResult) -> FileEntry,
+function (self: FindResult) -> FileEntry,
 ```
 
 </h4>
@@ -793,7 +793,7 @@ FindResult.unwrap_file: (self: FindResult) -> FileEntry,
 <h4>
 
 ```luau
-FindResult.unwrap_dir: (self: FindResult) -> DirectoryEntry,
+function (self: FindResult) -> DirectoryEntry,
 ```
 
 </h4>
@@ -811,7 +811,7 @@ FindResult.unwrap_dir: (self: FindResult) -> DirectoryEntry,
 <h4>
 
 ```luau
-FileBuilder.name: string,
+string,
 ```
 
 </h4>
@@ -823,7 +823,7 @@ FileBuilder.name: string,
 <h4>
 
 ```luau
-FileBuilder.type: "File",
+"File",
 ```
 
 </h4>
@@ -835,7 +835,7 @@ FileBuilder.type: "File",
 <h4>
 
 ```luau
-FileBuilder.content: string,
+string,
 ```
 
 </h4>
@@ -851,7 +851,7 @@ FileBuilder.content: string,
 <h4>
 
 ```luau
-DirectoryBuilder.name: string,
+string,
 ```
 
 </h4>
@@ -863,7 +863,7 @@ DirectoryBuilder.name: string,
 <h4>
 
 ```luau
-DirectoryBuilder.type: "Directory",
+"Directory",
 ```
 
 </h4>
@@ -875,7 +875,7 @@ DirectoryBuilder.type: "Directory",
 <h4>
 
 ```luau
-DirectoryBuilder.children: DirectoryTree,
+DirectoryTree,
 ```
 
 </h4>

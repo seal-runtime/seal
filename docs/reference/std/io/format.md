@@ -14,7 +14,7 @@ Format objects for pretty printing to stdout/stderr.
 <h4>
 
 ```luau
-format.pretty: (item: unknown) -> string,
+function (item: unknown) -> string,
 ```
 
 </h4>
@@ -28,7 +28,7 @@ Formats `item` in the same way as `print` or `pp`.
 <h4>
 
 ```luau
-format.simple: (item: unknown) -> string,
+function (item: unknown) -> string,
 ```
 
 </h4>
@@ -42,7 +42,7 @@ Like pretty printing but without colors.
 <h4>
 
 ```luau
-format.debug: (item: unknown) -> string,
+function (item: unknown) -> string,
 ```
 
 </h4>
@@ -56,7 +56,7 @@ Prints the debug representation of `item`, equivalent to using `{:?}` in Rust.
 <h4>
 
 ```luau
-format.uncolor: (s: string) -> string,
+function (s: string) -> string,
 ```
 
 </h4>
@@ -70,7 +70,7 @@ Removes ANSI color codes from a pretty formatted string.
 <h4>
 
 ```luau
-format.__call: (self: any, item: unknown) -> string,
+function (self: any, item: unknown) -> string,
 ```
 
 </h4>
