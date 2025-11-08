@@ -60,6 +60,14 @@ local dir = fs.tree()
 
 ## `export type` FileEntry
 
+<h4>
+
+```luau
+export type FileEntry = {
+```
+
+</h4>
+
 ---
 
 ### FileEntry.name
@@ -322,6 +330,14 @@ function FileEntry.remove(self: FileEntry) -> (),
 
 ## `export type` DirectoryEntry
 
+<h4>
+
+```luau
+export type DirectoryEntry = {
+```
+
+</h4>
+
 ---
 
 ### DirectoryEntry.name
@@ -580,9 +596,25 @@ function DirectoryEntry.remove(self: DirectoryEntry) -> (),
 
 ## `export type` Entry
 
+<h4>
+
+```luau
+export type Entry = FileEntry | DirectoryEntry
+```
+
+</h4>
+
 ---
 
 ## `export type` FsMetadata
+
+<h4>
+
+```luau
+export type FsMetadata = {
+```
+
+</h4>
 
 ---
 
@@ -661,6 +693,14 @@ unix_mode: number?,
 ---
 
 ## `export type` FindResult
+
+<h4>
+
+```luau
+export type FindResult = { -- can't make this type more accurate w/ unions bc it breaks (new) typesolver
+```
+
+</h4>
 
 ---
 
@@ -804,6 +844,14 @@ function FindResult.unwrap_dir(self: FindResult) -> DirectoryEntry,
 
 ## `export type` FileBuilder
 
+<h4>
+
+```luau
+export type FileBuilder = {
+```
+
+</h4>
+
 ---
 
 ### FileBuilder.name
@@ -844,6 +892,14 @@ content: string,
 
 ## `export type` DirectoryBuilder
 
+<h4>
+
+```luau
+export type DirectoryBuilder = {
+```
+
+</h4>
+
 ---
 
 ### DirectoryBuilder.name
@@ -883,5 +939,13 @@ children: DirectoryTree,
 ---
 
 ## `export type` DirectoryTree
+
+<h4>
+
+```luau
+export type DirectoryTree = {
+```
+
+</h4>
 
 ---

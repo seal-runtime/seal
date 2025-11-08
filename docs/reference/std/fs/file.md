@@ -9,9 +9,25 @@
 
 ## `export type` FileBuilder
 
+<h4>
+
+```luau
+export type FileBuilder = common_types.FileBuilder
+```
+
+</h4>
+
 ---
 
 ## `export type` FileLib
+
+<h4>
+
+```luau
+export type FileLib = setmetatable<{
+```
+
+</h4>
 
 ---
 

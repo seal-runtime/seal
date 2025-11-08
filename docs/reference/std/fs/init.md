@@ -809,6 +809,14 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ## `export type` PathIs
 
+<h4>
+
+```luau
+export type PathIs =
+```
+
+</h4>
+
 ---
 
 ```luau
@@ -879,33 +887,97 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ## `export type` DirectoryTree
 
+<h4>
+
+```luau
+export type DirectoryTree = common_types.DirectoryTree
+```
+
+</h4>
+
 ---
 
 ## `export type` DirectoryBuilder
+
+<h4>
+
+```luau
+export type DirectoryBuilder = common_types.DirectoryBuilder
+```
+
+</h4>
 
 ---
 
 ## `export type` TreeBuilder
 
+<h4>
+
+```luau
+export type TreeBuilder = common_types.TreeBuilder
+```
+
+</h4>
+
 ---
 
 ## `export type` FindResult
+
+<h4>
+
+```luau
+export type FindResult = common_types.FindResult
+```
+
+</h4>
 
 ---
 
 ## `export type` Entry
 
+<h4>
+
+```luau
+export type Entry = common_types.Entry
+```
+
+</h4>
+
 ---
 
 ## `export type` FileEntry
+
+<h4>
+
+```luau
+export type FileEntry = common_types.FileEntry
+```
+
+</h4>
 
 ---
 
 ## `export type` DirectoryEntry
 
+<h4>
+
+```luau
+export type DirectoryEntry = common_types.DirectoryEntry
+```
+
+</h4>
+
 ---
 
 ## `export type` WatchOptions
+
+<h4>
+
+```luau
+export type WatchOptions = {
+```
+
+</h4>
 
 ---
 
@@ -934,6 +1006,14 @@ timeout_ms: number?,
 ---
 
 ## `export type` WatchEventCategory
+
+<h4>
+
+```luau
+export type WatchEventCategory =
+```
+
+</h4>
 
 <details>
 
@@ -1037,6 +1117,14 @@ Some usage notes:
 
 ## `export type` WatchEventInfo
 
+<h4>
+
+```luau
+export type WatchEventInfo = {
+```
+
+</h4>
+
 ---
 
 ### WatchEventInfo.paths
@@ -1078,6 +1166,14 @@ is_write: boolean,
 ---
 
 ## `export type` WatchKind
+
+<h4>
+
+```luau
+export type WatchKind =
+```
+
+</h4>
 
 <details>
 

@@ -59,4 +59,12 @@ function toml.writefile(path: string, content: TomlValue) -> (),
 
 ## `export type` TomlValue
 
+<h4>
+
+```luau
+export type TomlValue = { [any]: any }
+```
+
+</h4>
+
 ---

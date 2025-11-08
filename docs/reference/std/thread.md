@@ -144,9 +144,25 @@ Literally the same as `time.wait`, except in milliseconds.
 
 ## `export type` JsonSerializableTable
 
+<h4>
+
+```luau
+export type JsonSerializableTable = { [unknown]: unknown }
+```
+
+</h4>
+
 ---
 
 ## `export type` ThreadHandle
+
+<h4>
+
+```luau
+export type ThreadHandle = {
+```
+
+</h4>
 
 ---
 
@@ -341,6 +357,14 @@ Errors if the channel has somehow become disconnected.
 ---
 
 ## `export type` ThreadSpawnOptions
+
+<h4>
+
+```luau
+export type ThreadSpawnOptions = {
+```
+
+</h4>
 
 ---
 

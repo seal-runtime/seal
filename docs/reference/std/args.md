@@ -265,6 +265,14 @@ function args.default(...Arg) -> Command,
 
 ## `export type` ProgramInfo
 
+<h4>
+
+```luau
+export type ProgramInfo = {
+```
+
+</h4>
+
 ---
 
 ### ProgramInfo.description
@@ -310,6 +318,14 @@ footer: string?
 ---
 
 ## `export type` Command
+
+<h4>
+
+```luau
+export type Command = {
+```
+
+</h4>
 
 ---
 
@@ -401,6 +417,14 @@ function Command.aliases(self: Command, ...string) -> Command,
 
 ## `export type` Parsed
 
+<h4>
+
+```luau
+export type Parsed = {
+```
+
+</h4>
+
 ---
 
 ### Parsed.command
@@ -465,6 +489,14 @@ flags: { [string]: true? },
 
 ## `export type` ArgList
 
+<h4>
+
+```luau
+export type ArgList = {
+```
+
+</h4>
+
 ---
 
 ### ArgList.name
@@ -517,9 +549,25 @@ values: { string }?,
 
 ## `export type` Validator
 
+<h4>
+
+```luau
+export type Validator = (arg: string) -> any | error
+```
+
+</h4>
+
 ---
 
 ## `export type` Arg
+
+<h4>
+
+```luau
+export type Arg =
+```
+
+</h4>
 
 ---
 
@@ -548,6 +596,14 @@ values: { string }?,
 ---
 
 ## `export type` Positional
+
+<h4>
+
+```luau
+export type Positional = {
+```
+
+</h4>
 
 ---
 
@@ -678,6 +734,14 @@ value: any,
 
 ## `export type` Flag
 
+<h4>
+
+```luau
+export type Flag = {
+```
+
+</h4>
+
 ---
 
 ### Flag.name
@@ -781,6 +845,14 @@ value: boolean,
 ---
 
 ## `export type` Named
+
+<h4>
+
+```luau
+export type Named = {
+```
+
+</h4>
 
 ---
 

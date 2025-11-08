@@ -115,6 +115,14 @@ end
 
 ## `export type` HashedPassword
 
+<h4>
+
+```luau
+export type HashedPassword = {
+```
+
+</h4>
+
 ---
 
 ### HashedPassword.salt
@@ -142,6 +150,14 @@ hash: buffer,
 ---
 
 ## `export type` PasswordVerifyOptions
+
+<h4>
+
+```luau
+export type PasswordVerifyOptions = {
+```
+
+</h4>
 
 ---
 

@@ -267,6 +267,14 @@ end
 
 ## `export type` KeyModifiers
 
+<h4>
+
+```luau
+export type KeyModifiers = {
+```
+
+</h4>
+
  Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
 
 ---
@@ -309,6 +317,14 @@ alt: boolean,
 
 ## `export type` KeyEvent
 
+<h4>
+
+```luau
+export type KeyEvent = {
+```
+
+</h4>
+
 ---
 
 ### KeyEvent.is
@@ -348,6 +364,14 @@ modifiers: KeyModifiers,
 ---
 
 ## `export type` MouseEvent
+
+<h4>
+
+```luau
+export type MouseEvent = {
+```
+
+</h4>
 
 ---
 
@@ -413,6 +437,14 @@ modifiers: KeyModifiers,
 
 ## `export type` ResizeEvent
 
+<h4>
+
+```luau
+export type ResizeEvent = {
+```
+
+</h4>
+
 ---
 
 ### ResizeEvent.is
@@ -453,6 +485,14 @@ rows: number,
 
 ## `export type` FocusGained
 
+<h4>
+
+```luau
+export type FocusGained = {
+```
+
+</h4>
+
 ---
 
 ### FocusGained.is
@@ -469,6 +509,14 @@ is: "FocusGained",
 
 ## `export type` FocusLost
 
+<h4>
+
+```luau
+export type FocusLost = {
+```
+
+</h4>
+
 ---
 
 ### FocusLost.is
@@ -484,6 +532,14 @@ is: "FocusLost",
 ---
 
 ## `export type` PasteEvent
+
+<h4>
+
+```luau
+export type PasteEvent = {
+```
+
+</h4>
 
 ---
 
@@ -513,6 +569,14 @@ contents: string,
 
 ## `export type` Empty
 
+<h4>
+
+```luau
+export type Empty = {
+```
+
+</h4>
+
 ---
 
 ### Empty.is
@@ -528,6 +592,14 @@ is: "Empty",
 ---
 
 ## `export type` TerminalEvent
+
+<h4>
+
+```luau
+export type TerminalEvent =
+```
+
+</h4>
 
 ---
 
@@ -568,5 +640,13 @@ is: "Empty",
 ---
 
 ## `export type` input
+
+<h4>
+
+```luau
+type input = typeof(input)
+```
+
+</h4>
 
 ---

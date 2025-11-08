@@ -138,7 +138,7 @@ for _, filepath in typedefs_paths do
             local new_api: Api = {
                 -- name = table.concat(current_names, "."),
                 name = found_type_name,
-                defs = "",
+                defs = line,
                 docs = table.concat(current_docs, "\n"),
                 is = "Type",
             }

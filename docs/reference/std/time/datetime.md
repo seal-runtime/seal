@@ -15,6 +15,14 @@
 
 ## `export type` CommonFormatKeys
 
+<h4>
+
+```luau
+type CommonFormatKeys = keyof<index<typeof(datetime), "common_formats">>
+```
+
+</h4>
+
 ---
 
 ### CommonFormatKeys.parse
@@ -200,6 +208,14 @@ function CommonFormatKeys.milliseconds(milliseconds: number): TimeSpan
 ---
 
 ## `export type` IanaTimezone
+
+<h4>
+
+```luau
+export type IanaTimezone =
+```
+
+</h4>
 
 ---
 

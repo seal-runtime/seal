@@ -9,13 +9,37 @@
 
 ## `export type` DirectoryEntry
 
+<h4>
+
+```luau
+export type DirectoryEntry = common_types.DirectoryEntry
+```
+
+</h4>
+
 ---
 
 ## `export type` DirectoryBuilder
 
+<h4>
+
+```luau
+export type DirectoryBuilder = common_types.DirectoryBuilder
+```
+
+</h4>
+
 ---
 
 ## `export type` DirLib
+
+<h4>
+
+```luau
+export type DirLib = setmetatable<{
+```
+
+</h4>
 
 ---
 

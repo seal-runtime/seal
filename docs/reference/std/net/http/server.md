@@ -67,6 +67,14 @@ server.serve {
 
 ## `export type` StatusCode
 
+<h4>
+
+```luau
+type StatusCode =
+```
+
+</h4>
+
 ---
 
 ```luau
@@ -215,6 +223,14 @@ server.serve {
 
 ## `export type` ContentType
 
+<h4>
+
+```luau
+type ContentType =
+```
+
+</h4>
+
 ---
 
 ```luau
@@ -266,6 +282,14 @@ server.serve {
 ---
 
 ## `export type` ServeRequest
+
+<h4>
+
+```luau
+export type ServeRequest = {
+```
+
+</h4>
 
 ---
 
@@ -330,6 +354,14 @@ body: string,
 ---
 
 ## `export type` ServeResponse
+
+<h4>
+
+```luau
+export type ServeResponse = {
+```
+
+</h4>
 
 ---
 
@@ -406,6 +438,14 @@ redirect_url: string?
 ---
 
 ## `export type` ServeConfig
+
+<h4>
+
+```luau
+export type ServeConfig = {
+```
+
+</h4>
 
 ---
 

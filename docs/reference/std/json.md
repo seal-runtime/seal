@@ -126,6 +126,14 @@ function json.array<T>(t: { T }?) -> { T }
 
 ## `export type` EncodeOptions
 
+<h4>
+
+```luau
+export type EncodeOptions = {
+```
+
+</h4>
+
 ---
 
 ### EncodeOptions.pretty
@@ -157,5 +165,13 @@ sorted: boolean?,
 ---
 
 ## `export type` JsonData
+
+<h4>
+
+```luau
+export type JsonData = { [any]: any }
+```
+
+</h4>
 
 ---

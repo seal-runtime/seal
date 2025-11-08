@@ -159,6 +159,14 @@ function luau.expand_aliases(requested_path: string, aliases_by_luaurc: { Luaurc
 
 ## `export type` EvalOptions
 
+<h4>
+
+```luau
+export type EvalOptions = {
+```
+
+</h4>
+
 ---
 
 ### EvalOptions.name
@@ -186,6 +194,14 @@ function EvalOptions.stdlib("seal" | "safe" | "none")?,
 ---
 
 ## `export type` LuaurcAliases
+
+<h4>
+
+```luau
+export type LuaurcAliases = {
+```
+
+</h4>
 
 ---
 

@@ -119,9 +119,25 @@ build: string?,
 
 ## `export type` SemverImpl
 
+<h4>
+
+```luau
+type SemverImpl = typeof(semver)
+```
+
+</h4>
+
 ---
 
 ## `export type` Semver
+
+<h4>
+
+```luau
+export type Semver = setmetatable<SemverFields, SemverImpl>
+```
+
+</h4>
 
 ---
 
@@ -174,6 +190,14 @@ FIXME: not optional fields not qualifying as optionals
 ---
 
 ## `export type` SemverVals
+
+<h4>
+
+```luau
+type SemverVals =
+```
+
+</h4>
 
 ---
 

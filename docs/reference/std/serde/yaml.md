@@ -59,4 +59,12 @@ function yaml.writefile(path: string, content: YamlValue) -> (),
 
 ## `export type` YamlValue
 
+<h4>
+
+```luau
+type YamlValue = { [any]: any }
+```
+
+</h4>
+
 ---

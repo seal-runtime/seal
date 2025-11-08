@@ -128,6 +128,14 @@ Create a webserver that listens for incoming requests.
 
 ## `export type` HttpResponse
 
+<h4>
+
+```luau
+export type HttpResponse = ({
+```
+
+</h4>
+
 ---
 
 ### HttpResponse.ok
@@ -220,6 +228,14 @@ function HttpResponse.unwrap_json(self: HttpResponse, default: { [any]: any }?) 
 
 ## `export type` RequestConfig
 
+<h4>
+
+```luau
+export type RequestConfig = {
+```
+
+</h4>
+
 ---
 
 ### RequestConfig.method
@@ -272,6 +288,14 @@ params: { [string]: string }?,
 
 ## `export type` GetConfig
 
+<h4>
+
+```luau
+export type GetConfig = {
+```
+
+</h4>
+
 ---
 
 ### GetConfig.url
@@ -299,6 +323,14 @@ headers: { [string]: string }?,
 ---
 
 ## `export type` PostConfig
+
+<h4>
+
+```luau
+export type PostConfig = {
+```
+
+</h4>
 
  Query parameters to append to the url string
 
@@ -329,6 +361,14 @@ body: string | {
 ---
 
 ## `export type` StatusCode
+
+<h4>
+
+```luau
+export type StatusCode =
+```
+
+</h4>
 
 ---
 

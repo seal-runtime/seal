@@ -194,6 +194,14 @@ Typically exit code 0 means success and exit code 1 means failure.
 
 ## `export type` RunResult
 
+<h4>
+
+```luau
+export type RunResult = {
+```
+
+</h4>
+
 ---
 
 ### RunResult.unwrap
@@ -229,6 +237,14 @@ If you provide a `default` function, `:unwrap_or` will return what it returns.
 ---
 
 ## `export type` RunResultOk
+
+<h4>
+
+```luau
+export type RunResultOk = {
+```
+
+</h4>
 
 ---
 
@@ -288,6 +304,14 @@ stderr: string,
 
 ## `export type` RunResultErr
 
+<h4>
+
+```luau
+export type RunResultErr = {
+```
+
+</h4>
+
 ---
 
 ### RunResultErr.ok
@@ -339,6 +363,14 @@ stderr: string,
 ---
 
 ## `export type` RunOptions
+
+<h4>
+
+```luau
+export type RunOptions = {
+```
+
+</h4>
 
 ---
 
@@ -397,6 +429,14 @@ cwd: string?,
 ---
 
 ## `export type` SpawnOptions
+
+<h4>
+
+```luau
+export type SpawnOptions = {
+```
+
+</h4>
 
 ---
 
@@ -542,6 +582,14 @@ function SpawnOptions.stream.stderr_truncate("front" | "back")?,
 ---
 
 ## `export type` ChildProcessStream
+
+<h4>
+
+```luau
+export type ChildProcessStream = setmetatable<{
+```
+
+</h4>
 
  Represents the stdout and stderr streams of a `ChildProcess`, both ran in parallel threads
  and streamed for nonblocking behavior.
@@ -916,6 +964,14 @@ Basically equivalent to `ChildProcessStream:lines()` except with generalized ite
 
 ## `export type` ChildProcessStdin
 
+<h4>
+
+```luau
+type ChildProcessStdin = {
+```
+
+</h4>
+
 ---
 
 ### ChildProcessStdin.write
@@ -960,6 +1016,14 @@ child.stdin:close()
 ---
 
 ## `export type` ChildProcess
+
+<h4>
+
+```luau
+export type ChildProcess = {
+```
+
+</h4>
 
 ---
 
