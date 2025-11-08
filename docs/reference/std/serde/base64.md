@@ -14,7 +14,7 @@ good for serving binary stuff in a digestable form for serving things on the int
 <h4>
 
 ```luau
-function (data: string | buffer) -> string,
+function base64.encode(data: string | buffer) -> string,
 ```
 
 </h4>
@@ -26,7 +26,7 @@ function (data: string | buffer) -> string,
 <h4>
 
 ```luau
-function (data: string) -> buffer,
+function base64.decode(data: string) -> buffer,
 ```
 
 </h4>
@@ -38,7 +38,7 @@ function (data: string) -> buffer,
 <h4>
 
 ```luau
-function (data: string | buffer) -> string,
+function base64.urlsafe.encode(data: string | buffer) -> string,
 ```
 
 </h4>
@@ -50,7 +50,7 @@ function (data: string | buffer) -> string,
 <h4>
 
 ```luau
-function (data: string) -> buffer
+function base64.urlsafe.decode(data: string) -> buffer
 ```
 
 </h4>

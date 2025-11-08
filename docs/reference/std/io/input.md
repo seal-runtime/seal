@@ -15,7 +15,7 @@
 <h4>
 
 ```luau
-function (stream: "Stdout" | "Stderr" | "Stdin"?): boolean
+function io.input.tty(stream: "Stdout" | "Stderr" | "Stdin"?): boolean
 ```
 
 </h4>
@@ -42,7 +42,7 @@ If *seal* is being run in a child process, this will almost always return `false
 <h4>
 
 ```luau
-function (prompt: string?): string
+function io.input.rawline(prompt: string?): string
 ```
 
 </h4>
@@ -58,7 +58,7 @@ But works with stdin in a child process/works while piped, making it a fallback 
 <h4>
 
 ```luau
-function (prompt: string): string | interrupt | error
+function io.input.readline(prompt: string): string | interrupt | error
 ```
 
 </h4>
@@ -110,7 +110,7 @@ end
 <h4>
 
 ```luau
-function (key: "CtrlC" | "CtrlD"): interrupt
+function io.input.interrupt(key: "CtrlC" | "CtrlD"): interrupt
 ```
 
 </h4>
@@ -124,7 +124,7 @@ Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 <h4>
 
 ```luau
-function (enabled: boolean)
+function io.input.rawmode(enabled: boolean)
 ```
 
 </h4>
@@ -152,7 +152,7 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 <h4>
 
 ```luau
-function (enabled: boolean) -> (),
+function io.input.mouse(enabled: boolean) -> (),
 ```
 
 </h4>
@@ -166,7 +166,7 @@ function (enabled: boolean) -> (),
 <h4>
 
 ```luau
-function (enabled: boolean) -> (),
+function io.input.focus(enabled: boolean) -> (),
 ```
 
 </h4>
@@ -180,7 +180,7 @@ function (enabled: boolean) -> (),
 <h4>
 
 ```luau
-function (enabled: boolean) -> (),
+function io.input.paste(enabled: boolean) -> (),
 ```
 
 </h4>
@@ -194,7 +194,7 @@ function (enabled: boolean) -> (),
 <h4>
 
 ```luau
-function (poll: Duration): () -> TerminalEvent
+function io.input.events(poll: Duration): () -> TerminalEvent
 ```
 
 </h4>

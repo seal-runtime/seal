@@ -14,7 +14,7 @@
 <h4>
 
 ```luau
-function (string) -> error,
+function err.message(string) -> error,
 ```
 
 </h4>
@@ -54,7 +54,7 @@ end
 <h4>
 
 ```luau
-function (message: string) -> error,
+function err.wrap(message: string) -> error,
 ```
 
 </h4>
@@ -70,7 +70,7 @@ Unlike `err.message`, errors created with this function are red colored and cont
 <h4>
 
 ```luau
-function (err: error) -> string,
+function err.format(err: error) -> string,
 ```
 
 </h4>
@@ -84,7 +84,7 @@ function (err: error) -> string,
 <h4>
 
 ```luau
-function () -> string,
+function err.traceback() -> string,
 ```
 
 </h4>
@@ -98,7 +98,7 @@ function () -> string,
 <h4>
 
 ```luau
-function (err: error) -> never,
+function err.throw(err: error) -> never,
 ```
 
 </h4>

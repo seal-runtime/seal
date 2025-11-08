@@ -12,7 +12,7 @@
 <h4>
 
 ```luau
-function (src: string, options: EvalOptions?) -> unknown | error,
+function luau.eval(src: string, options: EvalOptions?) -> unknown | error,
 ```
 
 </h4>
@@ -68,7 +68,7 @@ end
 <h4>
 
 ```luau
-function (src: string | buffer, options: EvalOptions?) -> unknown | error,
+function luau.eval_unsafe(src: string | buffer, options: EvalOptions?) -> unknown | error,
 ```
 
 </h4>
@@ -96,7 +96,7 @@ and *coredump*.
 <h4>
 
 ```luau
-function (src: string) -> buffer | error,
+function luau.bytecode(src: string) -> buffer | error,
 ```
 
 </h4>
@@ -110,7 +110,7 @@ Compiles `src` to Luau bytecode.
 <h4>
 
 ```luau
-function () -> {
+function luau.require_resolver() -> {
 ```
 
 </h4>
@@ -124,7 +124,7 @@ Returns *seal*'s require resolver implementation used internally.
 <h4>
 
 ```luau
-function (requested_path: string, requiring_file_path: string) -> { err: string, path: nil } | { path: string, err: nil },
+function luau.resolve(requested_path: string, requiring_file_path: string) -> { err: string, path: nil } | { path: string, err: nil },
 ```
 
 </h4>
@@ -138,7 +138,7 @@ function (requested_path: string, requiring_file_path: string) -> { err: string,
 <h4>
 
 ```luau
-function (requiring_file_path: string) -> ({ LuaurcAliases }?, string?),
+function luau.get_aliases(requiring_file_path: string) -> ({ LuaurcAliases }?, string?),
 ```
 
 </h4>
@@ -150,7 +150,7 @@ function (requiring_file_path: string) -> ({ LuaurcAliases }?, string?),
 <h4>
 
 ```luau
-function (requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?),
+function luau.expand_aliases(requested_path: string, aliases_by_luaurc: { LuaurcAliases }) -> (string?, string?),
 ```
 
 </h4>
@@ -178,7 +178,7 @@ name: string?,
 <h4>
 
 ```luau
-function ("seal" | "safe" | "none")?,
+function EvalOptions.stdlib("seal" | "safe" | "none")?,
 ```
 
 </h4>

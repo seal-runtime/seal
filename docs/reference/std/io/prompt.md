@@ -30,7 +30,7 @@ local result = prompt.text("What's your name?")
 <h4>
 
 ```luau
-function (message: string) -> string,
+function prompt.text(message: string) -> string,
 ```
 
 </h4>
@@ -71,7 +71,7 @@ local ssn = prompt.text(colors.bold.white("whats your ssn???: "))
 <h4>
 
 ```luau
-function (message: string, default: boolean?) -> boolean,
+function prompt.confirm(message: string, default: boolean?) -> boolean,
 ```
 
 </h4>
@@ -105,7 +105,7 @@ end
 <h4>
 
 ```luau
-function (message: string, v: (response: string) -> true | string) -> string,
+function prompt.validate(message: string, v: (response: string) -> true | string) -> string,
 ```
 
 </h4>
@@ -143,7 +143,7 @@ local response = prompt.validate("Favorite animal that starts with 's'",
 <h4>
 
 ```luau
-function (message: string, style: "Hidden" | "*"?) -> string,
+function prompt.password(message: string, style: "Hidden" | "*"?) -> string,
 ```
 
 </h4>
@@ -181,7 +181,7 @@ but it may not be perfectly safe from introspection.
 <h4>
 
 ```luau
-function (message: string, options: { string }, default: number?) -> number,
+function prompt.pick(message: string, options: { string }, default: number?) -> number,
 ```
 
 </h4>

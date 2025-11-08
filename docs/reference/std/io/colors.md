@@ -22,7 +22,7 @@ print(colors.blue("my blue text"))
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.black(text: string) -> string,
 ```
 
 </h4>
@@ -34,7 +34,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.red(text: string) -> string,
 ```
 
 </h4>
@@ -46,7 +46,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.green(text: string) -> string,
 ```
 
 </h4>
@@ -58,7 +58,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.yellow(text: string) -> string,
 ```
 
 </h4>
@@ -70,7 +70,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.blue(text: string) -> string,
 ```
 
 </h4>
@@ -82,7 +82,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.magenta(text: string) -> string,
 ```
 
 </h4>
@@ -94,7 +94,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.cyan(text: string) -> string,
 ```
 
 </h4>
@@ -106,7 +106,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.white(text: string) -> string,
 ```
 
 </h4>
@@ -118,7 +118,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.bold.black(text: string) -> string,
 ```
 
 </h4>
@@ -130,7 +130,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.bold.red(text: string) -> string,
 ```
 
 </h4>
@@ -142,7 +142,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.bold.green(text: string) -> string,
 ```
 
 </h4>
@@ -154,7 +154,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.bold.yellow(text: string) -> string,
 ```
 
 </h4>
@@ -166,7 +166,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.bold.blue(text: string) -> string,
 ```
 
 </h4>
@@ -178,7 +178,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.bold.magenta(text: string) -> string,
 ```
 
 </h4>
@@ -190,7 +190,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.bold.cyan(text: string) -> string,
 ```
 
 </h4>
@@ -202,7 +202,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.bold.white(text: string) -> string,
 ```
 
 </h4>
@@ -214,7 +214,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.style.dim(text: string) -> string,
 ```
 
 </h4>
@@ -226,7 +226,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.style.bold(text: string) -> string,
 ```
 
 </h4>
@@ -238,7 +238,7 @@ function (text: string) -> string,
 <h4>
 
 ```luau
-function (text: string) -> string,
+function colors.style.underline(text: string) -> string,
 ```
 
 </h4>

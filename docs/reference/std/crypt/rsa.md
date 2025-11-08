@@ -40,7 +40,7 @@ private: string
 <h4>
 
 ```luau
-function () -> RsaKeys,
+function Rsa.generatekeys() -> RsaKeys,
 ```
 
 </h4>
@@ -52,7 +52,7 @@ function () -> RsaKeys,
 <h4>
 
 ```luau
-function (plaintext: string, public_key: string) -> string,
+function Rsa.encrypt(plaintext: string, public_key: string) -> string,
 ```
 
 </h4>
@@ -64,7 +64,7 @@ function (plaintext: string, public_key: string) -> string,
 <h4>
 
 ```luau
-function (ciphertext: string, private_key: string) -> string,
+function Rsa.decrypt(ciphertext: string, private_key: string) -> string,
 ```
 
 </h4>

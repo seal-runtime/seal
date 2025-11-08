@@ -72,7 +72,7 @@ Please use with caution.
 <h4>
 
 ```luau
-function (raw_password: string) -> HashedPassword,
+function Password.hash(raw_password: string) -> HashedPassword,
 ```
 
 </h4>
@@ -117,7 +117,7 @@ end
 <h4>
 
 ```luau
-function (verify_options: PasswordVerifyOptions) -> boolean
+function Password.verify(verify_options: PasswordVerifyOptions) -> boolean
 ```
 
 </h4>

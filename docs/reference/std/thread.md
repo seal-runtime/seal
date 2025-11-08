@@ -72,7 +72,7 @@ end
 <h4>
 
 ```luau
-function (spawn_options: ThreadSpawnOptions) -> ThreadHandle,
+function thread.spawn(spawn_options: ThreadSpawnOptions) -> ThreadHandle,
 ```
 
 </h4>
@@ -133,7 +133,7 @@ end
 <h4>
 
 ```luau
-function (milliseconds: number) -> true,
+function thread.sleep(milliseconds: number) -> true,
 ```
 
 </h4>
@@ -169,7 +169,7 @@ name: string,
 <h4>
 
 ```luau
-function (self: ThreadHandle) -> (),
+function ThreadHandle.join(self: ThreadHandle) -> (),
 ```
 
 </h4>
@@ -185,7 +185,7 @@ Errors if the thread has already been joined or somehow disappeared.
 <h4>
 
 ```luau
-function (self: ThreadHandle, data: JsonSerializableTable | string) -> (),
+function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | string) -> (),
 ```
 
 </h4>
@@ -211,7 +211,7 @@ Errors if the channel has somehow become disconnected or provided data isn't jso
 <h4>
 
 ```luau
-function (self: ThreadHandle, data: JsonSerializableTable | string) -> (boolean, "Sent" | "Disconnected" | "Full"),
+function ThreadHandle.try_send(self: ThreadHandle, data: JsonSerializableTable | string) -> (boolean, "Sent" | "Disconnected" | "Full"),
 ```
 
 </h4>
@@ -238,7 +238,7 @@ This is usually caused by trying to send a message to a thread that's already be
 <h4>
 
 ```luau
-function (self: ThreadHandle, data: buffer) -> (),
+function ThreadHandle.sendbytes(self: ThreadHandle, data: buffer) -> (),
 ```
 
 </h4>
@@ -254,7 +254,7 @@ Errors if the channel has somehow become disconnected.
 <h4>
 
 ```luau
-function (self: ThreadHandle, data: buffer) -> (boolean, "Sent" | "Disconnected" | "Full"),
+function ThreadHandle.try_sendbytes(self: ThreadHandle, data: buffer) -> (boolean, "Sent" | "Disconnected" | "Full"),
 ```
 
 </h4>
@@ -281,7 +281,7 @@ This is usually caused by trying to send a message to a thread that's already be
 <h4>
 
 ```luau
-function (self: ThreadHandle) -> JsonSerializableTable? | string?,
+function ThreadHandle.read(self: ThreadHandle) -> JsonSerializableTable? | string?,
 ```
 
 </h4>
@@ -297,7 +297,7 @@ Errors if the channel has somehow become disconnected.
 <h4>
 
 ```luau
-function (self: ThreadHandle) -> JsonSerializableTable | string,
+function ThreadHandle.read_await(self: ThreadHandle) -> JsonSerializableTable | string,
 ```
 
 </h4>
@@ -313,7 +313,7 @@ Errors if the channel has somehow become disconnected.
 <h4>
 
 ```luau
-function (self: ThreadHandle) -> buffer?,
+function ThreadHandle.readbytes(self: ThreadHandle) -> buffer?,
 ```
 
 </h4>
@@ -329,7 +329,7 @@ Errors if the channel has somehow become disconnected.
 <h4>
 
 ```luau
-function (self: ThreadHandle) -> buffer,
+function ThreadHandle.readbytes_await(self: ThreadHandle) -> buffer,
 ```
 
 </h4>

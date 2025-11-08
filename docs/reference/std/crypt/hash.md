@@ -16,7 +16,7 @@ Contains function sha2, which can be used to create an **unsalted** hash, return
 <h4>
 
 ```luau
-function (plaintext: string) -> buffer,
+function Hash.sha2(plaintext: string) -> buffer,
 ```
 
 </h4>

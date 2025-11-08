@@ -14,7 +14,7 @@ Write to the terminal's stdout/stderr.
 <h4>
 
 ```luau
-function (contents: string | buffer, flush: boolean?) -> error?,
+function output.write(contents: string | buffer, flush: boolean?) -> error?,
 ```
 
 </h4>
@@ -53,7 +53,7 @@ end
 <h4>
 
 ```luau
-function (contents: string | buffer, flush: boolean?) -> error?,
+function output.ewrite(contents: string | buffer, flush: boolean?) -> error?,
 ```
 
 </h4>
@@ -89,7 +89,7 @@ local err = output.ewrite("error message\n")
 <h4>
 
 ```luau
-function () -> (),
+function output.clear() -> (),
 ```
 
 </h4>

@@ -195,7 +195,7 @@ for _, filepath in typedefs_paths do
             local is = "Property"
             local defs = rest
             if str.startswith(rest, "(") or str.startswith(rest, "<T") then
-                defs = `function {rest}`
+                defs = `function {name}{rest}`
                 is = "Function"
             else
                 defs = `{property_name}: {rest}`

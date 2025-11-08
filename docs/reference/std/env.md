@@ -56,7 +56,7 @@ executable_path: string,
 <h4>
 
 ```luau
-function () -> string,
+function env.cwd() -> string,
 ```
 
 </h4>
@@ -72,7 +72,7 @@ Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission deni
 <h4>
 
 ```luau
-function (key: string) -> string?,
+function env.getvar(key: string) -> string?,
 ```
 
 </h4>
@@ -86,7 +86,7 @@ Gets an environment variable in the current process.
 <h4>
 
 ```luau
-function (key: string, value: string) -> string,
+function env.setvar(key: string, value: string) -> string,
 ```
 
 </h4>
@@ -102,7 +102,7 @@ Note, this function is **unsafe** in multithreaded contexts on Linux.
 <h4>
 
 ```luau
-function (key: string) -> nil,
+function env.removevar(key: string) -> nil,
 ```
 
 </h4>

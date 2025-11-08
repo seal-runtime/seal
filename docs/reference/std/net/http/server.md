@@ -376,7 +376,7 @@ port: string | number,
 <h4>
 
 ```luau
-function (ServeRequest) -> ServeResponse,
+function ServeConfig.handler(ServeRequest) -> ServeResponse,
 ```
 
 </h4>
@@ -388,7 +388,7 @@ function (ServeRequest) -> ServeResponse,
 <h4>
 
 ```luau
-function (config: ServeConfig)
+function net.http.server.serve(config: ServeConfig)
 ```
 
 </h4>
