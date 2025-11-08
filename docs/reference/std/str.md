@@ -222,10 +222,10 @@ str.unindent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep
 
 ---
 
-### str.s
+### str.split
 
 ```luau
-str.s: string, ...string) -> { string }
+str.split: (s: string, ...: string): { string }
 ```
 
 <details>
@@ -266,10 +266,10 @@ local omit_hi = str.split("seals 🦭 say hi", " ", "hi")
 
 ---
 
-### str.s
+### str.splitaround
 
 ```luau
-str.s: string, seps: string, ...string) -> { string }
+str.splitaround: (s: string, seps: string, ...: string): { string }
 ```
 
 <details>
@@ -297,10 +297,10 @@ local tokens = str.splitaround(line, " ", ".", "(", ":", ",", ")")
 
 ---
 
-### str.s
+### str.splitbefore
 
 ```luau
-str.s: string, seps: string, ...string) -> { string }
+str.splitbefore: (s: string, seps: string, ...: string): { string }
 ```
 
 <details>
@@ -328,10 +328,10 @@ print(splitted) -->
 
 ---
 
-### str.s
+### str.splitafter
 
 ```luau
-str.s: string, seps: string, ...string) -> { string }
+str.splitafter: (s: string, seps: string, ...: string): { string }
 ```
 
 <details>
@@ -370,10 +370,10 @@ This function counts by 'characters', whereas `str.graphemes` provides byte indi
 
 ---
 
-### str.s
+### str.graphemes
 
 ```luau
-str.s: string) -> (...any) -> (number, string)
+str.graphemes: (s: string): (...any) -> (number, string)
 ```
 
 <details>

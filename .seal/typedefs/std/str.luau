@@ -288,7 +288,9 @@ local internal = (require)("@std/str_internal")
     - Sometimes simple characters directly to the right of emojis don't render when printed (example `print[["🦭"]]`)
     - Some Hindi graphemes (like हा) don't render properly in terminals :(
 ]=]
-str.split = internal.split :: (s: string, ...string) -> { string }
+function str.split(s: string, ...: string): { string }
+    return nil :: any
+end
 
 --[=[
     Splits string `s` *around* one or more separator strings, keeping the separators in the final result.
@@ -308,7 +310,9 @@ str.split = internal.split :: (s: string, ...string) -> { string }
     --> { "function", " ", "Cat", ".", "meow", "(", "name", ":", " ", "string", ",", " ", "age", ":", " ", "number", ")"}
     ```
 ]=]
-str.splitaround = internal.splitaround :: (s: string, seps: string, ...string) -> { string }
+function str.splitaround(s: string, seps: string, ...: string): { string }
+    return nil :: any
+end
 
 --[=[
     Splits `s` in front of any passed separator strings, keeping the separator in the subsequent element of the returned array.
@@ -328,7 +332,9 @@ str.splitaround = internal.splitaround :: (s: string, seps: string, ...string) -
     }
     ```
 ]=]
-str.splitbefore = internal.splitbefore :: (s: string, seps: string, ...string) -> { string }
+function str.splitbefore(s: string, seps: string, ...: string): { string }
+    return nil :: any
+end
 
 --[=[
     Splits `s` after every occurrence of a separator string, keeping the separator in the current element of the returned array.
@@ -347,7 +353,9 @@ str.splitbefore = internal.splitbefore :: (s: string, seps: string, ...string) -
     }
     ```
 ]=]
-str.splitafter = internal.splitafter :: (s: string, seps: string, ...string) -> { string }
+function str.splitafter(s: string, seps: string, ...: string): { string }
+    return nil :: any
+end
 
 --[=[
     Iterate over the human-readable characters (graphemes) of a string
@@ -386,6 +394,8 @@ end
     - Sometimes simple characters directly to the right of emojis don't render when printed (example "🦭")
     - Some Hindi graphemes (like हा) don't render properly in terminals :(
 ]=]
-str.graphemes = internal.graphemes :: (s: string) -> (...any) -> (number, string)
+function str.graphemes(s: string): (...any) -> (number, string)
+    return nil :: any
+end
 
 return str
