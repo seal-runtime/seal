@@ -8,7 +8,7 @@
  input handling lib
  gets input with an optional `raw_prompt` to display before getting said input.
 
-function input.tty(stream: `"Stdout" | "Stderr" | "Stdin"?): boolean`
+input.tty: `(stream: "Stdout" | "Stderr" | "Stdin"?) -> boolean`
 
 <details>
 
@@ -27,7 +27,7 @@ If *seal* is being run in a child process, this will almost always return `false
 
 ---
 
-function input.rawline(prompt: `string?): string`
+input.rawline: `(prompt: string?) -> string`
 
 Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
 
@@ -35,7 +35,7 @@ But works with stdin in a child process/works while piped, making it a fallback 
 
 ---
 
-function input.readline(prompt: `string): string | interrupt | error`
+input.readline: `(prompt: string) -> string | interrupt | error`
 
 <details>
 
@@ -79,13 +79,13 @@ end
 
 ---
 
-function input.interrupt(key: `"CtrlC" | "CtrlD"): interrupt`
+input.interrupt: `(key: "CtrlC" | "CtrlD") -> interrupt`
 
 Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 ---
 
-function input.rawmode(enabled: `boolean)`
+input.rawmode: `(enabled: boolean)`
 
 <details>
 
@@ -105,25 +105,25 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 ---
 
-mouse: `(enabled: boolean) -> ()`
+mouse: `: (enabled: boolean) -> ()`
 
  Allows `MouseEvents` to be reported by `input.events()`.
 
 ---
 
-focus: `(enabled: boolean) -> ()`
+focus: `: (enabled: boolean) -> ()`
 
  Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
 
 ---
 
-paste: `(enabled: boolean) -> ()`
+paste: `: (enabled: boolean) -> ()`
 
  Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
 
 ---
 
-function input.events(poll: `Duration): () -> TerminalEvent`
+input.events: `(poll: Duration) -> () -> TerminalEvent`
 
 <details>
 

@@ -162,8 +162,13 @@ for _, filepath in typedefs_paths do
             if not str.startswith(str.trimfront(line), "--") then
                 local trimmed_line = str.trimfront(line)
                 local found_name = table.concat(current_names, ".")
+                if str.startswith(trimmed_line, "local ") then
+                    continue
+                end
                 if #found_name == 0 or str.startswith(trimmed_line, "function") then
-                    found_name = trimmed_line
+                    found_name = str.trimfront(trimmed_line, "function ")
+                        :gsub("%(", ": (", 1)
+                        :gsub("%): ", ") -> ")
                 else
                     found_name = table.concat(current_names, ".") .. `.{trimmed_line}`
                 end

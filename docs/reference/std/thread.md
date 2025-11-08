@@ -108,7 +108,7 @@ Spawns a new Rust Thread running Luau code in a new Luau VM.
     end
 ```
 
-function thread.sleep(milliseconds: `number): true`
+thread.sleep: `(milliseconds: number) -> true`
 
 Literally the same as `time.wait`, except in milliseconds.
 

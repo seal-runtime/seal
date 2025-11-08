@@ -77,7 +77,7 @@ ServeConfig.handler: `(ServeRequest) -> ServeResponse`
 
 ---
 
-function server.serve(config: `ServeConfig)`
+server.serve: `(config: ServeConfig)`
 
 <details>
 

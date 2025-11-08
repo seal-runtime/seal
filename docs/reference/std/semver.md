@@ -75,11 +75,7 @@ SemverFields.metadata.release_candidate.build: `string?`
 
 ---
 
-Semver.local fields: `SemverFields = {`
-
----
-
-function semver.from(s: `string): Semver`
+semver.from: `(s: string) -> Semver`
 
 ---
 
@@ -91,10 +87,6 @@ Semver.error(`Invalid semver string:`{s}`)`
 
 ---
 
-Semver.local fields: `SemverFields = {`
-
----
-
 Semver.metadata = metadata : `: any, -- LUAU FIXME: not optional fields not qualifying as optionals`
 
 ---
@@ -103,7 +95,7 @@ Semver.metadata = metadata : `: any, -- LUAU FIXME: not optional fields not qual
 
 ---
 
-function semver.satisfies(self: `Semver, semver_range: string): boolean`
+semver.satisfies: `(self: Semver, semver_range: string) -> boolean`
 
 <details>
 
@@ -140,22 +132,18 @@ end
 
 ---
 
-SemverVals.local function get_specific_range(part: `string): (SemverVals, string)`
+semver.__eq: `(self: Semver, other: Semver) -> boolean`
 
 ---
 
-function semver.__eq(self: `Semver, other: Semver): boolean`
+semver.__lt: `(self: Semver, other: Semver) -> boolean`
 
 ---
 
-function semver.__lt(self: `Semver, other: Semver): boolean`
+semver.__le: `(self: Semver, other: Semver) -> boolean`
 
 ---
 
-function semver.__le(self: `Semver, other: Semver): boolean`
-
----
-
-function semver.__tostring(self: `Semver): string`
+semver.__tostring: `(self: Semver) -> string`
 
 ---
