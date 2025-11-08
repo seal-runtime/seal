@@ -9,22 +9,26 @@ Deal with hex data.
 
 ---
 
-<h3>
+## hex.encode
+
+<h4>
 
 ```luau
 hex.encode: (data: buffer | string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## hex.decode
+
+<h4>
 
 ```luau
 hex.decode: (encoded: string) -> buffer,
 ```
 
-</h3>
+</h4>
 
 ---

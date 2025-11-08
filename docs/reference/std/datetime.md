@@ -5,12 +5,14 @@
 
 `local datetime = require("@std/datetime")`
 
-<h3>
+## datetime
+
+<h4>
 
 ```luau
 return require("./time/datetime")
 ```
 
-</h3>
+</h4>
 
 ---

@@ -9,13 +9,15 @@ Library for sending HTTP Requests.
 
 ---
 
-<h3>
+## http.get
+
+<h4>
 
 ```luau
 http.get: (config: GetConfig | string) -> HttpResponse,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -51,13 +53,15 @@ local cats = http.get {
 
 ---
 
-<h3>
+## http.post
+
+<h4>
 
 ```luau
 http.post: (config: PostConfig) -> HttpResponse,
 ```
 
-</h3>
+</h4>
 
 Makes an HTTP `POST` request.
 
@@ -78,13 +82,15 @@ local response = http.post {
 
 ---
 
-<h3>
+## http.request
+
+<h4>
 
 ```luau
 http.request: (config: RequestConfig) -> HttpResponse,
 ```
 
-</h3>
+</h4>
 
 Sends an HTTP request:
 
@@ -104,13 +110,15 @@ end
 
 ---
 
-<h3>
+## http.server
+
+<h4>
 
 ```luau
 http.server: HttpServerLib,
 ```
 
-</h3>
+</h4>
 
 Create a webserver that listens for incoming requests.
 
@@ -118,410 +126,356 @@ Create a webserver that listens for incoming requests.
 
 ---
 
----
+## `export type` HttpServerLib
 
 ---
 
-<h3>
+## `export type` HttpResponse
+
+---
+
+## HttpResponse.ok
+
+<h4>
 
 ```luau
 HttpResponse.ok: true,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## HttpResponse.status_code
+
+<h4>
 
 ```luau
 HttpResponse.status_code: StatusCode,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## HttpResponse.body
+
+<h4>
 
 ```luau
 HttpResponse.body: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## HttpResponse.decode
+
+<h4>
 
 ```luau
 HttpResponse.decode: (self: HttpResponse) -> { [any]: any }
 ```
 
-</h3>
+</h4>
 
  decodes body to table, errors if body is invalid json or otherwise cannot be converted to table
 
 ---
 
-<h3>
+## HttpResponse.ok
+
+<h4>
 
 ```luau
 HttpResponse.ok: false,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## HttpResponse.err
+
+<h4>
 
 ```luau
 HttpResponse.err: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## HttpResponse.unwrap_json
+
+<h4>
 
 ```luau
 HttpResponse.unwrap_json: (self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
 ```
 
-</h3>
+</h4>
 
  decodes body as json or returns default value; errors if ok = false and default value not provided
 
 ---
 
+## `export type` RequestConfig
+
 ---
 
-<h3>
+## RequestConfig.method
+
+<h4>
 
 ```luau
 RequestConfig.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## RequestConfig.url
+
+<h4>
 
 ```luau
 RequestConfig.url: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## RequestConfig.headers
+
+<h4>
 
 ```luau
 RequestConfig.headers: { [string]: string }?,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## RequestConfig.params
+
+<h4>
 
 ```luau
 RequestConfig.params: { [string]: string }?,
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` GetConfig
+
 ---
 
-<h3>
+## GetConfig.url
+
+<h4>
 
 ```luau
 GetConfig.url: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## GetConfig.headers
+
+<h4>
 
 ```luau
 GetConfig.headers: { [string]: string }?,
 ```
 
-</h3>
+</h4>
 
 ---
+
+## `export type` PostConfig
 
  Query parameters to append to the url string
 
 ---
 
-<h3>
+## PostConfig.url
+
+<h4>
 
 ```luau
 PostConfig.url: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## PostConfig.headers.body
+
+<h4>
 
 ```luau
 PostConfig.headers.body: string | {
 ```
 
-</h3>
+</h4>
 
 ---
 
----
+## `export type` StatusCode
 
-<h3>
+---
 
 ```luau
 | "200 OK"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "201 Created"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "204 No Content"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "301 Moved Permanently"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "302 Found"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "304 Not Modified"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "307 Temporary Redirect"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "308 Permanent Redirect"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "400 Bad Request"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "401 Unauthorized"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "403 Forbidden"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "404 Not Found"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "405 Method Not Allowed"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "409 Conflict"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "410 Gone"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "412 Precondition Failed"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "415 Unsupported Media Type"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "429 Too Many Requests"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "500 Internal Server Error"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "501 Not Implemented"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "502 Bad Gateway"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "503 Service Unavailable"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "504 Gateway Timeout"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "505 HTTP Version Not Supported"
 ```
-
-</h3>
 
 ---

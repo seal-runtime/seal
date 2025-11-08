@@ -261,15 +261,19 @@ for _, library in libraries do
             else api.name
         local defs = api.defs
 
-        -- if api.is ~= "Enum" then
-        --     push(`### {name}`)
-        -- end
+        if api.is ~= "Enum" then
+            push(`## {name}`)
+        end
         if #api.defs > 0 then
-            push("<h3>", 2)
+            if api.is ~= "Enum" then
+                push("<h4>", 2)
+            end
             push("```luau", 0)
             push(defs, 0)
             push("```", 2)
-            push("</h3>")
+            if api.is ~= "Enum" then
+                push("</h4>")
+            end
         end
 
         if #api.docs > 1 and #api.docs < 340 then

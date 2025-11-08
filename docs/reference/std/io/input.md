@@ -10,13 +10,15 @@
 
 ---
 
-<h3>
+## io.input.tty
+
+<h4>
 
 ```luau
 io.input.tty: (stream: "Stdout" | "Stderr" | "Stdin"?): boolean
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -35,13 +37,15 @@ If *seal* is being run in a child process, this will almost always return `false
 
 ---
 
-<h3>
+## io.input.rawline
+
+<h4>
 
 ```luau
 io.input.rawline: (prompt: string?): string
 ```
 
-</h3>
+</h4>
 
 Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
 
@@ -49,13 +53,15 @@ But works with stdin in a child process/works while piped, making it a fallback 
 
 ---
 
-<h3>
+## io.input.readline
+
+<h4>
 
 ```luau
 io.input.readline: (prompt: string): string | interrupt | error
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -99,25 +105,29 @@ end
 
 ---
 
-<h3>
+## io.input.interrupt
+
+<h4>
 
 ```luau
 io.input.interrupt: (key: "CtrlC" | "CtrlD"): interrupt
 ```
 
-</h3>
+</h4>
 
 Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 ---
 
-<h3>
+## io.input.rawmode
+
+<h4>
 
 ```luau
 io.input.rawmode: (enabled: boolean)
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -137,49 +147,57 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 ---
 
-<h3>
+## io.input.mouse
+
+<h4>
 
 ```luau
 io.input.mouse: (enabled: boolean) -> (),
 ```
 
-</h3>
+</h4>
 
  Allows `MouseEvents` to be reported by `input.events()`.
 
 ---
 
-<h3>
+## io.input.focus
+
+<h4>
 
 ```luau
 io.input.focus: (enabled: boolean) -> (),
 ```
 
-</h3>
+</h4>
 
  Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
 
 ---
 
-<h3>
+## io.input.paste
+
+<h4>
 
 ```luau
 io.input.paste: (enabled: boolean) -> (),
 ```
 
-</h3>
+</h4>
 
  Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
 
 ---
 
-<h3>
+## io.input.events
+
+<h4>
 
 ```luau
 io.input.events: (poll: Duration): () -> TerminalEvent
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -247,274 +265,308 @@ end
 
 ---
 
+## `export type` KeyModifiers
+
  Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
 
 ---
 
-<h3>
+## KeyModifiers.ctrl
+
+<h4>
 
 ```luau
 KeyModifiers.ctrl: boolean,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## KeyModifiers.shift
+
+<h4>
 
 ```luau
 KeyModifiers.shift: boolean,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## KeyModifiers.alt
+
+<h4>
 
 ```luau
 KeyModifiers.alt: boolean,
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` KeyEvent
+
 ---
 
-<h3>
+## KeyEvent.is
+
+<h4>
 
 ```luau
 KeyEvent.is: "Key",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## KeyEvent.key
+
+<h4>
 
 ```luau
 KeyEvent.key: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## KeyEvent.modifiers
+
+<h4>
 
 ```luau
 KeyEvent.modifiers: KeyModifiers,
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` MouseEvent
+
 ---
 
-<h3>
+## MouseEvent.is
+
+<h4>
 
 ```luau
 MouseEvent.is: "Mouse",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## MouseEvent.kind
+
+<h4>
 
 ```luau
 MouseEvent.kind: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## MouseEvent.column
+
+<h4>
 
 ```luau
 MouseEvent.column: number,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## MouseEvent.row
+
+<h4>
 
 ```luau
 MouseEvent.row: number,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## MouseEvent.modifiers
+
+<h4>
 
 ```luau
 MouseEvent.modifiers: KeyModifiers,
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` ResizeEvent
+
 ---
 
-<h3>
+## ResizeEvent.is
+
+<h4>
 
 ```luau
 ResizeEvent.is: "Resize",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ResizeEvent.columns
+
+<h4>
 
 ```luau
 ResizeEvent.columns: number,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ResizeEvent.rows
+
+<h4>
 
 ```luau
 ResizeEvent.rows: number,
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` FocusGained
+
 ---
 
-<h3>
+## FocusGained.is
+
+<h4>
 
 ```luau
 FocusGained.is: "FocusGained",
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` FocusLost
+
 ---
 
-<h3>
+## FocusLost.is
+
+<h4>
 
 ```luau
 FocusLost.is: "FocusLost",
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` PasteEvent
+
 ---
 
-<h3>
+## PasteEvent.is
+
+<h4>
 
 ```luau
 PasteEvent.is: "Paste",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## PasteEvent.contents
+
+<h4>
 
 ```luau
 PasteEvent.contents: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` Empty
+
 ---
 
-<h3>
+## Empty.is
+
+<h4>
 
 ```luau
 Empty.is: "Empty",
 ```
 
-</h3>
+</h4>
 
 ---
 
----
+## `export type` TerminalEvent
 
-<h3>
+---
 
 ```luau
 | KeyEvent
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | MouseEvent
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | ResizeEvent
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | PasteEvent
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | FocusGained | FocusLost
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | Empty
 ```
 
-</h3>
-
 ---
+
+## `export type` input
 
 ---

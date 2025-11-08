@@ -7,55 +7,69 @@
 
 ---
 
----
+## `export type` DirectoryEntry
 
 ---
 
+## `export type` DirectoryBuilder
+
 ---
 
-<h3>
+## `export type` DirLib
+
+---
+
+## DirLib.from
+
+<h4>
 
 ```luau
 DirLib.from: (path: string) -> DirectoryEntry,
 ```
 
-</h3>
+</h4>
 
  Creates a `DirectoryEntry` from the directory at `path`, erroring if the directory is NotFound/PermissionDenied, etc.
 
 ---
 
-<h3>
+## DirLib.build
+
+<h4>
 
 ```luau
 DirLib.build: (name: string, tree: DirectoryTree) -> DirectoryBuilder,
 ```
 
-</h3>
+</h4>
 
  Returns a `DirectoryBuilder` table for `fs.readtree`, `fs.writetree`, etc.
 
 ---
 
-<h3>
+## DirLib.create
+
+<h4>
 
 ```luau
 DirLib.create: (path: string) -> DirectoryEntry,
 ```
 
-</h3>
+</h4>
 
  Creates a *new* directory at `path`, erroring if an entry already exists there.
 
 ---
 
-<h3>
+## DirLib.ensure
+
+<h4>
 
 ```luau
 DirLib.ensure: (path: string, create_missing: boolean?) -> DirectoryEntry,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -77,13 +91,15 @@ local settings_json = dot_vscode:find("settings.json"):try_file()
 
 ---
 
-<h3>
+## DirLib.try_remove
+
+<h4>
 
 ```luau
 DirLib.try_remove: (path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -102,13 +118,15 @@ with result "Other", as well as an error kind string that describes what went wr
 
 ---
 
-<h3>
+## DirLib.home
+
+<h4>
 
 ```luau
 DirLib.home: () -> DirectoryEntry,
 ```
 
-</h3>
+</h4>
 
 Returns a `DirectoryEntry` corresponding to the user's home directory, erroring if not found.
 
@@ -124,13 +142,15 @@ local zip_downloads = fs.dir.home()
 
 ---
 
-<h3>
+## DirLib.cwd
+
+<h4>
 
 ```luau
 DirLib.cwd: () -> DirectoryEntry,
 ```
 
-</h3>
+</h4>
 
 Constructs a `DirectoryEntry` from the user's current working directory (cwd)
 
@@ -139,13 +159,15 @@ where the user is when they execute your code.
 
 ---
 
-<h3>
+## DirLib.project
+
+<h4>
 
 ```luau
 DirLib.project: (n: number?) -> DirectoryEntry,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -177,14 +199,16 @@ local input_files = fs.dir.project()
 
 ---
 
-<h3>
+## DirLib.__call
+
+<h4>
 
 
 ```luau
 DirLib.__call: (self: any, path: string) -> DirectoryEntry?,
 ```
 
-</h3>
+</h4>
 
     Convenient and slightly more efficient alternative to `fs.find(path):try_dir()`
 

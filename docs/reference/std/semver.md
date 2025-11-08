@@ -45,169 +45,177 @@ assert(first_version < second_version)
 
 ---
 
-<h3>
+## SemverFields.major
+
+<h4>
 
 ```luau
 SemverFields.major: number,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## SemverFields.minor
+
+<h4>
 
 ```luau
 SemverFields.minor: number,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## SemverFields.patch
+
+<h4>
 
 ```luau
 SemverFields.patch: number,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## SemverFields.metadata.release_candidate.tag
+
+<h4>
 
 ```luau
 SemverFields.metadata.release_candidate.tag: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## SemverFields.metadata.release_candidate.ver
+
+<h4>
 
 ```luau
 SemverFields.metadata.release_candidate.ver: number,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## SemverFields.metadata.release_candidate.build
+
+<h4>
 
 ```luau
 SemverFields.metadata.release_candidate.build: string?,
 ```
 
-</h3>
+</h4>
 
 ---
 
----
+## `export type` SemverImpl
 
 ---
 
-<h3>
+## `export type` Semver
+
+---
+
+## Semver.from
+
+<h4>
 
 ```luau
 Semver.from: (s: string): Semver
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Semver.string
+
+<h4>
 
 ```luau
 Semver.string: " .. s)
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Semver.string
+
+<h4>
 
 ```luau
 Semver.string: {s}`)
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Semver.FIXME
+
+<h4>
 
 ```luau
 Semver.FIXME: not optional fields not qualifying as optionals
 ```
 
-</h3>
+</h4>
 
 ---
 
----
+## `export type` SemverVals
 
-<h3>
+---
 
 ```luau
 | "AND UP"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "EXACTLY EQUAL"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "LESS THAN OR EQUAL"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "LESS THAN"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "GREATER THAN NOT INCLUDING"
 ```
 
-</h3>
-
 ---
 
-<h3>
+## SemverVals.satisfies
+
+<h4>
 
 ```luau
 SemverVals.satisfies: (self: Semver, semver_range: string): boolean
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -244,42 +252,50 @@ end
 
 ---
 
-<h3>
+## SemverVals.__eq
+
+<h4>
 
 ```luau
 SemverVals.__eq: (self: Semver, other: Semver): boolean
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## SemverVals.__lt
+
+<h4>
 
 ```luau
 SemverVals.__lt: (self: Semver, other: Semver): boolean
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## SemverVals.__le
+
+<h4>
 
 ```luau
 SemverVals.__le: (self: Semver, other: Semver): boolean
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## SemverVals.__tostring
+
+<h4>
 
 ```luau
 SemverVals.__tostring: (self: Semver): string
 ```
 
-</h3>
+</h4>
 
 ---

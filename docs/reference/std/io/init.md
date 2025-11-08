@@ -17,52 +17,62 @@ libraries as you need them instead.
 
 ---
 
-<h3>
+## io.input
+
+<h4>
 
 ```luau
 io.input: typeof(require("@self/input")),
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## io.output
+
+<h4>
 
 ```luau
 io.output: typeof(require("@self/output")),
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## io.colors
+
+<h4>
 
 ```luau
 io.colors: typeof(require("@self/colors")),
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## io.format
+
+<h4>
 
 ```luau
 io.format: typeof(require("@self/format")),
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## io.prompt
+
+<h4>
 
 ```luau
 io.prompt: typeof(require("@self/prompt")),
 ```
 
-</h3>
+</h4>
 
 ---

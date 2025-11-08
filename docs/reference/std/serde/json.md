@@ -5,12 +5,14 @@
 
 `local json = require("@std/serde/json")`
 
-<h3>
+## serde.json
+
+<h4>
 
 ```luau
 return require("@std/json")
 ```
 
-</h3>
+</h4>
 
 ---

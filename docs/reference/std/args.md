@@ -138,678 +138,796 @@ end
 
 ---
 
-<h3>
+## args.parse
+
+<h4>
 
 ```luau
 args.parse: (program: string, tagline: string, info: ProgramInfo?) -> {
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## args.simple
+
+<h4>
 
 ```luau
 args.simple: (self: any, ...Arg) -> Parsed,
 ```
 
-</h3>
+</h4>
 
  Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
 
 ---
 
-<h3>
+## args.commands
+
+<h4>
 
 ```luau
 args.commands: (self: any, ...Command) -> Parsed,
 ```
 
-</h3>
+</h4>
 
  Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
  generate commands.
 
 ---
 
-<h3>
+## args.positional
+
+<h4>
 
 ```luau
 args.positional: (name: string, help: string) -> Positional,
 ```
 
-</h3>
+</h4>
 
  Add a positional argument
 
 ---
 
-<h3>
+## args.named
+
+<h4>
 
 ```luau
 args.named: (name: string, help: string) -> Named,
 ```
 
-</h3>
+</h4>
 
  Add a named argument `--name=value` (or when aliased to -n, `-n value`). Named arguments must start with `--`
 
 ---
 
-<h3>
+## args.command
+
+<h4>
 
 ```luau
 args.command: (name: string, help: string) -> Command,
 ```
 
-</h3>
+</h4>
 
  Add a new top-level command, must be used with `args.parse(program, desc, info):commands(...)`
 
 ---
 
-<h3>
+## args.flag
+
+<h4>
 
 ```luau
 args.flag: (name: string, help: string) -> Flag,
 ```
 
-</h3>
+</h4>
 
  Add a new flag argument like `--verbose` or `--override`. Flags must start with `--` and cannot be `--help` or `--commands`.
 
 ---
 
-<h3>
+## args.list
+
+<h4>
 
 ```luau
 args.list: (name: string, help: string) -> ArgList,
 ```
 
-</h3>
+</h4>
 
  Add a new list (tail) argument that collects all remaining positional arguments into a `{ string }`
 
 ---
 
-<h3>
+## args.default
+
+<h4>
 
 ```luau
 args.default: (...Arg) -> Command,
 ```
 
-</h3>
+</h4>
 
  Add a default command.
 
 ---
 
+## `export type` ProgramInfo
+
 ---
 
-<h3>
+## ProgramInfo.description
+
+<h4>
 
 ```luau
 ProgramInfo.description: string?,
 ```
 
-</h3>
+</h4>
 
  if provided, goes below program name/tagline in `--help`
 
 ---
 
-<h3>
+## ProgramInfo.examples
+
+<h4>
 
 ```luau
 ProgramInfo.examples: { string }?,
 ```
 
-</h3>
+</h4>
 
  examples of arguments *following* program and path (already pre-filled)
 
 ---
 
-<h3>
+## ProgramInfo.footer
+
+<h4>
 
 ```luau
 ProgramInfo.footer: string?
 ```
 
-</h3>
+</h4>
 
  put authors and/or repository link here
 
 ---
 
+## `export type` Command
+
 ---
 
-<h3>
+## Command.name
+
+<h4>
 
 ```luau
 Command.name: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Command.is
+
+<h4>
 
 ```luau
 Command.is: "Command",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Command.help
+
+<h4>
 
 ```luau
 Command.help: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Command._args
+
+<h4>
 
 ```luau
 Command._args: { Arg },
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Command.args
+
+<h4>
 
 ```luau
 Command.args: (self: Command, ...Arg) -> Command,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Command._aliases
+
+<h4>
 
 ```luau
 Command._aliases: { [string]: true? },
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Command.aliases
+
+<h4>
 
 ```luau
 Command.aliases: (self: Command, ...string) -> Command,
 ```
 
-</h3>
+</h4>
 
  Aliases for your command, like `seal r -> seal run`
 
 ---
 
+## `export type` Parsed
+
 ---
 
-<h3>
+## Parsed.command
+
+<h4>
 
 ```luau
 Parsed.command: string | "default",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Parsed.get
+
+<h4>
 
 ```luau
 Parsed.get: <T>(self: Parsed, name: string, default: T?) -> T?,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Parsed.expect
+
+<h4>
 
 ```luau
 Parsed.expect: <T>(self: Parsed, name: string, assertion: string?) -> T,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Parsed.help
+
+<h4>
 
 ```luau
 Parsed.help: (self: Parsed) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Parsed.flags
+
+<h4>
 
 ```luau
 Parsed.flags: { [string]: true? },
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` ArgList
+
 ---
 
-<h3>
+## ArgList.name
+
+<h4>
 
 ```luau
 ArgList.name: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ArgList.is
+
+<h4>
 
 ```luau
 ArgList.is: "ArgList",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ArgList.help
+
+<h4>
 
 ```luau
 ArgList.help: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ArgList.values
+
+<h4>
 
 ```luau
 ArgList.values: { string }?,
 ```
 
-</h3>
+</h4>
 
 ---
 
----
+## `export type` Validator
 
 ---
 
-<h3>
+## `export type` Arg
+
+---
 
 ```luau
 | Positional
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | Flag
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | Named
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | ArgList
 ```
 
-</h3>
+---
+
+## `export type` Positional
 
 ---
 
----
+## Positional.name
 
-<h3>
+<h4>
 
 ```luau
 Positional.name: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Positional.is
+
+<h4>
 
 ```luau
 Positional.is: "Positional",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Positional.help
+
+<h4>
 
 ```luau
 Positional.help: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Positional._default
+
+<h4>
 
 ```luau
 Positional._default: any,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Positional.default
+
+<h4>
 
 ```luau
 Positional.default: (any) -> Positional,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Positional._optional
+
+<h4>
 
 ```luau
 Positional._optional: boolean,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Positional.optional
+
+<h4>
 
 ```luau
 Positional.optional: (self: Positional) -> Positional,
 ```
 
-</h3>
+</h4>
 
  call this to turn the positional argument into an optional positional argument
 
 ---
 
-<h3>
+## Positional._validator
+
+<h4>
 
 ```luau
 Positional._validator: Validator?,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Positional.validate
+
+<h4>
 
 ```luau
 Positional.validate: (self: Positional, validator: Validator) -> Positional,
 ```
 
-</h3>
+</h4>
 
  validate the argument's input by passing a function that returns either the transformed
  validated input (such as converting input strings from p -> project) or an error object.
 
 ---
 
-<h3>
+## Positional.value
+
+<h4>
 
 ```luau
 Positional.value: any,
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` Flag
+
 ---
 
-<h3>
+## Flag.name
+
+<h4>
 
 ```luau
 Flag.name: string,
 ```
 
-</h3>
+</h4>
 
  Must start with `--` and cannot be `--help` or `--commands`
 
 ---
 
-<h3>
+## Flag.is
+
+<h4>
 
 ```luau
 Flag.is: "Flag",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Flag.help
+
+<h4>
 
 ```luau
 Flag.help: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Flag._aliases
+
+<h4>
 
 ```luau
 Flag._aliases: { [string]: true? },
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Flag.aliases
+
+<h4>
 
 ```luau
 Flag.aliases: (self: Flag, ...string) -> Flag,
 ```
 
-</h3>
+</h4>
 
  flag aliases must start with `-` and cannot be `-h` (reserved for help)
 
 ---
 
-<h3>
+## Flag._default
+
+<h4>
 
 ```luau
 Flag._default: boolean?,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Flag.default
+
+<h4>
 
 ```luau
 Flag.default: (self: Flag, boolean) -> Flag,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Flag.value
+
+<h4>
 
 ```luau
 Flag.value: boolean,
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` Named
+
 ---
 
-<h3>
+## Named.name
+
+<h4>
 
 ```luau
 Named.name: string,
 ```
 
-</h3>
+</h4>
 
  Must start with `--` and cannot be `--help` or `--commands`
 
 ---
 
-<h3>
+## Named.is
+
+<h4>
 
 ```luau
 Named.is: "Named",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Named.help
+
+<h4>
 
 ```luau
 Named.help: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Named._default
+
+<h4>
 
 ```luau
 Named._default: any,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Named.default
+
+<h4>
 
 ```luau
 Named.default: (self: Named, any) -> Named,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Named._aliases
+
+<h4>
 
 ```luau
 Named._aliases: { [string]: true? },
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Named.aliases
+
+<h4>
 
 ```luau
 Named.aliases: (self: Named, ...string) -> Named,
 ```
 
-</h3>
+</h4>
 
  aliases must start with `-` and cannot be `-h` (reserved for help)
 
 ---
 
-<h3>
+## Named._required
+
+<h4>
 
 ```luau
 Named._required: boolean,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Named.required
+
+<h4>
 
 ```luau
 Named.required: (self: Named) -> Named,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Named._validator
+
+<h4>
 
 ```luau
 Named._validator: Validator?,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Named.validate
+
+<h4>
 
 ```luau
 Named.validate: (self: Named, validator: Validator) -> Named,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## Named.value
+
+<h4>
 
 ```luau
 Named.value: any,
 ```
 
-</h3>
+</h4>
 
 ---

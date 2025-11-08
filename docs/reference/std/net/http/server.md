@@ -7,481 +7,391 @@
 
 ---
 
-<h3>
-
 ```luau
 | "200 OK"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "201 Created"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "204 No Content"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "301 Moved Permanently"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "302 Found"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "304 Not Modified"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "307 Temporary Redirect"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "308 Permanent Redirect"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "400 Bad Request"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "401 Unauthorized"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "403 Forbidden"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "404 Not Found"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "405 Method Not Allowed"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "409 Conflict"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "410 Gone"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "412 Precondition Failed"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "415 Unsupported Media Type"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "429 Too Many Requests"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "500 Internal Server Error"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "501 Not Implemented"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "502 Bad Gateway"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "503 Service Unavailable"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "504 Gateway Timeout"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "505 HTTP Version Not Supported"
 ```
 
-</h3>
-
 ---
 
----
+## `export type` ContentType
 
-<h3>
+---
 
 ```luau
 | "Text"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "HTML"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "JSON"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "XML"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "CSS"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "JavaScript"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | "Binary"
 ```
 
-</h3>
-
 ---
-
-<h3>
 
 ```luau
 | string
 ```
 
-</h3>
+---
+
+## `export type` ServeRequest
 
 ---
 
----
+## ServeRequest.peer_address
 
-<h3>
+<h4>
 
 ```luau
 ServeRequest.peer_address: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeRequest.method
+
+<h4>
 
 ```luau
 ServeRequest.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeRequest.path
+
+<h4>
 
 ```luau
 ServeRequest.path: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeRequest.raw_text
+
+<h4>
 
 ```luau
 ServeRequest.raw_text: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeRequest.body
+
+<h4>
 
 ```luau
 ServeRequest.body: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` ServeResponse
+
 ---
 
-<h3>
+## ServeResponse.status_code
+
+<h4>
 
 ```luau
 ServeResponse.status_code: StatusCode,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeResponse.content_type
+
+<h4>
 
 ```luau
 ServeResponse.content_type: ContentType,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeResponse.body
+
+<h4>
 
 ```luau
 ServeResponse.body: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeResponse.headers.cookies.http_version
+
+<h4>
 
 ```luau
 ServeResponse.headers.cookies.http_version: string?,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeResponse.headers.cookies.reason_phrase
+
+<h4>
 
 ```luau
 ServeResponse.headers.cookies.reason_phrase: string?,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeResponse.headers.cookies.redirect_url
+
+<h4>
 
 ```luau
 ServeResponse.headers.cookies.redirect_url: string?
 ```
 
-</h3>
+</h4>
 
 ---
 
+## `export type` ServeConfig
+
 ---
 
-<h3>
+## ServeConfig.address
+
+<h4>
 
 ```luau
 ServeConfig.address: string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeConfig.port
+
+<h4>
 
 ```luau
 ServeConfig.port: string | number,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## ServeConfig.handler
+
+<h4>
 
 ```luau
 ServeConfig.handler: (ServeRequest) -> ServeResponse,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+## net.http.server.serve
+
+<h4>
 
 ```luau
 net.http.server.serve: (config: ServeConfig)
 ```
 
-</h3>
+</h4>
 
 <details>
 

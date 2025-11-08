@@ -5,12 +5,14 @@
 
 `local request = require("@std/request")`
 
-<h3>
+## request
+
+<h4>
 
 ```luau
 return require("@std/net/http").request
 ```
 
-</h3>
+</h4>
 
 ---
