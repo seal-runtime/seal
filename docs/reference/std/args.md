@@ -139,17 +139,21 @@ end
 ---
 
 <h3>
+
 ```luau
 args.parse: (program: string, tagline: string, info: ProgramInfo?) -> {
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 args.simple: (self: any, ...Arg) -> Parsed,
 ```
+
 </h3>
 
  Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
@@ -157,9 +161,11 @@ args.simple: (self: any, ...Arg) -> Parsed,
 ---
 
 <h3>
+
 ```luau
 args.commands: (self: any, ...Command) -> Parsed,
 ```
+
 </h3>
 
  Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
@@ -168,9 +174,11 @@ args.commands: (self: any, ...Command) -> Parsed,
 ---
 
 <h3>
+
 ```luau
 args.positional: (name: string, help: string) -> Positional,
 ```
+
 </h3>
 
  Add a positional argument
@@ -178,9 +186,11 @@ args.positional: (name: string, help: string) -> Positional,
 ---
 
 <h3>
+
 ```luau
 args.named: (name: string, help: string) -> Named,
 ```
+
 </h3>
 
  Add a named argument `--name=value` (or when aliased to -n, `-n value`). Named arguments must start with `--`
@@ -188,9 +198,11 @@ args.named: (name: string, help: string) -> Named,
 ---
 
 <h3>
+
 ```luau
 args.command: (name: string, help: string) -> Command,
 ```
+
 </h3>
 
  Add a new top-level command, must be used with `args.parse(program, desc, info):commands(...)`
@@ -198,9 +210,11 @@ args.command: (name: string, help: string) -> Command,
 ---
 
 <h3>
+
 ```luau
 args.flag: (name: string, help: string) -> Flag,
 ```
+
 </h3>
 
  Add a new flag argument like `--verbose` or `--override`. Flags must start with `--` and cannot be `--help` or `--commands`.
@@ -208,9 +222,11 @@ args.flag: (name: string, help: string) -> Flag,
 ---
 
 <h3>
+
 ```luau
 args.list: (name: string, help: string) -> ArgList,
 ```
+
 </h3>
 
  Add a new list (tail) argument that collects all remaining positional arguments into a `{ string }`
@@ -218,9 +234,11 @@ args.list: (name: string, help: string) -> ArgList,
 ---
 
 <h3>
+
 ```luau
 args.default: (...Arg) -> Command,
 ```
+
 </h3>
 
  Add a default command.
@@ -230,9 +248,11 @@ args.default: (...Arg) -> Command,
 ---
 
 <h3>
+
 ```luau
 ProgramInfo.description: string?,
 ```
+
 </h3>
 
  if provided, goes below program name/tagline in `--help`
@@ -240,9 +260,11 @@ ProgramInfo.description: string?,
 ---
 
 <h3>
+
 ```luau
 ProgramInfo.examples: { string }?,
 ```
+
 </h3>
 
  examples of arguments *following* program and path (already pre-filled)
@@ -250,9 +272,11 @@ ProgramInfo.examples: { string }?,
 ---
 
 <h3>
+
 ```luau
 ProgramInfo.footer: string?
 ```
+
 </h3>
 
  put authors and/or repository link here
@@ -262,57 +286,71 @@ ProgramInfo.footer: string?
 ---
 
 <h3>
+
 ```luau
 Command.name: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Command.is: "Command",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Command.help: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Command._args: { Arg },
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Command.args: (self: Command, ...Arg) -> Command,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Command._aliases: { [string]: true? },
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Command.aliases: (self: Command, ...string) -> Command,
 ```
+
 </h3>
 
  Aliases for your command, like `seal r -> seal run`
@@ -322,41 +360,51 @@ Command.aliases: (self: Command, ...string) -> Command,
 ---
 
 <h3>
+
 ```luau
 Parsed.command: string | "default",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Parsed.get: <T>(self: Parsed, name: string, default: T?) -> T?,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Parsed.expect: <T>(self: Parsed, name: string, assertion: string?) -> T,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Parsed.help: (self: Parsed) -> string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Parsed.flags: { [string]: true? },
 ```
+
 </h3>
 
 ---
@@ -364,33 +412,41 @@ Parsed.flags: { [string]: true? },
 ---
 
 <h3>
+
 ```luau
 ArgList.name: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 ArgList.is: "ArgList",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 ArgList.help: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 ArgList.values: { string }?,
 ```
+
 </h3>
 
 ---
@@ -400,33 +456,41 @@ ArgList.values: { string }?,
 ---
 
 <h3>
+
 ```luau
 | Positional
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | Flag
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | Named
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | ArgList
 ```
+
 </h3>
 
 ---
@@ -434,57 +498,71 @@ ArgList.values: { string }?,
 ---
 
 <h3>
+
 ```luau
 Positional.name: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Positional.is: "Positional",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Positional.help: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Positional._default: any,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Positional.default: (any) -> Positional,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Positional._optional: boolean,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Positional.optional: (self: Positional) -> Positional,
 ```
+
 </h3>
 
  call this to turn the positional argument into an optional positional argument
@@ -492,17 +570,21 @@ Positional.optional: (self: Positional) -> Positional,
 ---
 
 <h3>
+
 ```luau
 Positional._validator: Validator?,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Positional.validate: (self: Positional, validator: Validator) -> Positional,
 ```
+
 </h3>
 
  validate the argument's input by passing a function that returns either the transformed
@@ -511,9 +593,11 @@ Positional.validate: (self: Positional, validator: Validator) -> Positional,
 ---
 
 <h3>
+
 ```luau
 Positional.value: any,
 ```
+
 </h3>
 
 ---
@@ -521,9 +605,11 @@ Positional.value: any,
 ---
 
 <h3>
+
 ```luau
 Flag.name: string,
 ```
+
 </h3>
 
  Must start with `--` and cannot be `--help` or `--commands`
@@ -531,33 +617,41 @@ Flag.name: string,
 ---
 
 <h3>
+
 ```luau
 Flag.is: "Flag",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Flag.help: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Flag._aliases: { [string]: true? },
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Flag.aliases: (self: Flag, ...string) -> Flag,
 ```
+
 </h3>
 
  flag aliases must start with `-` and cannot be `-h` (reserved for help)
@@ -565,25 +659,31 @@ Flag.aliases: (self: Flag, ...string) -> Flag,
 ---
 
 <h3>
+
 ```luau
 Flag._default: boolean?,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Flag.default: (self: Flag, boolean) -> Flag,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Flag.value: boolean,
 ```
+
 </h3>
 
 ---
@@ -591,9 +691,11 @@ Flag.value: boolean,
 ---
 
 <h3>
+
 ```luau
 Named.name: string,
 ```
+
 </h3>
 
  Must start with `--` and cannot be `--help` or `--commands`
@@ -601,49 +703,61 @@ Named.name: string,
 ---
 
 <h3>
+
 ```luau
 Named.is: "Named",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Named.help: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Named._default: any,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Named.default: (self: Named, any) -> Named,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Named._aliases: { [string]: true? },
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Named.aliases: (self: Named, ...string) -> Named,
 ```
+
 </h3>
 
  aliases must start with `-` and cannot be `-h` (reserved for help)
@@ -651,41 +765,51 @@ Named.aliases: (self: Named, ...string) -> Named,
 ---
 
 <h3>
+
 ```luau
 Named._required: boolean,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Named.required: (self: Named) -> Named,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Named._validator: Validator?,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Named.validate: (self: Named, validator: Validator) -> Named,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Named.value: any,
 ```
+
 </h3>
 
 ---

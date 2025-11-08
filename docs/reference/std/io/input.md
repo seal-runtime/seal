@@ -11,9 +11,11 @@
 ---
 
 <h3>
+
 ```luau
 io.input.tty: (stream: "Stdout" | "Stderr" | "Stdin"?): boolean
 ```
+
 </h3>
 
 <details>
@@ -34,9 +36,11 @@ If *seal* is being run in a child process, this will almost always return `false
 ---
 
 <h3>
+
 ```luau
 io.input.rawline: (prompt: string?): string
 ```
+
 </h3>
 
 Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
@@ -46,9 +50,11 @@ But works with stdin in a child process/works while piped, making it a fallback 
 ---
 
 <h3>
+
 ```luau
 io.input.readline: (prompt: string): string | interrupt | error
 ```
+
 </h3>
 
 <details>
@@ -94,9 +100,11 @@ end
 ---
 
 <h3>
+
 ```luau
 io.input.interrupt: (key: "CtrlC" | "CtrlD"): interrupt
 ```
+
 </h3>
 
 Returns an `interrupt` userdata object. For reasons. Maybe control flow.
@@ -104,9 +112,11 @@ Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 ---
 
 <h3>
+
 ```luau
 io.input.rawmode: (enabled: boolean)
 ```
+
 </h3>
 
 <details>
@@ -128,9 +138,11 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 ---
 
 <h3>
+
 ```luau
 io.input.mouse: (enabled: boolean) -> (),
 ```
+
 </h3>
 
  Allows `MouseEvents` to be reported by `input.events()`.
@@ -138,9 +150,11 @@ io.input.mouse: (enabled: boolean) -> (),
 ---
 
 <h3>
+
 ```luau
 io.input.focus: (enabled: boolean) -> (),
 ```
+
 </h3>
 
  Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
@@ -148,9 +162,11 @@ io.input.focus: (enabled: boolean) -> (),
 ---
 
 <h3>
+
 ```luau
 io.input.paste: (enabled: boolean) -> (),
 ```
+
 </h3>
 
  Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
@@ -158,9 +174,11 @@ io.input.paste: (enabled: boolean) -> (),
 ---
 
 <h3>
+
 ```luau
 io.input.events: (poll: Duration): () -> TerminalEvent
 ```
+
 </h3>
 
 <details>
@@ -234,25 +252,31 @@ end
 ---
 
 <h3>
+
 ```luau
 KeyModifiers.ctrl: boolean,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 KeyModifiers.shift: boolean,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 KeyModifiers.alt: boolean,
 ```
+
 </h3>
 
 ---
@@ -260,25 +284,31 @@ KeyModifiers.alt: boolean,
 ---
 
 <h3>
+
 ```luau
 KeyEvent.is: "Key",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 KeyEvent.key: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 KeyEvent.modifiers: KeyModifiers,
 ```
+
 </h3>
 
 ---
@@ -286,41 +316,51 @@ KeyEvent.modifiers: KeyModifiers,
 ---
 
 <h3>
+
 ```luau
 MouseEvent.is: "Mouse",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 MouseEvent.kind: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 MouseEvent.column: number,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 MouseEvent.row: number,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 MouseEvent.modifiers: KeyModifiers,
 ```
+
 </h3>
 
 ---
@@ -328,25 +368,31 @@ MouseEvent.modifiers: KeyModifiers,
 ---
 
 <h3>
+
 ```luau
 ResizeEvent.is: "Resize",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 ResizeEvent.columns: number,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 ResizeEvent.rows: number,
 ```
+
 </h3>
 
 ---
@@ -354,9 +400,11 @@ ResizeEvent.rows: number,
 ---
 
 <h3>
+
 ```luau
 FocusGained.is: "FocusGained",
 ```
+
 </h3>
 
 ---
@@ -364,9 +412,11 @@ FocusGained.is: "FocusGained",
 ---
 
 <h3>
+
 ```luau
 FocusLost.is: "FocusLost",
 ```
+
 </h3>
 
 ---
@@ -374,17 +424,21 @@ FocusLost.is: "FocusLost",
 ---
 
 <h3>
+
 ```luau
 PasteEvent.is: "Paste",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 PasteEvent.contents: string,
 ```
+
 </h3>
 
 ---
@@ -392,9 +446,11 @@ PasteEvent.contents: string,
 ---
 
 <h3>
+
 ```luau
 Empty.is: "Empty",
 ```
+
 </h3>
 
 ---
@@ -402,49 +458,61 @@ Empty.is: "Empty",
 ---
 
 <h3>
+
 ```luau
 | KeyEvent
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | MouseEvent
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | ResizeEvent
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | PasteEvent
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | FocusGained | FocusLost
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | Empty
 ```
+
 </h3>
 
 ---

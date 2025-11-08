@@ -14,9 +14,11 @@
 ---
 
 <h3>
+
 ```luau
 DirLib.from: (path: string) -> DirectoryEntry,
 ```
+
 </h3>
 
  Creates a `DirectoryEntry` from the directory at `path`, erroring if the directory is NotFound/PermissionDenied, etc.
@@ -24,9 +26,11 @@ DirLib.from: (path: string) -> DirectoryEntry,
 ---
 
 <h3>
+
 ```luau
 DirLib.build: (name: string, tree: DirectoryTree) -> DirectoryBuilder,
 ```
+
 </h3>
 
  Returns a `DirectoryBuilder` table for `fs.readtree`, `fs.writetree`, etc.
@@ -34,9 +38,11 @@ DirLib.build: (name: string, tree: DirectoryTree) -> DirectoryBuilder,
 ---
 
 <h3>
+
 ```luau
 DirLib.create: (path: string) -> DirectoryEntry,
 ```
+
 </h3>
 
  Creates a *new* directory at `path`, erroring if an entry already exists there.
@@ -44,9 +50,11 @@ DirLib.create: (path: string) -> DirectoryEntry,
 ---
 
 <h3>
+
 ```luau
 DirLib.ensure: (path: string, create_missing: boolean?) -> DirectoryEntry,
 ```
+
 </h3>
 
 <details>
@@ -70,9 +78,11 @@ local settings_json = dot_vscode:find("settings.json"):try_file()
 ---
 
 <h3>
+
 ```luau
 DirLib.try_remove: (path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?),
 ```
+
 </h3>
 
 <details>
@@ -93,9 +103,11 @@ with result "Other", as well as an error kind string that describes what went wr
 ---
 
 <h3>
+
 ```luau
 DirLib.home: () -> DirectoryEntry,
 ```
+
 </h3>
 
 Returns a `DirectoryEntry` corresponding to the user's home directory, erroring if not found.
@@ -113,9 +125,11 @@ local zip_downloads = fs.dir.home()
 ---
 
 <h3>
+
 ```luau
 DirLib.cwd: () -> DirectoryEntry,
 ```
+
 </h3>
 
 Constructs a `DirectoryEntry` from the user's current working directory (cwd)
@@ -126,9 +140,11 @@ where the user is when they execute your code.
 ---
 
 <h3>
+
 ```luau
 DirLib.project: (n: number?) -> DirectoryEntry,
 ```
+
 </h3>
 
 <details>
@@ -162,6 +178,8 @@ local input_files = fs.dir.project()
 ---
 
 <h3>
+
+
 ```luau
 DirLib.__call: (self: any, path: string) -> DirectoryEntry?,
 ```

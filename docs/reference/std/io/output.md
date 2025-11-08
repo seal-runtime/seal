@@ -10,9 +10,11 @@ Write to the terminal's stdout/stderr.
 ---
 
 <h3>
+
 ```luau
 output.write: (contents: string | buffer, flush: boolean?) -> error?,
 ```
+
 </h3>
 
 <details>
@@ -45,9 +47,11 @@ end
 ---
 
 <h3>
+
 ```luau
 output.ewrite: (contents: string | buffer, flush: boolean?) -> error?,
 ```
+
 </h3>
 
 <details>
@@ -77,9 +81,11 @@ local err = output.ewrite("error message\n")
 ---
 
 <h3>
+
 ```luau
 output.clear: () -> (),
 ```
+
 </h3>
 
  clears stdout akin to `cls` or `clear`.

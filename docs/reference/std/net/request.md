@@ -6,9 +6,11 @@
 `local request = require("@std/net/request")`
 
 <h3>
+
 ```luau
 return require("@std/net/http").request
 ```
+
 </h3>
 
 ---

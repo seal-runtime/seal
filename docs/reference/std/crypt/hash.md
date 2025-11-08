@@ -12,9 +12,11 @@ Contains function sha2, which can be used to create an **unsalted** hash, return
 ---
 
 <h3>
+
 ```luau
 Hash.sha2: (plaintext: string) -> buffer,
 ```
+
 </h3>
 
 Hashes plaintext with the SHA2-256 algorithm, returns a buffer (of length 32) containing the result.

@@ -18,41 +18,51 @@ libraries as you need them instead.
 ---
 
 <h3>
+
 ```luau
 io.input: typeof(require("@self/input")),
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 io.output: typeof(require("@self/output")),
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 io.colors: typeof(require("@self/colors")),
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 io.format: typeof(require("@self/format")),
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 io.prompt: typeof(require("@self/prompt")),
 ```
+
 </h3>
 
 ---

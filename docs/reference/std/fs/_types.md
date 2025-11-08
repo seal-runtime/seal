@@ -8,9 +8,11 @@
 ---
 
 <h3>
+
 ```luau
 TreeBuilder.inner: DirectoryTree,
 ```
+
 </h3>
 
  The `DirectoryTree` being constructed by the `TreeBuilder`.
@@ -18,9 +20,11 @@ TreeBuilder.inner: DirectoryTree,
 ---
 
 <h3>
+
 ```luau
 TreeBuilder.with_file: (self: TreeBuilder, name: string, content: string) -> TreeBuilder,
 ```
+
 </h3>
 
  Add a file to the DirectoryTree by `name` with `content`
@@ -28,9 +32,11 @@ TreeBuilder.with_file: (self: TreeBuilder, name: string, content: string) -> Tre
 ---
 
 <h3>
+
 ```luau
 TreeBuilder.with_tree: (self: TreeBuilder, name: string, builder: TreeBuilder) -> TreeBuilder,
 ```
+
 </h3>
 
 Add a new tree to the DirectoryTree; the second argument should be another `TreeBuilder` from `fs.tree()`
@@ -49,9 +55,11 @@ local dir = fs.tree()
 ---
 
 <h3>
+
 ```luau
 FileEntry.name: string,
 ```
+
 </h3>
 
  The name of the file; also called basename, filename, etc. Can also be obtained by calling `fs.path.child` on a path.
@@ -59,9 +67,11 @@ FileEntry.name: string,
 ---
 
 <h3>
+
 ```luau
 FileEntry.path: string,
 ```
+
 </h3>
 
  A filesystem path to the file; if the `FileEntry` was requested with an absolute path, then this path will be absolute, otherwise it'll be a relative path.
@@ -69,17 +79,21 @@ FileEntry.path: string,
 ---
 
 <h3>
+
 ```luau
 FileEntry.type: "File",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 FileEntry.read: (self: FileEntry) -> string,
 ```
+
 </h3>
 
 <details>
@@ -103,9 +117,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 ---
 
 <h3>
+
 ```luau
 FileEntry.size: (self: FileEntry) -> number,
 ```
+
 </h3>
 
  Returns the file's size (length) in bytes.
@@ -113,9 +129,11 @@ FileEntry.size: (self: FileEntry) -> number,
 ---
 
 <h3>
+
 ```luau
 FileEntry.readlines: (self: FileEntry) -> () -> (number, string),
 ```
+
 </h3>
 
 Iterate over the lines of the file without reading the whole file into memory.
@@ -139,9 +157,11 @@ end
 ---
 
 <h3>
+
 ```luau
 FileEntry.readbytes: (self: FileEntry, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
 ```
+
 </h3>
 
 <details>
@@ -175,9 +195,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 ---
 
 <h3>
+
 ```luau
 FileEntry.append: (self: FileEntry, content: buffer | string) -> (),
 ```
+
 </h3>
 
 <details>
@@ -199,17 +221,21 @@ Like `fs.writefile`, `content` does not have to be a valid utf-8 encoded string 
 ---
 
 <h3>
+
 ```luau
 FileEntry.is_valid_utf8: (self: FileEntry) -> boolean,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 FileEntry.metadata: (self: FileEntry) -> FsMetadata,
 ```
+
 </h3>
 
 Returns a `FsMetadata` table containing timestamps for creation, modified, and access times, as well as permissions (depends on your operating system)
@@ -217,33 +243,41 @@ Returns a `FsMetadata` table containing timestamps for creation, modified, and a
 ---
 
 <h3>
+
 ```luau
 FileEntry.copy_to: (self: FileEntry, to: string) -> (),
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 FileEntry.move_to: (self: FileEntry, to: string) -> (),
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 FileEntry.rename: (self: FileEntry, name: string) -> (),
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 FileEntry.remove: (self: FileEntry) -> (),
 ```
+
 </h3>
 
  Removes the file at `FileEntry.path`.
@@ -253,9 +287,11 @@ FileEntry.remove: (self: FileEntry) -> (),
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.name: string,
 ```
+
 </h3>
 
  The name of the directory; also called basename, etc. Can also be obtained by calling `fs.path.child` on a path.
@@ -263,9 +299,11 @@ DirectoryEntry.name: string,
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.path: string,
 ```
+
 </h3>
 
  A filesystem path to the directory; if the `DirectoryEntry` was requested with an absolute path, then this path will be absolute,
@@ -274,17 +312,21 @@ DirectoryEntry.path: string,
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.type: "Directory",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.list: (self: DirectoryEntry, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
 ```
+
 </h3>
 
  Returns an an array of basenames of the directory's entries; pass `true` as the second argument to list all files recursively.
@@ -293,9 +335,11 @@ DirectoryEntry.list: (self: DirectoryEntry, recursive: boolean?, filter: ((path:
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.join: (self: DirectoryEntry, ...string) -> string,
 ```
+
 </h3>
 
  Join the `DirectoryEntry`'s path with multiple paths in a cross-platform-compliant manner.
@@ -304,25 +348,31 @@ DirectoryEntry.join: (self: DirectoryEntry, ...string) -> string,
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.find: (self: DirectoryEntry, name: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.entries: (self: DirectoryEntry) -> { [string]: Entry },
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.expect_file: (self: DirectoryEntry, name: string) -> FileEntry,
 ```
+
 </h3>
 
  Expect that the directory contains file `name`, returning its `FileEntry` or otherwise error.
@@ -330,9 +380,11 @@ DirectoryEntry.expect_file: (self: DirectoryEntry, name: string) -> FileEntry,
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.expect_dir: (self: DirectoryEntry, name: string) -> DirectoryEntry,
 ```
+
 </h3>
 
  Expect that the directory contains directory `name`, returning its `DirectoryEntry` or otherwise error.
@@ -340,9 +392,11 @@ DirectoryEntry.expect_dir: (self: DirectoryEntry, name: string) -> DirectoryEntr
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.add_file: (self: DirectoryEntry, name: string, content: string | buffer) -> DirectoryEntry,
 ```
+
 </h3>
 
 <details>
@@ -369,9 +423,11 @@ local src = fs.dir.ensure("./src")
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.add_tree: (self: DirectoryEntry, name: string, builder: TreeBuilder) -> DirectoryEntry,
 ```
+
 </h3>
 
 <details>
@@ -399,9 +455,11 @@ local src = fs.dir.ensure("./src")
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.metadata: (self: DirectoryEntry) -> FsMetadata,
 ```
+
 </h3>
 
 Returns a `FsMetadata` table containing timestamps for creation, modified, and access times, as well as permissions (depends on your operating system)
@@ -409,33 +467,41 @@ Returns a `FsMetadata` table containing timestamps for creation, modified, and a
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.copy_to: (self: DirectoryEntry, to: string) -> (),
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.move_to: (self: DirectoryEntry, to: string) -> (),
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.rename: (self: DirectoryEntry, name: string) -> (),
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 DirectoryEntry.remove: (self: DirectoryEntry) -> (),
 ```
+
 </h3>
 
  Removes the directory at `DirectoryEntry.path`, alongside all its contents.
@@ -447,9 +513,11 @@ DirectoryEntry.remove: (self: DirectoryEntry) -> (),
 ---
 
 <h3>
+
 ```luau
 FsMetadata.created_at: DateTime?,
 ```
+
 </h3>
 
  A UTC DateTime representing when the `Entry` was created.
@@ -458,9 +526,11 @@ FsMetadata.created_at: DateTime?,
 ---
 
 <h3>
+
 ```luau
 FsMetadata.modified_at: DateTime?,
 ```
+
 </h3>
 
  A UTC DateTime representing when the `Entry` was last modified.
@@ -469,9 +539,11 @@ FsMetadata.modified_at: DateTime?,
 ---
 
 <h3>
+
 ```luau
 FsMetadata.accessed_at: DateTime?,
 ```
+
 </h3>
 
  A UTC DateTime representing when the `Entry` was last accessed.
@@ -480,9 +552,11 @@ FsMetadata.accessed_at: DateTime?,
 ---
 
 <h3>
+
 ```luau
 FsMetadata.permissions.readonly: boolean,
 ```
+
 </h3>
 
  Whether the `Entry` is read-only or not. Should be accessible on both Windows and Unix-like operating systems.
@@ -490,9 +564,11 @@ FsMetadata.permissions.readonly: boolean,
 ---
 
 <h3>
+
 ```luau
 FsMetadata.permissions.unix_mode: number?,
 ```
+
 </h3>
 
  Represents the numeric Unix permission bits for the `Entry`, combining read, write, and execute permissions
@@ -503,9 +579,11 @@ FsMetadata.permissions.unix_mode: number?,
 ---
 
 <h3>
+
 ```luau
 FindResult.ok: boolean,
 ```
+
 </h3>
 
  `true` if the find operation succeeded ("File" | "Directory" | "Symlink"), otherwise `false` ("NotFound" | "PermissionDenied")
@@ -513,25 +591,31 @@ FindResult.ok: boolean,
 ---
 
 <h3>
+
 ```luau
 FindResult.path: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 FindResult.type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 FindResult.exists: (self: FindResult) -> boolean,
 ```
+
 </h3>
 
 Checks if `FindResult.path` exists on the filesystem.
@@ -551,9 +635,11 @@ end
 ---
 
 <h3>
+
 ```luau
 FindResult.try_file: (self: FindResult) -> FileEntry?,
 ```
+
 </h3>
 
 Attempt to create a `FileEntry` from the `FindResult`, returning it or `nil` if unsuccessful.
@@ -570,9 +656,11 @@ end
 ---
 
 <h3>
+
 ```luau
 FindResult.try_dir: (self: FindResult) -> DirectoryEntry?,
 ```
+
 </h3>
 
 Attempt to create a `DirectoryEntry` from the `FindResult`, returning it or `nil` if unsuccessful.
@@ -589,9 +677,11 @@ end
 ---
 
 <h3>
+
 ```luau
 FindResult.unwrap_file: (self: FindResult) -> FileEntry,
 ```
+
 </h3>
 
  Create a `FileEntry` from the `FindResult`, erroring if the file doesn't exist.
@@ -599,9 +689,11 @@ FindResult.unwrap_file: (self: FindResult) -> FileEntry,
 ---
 
 <h3>
+
 ```luau
 FindResult.unwrap_dir: (self: FindResult) -> DirectoryEntry,
 ```
+
 </h3>
 
  Create a `DirectoryEntry` from the `FindResult`, erroring if the directory doesn't exist.
@@ -611,25 +703,31 @@ FindResult.unwrap_dir: (self: FindResult) -> DirectoryEntry,
 ---
 
 <h3>
+
 ```luau
 FileBuilder.name: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 FileBuilder.type: "File",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 FileBuilder.content: string,
 ```
+
 </h3>
 
 ---
@@ -637,25 +735,31 @@ FileBuilder.content: string,
 ---
 
 <h3>
+
 ```luau
 DirectoryBuilder.name: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 DirectoryBuilder.type: "Directory",
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 DirectoryBuilder.children: DirectoryTree,
 ```
+
 </h3>
 
 ---

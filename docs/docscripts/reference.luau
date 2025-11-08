@@ -265,10 +265,10 @@ for _, library in libraries do
         --     push(`### {name}`)
         -- end
         if #api.defs > 0 then
-            push("<h3>", 0)
+            push("<h3>", 2)
             push("```luau", 0)
             push(defs, 0)
-            push("```", 0)
+            push("```", 2)
             push("</h3>")
         end
 

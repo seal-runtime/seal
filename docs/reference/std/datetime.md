@@ -6,9 +6,11 @@
 `local datetime = require("@std/datetime")`
 
 <h3>
+
 ```luau
 return require("./time/datetime")
 ```
+
 </h3>
 
 ---

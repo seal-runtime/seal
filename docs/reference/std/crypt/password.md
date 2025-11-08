@@ -8,17 +8,21 @@
 ---
 
 <h3>
+
 ```luau
 HashedPassword.salt: buffer,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 HashedPassword.hash: buffer,
 ```
+
 </h3>
 
 ---
@@ -26,17 +30,21 @@ HashedPassword.hash: buffer,
 ---
 
 <h3>
+
 ```luau
 PasswordVerifyOptions.raw_password: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 PasswordVerifyOptions.hashed_password: HashedPassword,
 ```
+
 </h3>
 
 ---
@@ -48,9 +56,11 @@ Please use with caution.
 ---
 
 <h3>
+
 ```luau
 Password.hash: (raw_password: string) -> HashedPassword,
 ```
+
 </h3>
 
 <details>
@@ -89,9 +99,11 @@ end
 ---
 
 <h3>
+
 ```luau
 Password.verify: (verify_options: PasswordVerifyOptions) -> boolean
 ```
+
 </h3>
 
 <details>

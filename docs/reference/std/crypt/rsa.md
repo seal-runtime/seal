@@ -8,17 +8,21 @@
 ---
 
 <h3>
+
 ```luau
 RsaKeys.public: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 RsaKeys.private: string
 ```
+
 </h3>
 
 ---
@@ -26,25 +30,31 @@ RsaKeys.private: string
 ---
 
 <h3>
+
 ```luau
 Rsa.generatekeys: () -> RsaKeys,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Rsa.encrypt: (plaintext: string, public_key: string) -> string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Rsa.decrypt: (ciphertext: string, private_key: string) -> string,
 ```
+
 </h3>
 
 ---

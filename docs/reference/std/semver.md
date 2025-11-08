@@ -46,49 +46,61 @@ assert(first_version < second_version)
 ---
 
 <h3>
+
 ```luau
 SemverFields.major: number,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 SemverFields.minor: number,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 SemverFields.patch: number,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 SemverFields.metadata.release_candidate.tag: string,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 SemverFields.metadata.release_candidate.ver: number,
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 SemverFields.metadata.release_candidate.build: string?,
 ```
+
 </h3>
 
 ---
@@ -98,33 +110,41 @@ SemverFields.metadata.release_candidate.build: string?,
 ---
 
 <h3>
+
 ```luau
 Semver.from: (s: string): Semver
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Semver.string: " .. s)
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Semver.string: {s}`)
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 Semver.FIXME: not optional fields not qualifying as optionals
 ```
+
 </h3>
 
 ---
@@ -132,49 +152,61 @@ Semver.FIXME: not optional fields not qualifying as optionals
 ---
 
 <h3>
+
 ```luau
 | "AND UP"
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | "EXACTLY EQUAL"
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | "LESS THAN OR EQUAL"
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | "LESS THAN"
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 | "GREATER THAN NOT INCLUDING"
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 SemverVals.satisfies: (self: Semver, semver_range: string): boolean
 ```
+
 </h3>
 
 <details>
@@ -213,33 +245,41 @@ end
 ---
 
 <h3>
+
 ```luau
 SemverVals.__eq: (self: Semver, other: Semver): boolean
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 SemverVals.__lt: (self: Semver, other: Semver): boolean
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 SemverVals.__le: (self: Semver, other: Semver): boolean
 ```
+
 </h3>
 
 ---
 
 <h3>
+
 ```luau
 SemverVals.__tostring: (self: Semver): string
 ```
+
 </h3>
 
 ---
