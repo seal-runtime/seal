@@ -267,22 +267,36 @@ for _, library in libraries do
             else api.name
         local defs = api.defs
 
-        if api.is ~= "Enum" then
-            if api.is == "Type" then
-                push(`## {name}`)
-            else
-                push(`### {name}`)
-            end
+        -- if api.is ~= "Enum" then
+        --     if api.is == "Type" then
+        --         push(`## {name}`)
+        --     else
+        --         push(`### {name}`)
+        --     end
+        -- end
+        if api.is == "Type" then
+            push(`## {name}`)
+        elseif api.is == "Property" then
+            push(`### {name}`)
         end
         if #api.defs > 0 then
-            if api.is ~= "Enum" then
+            -- if api.is ~= "Enum" then
+            --     push("<h4>", 2)
+            -- elseif api.is == "Function" then
+            --     push("<h3>", 2)
+            -- end
+            if api.is == "Function" then
+                push("<h3>", 2)
+            elseif api.is ~= "Enum" then
                 push("<h4>", 2)
             end
             push("```luau", 0)
             push(defs, 0)
             push("```", 2)
-            if api.is ~= "Enum" then
-                push("</h4>")
+            if api.is == "Function" then
+                push("</h3>", 2)
+            elseif api.is ~= "Enum" then
+                push("</h4>", 2)
             end
         end
 

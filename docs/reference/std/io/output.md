@@ -9,15 +9,13 @@ Write to the terminal's stdout/stderr.
 
 ---
 
-### output.write
-
-<h4>
+<h3>
 
 ```luau
 function output.write(contents: string | buffer, flush: boolean?) -> error?,
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -48,15 +46,13 @@ end
 
 ---
 
-### output.ewrite
-
-<h4>
+<h3>
 
 ```luau
 function output.ewrite(contents: string | buffer, flush: boolean?) -> error?,
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -84,15 +80,13 @@ local err = output.ewrite("error message\n")
 
 ---
 
-### output.clear
-
-<h4>
+<h3>
 
 ```luau
 function output.clear() -> (),
 ```
 
-</h4>
+</h3>
 
  clears stdout akin to `cls` or `clear`.
 

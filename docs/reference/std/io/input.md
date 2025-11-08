@@ -10,15 +10,13 @@
 
 ---
 
-### io.input.tty
-
-<h4>
+<h3>
 
 ```luau
 function io.input.tty(stream: "Stdout" | "Stderr" | "Stdin"?): boolean
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -37,15 +35,13 @@ If *seal* is being run in a child process, this will almost always return `false
 
 ---
 
-### io.input.rawline
-
-<h4>
+<h3>
 
 ```luau
 function io.input.rawline(prompt: string?): string
 ```
 
-</h4>
+</h3>
 
 Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
 
@@ -53,15 +49,13 @@ But works with stdin in a child process/works while piped, making it a fallback 
 
 ---
 
-### io.input.readline
-
-<h4>
+<h3>
 
 ```luau
 function io.input.readline(prompt: string): string | interrupt | error
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -105,29 +99,25 @@ end
 
 ---
 
-### io.input.interrupt
-
-<h4>
+<h3>
 
 ```luau
 function io.input.interrupt(key: "CtrlC" | "CtrlD"): interrupt
 ```
 
-</h4>
+</h3>
 
 Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 ---
 
-### io.input.rawmode
-
-<h4>
+<h3>
 
 ```luau
 function io.input.rawmode(enabled: boolean)
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -147,57 +137,49 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 ---
 
-### io.input.mouse
-
-<h4>
+<h3>
 
 ```luau
 function io.input.mouse(enabled: boolean) -> (),
 ```
 
-</h4>
+</h3>
 
  Allows `MouseEvents` to be reported by `input.events()`.
 
 ---
 
-### io.input.focus
-
-<h4>
+<h3>
 
 ```luau
 function io.input.focus(enabled: boolean) -> (),
 ```
 
-</h4>
+</h3>
 
  Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
 
 ---
 
-### io.input.paste
-
-<h4>
+<h3>
 
 ```luau
 function io.input.paste(enabled: boolean) -> (),
 ```
 
-</h4>
+</h3>
 
  Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
 
 ---
 
-### io.input.events
-
-<h4>
+<h3>
 
 ```luau
 function io.input.events(poll: Duration): () -> TerminalEvent
 ```
 
-</h4>
+</h3>
 
 <details>
 

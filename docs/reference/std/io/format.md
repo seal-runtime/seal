@@ -9,70 +9,60 @@ Format objects for pretty printing to stdout/stderr.
 
 ---
 
-### format.pretty
-
-<h4>
+<h3>
 
 ```luau
 function format.pretty(item: unknown) -> string,
 ```
 
-</h4>
+</h3>
 
 Formats `item` in the same way as `print` or `pp`.
 
 ---
 
-### format.simple
-
-<h4>
+<h3>
 
 ```luau
 function format.simple(item: unknown) -> string,
 ```
 
-</h4>
+</h3>
 
 Like pretty printing but without colors.
 
 ---
 
-### format.debug
-
-<h4>
+<h3>
 
 ```luau
 function format.debug(item: unknown) -> string,
 ```
 
-</h4>
+</h3>
 
 Prints the debug representation of `item`, equivalent to using `{:?}` in Rust.
 
 ---
 
-### format.uncolor
-
-<h4>
+<h3>
 
 ```luau
 function format.uncolor(s: string) -> string,
 ```
 
-</h4>
+</h3>
 
 Removes ANSI color codes from a pretty formatted string.
 
 ---
 
-### format.__call
-
-<h4>
+<h3>
 
 ```luau
 function format.__call(self: any, item: unknown) -> string,
 ```
 
-</h4>
+</h3>
 
 ---

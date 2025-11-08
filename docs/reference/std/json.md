@@ -18,105 +18,89 @@ json.writefile("./animals.json", data)
 
 ---
 
-### json.encode
-
-<h4>
+<h3>
 
 ```luau
 function json.encode(t: JsonData, options: EncodeOptions?) -> string,
 ```
 
-</h4>
+</h3>
 
  encodes a table as json; by default this encodes as a pretty-formatted string; use `json.raw` for a condensed version instead
 
 ---
 
-### json.raw
-
-<h4>
+<h3>
 
 ```luau
 function json.raw(t: JsonData) -> string,
 ```
 
-</h4>
+</h3>
 
  encodes a table as json in a condensed fashion for passing as data (without newlines, not as easily readable)
 
 ---
 
-### json.decode
-
-<h4>
+<h3>
 
 ```luau
 function json.decode(json: string) -> JsonData,
 ```
 
-</h4>
+</h3>
 
 ---
 
-### json.readfile
-
-<h4>
+<h3>
 
 ```luau
 function json.readfile(path: string) -> JsonData,
 ```
 
-</h4>
+</h3>
 
 ---
 
-### json.writefile
-
-<h4>
+<h3>
 
 ```luau
 function json.writefile(path: string, data: JsonData, options: EncodeOptions?) -> (),
 ```
 
-</h4>
+</h3>
 
 ---
 
-### json.writefile_raw
-
-<h4>
+<h3>
 
 ```luau
 function json.writefile_raw(path: string, data: JsonData) -> (),
 ```
 
-</h4>
+</h3>
 
 ---
 
-### json.null
-
-<h4>
+<h3>
 
 ```luau
 function json.null() -> any,
 ```
 
-</h4>
+</h3>
 
  returns an object that serializes to json's `null`
 
 ---
 
-### json.array
-
-<h4>
+<h3>
 
 ```luau
 function json.array<T>(t: { T }?) -> { T }
 ```
 
-</h4>
+</h3>
 
  Treat `t` as an array (will always encode as `[]` even when empty).
 

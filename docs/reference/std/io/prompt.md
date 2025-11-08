@@ -25,15 +25,13 @@ local result = prompt.text("What's your name?")
 
 ---
 
-### prompt.text
-
-<h4>
+<h3>
 
 ```luau
 function prompt.text(message: string) -> string,
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -66,15 +64,13 @@ local ssn = prompt.text(colors.bold.white("whats your ssn???: "))
 
 ---
 
-### prompt.confirm
-
-<h4>
+<h3>
 
 ```luau
 function prompt.confirm(message: string, default: boolean?) -> boolean,
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -100,15 +96,13 @@ end
 
 ---
 
-### prompt.validate
-
-<h4>
+<h3>
 
 ```luau
 function prompt.validate(message: string, v: (response: string) -> true | string) -> string,
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -138,15 +132,13 @@ local response = prompt.validate("Favorite animal that starts with 's'",
 
 ---
 
-### prompt.password
-
-<h4>
+<h3>
 
 ```luau
 function prompt.password(message: string, style: "Hidden" | "*"?) -> string,
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -176,15 +168,13 @@ but it may not be perfectly safe from introspection.
 
 ---
 
-### prompt.pick
-
-<h4>
+<h3>
 
 ```luau
 function prompt.pick(message: string, options: { string }, default: number?) -> number,
 ```
 
-</h4>
+</h3>
 
 <details>
 

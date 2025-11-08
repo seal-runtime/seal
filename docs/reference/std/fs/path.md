@@ -7,15 +7,13 @@
 
 ---
 
-### PathLib.join
-
-<h4>
+<h3>
 
 ```luau
 function PathLib.join(...string) -> string,
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -41,15 +39,13 @@ local otherfile_in_script_dir = path.join(script:parent(), "otherfile.txt")
 
 ---
 
-### PathLib.exists
-
-<h4>
+<h3>
 
 ```luau
 function PathLib.exists(path: string) -> boolean,
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -66,15 +62,13 @@ handle cases like `NotFound` and `PermissionDenied` without wrapping error-throw
 
 ---
 
-### PathLib.canonicalize
-
-<h4>
+<h3>
 
 ```luau
 function PathLib.canonicalize(path: string) -> string,
 ```
 
-</h4>
+</h3>
 
 Returns the canonical (absolute) form of `path` using Rust's `std::fs::canonicalize`, resolving symlinks and intermediate components.
 
@@ -82,15 +76,13 @@ Errors if the requested path doesn't exist on the filesystem or is invalid.
 
 ---
 
-### PathLib.absolutize
-
-<h4>
+<h3>
 
 ```luau
 function PathLib.absolutize(path: string) -> string,
 ```
 
-</h4>
+</h3>
 
 Returns the absolute path of `path` without checking the filesystem.
 
@@ -98,15 +90,13 @@ Use this function if your path may or may not exist (yet).
 
 ---
 
-### PathLib.normalize
-
-<h4>
+<h3>
 
 ```luau
 function PathLib.normalize(path: string) -> string,
 ```
 
-</h4>
+</h3>
 
 <details>
 
@@ -136,15 +126,13 @@ as well as UNC paths like `"\\network\share\text.txt"` or `"\\?\wsl\mnt\..."`.
 
 ---
 
-### PathLib.parent
-
-<h4>
+<h3>
 
 ```luau
 function PathLib.parent(path: string, n: number?) -> string?,
 ```
 
-</h4>
+</h3>
 
 Returns the path of the parent directory `n` (default = 1) parents to the left of `path`
 
@@ -161,43 +149,37 @@ local parent_dir = path.parent(cwd)
 
 ---
 
-### PathLib.child
-
-<h4>
+<h3>
 
 ```luau
 function PathLib.child(path: string) -> string?,
 ```
 
-</h4>
+</h3>
 
  the farthest child/leaf/node of the path, ex. `path.child("./src/main.luau") == "main.luau"`
 
 ---
 
-### PathLib.home
-
-<h4>
+<h3>
 
 ```luau
 function PathLib.home() -> string,
 ```
 
-</h4>
+</h3>
 
  returns the user's home directory, also known as `~`
 
 ---
 
-### PathLib.cwd
-
-<h4>
+<h3>
 
 ```luau
 function PathLib.cwd() -> string,
 ```
 
-</h4>
+</h3>
 
  returns the current working directory, errors if not found or invalid utf-8.
 
@@ -206,15 +188,13 @@ function PathLib.cwd() -> string,
 
 ---
 
-### PathLib.project
-
-<h4>
+<h3>
 
 ```luau
 function PathLib.project(n: number?, script_path: string?) -> string?
 ```
 
-</h4>
+</h3>
 
 Returns the *seal* project directory `n` projects up, relative to `script_path` or the current `script:path()` if unspecified.
 

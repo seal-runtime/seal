@@ -51,15 +51,13 @@ executable_path: string,
 
 ---
 
-### env.cwd
-
-<h4>
+<h3>
 
 ```luau
 function env.cwd() -> string,
 ```
 
-</h4>
+</h3>
 
 Get the current working directory of the running process.
 
@@ -67,29 +65,25 @@ Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission deni
 
 ---
 
-### env.getvar
-
-<h4>
+<h3>
 
 ```luau
 function env.getvar(key: string) -> string?,
 ```
 
-</h4>
+</h3>
 
 Gets an environment variable in the current process.
 
 ---
 
-### env.setvar
-
-<h4>
+<h3>
 
 ```luau
 function env.setvar(key: string, value: string) -> string,
 ```
 
-</h4>
+</h3>
 
 Sets an environment variable in the current process.
 
@@ -97,15 +91,13 @@ Note, this function is **unsafe** in multithreaded contexts on Linux.
 
 ---
 
-### env.removevar
-
-<h4>
+<h3>
 
 ```luau
 function env.removevar(key: string) -> nil,
 ```
 
-</h4>
+</h3>
 
 Removes an environment variable in the current process.
 
