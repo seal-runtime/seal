@@ -625,6 +625,50 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ---
 
+PathIs: `| "File"`
+
+---
+
+PathIs: `| "Directory"`
+
+---
+
+PathIs: `| "Symlink"`
+
+---
+
+PathIs: `| "UnixSocket"`
+
+---
+
+PathIs: `| "UnixFifo"`
+
+---
+
+PathIs: `| "UnixCharDevice"`
+
+---
+
+PathIs: `| "UnixBlockDevice"`
+
+---
+
+PathIs: `| "WindowsReparsePoint"`
+
+---
+
+PathIs: `| "Other"`
+
+---
+
+PathIs: `| "NotFound"`
+
+---
+
+PathIs: `| "PermissionDenied"`
+
+---
+
 `export type` DirectoryTree
 
 ---
@@ -683,15 +727,59 @@ Some usage notes:
 
 ---
 
-WatchEventCategory.| "Modify: `:Data"`
+WatchEventCategory: `| "Read" -- note that Read ~= open for reading (which is in Open)`
 
 ---
 
-WatchEventCategory.| "Modify: `:Metadata"`
+WatchEventCategory: `| "Execute"`
 
 ---
 
-WatchEventCategory.| "Modify: `:Other"`
+WatchEventCategory: `| "Open"`
+
+---
+
+WatchEventCategory: `| "Close"`
+
+---
+
+WatchEventCategory: `| "Access"`
+
+---
+
+WatchEventCategory: `| "Create"`
+
+---
+
+WatchEventCategory: `| "Rename"`
+
+---
+
+WatchEventCategory: `| "Modify::Data"`
+
+---
+
+WatchEventCategory: `| "Modify::Metadata"`
+
+---
+
+WatchEventCategory: `| "Modify::Other"`
+
+---
+
+WatchEventCategory: `| "Remove"`
+
+---
+
+WatchEventCategory: `| "Other"`
+
+---
+
+WatchEventCategory: `| "Unknown"`
+
+---
+
+WatchEventCategory: `| "None"`
 
 ---
 
@@ -734,158 +822,170 @@ WatchEventInfo.is_write: `boolean`
 
 ---
 
-WatchKind.| "Open: `:Execute"`
+WatchKind: `| "Read"`
 
 ---
 
-WatchKind.| "Open: `:Read"`
+WatchKind: `| "Open::Execute"`
 
 ---
 
-WatchKind.| "Open: `:Write"`
+WatchKind: `| "Open::Read"`
 
 ---
 
-WatchKind.| "Open: `:Other"`
+WatchKind: `| "Open::Write"`
 
 ---
 
-WatchKind.| "Close: `:Execute"`
+WatchKind: `| "Open::Other"`
 
 ---
 
-WatchKind.| "Close: `:Read"`
+WatchKind: `| "Close::Execute"`
 
 ---
 
-WatchKind.| "Close: `:Write"`
+WatchKind: `| "Close::Read"`
 
 ---
 
-WatchKind.| "Close: `:Other"`
+WatchKind: `| "Close::Write"`
 
 ---
 
-WatchKind.| "Close: `:Any"`
+WatchKind: `| "Close::Other"`
 
 ---
 
-WatchKind.| "Open: `:Any"`
+WatchKind: `| "Close::Any"`
 
 ---
 
-WatchKind.| "Access: `:Any"`
+WatchKind: `| "Open::Any"`
 
 ---
 
-WatchKind.| "Access: `:Other"`
+WatchKind: `| "Access::Any"`
 
 ---
 
-WatchKind.| "Create: `:File"`
+WatchKind: `| "Access::Other"`
 
 ---
 
-WatchKind.| "Create: `:Directory" -- sent on macos and unixlike`
+WatchKind: `| "Create::File"`
 
 ---
 
-WatchKind.| "Create: `:Other"`
+WatchKind: `| "Create::Directory" -- sent on macos and unixlike`
 
 ---
 
-WatchKind.| "Create: `:Any"`
+WatchKind: `| "Create::Other"`
 
 ---
 
-WatchKind.| "Rename: `:Any"`
+WatchKind: `| "Create::Any"`
 
 ---
 
-WatchKind.| "Rename: `:From"`
+WatchKind: `| "Rename::Any"`
 
 ---
 
-WatchKind.| "Rename: `:To"`
+WatchKind: `| "Rename::From"`
 
 ---
 
-WatchKind.| "Rename: `:Both"`
+WatchKind: `| "Rename::To"`
 
 ---
 
-WatchKind.| "Rename: `:Other"`
+WatchKind: `| "Rename::Both"`
 
 ---
 
-WatchKind.| "Modify: `:Data" -- sent on unixlike`
+WatchKind: `| "Rename::Other"`
 
 ---
 
-WatchKind.| "Modify: `:Data::Content"`
+WatchKind: `| "Modify::Data" -- sent on unixlike`
 
 ---
 
-WatchKind.| "Modify: `:Data::Size"`
+WatchKind: `| "Modify::Data::Content"`
 
 ---
 
-WatchKind.| "Modify: `:Data::Other" -- sent on windows`
+WatchKind: `| "Modify::Data::Size"`
 
 ---
 
-WatchKind.| "Modify: `:Metadata::AccessTime"`
+WatchKind: `| "Modify::Data::Other" -- sent on windows`
 
 ---
 
-WatchKind.| "Modify: `:Metadata::WriteTime"`
+WatchKind: `| "Modify::Metadata::AccessTime"`
 
 ---
 
-WatchKind.| "Modify: `:Metadata::Ownership"`
+WatchKind: `| "Modify::Metadata::WriteTime"`
 
 ---
 
-WatchKind.| "Modify: `:Metadata::Permissions"`
+WatchKind: `| "Modify::Metadata::Ownership"`
 
 ---
 
-WatchKind.| "Modify: `:Metadata::Extended"`
+WatchKind: `| "Modify::Metadata::Permissions"`
 
 ---
 
-WatchKind.| "Modify: `:Metadata::Other"`
+WatchKind: `| "Modify::Metadata::Extended"`
 
 ---
 
-WatchKind.| "Modify: `:Metadata::Any"`
+WatchKind: `| "Modify::Metadata::Other"`
 
 ---
 
-WatchKind.| "Modify: `:Any"`
+WatchKind: `| "Modify::Metadata::Any"`
 
 ---
 
-WatchKind.| "Modify: `:Other"`
+WatchKind: `| "Modify::Any"`
 
 ---
 
-WatchKind.| "Remove: `:File" -- sent on unixlike`
+WatchKind: `| "Modify::Other"`
 
 ---
 
-WatchKind.| "Remove: `:Directory" -- sent on unixlike`
+WatchKind: `| "Remove::File" -- sent on unixlike`
 
 ---
 
-WatchKind.| "Remove: `:Other"`
+WatchKind: `| "Remove::Directory" -- sent on unixlike`
 
 ---
 
-WatchKind.| "Remove: `:Any" -- sent on Windows`
+WatchKind: `| "Remove::Other"`
 
 ---
 
-WatchKind.| "None: `:Timeout"`
+WatchKind: `| "Remove::Any" -- sent on Windows`
+
+---
+
+WatchKind: `| "Other"`
+
+---
+
+WatchKind: `| "Unknown"`
+
+---
+
+WatchKind: `| "None::Timeout"`
 
 ---

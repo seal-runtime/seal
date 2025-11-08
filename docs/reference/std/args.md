@@ -297,6 +297,22 @@ ArgList.values: `{ string }?`
 
 ---
 
+Arg: `| Positional`
+
+---
+
+Arg: `| Flag`
+
+---
+
+Arg: `| Named`
+
+---
+
+Arg: `| ArgList`
+
+---
+
 `export type` Positional
 
 ---

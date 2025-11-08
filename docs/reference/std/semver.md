@@ -95,6 +95,26 @@ Semver.metadata = metadata : `: any, -- LUAU FIXME: not optional fields not qual
 
 ---
 
+SemverVals: `| "AND UP"`
+
+---
+
+SemverVals: `| "EXACTLY EQUAL"`
+
+---
+
+SemverVals: `| "LESS THAN OR EQUAL"`
+
+---
+
+SemverVals: `| "LESS THAN"`
+
+---
+
+SemverVals: `| "GREATER THAN NOT INCLUDING"`
+
+---
+
 semver.satisfies: `(self: Semver, semver_range: string) -> boolean`
 
 <details>

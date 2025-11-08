@@ -181,3 +181,99 @@ PostConfig.headers.body: `string | {`
 `export type` StatusCode
 
 ---
+
+StatusCode: `| "200 OK"`
+
+---
+
+StatusCode: `| "201 Created"`
+
+---
+
+StatusCode: `| "204 No Content"`
+
+---
+
+StatusCode: `| "301 Moved Permanently"`
+
+---
+
+StatusCode: `| "302 Found"`
+
+---
+
+StatusCode: `| "304 Not Modified"`
+
+---
+
+StatusCode: `| "307 Temporary Redirect"`
+
+---
+
+StatusCode: `| "308 Permanent Redirect"`
+
+---
+
+StatusCode: `| "400 Bad Request"`
+
+---
+
+StatusCode: `| "401 Unauthorized"`
+
+---
+
+StatusCode: `| "403 Forbidden"`
+
+---
+
+StatusCode: `| "404 Not Found"`
+
+---
+
+StatusCode: `| "405 Method Not Allowed"`
+
+---
+
+StatusCode: `| "409 Conflict"`
+
+---
+
+StatusCode: `| "410 Gone"`
+
+---
+
+StatusCode: `| "412 Precondition Failed"`
+
+---
+
+StatusCode: `| "415 Unsupported Media Type"`
+
+---
+
+StatusCode: `| "429 Too Many Requests"`
+
+---
+
+StatusCode: `| "500 Internal Server Error"`
+
+---
+
+StatusCode: `| "501 Not Implemented"`
+
+---
+
+StatusCode: `| "502 Bad Gateway"`
+
+---
+
+StatusCode: `| "503 Service Unavailable"`
+
+---
+
+StatusCode: `| "504 Gateway Timeout"`
+
+---
+
+StatusCode: `| "505 HTTP Version Not Supported"`
+
+---

@@ -305,6 +305,30 @@ Empty.is: `"Empty"`
 
 ---
 
+TerminalEvent: `| KeyEvent`
+
+---
+
+TerminalEvent: `| MouseEvent`
+
+---
+
+TerminalEvent: `| ResizeEvent`
+
+---
+
+TerminalEvent: `| PasteEvent`
+
+---
+
+TerminalEvent: `| FocusGained | FocusLost`
+
+---
+
+TerminalEvent: `| Empty`
+
+---
+
 `export type` input
 
 ---

@@ -158,9 +158,18 @@ for _, filepath in typedefs_paths do
             pop_name()
         end
 
-        if string.match(line, "[%w_]+:") then
+        local trimmed_line = str.trimfront(line)
+        if string.match(line, "^%s*|") then
+            local found_name = current_names[1]
+            local new_api: Api = {
+                name = `{found_name}: {trimmed_line}`,
+                docs = table.concat(current_docs, "\n"),
+                is = "Property",
+            }
+            table.insert(apis_for_path, new_api)
+            table.clear(current_docs)
+        elseif string.match(line, "[%w_]+:") then
             if not str.startswith(str.trimfront(line), "--") then
-                local trimmed_line = str.trimfront(line)
                 local found_name = table.concat(current_names, ".")
                 if str.startswith(trimmed_line, "local ") then
                     continue
