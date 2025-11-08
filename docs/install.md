@@ -29,7 +29,7 @@
 1. You need to build *seal* yourself, which means you need the Rust toolchain installed w/ nightly. Getting Rust Nightly installed on Termux is a big PITA so I'mma try to help you not have to discover everything yourself like I did.
 2. `pkg update && pkg upgrade` your package manager.
 3. You have to add the [Termux User Repository (TUR)](<https://github.com/termux-user-repository/tur>) with `pkg install tur-repo`
-4. Now you can install rustc, cargo, and nightly with `pkg install rustc cargo rustc-nightly`
-5. To make Rust default to nightly, you need to set an environment variable: `RUSTC=$PREFIX/opt/rust-nightly/bin/rustc` and you might want to prepend that path to your `$PATH` as well.
+4. Now you can install rustc, cargo, and nightly with `pkg install rustc-nightly`
+5. To make Rust default to nightly you need to set an environment variable: `export RUSTC=$PREFIX/opt/rust-nightly/bin/rustc` in your shell config file.
 6. Clone *seal*, `cd` into it, and see if you can `cargo b --release`. If you are on androidabi instead of linux-android you might have additional problems compiling.
 7. Ping me on Discord if you're having trouble getting *seal* to work on Android.
