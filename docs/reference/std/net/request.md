@@ -5,7 +5,7 @@
 
 `local request = require("@std/net/request")`
 
-## net.request
+### net.request
 
 <h4>
 

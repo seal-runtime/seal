@@ -5,7 +5,7 @@
 
 `local colors = require("@std/colors")`
 
-## colors
+### colors
 
 <h4>
 

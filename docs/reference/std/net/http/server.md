@@ -207,7 +207,7 @@
 
 ---
 
-## ServeRequest.peer_address
+### ServeRequest.peer_address
 
 <h4>
 
@@ -219,7 +219,7 @@ ServeRequest.peer_address: string,
 
 ---
 
-## ServeRequest.method
+### ServeRequest.method
 
 <h4>
 
@@ -231,7 +231,7 @@ ServeRequest.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 
 ---
 
-## ServeRequest.path
+### ServeRequest.path
 
 <h4>
 
@@ -243,7 +243,7 @@ ServeRequest.path: string,
 
 ---
 
-## ServeRequest.raw_text
+### ServeRequest.raw_text
 
 <h4>
 
@@ -255,7 +255,7 @@ ServeRequest.raw_text: string,
 
 ---
 
-## ServeRequest.body
+### ServeRequest.body
 
 <h4>
 
@@ -271,7 +271,7 @@ ServeRequest.body: string,
 
 ---
 
-## ServeResponse.status_code
+### ServeResponse.status_code
 
 <h4>
 
@@ -283,7 +283,7 @@ ServeResponse.status_code: StatusCode,
 
 ---
 
-## ServeResponse.content_type
+### ServeResponse.content_type
 
 <h4>
 
@@ -295,7 +295,7 @@ ServeResponse.content_type: ContentType,
 
 ---
 
-## ServeResponse.body
+### ServeResponse.body
 
 <h4>
 
@@ -307,7 +307,7 @@ ServeResponse.body: string,
 
 ---
 
-## ServeResponse.headers.cookies.http_version
+### ServeResponse.headers.cookies.http_version
 
 <h4>
 
@@ -319,7 +319,7 @@ ServeResponse.headers.cookies.http_version: string?,
 
 ---
 
-## ServeResponse.headers.cookies.reason_phrase
+### ServeResponse.headers.cookies.reason_phrase
 
 <h4>
 
@@ -331,7 +331,7 @@ ServeResponse.headers.cookies.reason_phrase: string?,
 
 ---
 
-## ServeResponse.headers.cookies.redirect_url
+### ServeResponse.headers.cookies.redirect_url
 
 <h4>
 
@@ -347,7 +347,7 @@ ServeResponse.headers.cookies.redirect_url: string?
 
 ---
 
-## ServeConfig.address
+### ServeConfig.address
 
 <h4>
 
@@ -359,7 +359,7 @@ ServeConfig.address: string,
 
 ---
 
-## ServeConfig.port
+### ServeConfig.port
 
 <h4>
 
@@ -371,7 +371,7 @@ ServeConfig.port: string | number,
 
 ---
 
-## ServeConfig.handler
+### ServeConfig.handler
 
 <h4>
 
@@ -383,7 +383,7 @@ ServeConfig.handler: (ServeRequest) -> ServeResponse,
 
 ---
 
-## net.http.server.serve
+### net.http.server.serve
 
 <h4>
 

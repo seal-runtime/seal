@@ -17,7 +17,7 @@
 
 ---
 
-## CommonFormatKeys.parse
+### CommonFormatKeys.parse
 
 <h4>
 
@@ -51,7 +51,7 @@ local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AU
 
 ---
 
-## CommonFormatKeys.years
+### CommonFormatKeys.years
 
 <h4>
 
@@ -90,7 +90,7 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-## CommonFormatKeys.months
+### CommonFormatKeys.months
 
 <h4>
 
@@ -129,7 +129,7 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-## CommonFormatKeys.days
+### CommonFormatKeys.days
 
 <h4>
 
@@ -143,7 +143,7 @@ CommonFormatKeys.days: (days: number): TimeSpan
 
 ---
 
-## CommonFormatKeys.hours
+### CommonFormatKeys.hours
 
 <h4>
 
@@ -157,7 +157,7 @@ CommonFormatKeys.hours: (hours: number): TimeSpan
 
 ---
 
-## CommonFormatKeys.minutes
+### CommonFormatKeys.minutes
 
 <h4>
 
@@ -171,7 +171,7 @@ CommonFormatKeys.minutes: (minutes: number): TimeSpan
 
 ---
 
-## CommonFormatKeys.seconds
+### CommonFormatKeys.seconds
 
 <h4>
 
@@ -185,7 +185,7 @@ CommonFormatKeys.seconds: (seconds: number): TimeSpan
 
 ---
 
-## CommonFormatKeys.milliseconds
+### CommonFormatKeys.milliseconds
 
 <h4>
 

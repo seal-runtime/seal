@@ -9,7 +9,7 @@ Format objects for pretty printing to stdout/stderr.
 
 ---
 
-## format.pretty
+### format.pretty
 
 <h4>
 
@@ -23,7 +23,7 @@ Formats `item` in the same way as `print` or `pp`.
 
 ---
 
-## format.simple
+### format.simple
 
 <h4>
 
@@ -37,7 +37,7 @@ Like pretty printing but without colors.
 
 ---
 
-## format.debug
+### format.debug
 
 <h4>
 
@@ -51,7 +51,7 @@ Prints the debug representation of `item`, equivalent to using `{:?}` in Rust.
 
 ---
 
-## format.uncolor
+### format.uncolor
 
 <h4>
 
@@ -65,7 +65,7 @@ Removes ANSI color codes from a pretty formatted string.
 
 ---
 
-## format.__call
+### format.__call
 
 <h4>
 

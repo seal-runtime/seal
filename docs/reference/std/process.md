@@ -35,7 +35,7 @@ end
 
 ---
 
-## process.run
+### process.run
 
 <h4>
 
@@ -86,7 +86,7 @@ end
 
 ---
 
-## process.shell
+### process.shell
 
 <h4>
 
@@ -127,7 +127,7 @@ print(file_stuff)
 
 ---
 
-## process.spawn
+### process.spawn
 
 <h4>
 
@@ -162,7 +162,7 @@ end
 
 ---
 
-## process.setexitcallback
+### process.setexitcallback
 
 <h4>
 
@@ -176,7 +176,7 @@ Doesn't work.
 
 ---
 
-## process.exit
+### process.exit
 
 <h4>
 
@@ -196,7 +196,7 @@ Typically exit code 0 means success and exit code 1 means failure.
 
 ---
 
-## RunResult.unwrap
+### RunResult.unwrap
 
 <h4>
 
@@ -211,7 +211,7 @@ RunResult.unwrap: (self: RunResult) -> string,
 
 ---
 
-## RunResult.unwrap_or
+### RunResult.unwrap_or
 
 <h4>
 
@@ -232,7 +232,7 @@ If you provide a `default` function, `:unwrap_or` will return what it returns.
 
 ---
 
-## RunResultOk.ok
+### RunResultOk.ok
 
 <h4>
 
@@ -244,7 +244,7 @@ RunResultOk.ok: true,
 
 ---
 
-## RunResultOk.out
+### RunResultOk.out
 
 <h4>
 
@@ -258,7 +258,7 @@ RunResultOk.out: string,
 
 ---
 
-## RunResultOk.stdout
+### RunResultOk.stdout
 
 <h4>
 
@@ -272,7 +272,7 @@ RunResultOk.stdout: string,
 
 ---
 
-## RunResultOk.stderr
+### RunResultOk.stderr
 
 <h4>
 
@@ -290,7 +290,7 @@ RunResultOk.stderr: string,
 
 ---
 
-## RunResultErr.ok
+### RunResultErr.ok
 
 <h4>
 
@@ -302,7 +302,7 @@ RunResultErr.ok: false,
 
 ---
 
-## RunResultErr.err
+### RunResultErr.err
 
 <h4>
 
@@ -314,7 +314,7 @@ RunResultErr.err: string,
 
 ---
 
-## RunResultErr.stdout
+### RunResultErr.stdout
 
 <h4>
 
@@ -326,7 +326,7 @@ RunResultErr.stdout: string,
 
 ---
 
-## RunResultErr.stderr
+### RunResultErr.stderr
 
 <h4>
 
@@ -342,7 +342,7 @@ RunResultErr.stderr: string,
 
 ---
 
-## RunOptions.program
+### RunOptions.program
 
 <h4>
 
@@ -354,7 +354,7 @@ RunOptions.program: string,
 
 ---
 
-## RunOptions.args
+### RunOptions.args
 
 <h4>
 
@@ -368,7 +368,7 @@ RunOptions.args: { string }?,
 
 ---
 
-## RunOptions.shell
+### RunOptions.shell
 
 <h4>
 
@@ -382,7 +382,7 @@ RunOptions.shell: string?,
 
 ---
 
-## RunOptions.cwd
+### RunOptions.cwd
 
 <h4>
 
@@ -400,7 +400,7 @@ RunOptions.cwd: string?,
 
 ---
 
-## SpawnOptions.program
+### SpawnOptions.program
 
 <h4>
 
@@ -414,7 +414,7 @@ SpawnOptions.program: string,
 
 ---
 
-## SpawnOptions.args
+### SpawnOptions.args
 
 <h4>
 
@@ -428,7 +428,7 @@ SpawnOptions.args: { string }?,
 
 ---
 
-## SpawnOptions.shell
+### SpawnOptions.shell
 
 <h4>
 
@@ -440,7 +440,7 @@ SpawnOptions.shell: string?,
 
 ---
 
-## SpawnOptions.cwd
+### SpawnOptions.cwd
 
 <h4>
 
@@ -454,7 +454,7 @@ SpawnOptions.cwd: string?,
 
 ---
 
-## SpawnOptions.stream.stdout_capacity
+### SpawnOptions.stream.stdout_capacity
 
 <h4>
 
@@ -499,7 +499,7 @@ By default, seal truncates bytes from the front of inner, causing old data to be
 
 ---
 
-## SpawnOptions.stream.stderr_capacity
+### SpawnOptions.stream.stderr_capacity
 
 <h4>
 
@@ -513,7 +513,7 @@ SpawnOptions.stream.stderr_capacity: number?,
 
 ---
 
-## SpawnOptions.stream.stdout_truncate
+### SpawnOptions.stream.stdout_truncate
 
 <h4>
 
@@ -527,7 +527,7 @@ SpawnOptions.stream.stdout_truncate: ("front" | "back")?,
 
 ---
 
-## SpawnOptions.stream.stderr_truncate
+### SpawnOptions.stream.stderr_truncate
 
 <h4>
 
@@ -548,7 +548,7 @@ SpawnOptions.stream.stderr_truncate: ("front" | "back")?,
 
 ---
 
-## ChildProcessStream.read
+### ChildProcessStream.read
 
 <h4>
 
@@ -606,7 +606,7 @@ local current_data = child.stdout:read(nil, 0.0)
 
 ---
 
-## ChildProcessStream.read_exact
+### ChildProcessStream.read_exact
 
 <h4>
 
@@ -666,7 +666,7 @@ end
 
 ---
 
-## ChildProcessStream.read_to
+### ChildProcessStream.read_to
 
 <h4>
 
@@ -703,7 +703,7 @@ Blocks the current VM until `term` is found, `timeout` seconds elapse, or the re
 
 ---
 
-## ChildProcessStream.fill
+### ChildProcessStream.fill
 
 <h4>
 
@@ -749,7 +749,7 @@ end
 
 ---
 
-## ChildProcessStream.fill_exact
+### ChildProcessStream.fill_exact
 
 <h4>
 
@@ -785,7 +785,7 @@ Pass a `timeout` of `0` seconds to prevent this function from blocking!
 
 ---
 
-## ChildProcessStream.len
+### ChildProcessStream.len
 
 <h4>
 
@@ -799,7 +799,7 @@ ChildProcessStream.len: (self: ChildProcessStream) -> number,
 
 ---
 
-## ChildProcessStream.capacity
+### ChildProcessStream.capacity
 
 <h4>
 
@@ -813,7 +813,7 @@ ChildProcessStream.capacity: (self: ChildProcessStream) -> number,
 
 ---
 
-## ChildProcessStream.lines
+### ChildProcessStream.lines
 
 <h4>
 
@@ -869,7 +869,7 @@ local second_line = next_line()
 
 ---
 
-## ChildProcessStream.iter
+### ChildProcessStream.iter
 
 <h4>
 
@@ -898,7 +898,7 @@ This function does *not* strip preceding '\r's and trailing '\n's (unlike `:line
 
 ---
 
-## ChildProcessStream.__iter
+### ChildProcessStream.__iter
 
 <h4>
 
@@ -918,7 +918,7 @@ Basically equivalent to `ChildProcessStream:lines()` except with generalized ite
 
 ---
 
-## ChildProcessStdin.write
+### ChildProcessStdin.write
 
 <h4>
 
@@ -932,7 +932,7 @@ Attempts to write to the child process' stdin; if an error occurs (usually a bro
 
 ---
 
-## ChildProcessStdin.close
+### ChildProcessStdin.close
 
 <h4>
 
@@ -963,7 +963,7 @@ child.stdin:close()
 
 ---
 
-## ChildProcess.id
+### ChildProcess.id
 
 <h4>
 
@@ -975,7 +975,7 @@ ChildProcess.id: number,
 
 ---
 
-## ChildProcess.alive
+### ChildProcess.alive
 
 <h4>
 
@@ -987,7 +987,7 @@ ChildProcess.alive: (self: ChildProcess) -> boolean,
 
 ---
 
-## ChildProcess.kill
+### ChildProcess.kill
 
 <h4>
 
@@ -999,7 +999,7 @@ ChildProcess.kill: (self: ChildProcess) -> (),
 
 ---
 
-## ChildProcess.stdout
+### ChildProcess.stdout
 
 <h4>
 
@@ -1011,7 +1011,7 @@ ChildProcess.stdout: ChildProcessStream,
 
 ---
 
-## ChildProcess.stderr
+### ChildProcess.stderr
 
 <h4>
 
@@ -1023,7 +1023,7 @@ ChildProcess.stderr: ChildProcessStream,
 
 ---
 
-## ChildProcess.stdin
+### ChildProcess.stdin
 
 <h4>
 

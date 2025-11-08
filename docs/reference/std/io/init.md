@@ -17,7 +17,7 @@ libraries as you need them instead.
 
 ---
 
-## io.input
+### io.input
 
 <h4>
 
@@ -29,7 +29,7 @@ io.input: typeof(require("@self/input")),
 
 ---
 
-## io.output
+### io.output
 
 <h4>
 
@@ -41,7 +41,7 @@ io.output: typeof(require("@self/output")),
 
 ---
 
-## io.colors
+### io.colors
 
 <h4>
 
@@ -53,7 +53,7 @@ io.colors: typeof(require("@self/colors")),
 
 ---
 
-## io.format
+### io.format
 
 <h4>
 
@@ -65,7 +65,7 @@ io.format: typeof(require("@self/format")),
 
 ---
 
-## io.prompt
+### io.prompt
 
 <h4>
 

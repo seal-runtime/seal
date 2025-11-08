@@ -7,7 +7,7 @@
 
 ---
 
-## luau.eval
+### luau.eval
 
 <h4>
 
@@ -63,7 +63,7 @@ end
 
 ---
 
-## luau.eval_unsafe
+### luau.eval_unsafe
 
 <h4>
 
@@ -91,7 +91,7 @@ and *coredump*.
 
 ---
 
-## luau.bytecode
+### luau.bytecode
 
 <h4>
 
@@ -105,7 +105,7 @@ Compiles `src` to Luau bytecode.
 
 ---
 
-## luau.require_resolver
+### luau.require_resolver
 
 <h4>
 
@@ -119,7 +119,7 @@ Returns *seal*'s require resolver implementation used internally.
 
 ---
 
-## luau.resolve
+### luau.resolve
 
 <h4>
 
@@ -133,7 +133,7 @@ luau.resolve: (requested_path: string, requiring_file_path: string) -> { err: st
 
 ---
 
-## luau.get_aliases
+### luau.get_aliases
 
 <h4>
 
@@ -145,7 +145,7 @@ luau.get_aliases: (requiring_file_path: string) -> ({ LuaurcAliases }?, string?)
 
 ---
 
-## luau.expand_aliases
+### luau.expand_aliases
 
 <h4>
 
@@ -161,7 +161,7 @@ luau.expand_aliases: (requested_path: string, aliases_by_luaurc: { LuaurcAliases
 
 ---
 
-## EvalOptions.name
+### EvalOptions.name
 
 <h4>
 
@@ -173,7 +173,7 @@ EvalOptions.name: string?,
 
 ---
 
-## EvalOptions.stdlib
+### EvalOptions.stdlib
 
 <h4>
 
@@ -189,7 +189,7 @@ EvalOptions.stdlib: ("seal" | "safe" | "none")?,
 
 ---
 
-## LuaurcAliases.path
+### LuaurcAliases.path
 
 <h4>
 

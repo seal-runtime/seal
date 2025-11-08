@@ -18,7 +18,7 @@ json.writefile("./animals.json", data)
 
 ---
 
-## json.encode
+### json.encode
 
 <h4>
 
@@ -32,7 +32,7 @@ json.encode: (t: JsonData, options: EncodeOptions?) -> string,
 
 ---
 
-## json.raw
+### json.raw
 
 <h4>
 
@@ -46,7 +46,7 @@ json.raw: (t: JsonData) -> string,
 
 ---
 
-## json.decode
+### json.decode
 
 <h4>
 
@@ -58,7 +58,7 @@ json.decode: (json: string) -> JsonData,
 
 ---
 
-## json.readfile
+### json.readfile
 
 <h4>
 
@@ -70,7 +70,7 @@ json.readfile: (path: string) -> JsonData,
 
 ---
 
-## json.writefile
+### json.writefile
 
 <h4>
 
@@ -82,7 +82,7 @@ json.writefile: (path: string, data: JsonData, options: EncodeOptions?) -> (),
 
 ---
 
-## json.writefile_raw
+### json.writefile_raw
 
 <h4>
 
@@ -94,7 +94,7 @@ json.writefile_raw: (path: string, data: JsonData) -> (),
 
 ---
 
-## json.null
+### json.null
 
 <h4>
 
@@ -108,7 +108,7 @@ json.null: () -> any,
 
 ---
 
-## json.array
+### json.array
 
 <h4>
 
@@ -128,7 +128,7 @@ json.array: <T>(t: { T }?) -> { T }
 
 ---
 
-## EncodeOptions.pretty
+### EncodeOptions.pretty
 
 <h4>
 
@@ -142,7 +142,7 @@ EncodeOptions.pretty: boolean?,
 
 ---
 
-## EncodeOptions.sorted
+### EncodeOptions.sorted
 
 <h4>
 

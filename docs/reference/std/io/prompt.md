@@ -25,7 +25,7 @@ local result = prompt.text("What's your name?")
 
 ---
 
-## prompt.text
+### prompt.text
 
 <h4>
 
@@ -66,7 +66,7 @@ local ssn = prompt.text(colors.bold.white("whats your ssn???: "))
 
 ---
 
-## prompt.confirm
+### prompt.confirm
 
 <h4>
 
@@ -100,7 +100,7 @@ end
 
 ---
 
-## prompt.validate
+### prompt.validate
 
 <h4>
 
@@ -138,7 +138,7 @@ local response = prompt.validate("Favorite animal that starts with 's'",
 
 ---
 
-## prompt.password
+### prompt.password
 
 <h4>
 
@@ -176,7 +176,7 @@ but it may not be perfectly safe from introspection.
 
 ---
 
-## prompt.pick
+### prompt.pick
 
 <h4>
 

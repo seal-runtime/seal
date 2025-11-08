@@ -19,7 +19,7 @@
 
 ---
 
-## DirLib.from
+### DirLib.from
 
 <h4>
 
@@ -33,7 +33,7 @@ DirLib.from: (path: string) -> DirectoryEntry,
 
 ---
 
-## DirLib.build
+### DirLib.build
 
 <h4>
 
@@ -47,7 +47,7 @@ DirLib.build: (name: string, tree: DirectoryTree) -> DirectoryBuilder,
 
 ---
 
-## DirLib.create
+### DirLib.create
 
 <h4>
 
@@ -61,7 +61,7 @@ DirLib.create: (path: string) -> DirectoryEntry,
 
 ---
 
-## DirLib.ensure
+### DirLib.ensure
 
 <h4>
 
@@ -91,7 +91,7 @@ local settings_json = dot_vscode:find("settings.json"):try_file()
 
 ---
 
-## DirLib.try_remove
+### DirLib.try_remove
 
 <h4>
 
@@ -118,7 +118,7 @@ with result "Other", as well as an error kind string that describes what went wr
 
 ---
 
-## DirLib.home
+### DirLib.home
 
 <h4>
 
@@ -142,7 +142,7 @@ local zip_downloads = fs.dir.home()
 
 ---
 
-## DirLib.cwd
+### DirLib.cwd
 
 <h4>
 
@@ -159,7 +159,7 @@ where the user is when they execute your code.
 
 ---
 
-## DirLib.project
+### DirLib.project
 
 <h4>
 
@@ -199,7 +199,7 @@ local input_files = fs.dir.project()
 
 ---
 
-## DirLib.__call
+### DirLib.__call
 
 <h4>
 

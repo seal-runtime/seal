@@ -7,7 +7,7 @@
 
 ---
 
-## fs.readfile
+### fs.readfile
 
 <h4>
 
@@ -37,7 +37,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-## fs.readbytes
+### fs.readbytes
 
 <h4>
 
@@ -84,7 +84,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-## fs.readlines
+### fs.readlines
 
 <h4>
 
@@ -122,7 +122,7 @@ local _, line2 = nextline()
 
 ---
 
-## fs.writefile
+### fs.writefile
 
 <h4>
 
@@ -159,7 +159,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-## fs.removefile
+### fs.removefile
 
 <h4>
 
@@ -181,7 +181,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-## fs.is
+### fs.is
 
 <h4>
 
@@ -233,7 +233,7 @@ end
 
 ---
 
-## fs.symlink
+### fs.symlink
 
 <h4>
 
@@ -261,7 +261,7 @@ If you're on Windows, you need to run this program with Administrator permission
 
 ---
 
-## fs.unsymlink
+### fs.unsymlink
 
 <h4>
 
@@ -284,7 +284,7 @@ Removes the symlink at `link`.
 
 ---
 
-## fs.readlink
+### fs.readlink
 
 <h4>
 
@@ -302,7 +302,7 @@ Follows `symlink` and returns the *path* targeted by the symlink.
 
 ---
 
-## fs.watch
+### fs.watch
 
 <h4>
 
@@ -434,7 +434,7 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 
 ---
 
-## fs.readtree
+### fs.readtree
 
 <h4>
 
@@ -448,7 +448,7 @@ Recursively read contents of directory at `path` into a `fs.DirectoryTree` that 
 
 ---
 
-## fs.writetree
+### fs.writetree
 
 <h4>
 
@@ -501,7 +501,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-## fs.removetree
+### fs.removetree
 
 <h4>
 
@@ -535,7 +535,7 @@ Please use this function carefully.
 
 ---
 
-## fs.makedir
+### fs.makedir
 
 <h4>
 
@@ -579,7 +579,7 @@ fs.makedir(fs.path.join(fs.path.cwd(), "Config", "Editor", "Formatting"), {
 
 ---
 
-## fs.listdir
+### fs.listdir
 
 <h4>
 
@@ -622,7 +622,7 @@ end)
 
 ---
 
-## fs.move
+### fs.move
 
 <h4>
 
@@ -643,7 +643,7 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 ---
 
-## fs.copy
+### fs.copy
 
 <h4>
 
@@ -659,7 +659,7 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 ---
 
-## fs.find
+### fs.find
 
 <h4>
 
@@ -717,7 +717,7 @@ end
 
 ---
 
-## fs.entries
+### fs.entries
 
 <h4>
 
@@ -743,7 +743,7 @@ end
 
 ---
 
-## fs.file
+### fs.file
 
 <h4>
 
@@ -761,7 +761,7 @@ This library can be called as a function as a convenience alternative for `fs.fi
 
 ---
 
-## fs.dir
+### fs.dir
 
 <h4>
 
@@ -777,7 +777,7 @@ This library can be called as a function as a convenience alternative to `fs.fin
 
 ---
 
-## fs.path
+### fs.path
 
 <h4>
 
@@ -793,7 +793,7 @@ Commonly used `fs.path` functions include: `fs.path.join` for combining paths an
 
 ---
 
-## fs.tree
+### fs.tree
 
 <h4>
 
@@ -909,7 +909,7 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ---
 
-## WatchOptions.recursive
+### WatchOptions.recursive
 
 <h4>
 
@@ -921,7 +921,7 @@ WatchOptions.recursive: boolean?,
 
 ---
 
-## WatchOptions.timeout_ms
+### WatchOptions.timeout_ms
 
 <h4>
 
@@ -1039,7 +1039,7 @@ Some usage notes:
 
 ---
 
-## WatchEventInfo.paths
+### WatchEventInfo.paths
 
 <h4>
 
@@ -1051,7 +1051,7 @@ WatchEventInfo.paths: { string },
 
 ---
 
-## WatchEventInfo.kind
+### WatchEventInfo.kind
 
 <h4>
 
@@ -1063,7 +1063,7 @@ WatchEventInfo.kind: WatchKind,
 
 ---
 
-## WatchEventInfo.is_write
+### WatchEventInfo.is_write
 
 <h4>
 

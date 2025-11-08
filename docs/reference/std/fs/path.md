@@ -7,7 +7,7 @@
 
 ---
 
-## PathLib.join
+### PathLib.join
 
 <h4>
 
@@ -41,7 +41,7 @@ local otherfile_in_script_dir = path.join(script:parent(), "otherfile.txt")
 
 ---
 
-## PathLib.exists
+### PathLib.exists
 
 <h4>
 
@@ -66,7 +66,7 @@ handle cases like `NotFound` and `PermissionDenied` without wrapping error-throw
 
 ---
 
-## PathLib.canonicalize
+### PathLib.canonicalize
 
 <h4>
 
@@ -82,7 +82,7 @@ Errors if the requested path doesn't exist on the filesystem or is invalid.
 
 ---
 
-## PathLib.absolutize
+### PathLib.absolutize
 
 <h4>
 
@@ -98,7 +98,7 @@ Use this function if your path may or may not exist (yet).
 
 ---
 
-## PathLib.normalize
+### PathLib.normalize
 
 <h4>
 
@@ -136,7 +136,7 @@ as well as UNC paths like `"\\network\share\text.txt"` or `"\\?\wsl\mnt\..."`.
 
 ---
 
-## PathLib.parent
+### PathLib.parent
 
 <h4>
 
@@ -161,7 +161,7 @@ local parent_dir = path.parent(cwd)
 
 ---
 
-## PathLib.child
+### PathLib.child
 
 <h4>
 
@@ -175,7 +175,7 @@ PathLib.child: (path: string) -> string?,
 
 ---
 
-## PathLib.home
+### PathLib.home
 
 <h4>
 
@@ -189,7 +189,7 @@ PathLib.home: () -> string,
 
 ---
 
-## PathLib.cwd
+### PathLib.cwd
 
 <h4>
 
@@ -206,7 +206,7 @@ PathLib.cwd: () -> string,
 
 ---
 
-## PathLib.project
+### PathLib.project
 
 <h4>
 

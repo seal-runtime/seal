@@ -11,7 +11,7 @@ Contains function sha2, which can be used to create an **unsalted** hash, return
 
 ---
 
-## Hash.sha2
+### Hash.sha2
 
 <h4>
 

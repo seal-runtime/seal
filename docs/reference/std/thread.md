@@ -67,7 +67,7 @@ end
 
 ---
 
-## thread.spawn
+### thread.spawn
 
 <h4>
 
@@ -128,7 +128,7 @@ end
 
 ---
 
-## thread.sleep
+### thread.sleep
 
 <h4>
 
@@ -150,7 +150,7 @@ Literally the same as `time.wait`, except in milliseconds.
 
 ---
 
-## ThreadHandle.name
+### ThreadHandle.name
 
 <h4>
 
@@ -164,7 +164,7 @@ ThreadHandle.name: string,
 
 ---
 
-## ThreadHandle.join
+### ThreadHandle.join
 
 <h4>
 
@@ -180,7 +180,7 @@ Errors if the thread has already been joined or somehow disappeared.
 
 ---
 
-## ThreadHandle.send
+### ThreadHandle.send
 
 <h4>
 
@@ -206,7 +206,7 @@ Errors if the channel has somehow become disconnected or provided data isn't jso
 
 ---
 
-## ThreadHandle.try_send
+### ThreadHandle.try_send
 
 <h4>
 
@@ -233,7 +233,7 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
-## ThreadHandle.sendbytes
+### ThreadHandle.sendbytes
 
 <h4>
 
@@ -249,7 +249,7 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-## ThreadHandle.try_sendbytes
+### ThreadHandle.try_sendbytes
 
 <h4>
 
@@ -276,7 +276,7 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
-## ThreadHandle.read
+### ThreadHandle.read
 
 <h4>
 
@@ -292,7 +292,7 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-## ThreadHandle.read_await
+### ThreadHandle.read_await
 
 <h4>
 
@@ -308,7 +308,7 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-## ThreadHandle.readbytes
+### ThreadHandle.readbytes
 
 <h4>
 
@@ -324,7 +324,7 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-## ThreadHandle.readbytes_await
+### ThreadHandle.readbytes_await
 
 <h4>
 
@@ -344,7 +344,7 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-## ThreadSpawnOptions.name
+### ThreadSpawnOptions.name
 
 <h4>
 
@@ -358,7 +358,7 @@ ThreadSpawnOptions.name: string?,
 
 ---
 
-## ThreadSpawnOptions.path
+### ThreadSpawnOptions.path
 
 <h4>
 
@@ -372,7 +372,7 @@ ThreadSpawnOptions.path: string?,
 
 ---
 
-## ThreadSpawnOptions.src
+### ThreadSpawnOptions.src
 
 <h4>
 
@@ -386,7 +386,7 @@ ThreadSpawnOptions.src: string?,
 
 ---
 
-## ThreadSpawnOptions.data
+### ThreadSpawnOptions.data
 
 <h4>
 
@@ -400,7 +400,7 @@ ThreadSpawnOptions.data: JsonSerializableTable?,
 
 ---
 
-## ThreadSpawnOptions.capacity.regular
+### ThreadSpawnOptions.capacity.regular
 
 <h4>
 
@@ -415,7 +415,7 @@ ThreadSpawnOptions.capacity.regular: number?,
 
 ---
 
-## ThreadSpawnOptions.capacity.bytes
+### ThreadSpawnOptions.capacity.bytes
 
 <h4>
 

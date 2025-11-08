@@ -9,7 +9,7 @@ Serialize TOML files.
 
 ---
 
-## toml.encode
+### toml.encode
 
 <h4>
 
@@ -21,7 +21,7 @@ toml.encode: (t: TomlValue) -> string,
 
 ---
 
-## toml.decode
+### toml.decode
 
 <h4>
 
@@ -33,7 +33,7 @@ toml.decode: (toml_data: string) -> TomlValue,
 
 ---
 
-## toml.readfile
+### toml.readfile
 
 <h4>
 
@@ -45,7 +45,7 @@ toml.readfile: (path: string) -> TomlValue,
 
 ---
 
-## toml.writefile
+### toml.writefile
 
 <h4>
 

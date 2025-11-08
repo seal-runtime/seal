@@ -15,7 +15,7 @@
 
 ---
 
-## FileLib.from
+### FileLib.from
 
 <h4>
 
@@ -29,7 +29,7 @@ Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if 
 
 ---
 
-## FileLib.build
+### FileLib.build
 
 <h4>
 
@@ -43,7 +43,7 @@ FileLib.build: (name: string, content: string) -> FileBuilder,
 
 ---
 
-## FileLib.create
+### FileLib.create
 
 <h4>
 
@@ -57,7 +57,7 @@ FileLib.create: (path: string) -> FileEntry,
 
 ---
 
-## FileLib.try_read
+### FileLib.try_read
 
 <h4>
 
@@ -93,7 +93,7 @@ end
 
 ---
 
-## FileLib.try_readbytes
+### FileLib.try_readbytes
 
 <h4>
 
@@ -135,7 +135,7 @@ end
 
 ---
 
-## FileLib.try_write
+### FileLib.try_write
 
 <h4>
 
@@ -166,7 +166,7 @@ end
 
 ---
 
-## FileLib.try_remove
+### FileLib.try_remove
 
 <h4>
 
@@ -186,7 +186,7 @@ Doesn't follow symlinks.
 
 ---
 
-## FileLib.__call
+### FileLib.__call
 
 <h4>
 

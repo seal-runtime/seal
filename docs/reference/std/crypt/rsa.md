@@ -7,7 +7,7 @@
 
 ---
 
-## RsaKeys.public
+### RsaKeys.public
 
 <h4>
 
@@ -19,7 +19,7 @@ RsaKeys.public: string,
 
 ---
 
-## RsaKeys.private
+### RsaKeys.private
 
 <h4>
 
@@ -35,7 +35,7 @@ RsaKeys.private: string
 
 ---
 
-## Rsa.generatekeys
+### Rsa.generatekeys
 
 <h4>
 
@@ -47,7 +47,7 @@ Rsa.generatekeys: () -> RsaKeys,
 
 ---
 
-## Rsa.encrypt
+### Rsa.encrypt
 
 <h4>
 
@@ -59,7 +59,7 @@ Rsa.encrypt: (plaintext: string, public_key: string) -> string,
 
 ---
 
-## Rsa.decrypt
+### Rsa.decrypt
 
 <h4>
 

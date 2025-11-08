@@ -262,7 +262,11 @@ for _, library in libraries do
         local defs = api.defs
 
         if api.is ~= "Enum" then
-            push(`## {name}`)
+            if api.is == "Type" then
+                push(`## {name}`)
+            else
+                push(`### {name}`)
+            end
         end
         if #api.defs > 0 then
             if api.is ~= "Enum" then

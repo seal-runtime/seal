@@ -9,7 +9,7 @@ Deal with hex data.
 
 ---
 
-## hex.encode
+### hex.encode
 
 <h4>
 
@@ -21,7 +21,7 @@ hex.encode: (data: buffer | string) -> string,
 
 ---
 
-## hex.decode
+### hex.decode
 
 <h4>
 

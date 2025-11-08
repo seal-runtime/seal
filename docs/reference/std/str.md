@@ -16,7 +16,7 @@ to be valid utf-8 encoded strings.
 
 ---
 
-## str.endswith
+### str.endswith
 
 <h4>
 
@@ -30,7 +30,7 @@ str.endswith: (s: string, suffix: string): boolean
 
 ---
 
-## str.starts
+### str.starts
 
 <h4>
 
@@ -44,7 +44,7 @@ str.starts: (s: string, ...: string): boolean
 
 ---
 
-## str.ends
+### str.ends
 
 <h4>
 
@@ -58,7 +58,7 @@ str.ends: (s: string, ...: string): boolean
 
 ---
 
-## str.trimfront
+### str.trimfront
 
 <h4>
 
@@ -74,7 +74,7 @@ str.trimfront: (s: string, ...: string): string
 
 ---
 
-## str.trimback
+### str.trimback
 
 <h4>
 
@@ -90,7 +90,7 @@ str.trimback: (s: string, ...: string): string
 
 ---
 
-## str.trim
+### str.trim
 
 <h4>
 
@@ -106,7 +106,7 @@ str.trim: (s: string, ...: string): string
 
 ---
 
-## str.splitlines
+### str.splitlines
 
 <h4>
 
@@ -121,7 +121,7 @@ str.splitlines: (s: string, trim_trailing_whitespace: boolean?): { string }
 
 ---
 
-## str.len
+### str.len
 
 <h4>
 
@@ -135,7 +135,7 @@ str.len: (s: string): number
 
 ---
 
-## str.width
+### str.width
 
 <h4>
 
@@ -198,7 +198,7 @@ end
 
 ---
 
-## str.leftpad
+### str.leftpad
 
 <h4>
 
@@ -212,7 +212,7 @@ str.leftpad: (s: string, width: number, pad: string?): string
 
 ---
 
-## str.escape
+### str.escape
 
 <h4>
 
@@ -226,7 +226,7 @@ str.escape: (s: string): string
 
 ---
 
-## str.unescape
+### str.unescape
 
 <h4>
 
@@ -240,7 +240,7 @@ str.unescape: (s: string): string
 
 ---
 
-## str.slice
+### str.slice
 
 <h4>
 
@@ -254,7 +254,7 @@ str.slice: (s: string, first: number, final: number)
 
 ---
 
-## str.indent
+### str.indent
 
 <h4>
 
@@ -268,7 +268,7 @@ str.indent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: 
 
 ---
 
-## str.unindent
+### str.unindent
 
 <h4>
 
@@ -282,7 +282,7 @@ str.unindent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep
 
 ---
 
-## str.split
+### str.split
 
 <h4>
 
@@ -330,7 +330,7 @@ local omit_hi = str.split("seals 🦭 say hi", " ", "hi")
 
 ---
 
-## str.splitaround
+### str.splitaround
 
 <h4>
 
@@ -365,7 +365,7 @@ local tokens = str.splitaround(line, " ", ".", "(", ":", ",", ")")
 
 ---
 
-## str.splitbefore
+### str.splitbefore
 
 <h4>
 
@@ -400,7 +400,7 @@ print(splitted) -->
 
 ---
 
-## str.splitafter
+### str.splitafter
 
 <h4>
 
@@ -434,7 +434,7 @@ local splitted = str.splitafter(httpheaders, "\r\n") -->
 
 ---
 
-## str.chars
+### str.chars
 
 <h4>
 
@@ -450,7 +450,7 @@ This function counts by 'characters', whereas `str.graphemes` provides byte indi
 
 ---
 
-## str.graphemes
+### str.graphemes
 
 <h4>
 

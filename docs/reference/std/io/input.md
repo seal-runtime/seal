@@ -10,7 +10,7 @@
 
 ---
 
-## io.input.tty
+### io.input.tty
 
 <h4>
 
@@ -37,7 +37,7 @@ If *seal* is being run in a child process, this will almost always return `false
 
 ---
 
-## io.input.rawline
+### io.input.rawline
 
 <h4>
 
@@ -53,7 +53,7 @@ But works with stdin in a child process/works while piped, making it a fallback 
 
 ---
 
-## io.input.readline
+### io.input.readline
 
 <h4>
 
@@ -105,7 +105,7 @@ end
 
 ---
 
-## io.input.interrupt
+### io.input.interrupt
 
 <h4>
 
@@ -119,7 +119,7 @@ Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 ---
 
-## io.input.rawmode
+### io.input.rawmode
 
 <h4>
 
@@ -147,7 +147,7 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 ---
 
-## io.input.mouse
+### io.input.mouse
 
 <h4>
 
@@ -161,7 +161,7 @@ io.input.mouse: (enabled: boolean) -> (),
 
 ---
 
-## io.input.focus
+### io.input.focus
 
 <h4>
 
@@ -175,7 +175,7 @@ io.input.focus: (enabled: boolean) -> (),
 
 ---
 
-## io.input.paste
+### io.input.paste
 
 <h4>
 
@@ -189,7 +189,7 @@ io.input.paste: (enabled: boolean) -> (),
 
 ---
 
-## io.input.events
+### io.input.events
 
 <h4>
 
@@ -271,7 +271,7 @@ end
 
 ---
 
-## KeyModifiers.ctrl
+### KeyModifiers.ctrl
 
 <h4>
 
@@ -283,7 +283,7 @@ KeyModifiers.ctrl: boolean,
 
 ---
 
-## KeyModifiers.shift
+### KeyModifiers.shift
 
 <h4>
 
@@ -295,7 +295,7 @@ KeyModifiers.shift: boolean,
 
 ---
 
-## KeyModifiers.alt
+### KeyModifiers.alt
 
 <h4>
 
@@ -311,7 +311,7 @@ KeyModifiers.alt: boolean,
 
 ---
 
-## KeyEvent.is
+### KeyEvent.is
 
 <h4>
 
@@ -323,7 +323,7 @@ KeyEvent.is: "Key",
 
 ---
 
-## KeyEvent.key
+### KeyEvent.key
 
 <h4>
 
@@ -335,7 +335,7 @@ KeyEvent.key: string,
 
 ---
 
-## KeyEvent.modifiers
+### KeyEvent.modifiers
 
 <h4>
 
@@ -351,7 +351,7 @@ KeyEvent.modifiers: KeyModifiers,
 
 ---
 
-## MouseEvent.is
+### MouseEvent.is
 
 <h4>
 
@@ -363,7 +363,7 @@ MouseEvent.is: "Mouse",
 
 ---
 
-## MouseEvent.kind
+### MouseEvent.kind
 
 <h4>
 
@@ -375,7 +375,7 @@ MouseEvent.kind: string,
 
 ---
 
-## MouseEvent.column
+### MouseEvent.column
 
 <h4>
 
@@ -387,7 +387,7 @@ MouseEvent.column: number,
 
 ---
 
-## MouseEvent.row
+### MouseEvent.row
 
 <h4>
 
@@ -399,7 +399,7 @@ MouseEvent.row: number,
 
 ---
 
-## MouseEvent.modifiers
+### MouseEvent.modifiers
 
 <h4>
 
@@ -415,7 +415,7 @@ MouseEvent.modifiers: KeyModifiers,
 
 ---
 
-## ResizeEvent.is
+### ResizeEvent.is
 
 <h4>
 
@@ -427,7 +427,7 @@ ResizeEvent.is: "Resize",
 
 ---
 
-## ResizeEvent.columns
+### ResizeEvent.columns
 
 <h4>
 
@@ -439,7 +439,7 @@ ResizeEvent.columns: number,
 
 ---
 
-## ResizeEvent.rows
+### ResizeEvent.rows
 
 <h4>
 
@@ -455,7 +455,7 @@ ResizeEvent.rows: number,
 
 ---
 
-## FocusGained.is
+### FocusGained.is
 
 <h4>
 
@@ -471,7 +471,7 @@ FocusGained.is: "FocusGained",
 
 ---
 
-## FocusLost.is
+### FocusLost.is
 
 <h4>
 
@@ -487,7 +487,7 @@ FocusLost.is: "FocusLost",
 
 ---
 
-## PasteEvent.is
+### PasteEvent.is
 
 <h4>
 
@@ -499,7 +499,7 @@ PasteEvent.is: "Paste",
 
 ---
 
-## PasteEvent.contents
+### PasteEvent.contents
 
 <h4>
 
@@ -515,7 +515,7 @@ PasteEvent.contents: string,
 
 ---
 
-## Empty.is
+### Empty.is
 
 <h4>
 

@@ -7,7 +7,7 @@
 
 ---
 
-## HashedPassword.salt
+### HashedPassword.salt
 
 <h4>
 
@@ -19,7 +19,7 @@ HashedPassword.salt: buffer,
 
 ---
 
-## HashedPassword.hash
+### HashedPassword.hash
 
 <h4>
 
@@ -35,7 +35,7 @@ HashedPassword.hash: buffer,
 
 ---
 
-## PasswordVerifyOptions.raw_password
+### PasswordVerifyOptions.raw_password
 
 <h4>
 
@@ -47,7 +47,7 @@ PasswordVerifyOptions.raw_password: string,
 
 ---
 
-## PasswordVerifyOptions.hashed_password
+### PasswordVerifyOptions.hashed_password
 
 <h4>
 
@@ -67,7 +67,7 @@ Please use with caution.
 
 ---
 
-## Password.hash
+### Password.hash
 
 <h4>
 
@@ -112,7 +112,7 @@ end
 
 ---
 
-## Password.verify
+### Password.verify
 
 <h4>
 

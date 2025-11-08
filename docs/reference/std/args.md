@@ -138,7 +138,7 @@ end
 
 ---
 
-## args.parse
+### args.parse
 
 <h4>
 
@@ -150,7 +150,7 @@ args.parse: (program: string, tagline: string, info: ProgramInfo?) -> {
 
 ---
 
-## args.simple
+### args.simple
 
 <h4>
 
@@ -164,7 +164,7 @@ args.simple: (self: any, ...Arg) -> Parsed,
 
 ---
 
-## args.commands
+### args.commands
 
 <h4>
 
@@ -179,7 +179,7 @@ args.commands: (self: any, ...Command) -> Parsed,
 
 ---
 
-## args.positional
+### args.positional
 
 <h4>
 
@@ -193,7 +193,7 @@ args.positional: (name: string, help: string) -> Positional,
 
 ---
 
-## args.named
+### args.named
 
 <h4>
 
@@ -207,7 +207,7 @@ args.named: (name: string, help: string) -> Named,
 
 ---
 
-## args.command
+### args.command
 
 <h4>
 
@@ -221,7 +221,7 @@ args.command: (name: string, help: string) -> Command,
 
 ---
 
-## args.flag
+### args.flag
 
 <h4>
 
@@ -235,7 +235,7 @@ args.flag: (name: string, help: string) -> Flag,
 
 ---
 
-## args.list
+### args.list
 
 <h4>
 
@@ -249,7 +249,7 @@ args.list: (name: string, help: string) -> ArgList,
 
 ---
 
-## args.default
+### args.default
 
 <h4>
 
@@ -267,7 +267,7 @@ args.default: (...Arg) -> Command,
 
 ---
 
-## ProgramInfo.description
+### ProgramInfo.description
 
 <h4>
 
@@ -281,7 +281,7 @@ ProgramInfo.description: string?,
 
 ---
 
-## ProgramInfo.examples
+### ProgramInfo.examples
 
 <h4>
 
@@ -295,7 +295,7 @@ ProgramInfo.examples: { string }?,
 
 ---
 
-## ProgramInfo.footer
+### ProgramInfo.footer
 
 <h4>
 
@@ -313,7 +313,7 @@ ProgramInfo.footer: string?
 
 ---
 
-## Command.name
+### Command.name
 
 <h4>
 
@@ -325,7 +325,7 @@ Command.name: string,
 
 ---
 
-## Command.is
+### Command.is
 
 <h4>
 
@@ -337,7 +337,7 @@ Command.is: "Command",
 
 ---
 
-## Command.help
+### Command.help
 
 <h4>
 
@@ -349,7 +349,7 @@ Command.help: string,
 
 ---
 
-## Command._args
+### Command._args
 
 <h4>
 
@@ -361,7 +361,7 @@ Command._args: { Arg },
 
 ---
 
-## Command.args
+### Command.args
 
 <h4>
 
@@ -373,7 +373,7 @@ Command.args: (self: Command, ...Arg) -> Command,
 
 ---
 
-## Command._aliases
+### Command._aliases
 
 <h4>
 
@@ -385,7 +385,7 @@ Command._aliases: { [string]: true? },
 
 ---
 
-## Command.aliases
+### Command.aliases
 
 <h4>
 
@@ -403,7 +403,7 @@ Command.aliases: (self: Command, ...string) -> Command,
 
 ---
 
-## Parsed.command
+### Parsed.command
 
 <h4>
 
@@ -415,7 +415,7 @@ Parsed.command: string | "default",
 
 ---
 
-## Parsed.get
+### Parsed.get
 
 <h4>
 
@@ -427,7 +427,7 @@ Parsed.get: <T>(self: Parsed, name: string, default: T?) -> T?,
 
 ---
 
-## Parsed.expect
+### Parsed.expect
 
 <h4>
 
@@ -439,7 +439,7 @@ Parsed.expect: <T>(self: Parsed, name: string, assertion: string?) -> T,
 
 ---
 
-## Parsed.help
+### Parsed.help
 
 <h4>
 
@@ -451,7 +451,7 @@ Parsed.help: (self: Parsed) -> string,
 
 ---
 
-## Parsed.flags
+### Parsed.flags
 
 <h4>
 
@@ -467,7 +467,7 @@ Parsed.flags: { [string]: true? },
 
 ---
 
-## ArgList.name
+### ArgList.name
 
 <h4>
 
@@ -479,7 +479,7 @@ ArgList.name: string,
 
 ---
 
-## ArgList.is
+### ArgList.is
 
 <h4>
 
@@ -491,7 +491,7 @@ ArgList.is: "ArgList",
 
 ---
 
-## ArgList.help
+### ArgList.help
 
 <h4>
 
@@ -503,7 +503,7 @@ ArgList.help: string,
 
 ---
 
-## ArgList.values
+### ArgList.values
 
 <h4>
 
@@ -551,7 +551,7 @@ ArgList.values: { string }?,
 
 ---
 
-## Positional.name
+### Positional.name
 
 <h4>
 
@@ -563,7 +563,7 @@ Positional.name: string,
 
 ---
 
-## Positional.is
+### Positional.is
 
 <h4>
 
@@ -575,7 +575,7 @@ Positional.is: "Positional",
 
 ---
 
-## Positional.help
+### Positional.help
 
 <h4>
 
@@ -587,7 +587,7 @@ Positional.help: string,
 
 ---
 
-## Positional._default
+### Positional._default
 
 <h4>
 
@@ -599,7 +599,7 @@ Positional._default: any,
 
 ---
 
-## Positional.default
+### Positional.default
 
 <h4>
 
@@ -611,7 +611,7 @@ Positional.default: (any) -> Positional,
 
 ---
 
-## Positional._optional
+### Positional._optional
 
 <h4>
 
@@ -623,7 +623,7 @@ Positional._optional: boolean,
 
 ---
 
-## Positional.optional
+### Positional.optional
 
 <h4>
 
@@ -637,7 +637,7 @@ Positional.optional: (self: Positional) -> Positional,
 
 ---
 
-## Positional._validator
+### Positional._validator
 
 <h4>
 
@@ -649,7 +649,7 @@ Positional._validator: Validator?,
 
 ---
 
-## Positional.validate
+### Positional.validate
 
 <h4>
 
@@ -664,7 +664,7 @@ Positional.validate: (self: Positional, validator: Validator) -> Positional,
 
 ---
 
-## Positional.value
+### Positional.value
 
 <h4>
 
@@ -680,7 +680,7 @@ Positional.value: any,
 
 ---
 
-## Flag.name
+### Flag.name
 
 <h4>
 
@@ -694,7 +694,7 @@ Flag.name: string,
 
 ---
 
-## Flag.is
+### Flag.is
 
 <h4>
 
@@ -706,7 +706,7 @@ Flag.is: "Flag",
 
 ---
 
-## Flag.help
+### Flag.help
 
 <h4>
 
@@ -718,7 +718,7 @@ Flag.help: string,
 
 ---
 
-## Flag._aliases
+### Flag._aliases
 
 <h4>
 
@@ -730,7 +730,7 @@ Flag._aliases: { [string]: true? },
 
 ---
 
-## Flag.aliases
+### Flag.aliases
 
 <h4>
 
@@ -744,7 +744,7 @@ Flag.aliases: (self: Flag, ...string) -> Flag,
 
 ---
 
-## Flag._default
+### Flag._default
 
 <h4>
 
@@ -756,7 +756,7 @@ Flag._default: boolean?,
 
 ---
 
-## Flag.default
+### Flag.default
 
 <h4>
 
@@ -768,7 +768,7 @@ Flag.default: (self: Flag, boolean) -> Flag,
 
 ---
 
-## Flag.value
+### Flag.value
 
 <h4>
 
@@ -784,7 +784,7 @@ Flag.value: boolean,
 
 ---
 
-## Named.name
+### Named.name
 
 <h4>
 
@@ -798,7 +798,7 @@ Named.name: string,
 
 ---
 
-## Named.is
+### Named.is
 
 <h4>
 
@@ -810,7 +810,7 @@ Named.is: "Named",
 
 ---
 
-## Named.help
+### Named.help
 
 <h4>
 
@@ -822,7 +822,7 @@ Named.help: string,
 
 ---
 
-## Named._default
+### Named._default
 
 <h4>
 
@@ -834,7 +834,7 @@ Named._default: any,
 
 ---
 
-## Named.default
+### Named.default
 
 <h4>
 
@@ -846,7 +846,7 @@ Named.default: (self: Named, any) -> Named,
 
 ---
 
-## Named._aliases
+### Named._aliases
 
 <h4>
 
@@ -858,7 +858,7 @@ Named._aliases: { [string]: true? },
 
 ---
 
-## Named.aliases
+### Named.aliases
 
 <h4>
 
@@ -872,7 +872,7 @@ Named.aliases: (self: Named, ...string) -> Named,
 
 ---
 
-## Named._required
+### Named._required
 
 <h4>
 
@@ -884,7 +884,7 @@ Named._required: boolean,
 
 ---
 
-## Named.required
+### Named.required
 
 <h4>
 
@@ -896,7 +896,7 @@ Named.required: (self: Named) -> Named,
 
 ---
 
-## Named._validator
+### Named._validator
 
 <h4>
 
@@ -908,7 +908,7 @@ Named._validator: Validator?,
 
 ---
 
-## Named.validate
+### Named.validate
 
 <h4>
 
@@ -920,7 +920,7 @@ Named.validate: (self: Named, validator: Validator) -> Named,
 
 ---
 
-## Named.value
+### Named.value
 
 <h4>
 

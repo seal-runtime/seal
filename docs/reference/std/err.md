@@ -9,7 +9,7 @@
 
 ---
 
-## err.message
+### err.message
 
 <h4>
 
@@ -49,7 +49,7 @@ end
 
 ---
 
-## err.wrap
+### err.wrap
 
 <h4>
 
@@ -65,7 +65,7 @@ Unlike `err.message`, errors created with this function are red colored and cont
 
 ---
 
-## err.format
+### err.format
 
 <h4>
 
@@ -79,7 +79,7 @@ err.format: (err: error) -> string,
 
 ---
 
-## err.traceback
+### err.traceback
 
 <h4>
 
@@ -93,7 +93,7 @@ err.traceback: () -> string,
 
 ---
 
-## err.throw
+### err.throw
 
 <h4>
 

@@ -9,7 +9,7 @@ Write to the terminal's stdout/stderr.
 
 ---
 
-## output.write
+### output.write
 
 <h4>
 
@@ -48,7 +48,7 @@ end
 
 ---
 
-## output.ewrite
+### output.ewrite
 
 <h4>
 
@@ -84,7 +84,7 @@ local err = output.ewrite("error message\n")
 
 ---
 
-## output.clear
+### output.clear
 
 <h4>
 

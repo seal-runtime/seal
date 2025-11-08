@@ -9,7 +9,7 @@ good for serving binary stuff in a digestable form for serving things on the int
 
 ---
 
-## base64.encode
+### base64.encode
 
 <h4>
 
@@ -21,7 +21,7 @@ base64.encode: (data: string | buffer) -> string,
 
 ---
 
-## base64.decode
+### base64.decode
 
 <h4>
 
@@ -33,7 +33,7 @@ base64.decode: (data: string) -> buffer,
 
 ---
 
-## base64.urlsafe.encode
+### base64.urlsafe.encode
 
 <h4>
 
@@ -45,7 +45,7 @@ base64.urlsafe.encode: (data: string | buffer) -> string,
 
 ---
 
-## base64.urlsafe.decode
+### base64.urlsafe.decode
 
 <h4>
 

@@ -9,7 +9,7 @@ Library for sending HTTP Requests.
 
 ---
 
-## http.get
+### http.get
 
 <h4>
 
@@ -53,7 +53,7 @@ local cats = http.get {
 
 ---
 
-## http.post
+### http.post
 
 <h4>
 
@@ -82,7 +82,7 @@ local response = http.post {
 
 ---
 
-## http.request
+### http.request
 
 <h4>
 
@@ -110,7 +110,7 @@ end
 
 ---
 
-## http.server
+### http.server
 
 <h4>
 
@@ -134,7 +134,7 @@ Create a webserver that listens for incoming requests.
 
 ---
 
-## HttpResponse.ok
+### HttpResponse.ok
 
 <h4>
 
@@ -146,7 +146,7 @@ HttpResponse.ok: true,
 
 ---
 
-## HttpResponse.status_code
+### HttpResponse.status_code
 
 <h4>
 
@@ -158,7 +158,7 @@ HttpResponse.status_code: StatusCode,
 
 ---
 
-## HttpResponse.body
+### HttpResponse.body
 
 <h4>
 
@@ -170,7 +170,7 @@ HttpResponse.body: string,
 
 ---
 
-## HttpResponse.decode
+### HttpResponse.decode
 
 <h4>
 
@@ -184,7 +184,7 @@ HttpResponse.decode: (self: HttpResponse) -> { [any]: any }
 
 ---
 
-## HttpResponse.ok
+### HttpResponse.ok
 
 <h4>
 
@@ -196,7 +196,7 @@ HttpResponse.ok: false,
 
 ---
 
-## HttpResponse.err
+### HttpResponse.err
 
 <h4>
 
@@ -208,7 +208,7 @@ HttpResponse.err: string,
 
 ---
 
-## HttpResponse.unwrap_json
+### HttpResponse.unwrap_json
 
 <h4>
 
@@ -226,7 +226,7 @@ HttpResponse.unwrap_json: (self: HttpResponse, default: { [any]: any }?) -> { [a
 
 ---
 
-## RequestConfig.method
+### RequestConfig.method
 
 <h4>
 
@@ -238,7 +238,7 @@ RequestConfig.method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 
 ---
 
-## RequestConfig.url
+### RequestConfig.url
 
 <h4>
 
@@ -250,7 +250,7 @@ RequestConfig.url: string,
 
 ---
 
-## RequestConfig.headers
+### RequestConfig.headers
 
 <h4>
 
@@ -262,7 +262,7 @@ RequestConfig.headers: { [string]: string }?,
 
 ---
 
-## RequestConfig.params
+### RequestConfig.params
 
 <h4>
 
@@ -278,7 +278,7 @@ RequestConfig.params: { [string]: string }?,
 
 ---
 
-## GetConfig.url
+### GetConfig.url
 
 <h4>
 
@@ -290,7 +290,7 @@ GetConfig.url: string,
 
 ---
 
-## GetConfig.headers
+### GetConfig.headers
 
 <h4>
 
@@ -308,7 +308,7 @@ GetConfig.headers: { [string]: string }?,
 
 ---
 
-## PostConfig.url
+### PostConfig.url
 
 <h4>
 
@@ -320,7 +320,7 @@ PostConfig.url: string,
 
 ---
 
-## PostConfig.headers.body
+### PostConfig.headers.body
 
 <h4>
 

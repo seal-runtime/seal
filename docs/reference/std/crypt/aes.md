@@ -7,7 +7,7 @@
 
 ---
 
-## Aes.generatekey
+### Aes.generatekey
 
 <h4>
 
@@ -19,7 +19,7 @@ Aes.generatekey: () -> string,
 
 ---
 
-## Aes.encrypt
+### Aes.encrypt
 
 <h4>
 
@@ -31,7 +31,7 @@ Aes.encrypt: (plaintext: string, key: string) -> string,
 
 ---
 
-## Aes.decrypt
+### Aes.decrypt
 
 <h4>
 

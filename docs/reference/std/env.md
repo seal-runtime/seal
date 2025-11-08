@@ -9,7 +9,7 @@ A stdlib to interact with the script's running environment.
 
 ---
 
-## env.args
+### env.args
 
 <h4>
 
@@ -23,7 +23,7 @@ env.args: {string},
 
 ---
 
-## env.os
+### env.os
 
 <h4>
 
@@ -37,7 +37,7 @@ env.os: "Windows" | "Linux" | "Android" | "MacOS" | "Other",
 
 ---
 
-## env.executable_path
+### env.executable_path
 
 <h4>
 
@@ -51,7 +51,7 @@ env.executable_path: string,
 
 ---
 
-## env.cwd
+### env.cwd
 
 <h4>
 
@@ -67,7 +67,7 @@ Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission deni
 
 ---
 
-## env.getvar
+### env.getvar
 
 <h4>
 
@@ -81,7 +81,7 @@ Gets an environment variable in the current process.
 
 ---
 
-## env.setvar
+### env.setvar
 
 <h4>
 
@@ -97,7 +97,7 @@ Note, this function is **unsafe** in multithreaded contexts on Linux.
 
 ---
 
-## env.removevar
+### env.removevar
 
 <h4>
 

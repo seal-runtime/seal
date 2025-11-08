@@ -7,7 +7,7 @@
 
 ---
 
-## TreeBuilder.inner
+### TreeBuilder.inner
 
 <h4>
 
@@ -21,7 +21,7 @@ TreeBuilder.inner: DirectoryTree,
 
 ---
 
-## TreeBuilder.with_file
+### TreeBuilder.with_file
 
 <h4>
 
@@ -35,7 +35,7 @@ TreeBuilder.with_file: (self: TreeBuilder, name: string, content: string) -> Tre
 
 ---
 
-## TreeBuilder.with_tree
+### TreeBuilder.with_tree
 
 <h4>
 
@@ -62,7 +62,7 @@ local dir = fs.tree()
 
 ---
 
-## FileEntry.name
+### FileEntry.name
 
 <h4>
 
@@ -76,7 +76,7 @@ FileEntry.name: string,
 
 ---
 
-## FileEntry.path
+### FileEntry.path
 
 <h4>
 
@@ -90,7 +90,7 @@ FileEntry.path: string,
 
 ---
 
-## FileEntry.type
+### FileEntry.type
 
 <h4>
 
@@ -102,7 +102,7 @@ FileEntry.type: "File",
 
 ---
 
-## FileEntry.read
+### FileEntry.read
 
 <h4>
 
@@ -132,7 +132,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-## FileEntry.size
+### FileEntry.size
 
 <h4>
 
@@ -146,7 +146,7 @@ FileEntry.size: (self: FileEntry) -> number,
 
 ---
 
-## FileEntry.readlines
+### FileEntry.readlines
 
 <h4>
 
@@ -176,7 +176,7 @@ end
 
 ---
 
-## FileEntry.readbytes
+### FileEntry.readbytes
 
 <h4>
 
@@ -216,7 +216,7 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-## FileEntry.append
+### FileEntry.append
 
 <h4>
 
@@ -244,7 +244,7 @@ Like `fs.writefile`, `content` does not have to be a valid utf-8 encoded string 
 
 ---
 
-## FileEntry.is_valid_utf8
+### FileEntry.is_valid_utf8
 
 <h4>
 
@@ -256,7 +256,7 @@ FileEntry.is_valid_utf8: (self: FileEntry) -> boolean,
 
 ---
 
-## FileEntry.metadata
+### FileEntry.metadata
 
 <h4>
 
@@ -270,7 +270,7 @@ Returns a `FsMetadata` table containing timestamps for creation, modified, and a
 
 ---
 
-## FileEntry.copy_to
+### FileEntry.copy_to
 
 <h4>
 
@@ -282,7 +282,7 @@ FileEntry.copy_to: (self: FileEntry, to: string) -> (),
 
 ---
 
-## FileEntry.move_to
+### FileEntry.move_to
 
 <h4>
 
@@ -294,7 +294,7 @@ FileEntry.move_to: (self: FileEntry, to: string) -> (),
 
 ---
 
-## FileEntry.rename
+### FileEntry.rename
 
 <h4>
 
@@ -306,7 +306,7 @@ FileEntry.rename: (self: FileEntry, name: string) -> (),
 
 ---
 
-## FileEntry.remove
+### FileEntry.remove
 
 <h4>
 
@@ -324,7 +324,7 @@ FileEntry.remove: (self: FileEntry) -> (),
 
 ---
 
-## DirectoryEntry.name
+### DirectoryEntry.name
 
 <h4>
 
@@ -338,7 +338,7 @@ DirectoryEntry.name: string,
 
 ---
 
-## DirectoryEntry.path
+### DirectoryEntry.path
 
 <h4>
 
@@ -353,7 +353,7 @@ DirectoryEntry.path: string,
 
 ---
 
-## DirectoryEntry.type
+### DirectoryEntry.type
 
 <h4>
 
@@ -365,7 +365,7 @@ DirectoryEntry.type: "Directory",
 
 ---
 
-## DirectoryEntry.list
+### DirectoryEntry.list
 
 <h4>
 
@@ -380,7 +380,7 @@ DirectoryEntry.list: (self: DirectoryEntry, recursive: boolean?, filter: ((path:
 
 ---
 
-## DirectoryEntry.join
+### DirectoryEntry.join
 
 <h4>
 
@@ -395,7 +395,7 @@ DirectoryEntry.join: (self: DirectoryEntry, ...string) -> string,
 
 ---
 
-## DirectoryEntry.find
+### DirectoryEntry.find
 
 <h4>
 
@@ -407,7 +407,7 @@ DirectoryEntry.find: (self: DirectoryEntry, name: string, options: { follow_syml
 
 ---
 
-## DirectoryEntry.entries
+### DirectoryEntry.entries
 
 <h4>
 
@@ -419,7 +419,7 @@ DirectoryEntry.entries: (self: DirectoryEntry) -> { [string]: Entry },
 
 ---
 
-## DirectoryEntry.expect_file
+### DirectoryEntry.expect_file
 
 <h4>
 
@@ -433,7 +433,7 @@ DirectoryEntry.expect_file: (self: DirectoryEntry, name: string) -> FileEntry,
 
 ---
 
-## DirectoryEntry.expect_dir
+### DirectoryEntry.expect_dir
 
 <h4>
 
@@ -447,7 +447,7 @@ DirectoryEntry.expect_dir: (self: DirectoryEntry, name: string) -> DirectoryEntr
 
 ---
 
-## DirectoryEntry.add_file
+### DirectoryEntry.add_file
 
 <h4>
 
@@ -480,7 +480,7 @@ local src = fs.dir.ensure("./src")
 
 ---
 
-## DirectoryEntry.add_tree
+### DirectoryEntry.add_tree
 
 <h4>
 
@@ -514,7 +514,7 @@ local src = fs.dir.ensure("./src")
 
 ---
 
-## DirectoryEntry.metadata
+### DirectoryEntry.metadata
 
 <h4>
 
@@ -528,7 +528,7 @@ Returns a `FsMetadata` table containing timestamps for creation, modified, and a
 
 ---
 
-## DirectoryEntry.copy_to
+### DirectoryEntry.copy_to
 
 <h4>
 
@@ -540,7 +540,7 @@ DirectoryEntry.copy_to: (self: DirectoryEntry, to: string) -> (),
 
 ---
 
-## DirectoryEntry.move_to
+### DirectoryEntry.move_to
 
 <h4>
 
@@ -552,7 +552,7 @@ DirectoryEntry.move_to: (self: DirectoryEntry, to: string) -> (),
 
 ---
 
-## DirectoryEntry.rename
+### DirectoryEntry.rename
 
 <h4>
 
@@ -564,7 +564,7 @@ DirectoryEntry.rename: (self: DirectoryEntry, name: string) -> (),
 
 ---
 
-## DirectoryEntry.remove
+### DirectoryEntry.remove
 
 <h4>
 
@@ -586,7 +586,7 @@ DirectoryEntry.remove: (self: DirectoryEntry) -> (),
 
 ---
 
-## FsMetadata.created_at
+### FsMetadata.created_at
 
 <h4>
 
@@ -601,7 +601,7 @@ FsMetadata.created_at: DateTime?,
 
 ---
 
-## FsMetadata.modified_at
+### FsMetadata.modified_at
 
 <h4>
 
@@ -616,7 +616,7 @@ FsMetadata.modified_at: DateTime?,
 
 ---
 
-## FsMetadata.accessed_at
+### FsMetadata.accessed_at
 
 <h4>
 
@@ -631,7 +631,7 @@ FsMetadata.accessed_at: DateTime?,
 
 ---
 
-## FsMetadata.permissions.readonly
+### FsMetadata.permissions.readonly
 
 <h4>
 
@@ -645,7 +645,7 @@ FsMetadata.permissions.readonly: boolean,
 
 ---
 
-## FsMetadata.permissions.unix_mode
+### FsMetadata.permissions.unix_mode
 
 <h4>
 
@@ -664,7 +664,7 @@ FsMetadata.permissions.unix_mode: number?,
 
 ---
 
-## FindResult.ok
+### FindResult.ok
 
 <h4>
 
@@ -678,7 +678,7 @@ FindResult.ok: boolean,
 
 ---
 
-## FindResult.path
+### FindResult.path
 
 <h4>
 
@@ -690,7 +690,7 @@ FindResult.path: string,
 
 ---
 
-## FindResult.type
+### FindResult.type
 
 <h4>
 
@@ -702,7 +702,7 @@ FindResult.type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDeni
 
 ---
 
-## FindResult.exists
+### FindResult.exists
 
 <h4>
 
@@ -728,7 +728,7 @@ end
 
 ---
 
-## FindResult.try_file
+### FindResult.try_file
 
 <h4>
 
@@ -751,7 +751,7 @@ end
 
 ---
 
-## FindResult.try_dir
+### FindResult.try_dir
 
 <h4>
 
@@ -774,7 +774,7 @@ end
 
 ---
 
-## FindResult.unwrap_file
+### FindResult.unwrap_file
 
 <h4>
 
@@ -788,7 +788,7 @@ FindResult.unwrap_file: (self: FindResult) -> FileEntry,
 
 ---
 
-## FindResult.unwrap_dir
+### FindResult.unwrap_dir
 
 <h4>
 
@@ -806,7 +806,7 @@ FindResult.unwrap_dir: (self: FindResult) -> DirectoryEntry,
 
 ---
 
-## FileBuilder.name
+### FileBuilder.name
 
 <h4>
 
@@ -818,7 +818,7 @@ FileBuilder.name: string,
 
 ---
 
-## FileBuilder.type
+### FileBuilder.type
 
 <h4>
 
@@ -830,7 +830,7 @@ FileBuilder.type: "File",
 
 ---
 
-## FileBuilder.content
+### FileBuilder.content
 
 <h4>
 
@@ -846,7 +846,7 @@ FileBuilder.content: string,
 
 ---
 
-## DirectoryBuilder.name
+### DirectoryBuilder.name
 
 <h4>
 
@@ -858,7 +858,7 @@ DirectoryBuilder.name: string,
 
 ---
 
-## DirectoryBuilder.type
+### DirectoryBuilder.type
 
 <h4>
 
@@ -870,7 +870,7 @@ DirectoryBuilder.type: "Directory",
 
 ---
 
-## DirectoryBuilder.children
+### DirectoryBuilder.children
 
 <h4>
 

@@ -9,7 +9,7 @@ A time library with `time.wait` and functions for creating `Duration` objects.
 
 ---
 
-## time.wait
+### time.wait
 
 <h4>
 
@@ -24,7 +24,7 @@ time.wait: (seconds: number) -> true,
 
 ---
 
-## time.datetime
+### time.datetime
 
 <h4>
 
@@ -38,7 +38,7 @@ time.datetime: typeof(require("@self/datetime")),
 
 ---
 
-## time.years
+### time.years
 
 <h4>
 
@@ -52,7 +52,7 @@ time.years: (y: number) -> Duration,
 
 ---
 
-## time.months
+### time.months
 
 <h4>
 
@@ -67,7 +67,7 @@ time.months: (months: number) -> Duration,
 
 ---
 
-## time.days
+### time.days
 
 <h4>
 
@@ -81,7 +81,7 @@ time.days: (d: number) -> Duration,
 
 ---
 
-## time.hours
+### time.hours
 
 <h4>
 
@@ -95,7 +95,7 @@ time.hours: (h: number) -> Duration,
 
 ---
 
-## time.minutes
+### time.minutes
 
 <h4>
 
@@ -109,7 +109,7 @@ time.minutes: (m: number) -> Duration,
 
 ---
 
-## time.seconds
+### time.seconds
 
 <h4>
 
@@ -123,7 +123,7 @@ time.seconds: (s: number) -> Duration,
 
 ---
 
-## time.milliseconds
+### time.milliseconds
 
 <h4>
 
@@ -137,7 +137,7 @@ time.milliseconds: (ms: number) -> Duration,
 
 ---
 
-## time.microseconds
+### time.microseconds
 
 <h4>
 
@@ -151,7 +151,7 @@ time.microseconds: (us: number) -> Duration,
 
 ---
 
-## time.nanoseconds
+### time.nanoseconds
 
 <h4>
 

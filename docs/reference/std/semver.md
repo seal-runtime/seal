@@ -45,7 +45,7 @@ assert(first_version < second_version)
 
 ---
 
-## SemverFields.major
+### SemverFields.major
 
 <h4>
 
@@ -57,7 +57,7 @@ SemverFields.major: number,
 
 ---
 
-## SemverFields.minor
+### SemverFields.minor
 
 <h4>
 
@@ -69,7 +69,7 @@ SemverFields.minor: number,
 
 ---
 
-## SemverFields.patch
+### SemverFields.patch
 
 <h4>
 
@@ -81,7 +81,7 @@ SemverFields.patch: number,
 
 ---
 
-## SemverFields.metadata.release_candidate.tag
+### SemverFields.metadata.release_candidate.tag
 
 <h4>
 
@@ -93,7 +93,7 @@ SemverFields.metadata.release_candidate.tag: string,
 
 ---
 
-## SemverFields.metadata.release_candidate.ver
+### SemverFields.metadata.release_candidate.ver
 
 <h4>
 
@@ -105,7 +105,7 @@ SemverFields.metadata.release_candidate.ver: number,
 
 ---
 
-## SemverFields.metadata.release_candidate.build
+### SemverFields.metadata.release_candidate.build
 
 <h4>
 
@@ -125,7 +125,7 @@ SemverFields.metadata.release_candidate.build: string?,
 
 ---
 
-## Semver.from
+### Semver.from
 
 <h4>
 
@@ -137,7 +137,7 @@ Semver.from: (s: string): Semver
 
 ---
 
-## Semver.string
+### Semver.string
 
 <h4>
 
@@ -149,7 +149,7 @@ Semver.string: " .. s)
 
 ---
 
-## Semver.string
+### Semver.string
 
 <h4>
 
@@ -161,7 +161,7 @@ Semver.string: {s}`)
 
 ---
 
-## Semver.FIXME
+### Semver.FIXME
 
 <h4>
 
@@ -207,7 +207,7 @@ Semver.FIXME: not optional fields not qualifying as optionals
 
 ---
 
-## SemverVals.satisfies
+### SemverVals.satisfies
 
 <h4>
 
@@ -252,7 +252,7 @@ end
 
 ---
 
-## SemverVals.__eq
+### SemverVals.__eq
 
 <h4>
 
@@ -264,7 +264,7 @@ SemverVals.__eq: (self: Semver, other: Semver): boolean
 
 ---
 
-## SemverVals.__lt
+### SemverVals.__lt
 
 <h4>
 
@@ -276,7 +276,7 @@ SemverVals.__lt: (self: Semver, other: Semver): boolean
 
 ---
 
-## SemverVals.__le
+### SemverVals.__le
 
 <h4>
 
@@ -288,7 +288,7 @@ SemverVals.__le: (self: Semver, other: Semver): boolean
 
 ---
 
-## SemverVals.__tostring
+### SemverVals.__tostring
 
 <h4>
 

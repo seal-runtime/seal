@@ -5,7 +5,7 @@
 
 `local datetime = require("@std/datetime")`
 
-## datetime
+### datetime
 
 <h4>
 

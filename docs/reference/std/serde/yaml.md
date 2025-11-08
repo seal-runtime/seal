@@ -9,7 +9,7 @@ Serialize YAML files.
 
 ---
 
-## yaml.encode
+### yaml.encode
 
 <h4>
 
@@ -21,7 +21,7 @@ yaml.encode: (t: YamlValue) -> string,
 
 ---
 
-## yaml.decode
+### yaml.decode
 
 <h4>
 
@@ -33,7 +33,7 @@ yaml.decode: (toml_data: string) -> YamlValue,
 
 ---
 
-## yaml.readfile
+### yaml.readfile
 
 <h4>
 
@@ -45,7 +45,7 @@ yaml.readfile: (path: string) -> YamlValue,
 
 ---
 
-## yaml.writefile
+### yaml.writefile
 
 <h4>
 
