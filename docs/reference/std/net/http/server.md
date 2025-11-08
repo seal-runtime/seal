@@ -25,11 +25,11 @@ ServeRequest.path: `string`
 
 ---
 
-ServeRequest.headers.raw_text: `string`
+ServeRequest.raw_text: `string`
 
 ---
 
-ServeRequest.headers.body: `string`
+ServeRequest.body: `string`
 
 ---
 

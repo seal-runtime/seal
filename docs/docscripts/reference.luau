@@ -146,14 +146,14 @@ for _, filepath in typedefs_paths do
             push_name(found_type_name, 0)
             continue
         else
-            local indent, found_property_name = string.match(line, "(%s*)([%w_]+): {$")
+            local indent, found_property_name = string.match(line, "(%s*)([%w_]+): {%s*$")
             if indent and found_property_name then
                 push_name(found_property_name, #indent)
                 continue
             end
         end
 
-        local found_indent = string.match(line, "$(%s*)}[,]?$")
+        local found_indent = string.match(line, "^(%s*)}[,]?%s*$")
         if #current_names > 0 and found_indent and #found_indent == last_indent() then
             pop_name()
         end
@@ -206,6 +206,7 @@ for _, library in libraries do
     push(`# {library.name}`)
     local require_path = str.split(library.path, ".md", "/init.md")[1]
     push("`" .. `local {fs.path.child(require_path)} = require("@{require_path}")` .. "`")
+
     for index, api in library.apis do
         if index == 1 then
             push(api.docs, 2)
