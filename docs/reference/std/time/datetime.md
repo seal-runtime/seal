@@ -17,13 +17,15 @@
 
 ---
 
-<h3>
+### CommonFormatKeys.parse
+
+<h4>
 
 ```luau
 function CommonFormatKeys.parse(source: string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -49,13 +51,15 @@ local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AU
 
 ---
 
-<h3>
+### CommonFormatKeys.years
+
+<h4>
 
 ```luau
 function CommonFormatKeys.years(years: number, relative_to: DateTime?): TimeSpan
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -86,13 +90,15 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-<h3>
+### CommonFormatKeys.months
+
+<h4>
 
 ```luau
 function CommonFormatKeys.months(months: number, relative_to: DateTime?): TimeSpan
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -123,61 +129,71 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-<h3>
+### CommonFormatKeys.days
+
+<h4>
 
 ```luau
 function CommonFormatKeys.days(days: number): TimeSpan
 ```
 
-</h3>
+</h4>
 
  Constructs a `TimeSpan` from days. Assumes every day is 24 hours.
 
 ---
 
-<h3>
+### CommonFormatKeys.hours
+
+<h4>
 
 ```luau
 function CommonFormatKeys.hours(hours: number): TimeSpan
 ```
 
-</h3>
+</h4>
 
  Constructs a `TimeSpan` from hours.
 
 ---
 
-<h3>
+### CommonFormatKeys.minutes
+
+<h4>
 
 ```luau
 function CommonFormatKeys.minutes(minutes: number): TimeSpan
 ```
 
-</h3>
+</h4>
 
  Constructs a `TimeSpan` from minutes.
 
 ---
 
-<h3>
+### CommonFormatKeys.seconds
+
+<h4>
 
 ```luau
 function CommonFormatKeys.seconds(seconds: number): TimeSpan
 ```
 
-</h3>
+</h4>
 
  Constructs a `TimeSpan` from seconds.
 
 ---
 
-<h3>
+### CommonFormatKeys.milliseconds
+
+<h4>
 
 ```luau
 function CommonFormatKeys.milliseconds(milliseconds: number): TimeSpan
 ```
 
-</h3>
+</h4>
 
  Constructs a `TimeSpan` from milliseconds.
 

@@ -21,25 +21,29 @@ inner: DirectoryTree,
 
 ---
 
-<h3>
+### TreeBuilder.with_file
+
+<h4>
 
 ```luau
 function TreeBuilder.with_file(self: TreeBuilder, name: string, content: string) -> TreeBuilder,
 ```
 
-</h3>
+</h4>
 
  Add a file to the DirectoryTree by `name` with `content`
 
 ---
 
-<h3>
+### TreeBuilder.with_tree
+
+<h4>
 
 ```luau
 function TreeBuilder.with_tree(self: TreeBuilder, name: string, builder: TreeBuilder) -> TreeBuilder,
 ```
 
-</h3>
+</h4>
 
 Add a new tree to the DirectoryTree; the second argument should be another `TreeBuilder` from `fs.tree()`
 
@@ -98,13 +102,15 @@ type: "File",
 
 ---
 
-<h3>
+### FileEntry.read
+
+<h4>
 
 ```luau
 function FileEntry.read(self: FileEntry) -> string,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -126,25 +132,29 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-<h3>
+### FileEntry.size
+
+<h4>
 
 ```luau
 function FileEntry.size(self: FileEntry) -> number,
 ```
 
-</h3>
+</h4>
 
  Returns the file's size (length) in bytes.
 
 ---
 
-<h3>
+### FileEntry.readlines
+
+<h4>
 
 ```luau
 function FileEntry.readlines(self: FileEntry) -> () -> (number, string),
 ```
 
-</h3>
+</h4>
 
 Iterate over the lines of the file without reading the whole file into memory.
 
@@ -166,13 +176,15 @@ end
 
 ---
 
-<h3>
+### FileEntry.readbytes
+
+<h4>
 
 ```luau
 function FileEntry.readbytes(self: FileEntry, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -204,13 +216,15 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-<h3>
+### FileEntry.append
+
+<h4>
 
 ```luau
 function FileEntry.append(self: FileEntry, content: buffer | string) -> (),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -230,65 +244,77 @@ Like `fs.writefile`, `content` does not have to be a valid utf-8 encoded string 
 
 ---
 
-<h3>
+### FileEntry.is_valid_utf8
+
+<h4>
 
 ```luau
 function FileEntry.is_valid_utf8(self: FileEntry) -> boolean,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### FileEntry.metadata
+
+<h4>
 
 ```luau
 function FileEntry.metadata(self: FileEntry) -> FsMetadata,
 ```
 
-</h3>
+</h4>
 
 Returns a `FsMetadata` table containing timestamps for creation, modified, and access times, as well as permissions (depends on your operating system)
 
 ---
 
-<h3>
+### FileEntry.copy_to
+
+<h4>
 
 ```luau
 function FileEntry.copy_to(self: FileEntry, to: string) -> (),
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### FileEntry.move_to
+
+<h4>
 
 ```luau
 function FileEntry.move_to(self: FileEntry, to: string) -> (),
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### FileEntry.rename
+
+<h4>
 
 ```luau
 function FileEntry.rename(self: FileEntry, name: string) -> (),
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### FileEntry.remove
+
+<h4>
 
 ```luau
 function FileEntry.remove(self: FileEntry) -> (),
 ```
 
-</h3>
+</h4>
 
  Removes the file at `FileEntry.path`.
 
@@ -339,83 +365,97 @@ type: "Directory",
 
 ---
 
-<h3>
+### DirectoryEntry.list
+
+<h4>
 
 ```luau
 function DirectoryEntry.list(self: DirectoryEntry, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
 ```
 
-</h3>
+</h4>
 
  Returns an an array of basenames of the directory's entries; pass `true` as the second argument to list all files recursively.
  Pass a filter function to narrow the returned list (to search for specific file names, extensions, etc.)
 
 ---
 
-<h3>
+### DirectoryEntry.join
+
+<h4>
 
 ```luau
 function DirectoryEntry.join(self: DirectoryEntry, ...string) -> string,
 ```
 
-</h3>
+</h4>
 
  Join the `DirectoryEntry`'s path with multiple paths in a cross-platform-compliant manner.
  Basically a wrapper around `fs.path.join(entry.path, a, b, c, ...)`
 
 ---
 
-<h3>
+### DirectoryEntry.find
+
+<h4>
 
 ```luau
 function DirectoryEntry.find(self: DirectoryEntry, name: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### DirectoryEntry.entries
+
+<h4>
 
 ```luau
 function DirectoryEntry.entries(self: DirectoryEntry) -> { [string]: Entry },
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### DirectoryEntry.expect_file
+
+<h4>
 
 ```luau
 function DirectoryEntry.expect_file(self: DirectoryEntry, name: string) -> FileEntry,
 ```
 
-</h3>
+</h4>
 
  Expect that the directory contains file `name`, returning its `FileEntry` or otherwise error.
 
 ---
 
-<h3>
+### DirectoryEntry.expect_dir
+
+<h4>
 
 ```luau
 function DirectoryEntry.expect_dir(self: DirectoryEntry, name: string) -> DirectoryEntry,
 ```
 
-</h3>
+</h4>
 
  Expect that the directory contains directory `name`, returning its `DirectoryEntry` or otherwise error.
 
 ---
 
-<h3>
+### DirectoryEntry.add_file
+
+<h4>
 
 ```luau
 function DirectoryEntry.add_file(self: DirectoryEntry, name: string, content: string | buffer) -> DirectoryEntry,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -440,13 +480,15 @@ local src = fs.dir.ensure("./src")
 
 ---
 
-<h3>
+### DirectoryEntry.add_tree
+
+<h4>
 
 ```luau
 function DirectoryEntry.add_tree(self: DirectoryEntry, name: string, builder: TreeBuilder) -> DirectoryEntry,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -472,55 +514,65 @@ local src = fs.dir.ensure("./src")
 
 ---
 
-<h3>
+### DirectoryEntry.metadata
+
+<h4>
 
 ```luau
 function DirectoryEntry.metadata(self: DirectoryEntry) -> FsMetadata,
 ```
 
-</h3>
+</h4>
 
 Returns a `FsMetadata` table containing timestamps for creation, modified, and access times, as well as permissions (depends on your operating system)
 
 ---
 
-<h3>
+### DirectoryEntry.copy_to
+
+<h4>
 
 ```luau
 function DirectoryEntry.copy_to(self: DirectoryEntry, to: string) -> (),
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### DirectoryEntry.move_to
+
+<h4>
 
 ```luau
 function DirectoryEntry.move_to(self: DirectoryEntry, to: string) -> (),
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### DirectoryEntry.rename
+
+<h4>
 
 ```luau
 function DirectoryEntry.rename(self: DirectoryEntry, name: string) -> (),
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### DirectoryEntry.remove
+
+<h4>
 
 ```luau
 function DirectoryEntry.remove(self: DirectoryEntry) -> (),
 ```
 
-</h3>
+</h4>
 
  Removes the directory at `DirectoryEntry.path`, alongside all its contents.
 
@@ -650,13 +702,15 @@ type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
 
 ---
 
-<h3>
+### FindResult.exists
+
+<h4>
 
 ```luau
 function FindResult.exists(self: FindResult) -> boolean,
 ```
 
-</h3>
+</h4>
 
 Checks if `FindResult.path` exists on the filesystem.
 
@@ -674,13 +728,15 @@ end
 
 ---
 
-<h3>
+### FindResult.try_file
+
+<h4>
 
 ```luau
 function FindResult.try_file(self: FindResult) -> FileEntry?,
 ```
 
-</h3>
+</h4>
 
 Attempt to create a `FileEntry` from the `FindResult`, returning it or `nil` if unsuccessful.
 
@@ -695,13 +751,15 @@ end
 
 ---
 
-<h3>
+### FindResult.try_dir
+
+<h4>
 
 ```luau
 function FindResult.try_dir(self: FindResult) -> DirectoryEntry?,
 ```
 
-</h3>
+</h4>
 
 Attempt to create a `DirectoryEntry` from the `FindResult`, returning it or `nil` if unsuccessful.
 
@@ -716,25 +774,29 @@ end
 
 ---
 
-<h3>
+### FindResult.unwrap_file
+
+<h4>
 
 ```luau
 function FindResult.unwrap_file(self: FindResult) -> FileEntry,
 ```
 
-</h3>
+</h4>
 
  Create a `FileEntry` from the `FindResult`, erroring if the file doesn't exist.
 
 ---
 
-<h3>
+### FindResult.unwrap_dir
+
+<h4>
 
 ```luau
 function FindResult.unwrap_dir(self: FindResult) -> DirectoryEntry,
 ```
 
-</h3>
+</h4>
 
  Create a `DirectoryEntry` from the `FindResult`, erroring if the directory doesn't exist.
 

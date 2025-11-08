@@ -9,43 +9,51 @@ Serialize TOML files.
 
 ---
 
-<h3>
+### toml.encode
+
+<h4>
 
 ```luau
 function toml.encode(t: TomlValue) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### toml.decode
+
+<h4>
 
 ```luau
 function toml.decode(toml_data: string) -> TomlValue,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### toml.readfile
+
+<h4>
 
 ```luau
 function toml.readfile(path: string) -> TomlValue,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### toml.writefile
+
+<h4>
 
 ```luau
 function toml.writefile(path: string, content: TomlValue) -> (),
 ```
 
-</h3>
+</h4>
 
 ---
 

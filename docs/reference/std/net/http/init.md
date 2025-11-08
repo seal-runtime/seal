@@ -9,13 +9,15 @@ Library for sending HTTP Requests.
 
 ---
 
-<h3>
+### http.get
+
+<h4>
 
 ```luau
 function http.get(config: GetConfig | string) -> HttpResponse,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -51,13 +53,15 @@ local cats = http.get {
 
 ---
 
-<h3>
+### http.post
+
+<h4>
 
 ```luau
 function http.post(config: PostConfig) -> HttpResponse,
 ```
 
-</h3>
+</h4>
 
 Makes an HTTP `POST` request.
 
@@ -78,13 +82,15 @@ local response = http.post {
 
 ---
 
-<h3>
+### http.request
+
+<h4>
 
 ```luau
 function http.request(config: RequestConfig) -> HttpResponse,
 ```
 
-</h3>
+</h4>
 
 Sends an HTTP request:
 
@@ -164,13 +170,15 @@ body: string,
 
 ---
 
-<h3>
+### HttpResponse.decode
+
+<h4>
 
 ```luau
 function HttpResponse.decode(self: HttpResponse) -> { [any]: any }
 ```
 
-</h3>
+</h4>
 
  decodes body to table, errors if body is invalid json or otherwise cannot be converted to table
 
@@ -200,13 +208,15 @@ err: string,
 
 ---
 
-<h3>
+### HttpResponse.unwrap_json
+
+<h4>
 
 ```luau
 function HttpResponse.unwrap_json(self: HttpResponse, default: { [any]: any }?) -> { [any]: any }
 ```
 
-</h3>
+</h4>
 
  decodes body as json or returns default value; errors if ok = false and default value not provided
 

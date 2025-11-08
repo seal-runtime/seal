@@ -125,13 +125,15 @@ build: string?,
 
 ---
 
-<h3>
+### Semver.from
+
+<h4>
 
 ```luau
 function Semver.from(s: string): Semver
 ```
 
-</h3>
+</h4>
 
 ---
 
@@ -205,13 +207,15 @@ FIXME: not optional fields not qualifying as optionals
 
 ---
 
-<h3>
+### SemverVals.satisfies
+
+<h4>
 
 ```luau
 function SemverVals.satisfies(self: Semver, semver_range: string): boolean
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -248,42 +252,50 @@ end
 
 ---
 
-<h3>
+### SemverVals.__eq
+
+<h4>
 
 ```luau
 function SemverVals.__eq(self: Semver, other: Semver): boolean
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### SemverVals.__lt
+
+<h4>
 
 ```luau
 function SemverVals.__lt(self: Semver, other: Semver): boolean
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### SemverVals.__le
+
+<h4>
 
 ```luau
 function SemverVals.__le(self: Semver, other: Semver): boolean
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### SemverVals.__tostring
+
+<h4>
 
 ```luau
 function SemverVals.__tostring(self: Semver): string
 ```
 
-</h3>
+</h4>
 
 ---

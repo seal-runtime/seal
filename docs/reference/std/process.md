@@ -35,13 +35,15 @@ end
 
 ---
 
-<h3>
+### process.run
+
+<h4>
 
 ```luau
 function process.run(options: RunOptions) -> RunResult,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -84,13 +86,15 @@ end
 
 ---
 
-<h3>
+### process.shell
+
+<h4>
 
 ```luau
 function process.shell(command: string) -> RunResult,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -123,13 +127,15 @@ print(file_stuff)
 
 ---
 
-<h3>
+### process.spawn
+
+<h4>
 
 ```luau
 function process.spawn(options: SpawnOptions) -> ChildProcess,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -156,25 +162,29 @@ end
 
 ---
 
-<h3>
+### process.setexitcallback
+
+<h4>
 
 ```luau
 function process.setexitcallback((number) -> ()) -> (),
 ```
 
-</h3>
+</h4>
 
 Doesn't work.
 
 ---
 
-<h3>
+### process.exit
+
+<h4>
 
 ```luau
 function process.exit(code: number?) -> never,
 ```
 
-</h3>
+</h4>
 
 Immediately terminate the current program with exit `code`.
 
@@ -186,26 +196,30 @@ Typically exit code 0 means success and exit code 1 means failure.
 
 ---
 
-<h3>
+### RunResult.unwrap
+
+<h4>
 
 ```luau
 function RunResult.unwrap(self: RunResult) -> string,
 ```
 
-</h3>
+</h4>
 
  Returns the `RunResult`'s `stdout` if it was successful, stripping trailing whitespace and newlines.
  Errors if the RunResult was unsuccessful.
 
 ---
 
-<h3>
+### RunResult.unwrap_or
+
+<h4>
 
 ```luau
 function RunResult.unwrap_or(self: RunResult, default: string | (result: RunResult) -> string) -> string
 ```
 
-</h3>
+</h4>
 
 Returns the `RunResult`'s `stdout` if it was successful, otherwise returns a default value.
 
@@ -499,25 +513,29 @@ stderr_capacity: number?,
 
 ---
 
-<h3>
+### SpawnOptions.stream.stdout_truncate
+
+<h4>
 
 ```luau
 function SpawnOptions.stream.stdout_truncate("front" | "back")?,
 ```
 
-</h3>
+</h4>
 
  what side of stdout should be truncated when full? defaults to "front"
 
 ---
 
-<h3>
+### SpawnOptions.stream.stderr_truncate
+
+<h4>
 
 ```luau
 function SpawnOptions.stream.stderr_truncate("front" | "back")?,
 ```
 
-</h3>
+</h4>
 
  what side of stderr should be truncated when full? defaults to "front"
 
@@ -530,13 +548,15 @@ function SpawnOptions.stream.stderr_truncate("front" | "back")?,
 
 ---
 
-<h3>
+### ChildProcessStream.read
+
+<h4>
 
 ```luau
 function ChildProcessStream.read(self: ChildProcessStream, count: number?, timeout: number?) -> string?,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -586,13 +606,15 @@ local current_data = child.stdout:read(nil, 0.0)
 
 ---
 
-<h3>
+### ChildProcessStream.read_exact
+
+<h4>
 
 ```luau
 function ChildProcessStream.read_exact(self: ChildProcessStream, count: number, timeout: number?) -> string?,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -644,13 +666,15 @@ end
 
 ---
 
-<h3>
+### ChildProcessStream.read_to
+
+<h4>
 
 ```luau
 function ChildProcessStream.read_to(self: ChildProcessStream, term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -679,13 +703,15 @@ Blocks the current VM until `term` is found, `timeout` seconds elapse, or the re
 
 ---
 
-<h3>
+### ChildProcessStream.fill
+
+<h4>
 
 ```luau
 function ChildProcessStream.fill(self: ChildProcessStream, target: buffer, target_offset: number?, timeout: number?) -> number,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -723,13 +749,15 @@ end
 
 ---
 
-<h3>
+### ChildProcessStream.fill_exact
+
+<h4>
 
 ```luau
 function ChildProcessStream.fill_exact(self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -757,37 +785,43 @@ Pass a `timeout` of `0` seconds to prevent this function from blocking!
 
 ---
 
-<h3>
+### ChildProcessStream.len
+
+<h4>
 
 ```luau
 function ChildProcessStream.len(self: ChildProcessStream) -> number,
 ```
 
-</h3>
+</h4>
 
  Returns the current length/size of the stream's inner buffer.
 
 ---
 
-<h3>
+### ChildProcessStream.capacity
+
+<h4>
 
 ```luau
 function ChildProcessStream.capacity(self: ChildProcessStream) -> number,
 ```
 
-</h3>
+</h4>
 
  Returns the maximum capacity of the stream's inner buffer.
 
 ---
 
-<h3>
+### ChildProcessStream.lines
+
+<h4>
 
 ```luau
 function ChildProcessStream.lines(self: ChildProcessStream, timeout: number?) -> (() -> string),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -835,13 +869,15 @@ local second_line = next_line()
 
 ---
 
-<h3>
+### ChildProcessStream.iter
+
+<h4>
 
 ```luau
 function ChildProcessStream.iter(self: ChildProcessStream, timeout: number?, write_delay_ms: number?) -> () -> string,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -862,13 +898,15 @@ This function does *not* strip preceding '\r's and trailing '\n's (unlike `:line
 
 ---
 
-<h3>
+### ChildProcessStream.__iter
+
+<h4>
 
 ```luau
 function ChildProcessStream.__iter(self: ChildProcessStream) -> () -> string,
 ```
 
-</h3>
+</h4>
 
 Iterate over the lines of the `ChildProcessStream` with generalized iteration, blocking until `break` or the reader thread exits.
 
@@ -880,25 +918,29 @@ Basically equivalent to `ChildProcessStream:lines()` except with generalized ite
 
 ---
 
-<h3>
+### ChildProcessStdin.write
+
+<h4>
 
 ```luau
 function ChildProcessStdin.write(self: ChildProcessStdin, data: string) -> error?,
 ```
 
-</h3>
+</h4>
 
 Attempts to write to the child process' stdin; if an error occurs (usually a broken pipe), returns a seal `error` userdata.
 
 ---
 
-<h3>
+### ChildProcessStdin.close
+
+<h4>
 
 ```luau
 function ChildProcessStdin.close(self: ChildProcessStdin) -> (),
 ```
 
-</h3>
+</h4>
 
 Explicitly closes the child process stdin; this signals EOF for some programs that read multiple lines from stdin.
 
@@ -933,23 +975,27 @@ id: number,
 
 ---
 
-<h3>
+### ChildProcess.alive
+
+<h4>
 
 ```luau
 function ChildProcess.alive(self: ChildProcess) -> boolean,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### ChildProcess.kill
+
+<h4>
 
 ```luau
 function ChildProcess.kill(self: ChildProcess) -> (),
 ```
 
-</h3>
+</h4>
 
 ---
 

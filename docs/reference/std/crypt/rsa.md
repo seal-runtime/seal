@@ -35,32 +35,38 @@ private: string
 
 ---
 
-<h3>
+### Rsa.generatekeys
+
+<h4>
 
 ```luau
 function Rsa.generatekeys() -> RsaKeys,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### Rsa.encrypt
+
+<h4>
 
 ```luau
 function Rsa.encrypt(plaintext: string, public_key: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### Rsa.decrypt
+
+<h4>
 
 ```luau
 function Rsa.decrypt(ciphertext: string, private_key: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---

@@ -138,108 +138,126 @@ end
 
 ---
 
-<h3>
+### args.parse
+
+<h4>
 
 ```luau
 function args.parse(program: string, tagline: string, info: ProgramInfo?) -> {
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### args.simple
+
+<h4>
 
 ```luau
 function args.simple(self: any, ...Arg) -> Parsed,
 ```
 
-</h3>
+</h4>
 
  Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
 
 ---
 
-<h3>
+### args.commands
+
+<h4>
 
 ```luau
 function args.commands(self: any, ...Command) -> Parsed,
 ```
 
-</h3>
+</h4>
 
  Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
  generate commands.
 
 ---
 
-<h3>
+### args.positional
+
+<h4>
 
 ```luau
 function args.positional(name: string, help: string) -> Positional,
 ```
 
-</h3>
+</h4>
 
  Add a positional argument
 
 ---
 
-<h3>
+### args.named
+
+<h4>
 
 ```luau
 function args.named(name: string, help: string) -> Named,
 ```
 
-</h3>
+</h4>
 
  Add a named argument `--name=value` (or when aliased to -n, `-n value`). Named arguments must start with `--`
 
 ---
 
-<h3>
+### args.command
+
+<h4>
 
 ```luau
 function args.command(name: string, help: string) -> Command,
 ```
 
-</h3>
+</h4>
 
  Add a new top-level command, must be used with `args.parse(program, desc, info):commands(...)`
 
 ---
 
-<h3>
+### args.flag
+
+<h4>
 
 ```luau
 function args.flag(name: string, help: string) -> Flag,
 ```
 
-</h3>
+</h4>
 
  Add a new flag argument like `--verbose` or `--override`. Flags must start with `--` and cannot be `--help` or `--commands`.
 
 ---
 
-<h3>
+### args.list
+
+<h4>
 
 ```luau
 function args.list(name: string, help: string) -> ArgList,
 ```
 
-</h3>
+</h4>
 
  Add a new list (tail) argument that collects all remaining positional arguments into a `{ string }`
 
 ---
 
-<h3>
+### args.default
+
+<h4>
 
 ```luau
 function args.default(...Arg) -> Command,
 ```
 
-</h3>
+</h4>
 
  Add a default command.
 
@@ -343,13 +361,15 @@ _args: { Arg },
 
 ---
 
-<h3>
+### Command.args
+
+<h4>
 
 ```luau
 function Command.args(self: Command, ...Arg) -> Command,
 ```
 
-</h3>
+</h4>
 
 ---
 
@@ -365,13 +385,15 @@ _aliases: { [string]: true? },
 
 ---
 
-<h3>
+### Command.aliases
+
+<h4>
 
 ```luau
 function Command.aliases(self: Command, ...string) -> Command,
 ```
 
-</h3>
+</h4>
 
  Aliases for your command, like `seal r -> seal run`
 
@@ -393,33 +415,39 @@ command: string | "default",
 
 ---
 
-<h3>
+### Parsed.get
+
+<h4>
 
 ```luau
 function Parsed.get<T>(self: Parsed, name: string, default: T?) -> T?,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### Parsed.expect
+
+<h4>
 
 ```luau
 function Parsed.expect<T>(self: Parsed, name: string, assertion: string?) -> T,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### Parsed.help
+
+<h4>
 
 ```luau
 function Parsed.help(self: Parsed) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
@@ -571,13 +599,15 @@ _default: any,
 
 ---
 
-<h3>
+### Positional.default
+
+<h4>
 
 ```luau
 function Positional.default(any) -> Positional,
 ```
 
-</h3>
+</h4>
 
 ---
 
@@ -593,13 +623,15 @@ _optional: boolean,
 
 ---
 
-<h3>
+### Positional.optional
+
+<h4>
 
 ```luau
 function Positional.optional(self: Positional) -> Positional,
 ```
 
-</h3>
+</h4>
 
  call this to turn the positional argument into an optional positional argument
 
@@ -617,13 +649,15 @@ _validator: Validator?,
 
 ---
 
-<h3>
+### Positional.validate
+
+<h4>
 
 ```luau
 function Positional.validate(self: Positional, validator: Validator) -> Positional,
 ```
 
-</h3>
+</h4>
 
  validate the argument's input by passing a function that returns either the transformed
  validated input (such as converting input strings from p -> project) or an error object.
@@ -696,13 +730,15 @@ _aliases: { [string]: true? },
 
 ---
 
-<h3>
+### Flag.aliases
+
+<h4>
 
 ```luau
 function Flag.aliases(self: Flag, ...string) -> Flag,
 ```
 
-</h3>
+</h4>
 
  flag aliases must start with `-` and cannot be `-h` (reserved for help)
 
@@ -720,13 +756,15 @@ _default: boolean?,
 
 ---
 
-<h3>
+### Flag.default
+
+<h4>
 
 ```luau
 function Flag.default(self: Flag, boolean) -> Flag,
 ```
 
-</h3>
+</h4>
 
 ---
 
@@ -796,13 +834,15 @@ _default: any,
 
 ---
 
-<h3>
+### Named.default
+
+<h4>
 
 ```luau
 function Named.default(self: Named, any) -> Named,
 ```
 
-</h3>
+</h4>
 
 ---
 
@@ -818,13 +858,15 @@ _aliases: { [string]: true? },
 
 ---
 
-<h3>
+### Named.aliases
+
+<h4>
 
 ```luau
 function Named.aliases(self: Named, ...string) -> Named,
 ```
 
-</h3>
+</h4>
 
  aliases must start with `-` and cannot be `-h` (reserved for help)
 
@@ -842,13 +884,15 @@ _required: boolean,
 
 ---
 
-<h3>
+### Named.required
+
+<h4>
 
 ```luau
 function Named.required(self: Named) -> Named,
 ```
 
-</h3>
+</h4>
 
 ---
 
@@ -864,13 +908,15 @@ _validator: Validator?,
 
 ---
 
-<h3>
+### Named.validate
+
+<h4>
 
 ```luau
 function Named.validate(self: Named, validator: Validator) -> Named,
 ```
 
-</h3>
+</h4>
 
 ---
 

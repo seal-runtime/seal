@@ -67,13 +67,15 @@ end
 
 ---
 
-<h3>
+### thread.spawn
+
+<h4>
 
 ```luau
 function thread.spawn(spawn_options: ThreadSpawnOptions) -> ThreadHandle,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -126,13 +128,15 @@ end
 
 ---
 
-<h3>
+### thread.sleep
+
+<h4>
 
 ```luau
 function thread.sleep(milliseconds: number) -> true,
 ```
 
-</h3>
+</h4>
 
 Literally the same as `time.wait`, except in milliseconds.
 
@@ -160,13 +164,15 @@ name: string,
 
 ---
 
-<h3>
+### ThreadHandle.join
+
+<h4>
 
 ```luau
 function ThreadHandle.join(self: ThreadHandle) -> (),
 ```
 
-</h3>
+</h4>
 
 Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
@@ -174,13 +180,15 @@ Errors if the thread has already been joined or somehow disappeared.
 
 ---
 
-<h3>
+### ThreadHandle.send
+
+<h4>
 
 ```luau
 function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | string) -> (),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -198,13 +206,15 @@ Errors if the channel has somehow become disconnected or provided data isn't jso
 
 ---
 
-<h3>
+### ThreadHandle.try_send
+
+<h4>
 
 ```luau
 function ThreadHandle.try_send(self: ThreadHandle, data: JsonSerializableTable | string) -> (boolean, "Sent" | "Disconnected" | "Full"),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -223,13 +233,15 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
-<h3>
+### ThreadHandle.sendbytes
+
+<h4>
 
 ```luau
 function ThreadHandle.sendbytes(self: ThreadHandle, data: buffer) -> (),
 ```
 
-</h3>
+</h4>
 
 Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
 
@@ -237,13 +249,15 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-<h3>
+### ThreadHandle.try_sendbytes
+
+<h4>
 
 ```luau
 function ThreadHandle.try_sendbytes(self: ThreadHandle, data: buffer) -> (boolean, "Sent" | "Disconnected" | "Full"),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -262,13 +276,15 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
-<h3>
+### ThreadHandle.read
+
+<h4>
 
 ```luau
 function ThreadHandle.read(self: ThreadHandle) -> JsonSerializableTable? | string?,
 ```
 
-</h3>
+</h4>
 
 Read a message from the regular channel without blocking the current thread.
 
@@ -276,13 +292,15 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-<h3>
+### ThreadHandle.read_await
+
+<h4>
 
 ```luau
 function ThreadHandle.read_await(self: ThreadHandle) -> JsonSerializableTable | string,
 ```
 
-</h3>
+</h4>
 
 Read a message from the regular channel, blocking until the next message is available.
 
@@ -290,13 +308,15 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-<h3>
+### ThreadHandle.readbytes
+
+<h4>
 
 ```luau
 function ThreadHandle.readbytes(self: ThreadHandle) -> buffer?,
 ```
 
-</h3>
+</h4>
 
 Read a message from the bytes channel without blocking the current thread.
 
@@ -304,13 +324,15 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-<h3>
+### ThreadHandle.readbytes_await
+
+<h4>
 
 ```luau
 function ThreadHandle.readbytes_await(self: ThreadHandle) -> buffer,
 ```
 
-</h3>
+</h4>
 
 Read a message from the bytes channel, blocking until the next message is available.
 

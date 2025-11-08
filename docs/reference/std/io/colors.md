@@ -17,193 +17,231 @@ print(colors.blue("my blue text"))
 
 ---
 
-<h3>
+### colors.black
+
+<h4>
 
 ```luau
 function colors.black(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.red
+
+<h4>
 
 ```luau
 function colors.red(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.green
+
+<h4>
 
 ```luau
 function colors.green(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.yellow
+
+<h4>
 
 ```luau
 function colors.yellow(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.blue
+
+<h4>
 
 ```luau
 function colors.blue(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.magenta
+
+<h4>
 
 ```luau
 function colors.magenta(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.cyan
+
+<h4>
 
 ```luau
 function colors.cyan(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.white
+
+<h4>
 
 ```luau
 function colors.white(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.bold.black
+
+<h4>
 
 ```luau
 function colors.bold.black(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.bold.red
+
+<h4>
 
 ```luau
 function colors.bold.red(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.bold.green
+
+<h4>
 
 ```luau
 function colors.bold.green(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.bold.yellow
+
+<h4>
 
 ```luau
 function colors.bold.yellow(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.bold.blue
+
+<h4>
 
 ```luau
 function colors.bold.blue(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.bold.magenta
+
+<h4>
 
 ```luau
 function colors.bold.magenta(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.bold.cyan
+
+<h4>
 
 ```luau
 function colors.bold.cyan(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.bold.white
+
+<h4>
 
 ```luau
 function colors.bold.white(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.style.dim
+
+<h4>
 
 ```luau
 function colors.style.dim(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.style.bold
+
+<h4>
 
 ```luau
 function colors.style.bold(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### colors.style.underline
+
+<h4>
 
 ```luau
 function colors.style.underline(text: string) -> string,
 ```
 
-</h3>
+</h4>
 
 ---
 

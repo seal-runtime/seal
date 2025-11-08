@@ -7,13 +7,15 @@
 
 ---
 
-<h3>
+### fs.readfile
+
+<h4>
 
 ```luau
 function fs.readfile(path: string) -> string,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -35,13 +37,15 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-<h3>
+### fs.readbytes
+
+<h4>
 
 ```luau
 function fs.readbytes(path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -80,13 +84,15 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-<h3>
+### fs.readlines
+
+<h4>
 
 ```luau
 function fs.readlines(path: string) -> () -> (number, string),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -116,13 +122,15 @@ local _, line2 = nextline()
 
 ---
 
-<h3>
+### fs.writefile
+
+<h4>
 
 ```luau
 function fs.writefile(path: string, content: string | buffer) -> (),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -151,13 +159,15 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-<h3>
+### fs.removefile
+
+<h4>
 
 ```luau
 function fs.removefile(path: string) -> (),
 ```
 
-</h3>
+</h4>
 
 Removes a regular file at `path` without following symlinks.
 
@@ -171,13 +181,15 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-<h3>
+### fs.is
+
+<h4>
 
 ```luau
 function fs.is(path: string) -> PathIs,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -221,13 +233,15 @@ end
 
 ---
 
-<h3>
+### fs.symlink
+
+<h4>
 
 ```luau
 function fs.symlink(target: string, link: string) -> boolean,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -247,13 +261,15 @@ If you're on Windows, you need to run this program with Administrator permission
 
 ---
 
-<h3>
+### fs.unsymlink
+
+<h4>
 
 ```luau
 function fs.unsymlink(link: string) -> boolean,
 ```
 
-</h3>
+</h4>
 
 Removes the symlink at `link`.
 
@@ -268,13 +284,15 @@ Removes the symlink at `link`.
 
 ---
 
-<h3>
+### fs.readlink
+
+<h4>
 
 ```luau
 function fs.readlink(symlink: string) -> string,
 ```
 
-</h3>
+</h4>
 
 Follows `symlink` and returns the *path* targeted by the symlink.
 
@@ -284,13 +302,15 @@ Follows `symlink` and returns the *path* targeted by the symlink.
 
 ---
 
-<h3>
+### fs.watch
+
+<h4>
 
 ```luau
 function fs.watch(paths: string | { string }, options: WatchOptions?) -> () -> (WatchEventCategory, WatchEventInfo),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -414,25 +434,29 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 
 ---
 
-<h3>
+### fs.readtree
+
+<h4>
 
 ```luau
 function fs.readtree(path: string) -> DirectoryTree,
 ```
 
-</h3>
+</h4>
 
 Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
 
 ---
 
-<h3>
+### fs.writetree
+
+<h4>
 
 ```luau
 function fs.writetree(path: string, tree: TreeBuilder | DirectoryTree) -> (),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -477,13 +501,15 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-<h3>
+### fs.removetree
+
+<h4>
 
 ```luau
 function fs.removetree(path: string) -> (),
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -509,13 +535,15 @@ Please use this function carefully.
 
 ---
 
-<h3>
+### fs.makedir
+
+<h4>
 
 ```luau
 function fs.makedir(path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?) -> boolean,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -551,13 +579,15 @@ fs.makedir(fs.path.join(fs.path.cwd(), "Config", "Editor", "Formatting"), {
 
 ---
 
-<h3>
+### fs.listdir
+
+<h4>
 
 ```luau
 function fs.listdir(path: string, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -592,13 +622,15 @@ end)
 
 ---
 
-<h3>
+### fs.move
+
+<h4>
 
 ```luau
 function fs.move(from: string, to: string) -> (),
 ```
 
-</h3>
+</h4>
 
 Move a regular file or directory `from` a path `to` a new path.
 
@@ -611,13 +643,15 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 ---
 
-<h3>
+### fs.copy
+
+<h4>
 
 ```luau
 function fs.copy(source: string, destination: string) -> (),
 ```
 
-</h3>
+</h4>
 
 Copy a regular file or directory from `source` to `destination`.
 
@@ -625,13 +659,15 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 ---
 
-<h3>
+### fs.find
+
+<h4>
 
 ```luau
 function fs.find(path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -681,13 +717,15 @@ end
 
 ---
 
-<h3>
+### fs.entries
+
+<h4>
 
 ```luau
 function fs.entries(path: string) -> { [string]: Entry },
 ```
 
-</h3>
+</h4>
 
 Returns a table mapping the paths of the directory at `path` with their `fs.Entry`s.
 
@@ -755,13 +793,15 @@ Commonly used `fs.path` functions include: `fs.path.join` for combining paths an
 
 ---
 
-<h3>
+### fs.tree
+
+<h4>
 
 ```luau
 function fs.tree() -> TreeBuilder,
 ```
 
-</h3>
+</h4>
 
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 

@@ -67,13 +67,15 @@ Please use with caution.
 
 ---
 
-<h3>
+### Password.hash
+
+<h4>
 
 ```luau
 function Password.hash(raw_password: string) -> HashedPassword,
 ```
 
-</h3>
+</h4>
 
 <details>
 
@@ -110,13 +112,15 @@ end
 
 ---
 
-<h3>
+### Password.verify
+
+<h4>
 
 ```luau
 function Password.verify(verify_options: PasswordVerifyOptions) -> boolean
 ```
 
-</h3>
+</h4>
 
 <details>
 

@@ -371,23 +371,27 @@ port: string | number,
 
 ---
 
-<h3>
+### ServeConfig.handler
+
+<h4>
 
 ```luau
 function ServeConfig.handler(ServeRequest) -> ServeResponse,
 ```
 
-</h3>
+</h4>
 
 ---
 
-<h3>
+### net.http.server.serve
+
+<h4>
 
 ```luau
 function net.http.server.serve(config: ServeConfig)
 ```
 
-</h3>
+</h4>
 
 <details>
 
