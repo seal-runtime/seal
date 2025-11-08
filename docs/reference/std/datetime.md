@@ -4,3 +4,7 @@
 # datetime
 
 `local datetime = require("@std/datetime")`
+
+returns: `require("./time/datetime")`
+
+---

@@ -4,3 +4,7 @@
 # request
 
 `local request = require("@std/request")`
+
+returns: `require("@std/net/http").request`
+
+---

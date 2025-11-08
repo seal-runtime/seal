@@ -68,10 +68,10 @@ for _, filepath in typedefs_paths do
     local in_a_codeblock = false
     local last_line_started_codeblock = false
     local codeblock_preceding_whitespace: string? = nil
-
-    --- represents the 'path' to an api, such as 'SpawnOptions' or 'SpawnOptions.stream.stdout_capacity'
+    
     local current_docs: { string } = {}
 
+    --- represents the 'path' to an api, such as 'SpawnOptions' or 'SpawnOptions.stream.stdout_capacity'
     local current_names: { string } = {}
     local current_indents: { number } = {}
     local function push_name(name: string, indent: number)
@@ -159,7 +159,12 @@ for _, filepath in typedefs_paths do
         end
 
         local trimmed_line = str.trimfront(line)
-        if string.match(line, "^%s*|") then
+
+        if str.startswith(trimmed_line, "--") then
+            continue -- is comment
+        end
+
+        if string.match(line, "^%s*|") then -- enum-like types
             local found_name = current_names[1]
             local new_api: Api = {
                 name = `{found_name}: {trimmed_line}`,
@@ -169,28 +174,33 @@ for _, filepath in typedefs_paths do
             table.insert(apis_for_path, new_api)
             table.clear(current_docs)
         elseif string.match(line, "[%w_]+:") then
-            if not str.startswith(str.trimfront(line), "--") then
-                local found_name = table.concat(current_names, ".")
-                if str.startswith(trimmed_line, "local ") then
-                    continue
-                end
-                if #found_name == 0 or str.startswith(trimmed_line, "function") then
-                    found_name = str.trimfront(trimmed_line, "function ")
-                        :gsub("%(", ": (", 1)
-                        :gsub("%): ", ") -> ")
-                else
-                    found_name = table.concat(current_names, ".") .. `.{trimmed_line}`
-                end
-                local new_api: Api = {
-                    name = found_name,
-                    docs = table.concat(current_docs, "\n"),
-                    is = "Property",
-                }
-                table.insert(apis_for_path, new_api)
-                table.clear(current_docs)
+            local found_name = table.concat(current_names, ".")
+            if str.startswith(trimmed_line, "local ") then
+                continue
             end
+            if #found_name == 0 or str.startswith(trimmed_line, "function") then
+                found_name = str.trimfront(trimmed_line, "function ")
+                    :gsub("%(", ": (", 1)
+                    :gsub("%): ", ") -> ")
+            else
+                found_name = table.concat(current_names, ".") .. `.{trimmed_line}`
+            end
+            local new_api: Api = {
+                name = found_name,
+                docs = table.concat(current_docs, "\n"),
+                is = "Property",
+            }
+            table.insert(apis_for_path, new_api)
+            table.clear(current_docs)
+        elseif #apis_for_path == 0 and string.match(trimmed_line, "return require") then
+            local new_api: Api = {
+                name = `returns: {str.trimfront(trimmed_line, "return ")}`,
+                docs = table.concat(current_docs, "\n"),
+                is = "Property",
+            }
+            table.insert(apis_for_path, new_api)
+            table.clear(current_docs)
         end
-
     end
 
     local library: StandardLibrary = {
@@ -222,7 +232,7 @@ for _, library in libraries do
     push("`" .. `local {fs.path.child(require_path)} = require("@{require_path}")` .. "`")
 
     for index, api in library.apis do
-        if index == 1 then
+        if #library.apis > 1 and index == 1 then
             push(api.docs, 2)
             continue
         end
@@ -249,7 +259,6 @@ for _, library in libraries do
             push("</details>", 2)
         end
         push("---")
-        -- push(api.docs, 2)
     end
 
     local new_path = fs.path.join(refs_path, library.path)

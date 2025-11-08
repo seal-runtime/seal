@@ -4,3 +4,7 @@
 # colors
 
 `local colors = require("@std/colors")`
+
+returns: `require("./io/colors")`
+
+---

@@ -4,3 +4,7 @@
 # serde.json
 
 `local json = require("@std/serde/json")`
+
+returns: `require("@std/json")`
+
+---
