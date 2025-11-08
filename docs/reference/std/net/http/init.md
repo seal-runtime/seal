@@ -7,6 +7,8 @@
 
 Library for sending HTTP Requests.
 
+---
+
 http.get: `(config: GetConfig | string) -> HttpResponse`
 
 <details>

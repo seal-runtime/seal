@@ -16,6 +16,8 @@ data.cats += 1
 json.writefile("./animals.json", data)
 ```
 
+---
+
 json.encode: `(t: JsonData, options: EncodeOptions?) -> string`
 
  encodes a table as json; by default this encodes as a pretty-formatted string; use `json.raw` for a condensed version instead

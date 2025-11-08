@@ -7,6 +7,8 @@
 
  Simple library for managing `error` types from seal.
 
+---
+
 err.message: `(string) -> error`
 
 <details>

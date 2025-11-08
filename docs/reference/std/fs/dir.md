@@ -5,6 +5,8 @@
 
 `local dir = require("@std/fs/dir")`
 
+---
+
 `export type` DirectoryEntry
 
 ---

@@ -15,6 +15,8 @@ local colors = require("@std/io/colors")
 print(colors.blue("my blue text"))
 ```
 
+---
+
 colors.black: `(text: string) -> string`
 
 ---

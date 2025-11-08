@@ -5,6 +5,8 @@
 
 `local luau = require("@std/luau")`
 
+---
+
 luau.eval: `(src: string, options: EvalOptions?) -> unknown | error`
 
 <details>

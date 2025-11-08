@@ -5,6 +5,8 @@
 
 `local server = require("@std/net/http/server")`
 
+---
+
 StatusCode: `| "200 OK"`
 
 ---

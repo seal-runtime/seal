@@ -65,6 +65,8 @@ end
 
 ```
 
+---
+
 thread.spawn: `(spawn_options: ThreadSpawnOptions) -> ThreadHandle`
 
 <details>

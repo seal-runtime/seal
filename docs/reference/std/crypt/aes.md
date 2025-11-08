@@ -5,6 +5,8 @@
 
 `local aes = require("@std/crypt/aes")`
 
+---
+
 Aes.generatekey: `() -> string`
 
 ---

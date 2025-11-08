@@ -8,6 +8,8 @@
  input handling lib
  gets input with an optional `raw_prompt` to display before getting said input.
 
+---
+
 input.tty: `(stream: "Stdout" | "Stderr" | "Stdin"?) -> boolean`
 
 <details>

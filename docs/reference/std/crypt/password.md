@@ -5,6 +5,8 @@
 
 `local password = require("@std/crypt/password")`
 
+---
+
 HashedPassword.salt: `buffer`
 
 ---

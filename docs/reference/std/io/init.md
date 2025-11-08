@@ -15,6 +15,8 @@ libraries as you need them instead.
 - Want to format your tables in the same pretty way as `print`? Use `@std/io/format`.
 - If you want to be colorful, use `@std/io/colors`, which is aliased to just `@std/colors` as well (due to high traffic).
 
+---
+
 io.input: `typeof(require("@self/input"))`
 
 ---

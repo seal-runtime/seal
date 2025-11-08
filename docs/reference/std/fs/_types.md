@@ -5,6 +5,8 @@
 
 `local _types = require("@std/fs/_types")`
 
+---
+
 TreeBuilder.inner: `DirectoryTree`
 
  The `DirectoryTree` being constructed by the `TreeBuilder`.

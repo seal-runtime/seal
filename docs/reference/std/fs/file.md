@@ -5,6 +5,8 @@
 
 `local file = require("@std/fs/file")`
 
+---
+
 `export type` FileBuilder
 
 ---

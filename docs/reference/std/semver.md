@@ -43,6 +43,8 @@ second_version:satisfies("^0.0.1") --> true
 assert(first_version < second_version)
 ```
 
+---
+
 SemverFields.major: `number`
 
 ---

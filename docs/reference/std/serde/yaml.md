@@ -7,6 +7,8 @@
 
 Serialize YAML files.
 
+---
+
 yaml.encode: `(t: YamlValue) -> string`
 
 ---

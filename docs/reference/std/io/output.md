@@ -7,6 +7,8 @@
 
 Write to the terminal's stdout/stderr.
 
+---
+
 output.write: `(contents: string | buffer, flush: boolean?) -> error?`
 
 <details>

@@ -136,6 +136,8 @@ elseif parsed.command == "remove" then
 end
 ```
 
+---
+
 args.parse: `(program: string, tagline: string, info: ProgramInfo?) -> {`
 
 ---

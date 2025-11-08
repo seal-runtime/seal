@@ -234,6 +234,7 @@ for _, library in libraries do
     for index, api in library.apis do
         if #library.apis > 1 and index == 1 then
             push(api.docs, 2)
+            push("---")
             continue
         end
         local split_name = str.splitafter(api.name, ":")

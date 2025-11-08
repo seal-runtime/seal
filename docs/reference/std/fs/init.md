@@ -5,6 +5,8 @@
 
 `local fs = require("@std/fs")`
 
+---
+
 fs.readfile: `(path: string) -> string`
 
 <details>

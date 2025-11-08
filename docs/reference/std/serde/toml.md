@@ -7,6 +7,8 @@
 
 Serialize TOML files.
 
+---
+
 toml.encode: `(t: TomlValue) -> string`
 
 ---

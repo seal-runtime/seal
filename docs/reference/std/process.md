@@ -33,6 +33,8 @@ for line in child.stdout:lines() do
 end
 ```
 
+---
+
 process.run: `(options: RunOptions) -> RunResult`
 
 <details>

@@ -5,6 +5,8 @@
 
 `local datetime = require("@std/time/datetime")`
 
+---
+
 RFC_2822 = "%a, %d %b %Y %H: `%M:%S %z" :: "%a, %d %b %Y %H:%M:%S %z"`
 
 ---

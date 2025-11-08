@@ -9,6 +9,8 @@ Contains function sha2, which can be used to create an **unsalted** hash, return
 
 ### Please use the `@std/crypt/password` library if you want to hash passwords (salted)
 
+---
+
 Hash.sha2: `(plaintext: string) -> buffer`
 
 Hashes plaintext with the SHA2-256 algorithm, returns a buffer (of length 32) containing the result.

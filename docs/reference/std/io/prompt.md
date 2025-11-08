@@ -23,6 +23,8 @@ local result = prompt.text("What's your name?")
 -- displays "What's your name?: "
 ```
 
+---
+
 prompt.text: `(message: string) -> string`
 
 <details>

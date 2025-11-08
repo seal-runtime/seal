@@ -7,6 +7,8 @@
 
 A time library with `time.wait` and functions for creating `Duration` objects.
 
+---
+
 time.wait: `(seconds: number) -> true`
 
  Blocks the current VM for approximately `seconds`, accurate to millisecond-ish precision.

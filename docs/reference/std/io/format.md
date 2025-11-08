@@ -7,6 +7,8 @@
 
 Format objects for pretty printing to stdout/stderr.
 
+---
+
 format.pretty: `(item: unknown) -> string`
 
 Formats `item` in the same way as `print` or `pp`.

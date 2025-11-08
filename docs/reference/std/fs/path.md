@@ -5,6 +5,8 @@
 
 `local path = require("@std/fs/path")`
 
+---
+
 PathLib.join: `(...string) -> string`
 
 <details>

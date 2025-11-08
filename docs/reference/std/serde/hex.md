@@ -7,6 +7,8 @@
 
 Deal with hex data.
 
+---
+
 hex.encode: `(data: buffer | string) -> string`
 
 ---

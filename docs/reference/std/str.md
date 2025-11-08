@@ -14,6 +14,8 @@ Unlike many seal standard libraries, inputs to `str` library functions don't nec
 to be valid utf-8 encoded strings.
  check if a string starts with `prefix`
 
+---
+
 str.endswith: `(s: string, suffix: string) -> boolean`
 
  check if a string ends with `suffix`

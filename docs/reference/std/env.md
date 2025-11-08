@@ -7,6 +7,8 @@
 
 A stdlib to interact with the script's running environment.
 
+---
+
 env.args: `{string}`
 
  a list of arguments passed to the program
