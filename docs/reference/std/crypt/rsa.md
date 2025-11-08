@@ -7,6 +7,46 @@
 
 ---
 
+### rsa.generatekeys
+
+<h4>
+
+```luau
+function rsa.generatekeys() -> RsaKeys,
+```
+
+</h4>
+
+---
+
+### rsa.encrypt
+
+<h4>
+
+```luau
+function rsa.encrypt(plaintext: string, public_key: string) -> string,
+```
+
+</h4>
+
+---
+
+### rsa.decrypt
+
+<h4>
+
+```luau
+function rsa.decrypt(ciphertext: string, private_key: string) -> string,
+```
+
+</h4>
+
+---
+
+## `export type` RsaKeys
+
+---
+
 ### RsaKeys.public
 
 <h4>
@@ -25,46 +65,6 @@ public: string,
 
 ```luau
 private: string
-```
-
-</h4>
-
----
-
-## `export type` Rsa
-
----
-
-### Rsa.generatekeys
-
-<h4>
-
-```luau
-function Rsa.generatekeys() -> RsaKeys,
-```
-
-</h4>
-
----
-
-### Rsa.encrypt
-
-<h4>
-
-```luau
-function Rsa.encrypt(plaintext: string, public_key: string) -> string,
-```
-
-</h4>
-
----
-
-### Rsa.decrypt
-
-<h4>
-
-```luau
-function Rsa.decrypt(ciphertext: string, private_key: string) -> string,
 ```
 
 </h4>

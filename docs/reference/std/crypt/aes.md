@@ -7,36 +7,36 @@
 
 ---
 
-### Aes.generatekey
+### aes.generatekey
 
 <h4>
 
 ```luau
-function Aes.generatekey() -> string,
+function aes.generatekey() -> string,
 ```
 
 </h4>
 
 ---
 
-### Aes.encrypt
+### aes.encrypt
 
 <h4>
 
 ```luau
-function Aes.encrypt(plaintext: string, key: string) -> string,
+function aes.encrypt(plaintext: string, key: string) -> string,
 ```
 
 </h4>
 
 ---
 
-### Aes.decrypt
+### aes.decrypt
 
 <h4>
 
 ```luau
-function Aes.decrypt(ciphertext: string, key: string) -> string,
+function aes.decrypt(ciphertext: string, key: string) -> string,
 ```
 
 </h4>

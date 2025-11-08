@@ -1,18 +1,10 @@
-export type HashedPassword = {
-    salt: buffer,
-    hash: buffer,
-}
-export type PasswordVerifyOptions = {
-    raw_password: string,
-    hashed_password: HashedPassword,
-}
 
 --[=[
 ## This is the password handling lib.
 
 Please use with caution.
 ]=]
-export type Password = {
+export type password = {
     --[=[
     Hash a password with the `PBKDF2_HMAC_SHA256` algorithm, returns a `HashedPassword`
     which you can later use to verify the password against a future
@@ -81,4 +73,14 @@ export type Password = {
     verify: (verify_options: PasswordVerifyOptions) -> boolean
 }
 
-return {} :: Password
+export type HashedPassword = {
+    salt: buffer,
+    hash: buffer,
+}
+
+export type PasswordVerifyOptions = {
+    raw_password: string,
+    hashed_password: HashedPassword,
+}
+
+return {} :: password

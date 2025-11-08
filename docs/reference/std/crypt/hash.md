@@ -11,12 +11,12 @@ Contains function sha2, which can be used to create an **unsalted** hash, return
 
 ---
 
-### Hash.sha2
+### hash.sha2
 
 <h4>
 
 ```luau
-function Hash.sha2(plaintext: string) -> buffer,
+function hash.sha2(plaintext: string) -> buffer,
 ```
 
 </h4>
