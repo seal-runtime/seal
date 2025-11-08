@@ -67,11 +67,11 @@ end
 
 ---
 
-### thread.spawn
-
+<h3>
 ```luau
 thread.spawn: (spawn_options: ThreadSpawnOptions) -> ThreadHandle,
 ```
+</h3>
 
 <details>
 
@@ -124,39 +124,35 @@ end
 
 ---
 
-### thread.sleep
-
+<h3>
 ```luau
 thread.sleep: (milliseconds: number) -> true,
 ```
+</h3>
 
 Literally the same as `time.wait`, except in milliseconds.
 
 ---
 
-### `export type` JsonSerializableTable
+---
 
 ---
 
-### `export type` ThreadHandle
-
----
-
-### ThreadHandle.name
-
+<h3>
 ```luau
 ThreadHandle.name: string,
 ```
+</h3>
 
  the name of your thread (defaults to a petname if not provided)
 
 ---
 
-### ThreadHandle.join
-
+<h3>
 ```luau
 ThreadHandle.join: (self: ThreadHandle) -> (),
 ```
+</h3>
 
 Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
@@ -164,11 +160,11 @@ Errors if the thread has already been joined or somehow disappeared.
 
 ---
 
-### ThreadHandle.send
-
+<h3>
 ```luau
 ThreadHandle.send: (self: ThreadHandle, data: JsonSerializableTable | string) -> (),
 ```
+</h3>
 
 <details>
 
@@ -186,11 +182,11 @@ Errors if the channel has somehow become disconnected or provided data isn't jso
 
 ---
 
-### ThreadHandle.try_send
-
+<h3>
 ```luau
 ThreadHandle.try_send: (self: ThreadHandle, data: JsonSerializableTable | string) -> (boolean, "Sent" | "Disconnected" | "Full"),
 ```
+</h3>
 
 <details>
 
@@ -209,11 +205,11 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
-### ThreadHandle.sendbytes
-
+<h3>
 ```luau
 ThreadHandle.sendbytes: (self: ThreadHandle, data: buffer) -> (),
 ```
+</h3>
 
 Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
 
@@ -221,11 +217,11 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-### ThreadHandle.try_sendbytes
-
+<h3>
 ```luau
 ThreadHandle.try_sendbytes: (self: ThreadHandle, data: buffer) -> (boolean, "Sent" | "Disconnected" | "Full"),
 ```
+</h3>
 
 <details>
 
@@ -244,11 +240,11 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
-### ThreadHandle.read
-
+<h3>
 ```luau
 ThreadHandle.read: (self: ThreadHandle) -> JsonSerializableTable? | string?,
 ```
+</h3>
 
 Read a message from the regular channel without blocking the current thread.
 
@@ -256,11 +252,11 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-### ThreadHandle.read_await
-
+<h3>
 ```luau
 ThreadHandle.read_await: (self: ThreadHandle) -> JsonSerializableTable | string,
 ```
+</h3>
 
 Read a message from the regular channel, blocking until the next message is available.
 
@@ -268,11 +264,11 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-### ThreadHandle.readbytes
-
+<h3>
 ```luau
 ThreadHandle.readbytes: (self: ThreadHandle) -> buffer?,
 ```
+</h3>
 
 Read a message from the bytes channel without blocking the current thread.
 
@@ -280,11 +276,11 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-### ThreadHandle.readbytes_await
-
+<h3>
 ```luau
 ThreadHandle.readbytes_await: (self: ThreadHandle) -> buffer,
 ```
+</h3>
 
 Read a message from the bytes channel, blocking until the next message is available.
 
@@ -292,66 +288,64 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-### `export type` ThreadSpawnOptions
-
 ---
 
-### ThreadSpawnOptions.name
-
+<h3>
 ```luau
 ThreadSpawnOptions.name: string?,
 ```
+</h3>
 
  Name your thread to quickly identify which one it is; if not provided a default alliterative petname will be provided instead.
 
 ---
 
-### ThreadSpawnOptions.path
-
+<h3>
 ```luau
 ThreadSpawnOptions.path: string?,
 ```
+</h3>
 
  Path to your source file you want to run in the separate thread, relative to the current file (not cwd).
 
 ---
 
-### ThreadSpawnOptions.src
-
+<h3>
 ```luau
 ThreadSpawnOptions.src: string?,
 ```
+</h3>
 
  Source code to evaluate; recommend passing a path instead.
 
 ---
 
-### ThreadSpawnOptions.data
-
+<h3>
 ```luau
 ThreadSpawnOptions.data: JsonSerializableTable?,
 ```
+</h3>
 
  Optional data you want to provide to your thread at startup; accessible with `channel.data` in the child thread.
 
 ---
 
-### ThreadSpawnOptions.capacity.regular
-
+<h3>
 ```luau
 ThreadSpawnOptions.capacity.regular: number?,
 ```
+</h3>
 
  Override the queue capacity of your thread's regular and bytes channels.
  default is 12
 
 ---
 
-### ThreadSpawnOptions.capacity.bytes
-
+<h3>
 ```luau
 ThreadSpawnOptions.capacity.bytes: number?,
 ```
+</h3>
 
  default is 24
 

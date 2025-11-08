@@ -9,41 +9,41 @@ A stdlib to interact with the script's running environment.
 
 ---
 
-### env.args
-
+<h3>
 ```luau
 env.args: {string},
 ```
+</h3>
 
  a list of arguments passed to the program
 
 ---
 
-### env.os
-
+<h3>
 ```luau
 env.os: "Windows" | "Linux" | "Android" | "MacOS" | "Other",
 ```
+</h3>
 
  your operating system
 
 ---
 
-### env.executable_path
-
+<h3>
 ```luau
 env.executable_path: string,
 ```
+</h3>
 
  the path of the executable
 
 ---
 
-### env.cwd
-
+<h3>
 ```luau
 env.cwd: () -> string,
 ```
+</h3>
 
 Get the current working directory of the running process.
 
@@ -51,21 +51,21 @@ Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission deni
 
 ---
 
-### env.getvar
-
+<h3>
 ```luau
 env.getvar: (key: string) -> string?,
 ```
+</h3>
 
 Gets an environment variable in the current process.
 
 ---
 
-### env.setvar
-
+<h3>
 ```luau
 env.setvar: (key: string, value: string) -> string,
 ```
+</h3>
 
 Sets an environment variable in the current process.
 
@@ -73,11 +73,11 @@ Note, this function is **unsafe** in multithreaded contexts on Linux.
 
 ---
 
-### env.removevar
-
+<h3>
 ```luau
 env.removevar: (key: string) -> nil,
 ```
+</h3>
 
 Removes an environment variable in the current process.
 

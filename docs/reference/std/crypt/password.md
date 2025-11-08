@@ -7,43 +7,39 @@
 
 ---
 
-### HashedPassword.salt
-
+<h3>
 ```luau
 HashedPassword.salt: buffer,
 ```
+</h3>
 
 ---
 
-### HashedPassword.hash
-
+<h3>
 ```luau
 HashedPassword.hash: buffer,
 ```
+</h3>
 
 ---
 
-### `export type` PasswordVerifyOptions
-
 ---
 
-### PasswordVerifyOptions.raw_password
-
+<h3>
 ```luau
 PasswordVerifyOptions.raw_password: string,
 ```
+</h3>
 
 ---
 
-### PasswordVerifyOptions.hashed_password
-
+<h3>
 ```luau
 PasswordVerifyOptions.hashed_password: HashedPassword,
 ```
+</h3>
 
 ---
-
-### `export type` Password
 
 ## This is the password handling lib
 
@@ -51,11 +47,11 @@ Please use with caution.
 
 ---
 
-### Password.hash
-
+<h3>
 ```luau
 Password.hash: (raw_password: string) -> HashedPassword,
 ```
+</h3>
 
 <details>
 
@@ -92,11 +88,11 @@ end
 
 ---
 
-### Password.verify
-
+<h3>
 ```luau
 Password.verify: (verify_options: PasswordVerifyOptions) -> boolean
 ```
+</h3>
 
 <details>
 

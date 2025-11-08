@@ -18,73 +18,73 @@ json.writefile("./animals.json", data)
 
 ---
 
-### json.encode
-
+<h3>
 ```luau
 json.encode: (t: JsonData, options: EncodeOptions?) -> string,
 ```
+</h3>
 
  encodes a table as json; by default this encodes as a pretty-formatted string; use `json.raw` for a condensed version instead
 
 ---
 
-### json.raw
-
+<h3>
 ```luau
 json.raw: (t: JsonData) -> string,
 ```
+</h3>
 
  encodes a table as json in a condensed fashion for passing as data (without newlines, not as easily readable)
 
 ---
 
-### json.decode
-
+<h3>
 ```luau
 json.decode: (json: string) -> JsonData,
 ```
+</h3>
 
 ---
 
-### json.readfile
-
+<h3>
 ```luau
 json.readfile: (path: string) -> JsonData,
 ```
+</h3>
 
 ---
 
-### json.writefile
-
+<h3>
 ```luau
 json.writefile: (path: string, data: JsonData, options: EncodeOptions?) -> (),
 ```
+</h3>
 
 ---
 
-### json.writefile_raw
-
+<h3>
 ```luau
 json.writefile_raw: (path: string, data: JsonData) -> (),
 ```
+</h3>
 
 ---
 
-### json.null
-
+<h3>
 ```luau
 json.null: () -> any,
 ```
+</h3>
 
  returns an object that serializes to json's `null`
 
 ---
 
-### json.array
-
+<h3>
 ```luau
 json.array: <T>(t: { T }?) -> { T }
 ```
+</h3>
 
  Treat `t` as an array (will always encode as `[]` even when empty).
 
@@ -92,30 +92,26 @@ json.array: <T>(t: { T }?) -> { T }
 
 ---
 
-### `export type` EncodeOptions
-
 ---
 
-### EncodeOptions.pretty
-
+<h3>
 ```luau
 EncodeOptions.pretty: boolean?,
 ```
+</h3>
 
  with tabs/newlines/spaces for easy reading (default true)
 
 ---
 
-### EncodeOptions.sorted
-
+<h3>
 ```luau
 EncodeOptions.sorted: boolean?,
 ```
+</h3>
 
  sorted in alphanumeric order (default false)
 
 ---
-
-### `export type` JsonData
 
 ---

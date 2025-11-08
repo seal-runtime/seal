@@ -5,10 +5,10 @@
 
 `local colors = require("@std/colors")`
 
-### colors
-
+<h3>
 ```luau
 return require("./io/colors")
 ```
+</h3>
 
 ---

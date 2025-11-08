@@ -7,49 +7,45 @@
 
 ---
 
-### `export type` FileBuilder
+---
 
 ---
 
-### `export type` FileLib
-
----
-
-### FileLib.from
-
+<h3>
 ```luau
 FileLib.from: (path: string) -> FileEntry,
 ```
+</h3>
 
 Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if a file is not found or permission was denied, etc.
 
 ---
 
-### FileLib.build
-
+<h3>
 ```luau
 FileLib.build: (name: string, content: string) -> FileBuilder,
 ```
+</h3>
 
  Returns a `FileBuilder` for use with `fs.readtree` and `fs.writetree`
 
 ---
 
-### FileLib.create
-
+<h3>
 ```luau
 FileLib.create: (path: string) -> FileEntry,
 ```
+</h3>
 
  Creates a *new*, empty file at `path` using Rust's `fs::File::create_new`; errors if a file or other entry already exists at that path.
 
 ---
 
-### FileLib.try_read
-
+<h3>
 ```luau
 FileLib.try_read: (path: string) -> (string?, "Ok" | "NotFound" | "PermissionDenied"),
 ```
+</h3>
 
 <details>
 
@@ -77,11 +73,11 @@ end
 
 ---
 
-### FileLib.try_readbytes
-
+<h3>
 ```luau
 FileLib.try_readbytes: (path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> (buffer?, "Ok" | "NotFound" | "PermissionDenied"),
 ```
+</h3>
 
 <details>
 
@@ -115,11 +111,11 @@ end
 
 ---
 
-### FileLib.try_write
-
+<h3>
 ```luau
 FileLib.try_write: (path: string, content: string | buffer) -> (boolean, "Ok" | "PermissionDenied"),
 ```
+</h3>
 
 <details>
 
@@ -142,11 +138,11 @@ end
 
 ---
 
-### FileLib.try_remove
-
+<h3>
 ```luau
 FileLib.try_remove: (path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "IsADirectory")
 ```
+</h3>
 
 Try to remove a file at `path` without erroring if the file doesn't exist or if the user doesn't have access to it.
 
@@ -158,11 +154,11 @@ Doesn't follow symlinks.
 
 ---
 
-### FileLib.__call
-
+<h3>
 ```luau
 FileLib.__call: (self: any, path: string) -> FileEntry?,
 ```
+</h3>
 
 Convenient and slightly more efficient alternative to `fs.find(path):try_file()`
 

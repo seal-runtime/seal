@@ -7,11 +7,11 @@
 
 ---
 
-### fs.readfile
-
+<h3>
 ```luau
 fs.readfile: (path: string) -> string,
 ```
+</h3>
 
 <details>
 
@@ -33,11 +33,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### fs.readbytes
-
+<h3>
 ```luau
 fs.readbytes: (path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
 ```
+</h3>
 
 <details>
 
@@ -76,11 +76,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### fs.readlines
-
+<h3>
 ```luau
 fs.readlines: (path: string) -> () -> (number, string),
 ```
+</h3>
 
 <details>
 
@@ -110,11 +110,11 @@ local _, line2 = nextline()
 
 ---
 
-### fs.writefile
-
+<h3>
 ```luau
 fs.writefile: (path: string, content: string | buffer) -> (),
 ```
+</h3>
 
 <details>
 
@@ -143,11 +143,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### fs.removefile
-
+<h3>
 ```luau
 fs.removefile: (path: string) -> (),
 ```
+</h3>
 
 Removes a regular file at `path` without following symlinks.
 
@@ -161,11 +161,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### fs.is
-
+<h3>
 ```luau
 fs.is: (path: string) -> PathIs,
 ```
+</h3>
 
 <details>
 
@@ -209,11 +209,11 @@ end
 
 ---
 
-### fs.symlink
-
+<h3>
 ```luau
 fs.symlink: (target: string, link: string) -> boolean,
 ```
+</h3>
 
 <details>
 
@@ -233,11 +233,11 @@ If you're on Windows, you need to run this program with Administrator permission
 
 ---
 
-### fs.unsymlink
-
+<h3>
 ```luau
 fs.unsymlink: (link: string) -> boolean,
 ```
+</h3>
 
 Removes the symlink at `link`.
 
@@ -252,11 +252,11 @@ Removes the symlink at `link`.
 
 ---
 
-### fs.readlink
-
+<h3>
 ```luau
 fs.readlink: (symlink: string) -> string,
 ```
+</h3>
 
 Follows `symlink` and returns the *path* targeted by the symlink.
 
@@ -266,11 +266,11 @@ Follows `symlink` and returns the *path* targeted by the symlink.
 
 ---
 
-### fs.watch
-
+<h3>
 ```luau
 fs.watch: (paths: string | { string }, options: WatchOptions?) -> () -> (WatchEventCategory, WatchEventInfo),
 ```
+</h3>
 
 <details>
 
@@ -394,21 +394,21 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 
 ---
 
-### fs.readtree
-
+<h3>
 ```luau
 fs.readtree: (path: string) -> DirectoryTree,
 ```
+</h3>
 
 Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
 
 ---
 
-### fs.writetree
-
+<h3>
 ```luau
 fs.writetree: (path: string, tree: TreeBuilder | DirectoryTree) -> (),
 ```
+</h3>
 
 <details>
 
@@ -453,11 +453,11 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### fs.removetree
-
+<h3>
 ```luau
 fs.removetree: (path: string) -> (),
 ```
+</h3>
 
 <details>
 
@@ -483,11 +483,11 @@ Please use this function carefully.
 
 ---
 
-### fs.makedir
-
+<h3>
 ```luau
 fs.makedir: (path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?) -> boolean,
 ```
+</h3>
 
 <details>
 
@@ -523,11 +523,11 @@ fs.makedir(fs.path.join(fs.path.cwd(), "Config", "Editor", "Formatting"), {
 
 ---
 
-### fs.listdir
-
+<h3>
 ```luau
 fs.listdir: (path: string, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
 ```
+</h3>
 
 <details>
 
@@ -562,11 +562,11 @@ end)
 
 ---
 
-### fs.move
-
+<h3>
 ```luau
 fs.move: (from: string, to: string) -> (),
 ```
+</h3>
 
 Move a regular file or directory `from` a path `to` a new path.
 
@@ -579,11 +579,11 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 ---
 
-### fs.copy
-
+<h3>
 ```luau
 fs.copy: (source: string, destination: string) -> (),
 ```
+</h3>
 
 Copy a regular file or directory from `source` to `destination`.
 
@@ -591,11 +591,11 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 ---
 
-### fs.find
-
+<h3>
 ```luau
 fs.find: (path: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
 ```
+</h3>
 
 <details>
 
@@ -645,11 +645,11 @@ end
 
 ---
 
-### fs.entries
-
+<h3>
 ```luau
 fs.entries: (path: string) -> { [string]: Entry },
 ```
+</h3>
 
 Returns a table mapping the paths of the directory at `path` with their `fs.Entry`s.
 
@@ -667,11 +667,11 @@ end
 
 ---
 
-### fs.file
-
+<h3>
 ```luau
 fs.file: filelib.FileLib,
 ```
+</h3>
 
 A sublib for handling operations with files and `fs.FileEntry`s.
 
@@ -681,11 +681,11 @@ This library can be called as a function as a convenience alternative for `fs.fi
 
 ---
 
-### fs.dir
-
+<h3>
 ```luau
 fs.dir: dirlib.DirLib,
 ```
+</h3>
 
 A sublib for handling operations with directories and `fs.DirectoryEntry`s.
 
@@ -693,11 +693,11 @@ This library can be called as a function as a convenience alternative to `fs.fin
 
 ---
 
-### fs.path
-
+<h3>
 ```luau
 fs.path:  pathlib.PathLib,
 ```
+</h3>
 
 A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
 
@@ -705,135 +705,137 @@ Commonly used `fs.path` functions include: `fs.path.join` for combining paths an
 
 ---
 
-### fs.tree
-
+<h3>
 ```luau
 fs.tree: () -> TreeBuilder,
 ```
+</h3>
 
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
 ---
 
-### `export type` PathIs
-
 ---
 
+<h3>
 ```luau
 | "File"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Directory"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Symlink"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "UnixSocket"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "UnixFifo"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "UnixCharDevice"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "UnixBlockDevice"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "WindowsReparsePoint"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "NotFound"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "PermissionDenied"
 ```
+</h3>
 
 ---
 
-### `export type` DirectoryTree
+---
 
 ---
 
-### `export type` DirectoryBuilder
+---
 
 ---
 
-### `export type` TreeBuilder
+---
 
 ---
 
-### `export type` FindResult
+---
 
 ---
 
-### `export type` Entry
-
----
-
-### `export type` FileEntry
-
----
-
-### `export type` DirectoryEntry
-
----
-
-### `export type` WatchOptions
-
----
-
-### WatchOptions.recursive
-
+<h3>
 ```luau
 WatchOptions.recursive: boolean?,
 ```
+</h3>
 
 ---
 
-### WatchOptions.timeout_ms
-
+<h3>
 ```luau
 WatchOptions.timeout_ms: number?,
 ```
+</h3>
 
 ---
-
-### `export type` WatchEventCategory
 
 <details>
 
@@ -851,121 +853,145 @@ Some usage notes:
 
 ---
 
+<h3>
 ```luau
 | "Read" -- note that Read ~= open for reading (which is in Open)
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Execute"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Open"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Close"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Access"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Create"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Rename"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Data"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Metadata"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Remove"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Unknown"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "None"
 ```
+</h3>
 
 ---
 
-### `export type` WatchEventInfo
-
 ---
 
-### WatchEventInfo.paths
-
+<h3>
 ```luau
 WatchEventInfo.paths: { string },
 ```
+</h3>
 
 ---
 
-### WatchEventInfo.kind
-
+<h3>
 ```luau
 WatchEventInfo.kind: WatchKind,
 ```
+</h3>
 
 ---
 
-### WatchEventInfo.is_write
-
+<h3>
 ```luau
 WatchEventInfo.is_write: boolean,
 ```
+</h3>
 
  if the event is *most likely* a write event (`Create::File` or `Modify::Data` or `Close::Write`)
 
 ---
-
-### `export type` WatchKind
 
 <details>
 
@@ -986,254 +1012,338 @@ WatchEventInfo.is_write: boolean,
 
 ---
 
+<h3>
 ```luau
 | "Read"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Open::Execute"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Open::Read"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Open::Write"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Open::Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Close::Execute"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Close::Read"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Close::Write"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Close::Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Close::Any"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Open::Any"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Access::Any"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Access::Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Create::File"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Create::Directory" -- sent on macos and unixlike
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Create::Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Create::Any"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Rename::Any"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Rename::From"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Rename::To"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Rename::Both"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Rename::Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Data" -- sent on unixlike
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Data::Content"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Data::Size"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Data::Other" -- sent on windows
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Metadata::AccessTime"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Metadata::WriteTime"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Metadata::Ownership"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Metadata::Permissions"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Metadata::Extended"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Metadata::Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Metadata::Any"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Any"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Modify::Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Remove::File" -- sent on unixlike
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Remove::Directory" -- sent on unixlike
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Remove::Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Remove::Any" -- sent on Windows
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Other"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "Unknown"
 ```
+</h3>
 
 ---
 
+<h3>
 ```luau
 | "None::Timeout"
 ```
+</h3>
 
 ---

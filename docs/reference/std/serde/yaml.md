@@ -9,38 +9,36 @@ Serialize YAML files.
 
 ---
 
-### yaml.encode
-
+<h3>
 ```luau
 yaml.encode: (t: YamlValue) -> string,
 ```
+</h3>
 
 ---
 
-### yaml.decode
-
+<h3>
 ```luau
 yaml.decode: (toml_data: string) -> YamlValue,
 ```
+</h3>
 
 ---
 
-### yaml.readfile
-
+<h3>
 ```luau
 yaml.readfile: (path: string) -> YamlValue,
 ```
+</h3>
 
 ---
 
-### yaml.writefile
-
+<h3>
 ```luau
 yaml.writefile: (path: string, content: YamlValue) -> (),
 ```
+</h3>
 
 ---
-
-### `export type` YamlValue
 
 ---

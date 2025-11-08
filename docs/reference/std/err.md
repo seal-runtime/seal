@@ -9,11 +9,11 @@
 
 ---
 
-### err.message
-
+<h3>
 ```luau
 err.message: (string) -> error,
 ```
+</h3>
 
 <details>
 
@@ -45,11 +45,11 @@ end
 
 ---
 
-### err.wrap
-
+<h3>
 ```luau
 err.wrap: (message: string) -> error,
 ```
+</h3>
 
 Wraps an error message with the stack traceback at the location this function was called.
 
@@ -57,31 +57,31 @@ Unlike `err.message`, errors created with this function are red colored and cont
 
 ---
 
-### err.format
-
+<h3>
 ```luau
 err.format: (err: error) -> string,
 ```
+</h3>
 
  Prettifies an `error` from `pcall` or any of the error returning functions.
 
 ---
 
-### err.traceback
-
+<h3>
 ```luau
 err.traceback: () -> string,
 ```
+</h3>
 
  Gets and formats the stack traceback at the current location.
 
 ---
 
-### err.throw
-
+<h3>
 ```luau
 err.throw: (err: error) -> never,
 ```
+</h3>
 
  Takes any error and throws it (causing an error).
 

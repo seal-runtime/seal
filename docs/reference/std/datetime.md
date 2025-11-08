@@ -5,10 +5,10 @@
 
 `local datetime = require("@std/datetime")`
 
-### datetime
-
+<h3>
 ```luau
 return require("./time/datetime")
 ```
+</h3>
 
 ---

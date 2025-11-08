@@ -16,41 +16,41 @@ to be valid utf-8 encoded strings.
 
 ---
 
-### str.endswith
-
+<h3>
 ```luau
 str.endswith: (s: string, suffix: string): boolean
 ```
+</h3>
 
  check if a string ends with `suffix`
 
 ---
 
-### str.starts
-
+<h3>
 ```luau
 str.starts: (s: string, ...: string): boolean
 ```
+</h3>
 
  like str.startswith, but accepts multiple prefixes
 
 ---
 
-### str.ends
-
+<h3>
 ```luau
 str.ends: (s: string, ...: string): boolean
 ```
+</h3>
 
  like str.endswith, but accepts multiple suffixes
 
 ---
 
-### str.trimfront
-
+<h3>
 ```luau
 str.trimfront: (s: string, ...: string): string
 ```
+</h3>
 
  trims any of the provided strings/characters from the front of the string `s`
 
@@ -58,11 +58,11 @@ str.trimfront: (s: string, ...: string): string
 
 ---
 
-### str.trimback
-
+<h3>
 ```luau
 str.trimback: (s: string, ...: string): string
 ```
+</h3>
 
  trims any of the provided strings/characters/patterns from the back of the string `s`
 
@@ -70,11 +70,11 @@ str.trimback: (s: string, ...: string): string
 
 ---
 
-### str.trim
-
+<h3>
 ```luau
 str.trim: (s: string, ...: string): string
 ```
+</h3>
 
  trims one or many strings/characters/patterns from both front and back of string `s`
 
@@ -82,32 +82,32 @@ str.trim: (s: string, ...: string): string
 
 ---
 
-### str.splitlines
-
+<h3>
 ```luau
 str.splitlines: (s: string, trim_trailing_whitespace: boolean?): { string }
 ```
+</h3>
 
  splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
  without an extra empty string, etc.
 
 ---
 
-### str.len
-
+<h3>
 ```luau
 str.len: (s: string): number
 ```
+</h3>
 
  returns the utf-8 length if `s` is utf-8 or the regular string length #
 
 ---
 
-### str.width
-
+<h3>
 ```luau
 str.width: (s: string): number
 ```
+</h3>
 
 <details>
 
@@ -162,71 +162,71 @@ end
 
 ---
 
-### str.leftpad
-
+<h3>
 ```luau
 str.leftpad: (s: string, width: number, pad: string?): string
 ```
+</h3>
 
  left pads `s` to make it at least `width` characters long, using `pad` as the padding character.
 
 ---
 
-### str.escape
-
+<h3>
 ```luau
 str.escape: (s: string): string
 ```
+</h3>
 
  escapes special characters like `\n`, `\t`, `\\` for easier debugging
 
 ---
 
-### str.unescape
-
+<h3>
 ```luau
 str.unescape: (s: string): string
 ```
+</h3>
 
  reverts `str.escape`
 
 ---
 
-### str.slice
-
+<h3>
 ```luau
 str.slice: (s: string, first: number, final: number)
 ```
+</h3>
 
  alias for string.sub
 
 ---
 
-### str.indent
-
+<h3>
 ```luau
 str.indent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string
 ```
+</h3>
 
  indents multiline string `count` characters; lines separated by `sep` (default "\n")
 
 ---
 
-### str.unindent
-
+<h3>
 ```luau
 str.unindent: (s: string, whitespace_type: "Tabs" | "Spaces", count: number, sep: ("\n" | "\r\n")?): string
 ```
+</h3>
 
  unindents multiline string by `count` characters; lines separated by `sep` (default "\n")
 
 ---
 
-### str.split
-
+<h3>
 ```luau
 str.split: (s: string, ...: string): { string }
 ```
+</h3>
 
 <details>
 
@@ -266,11 +266,11 @@ local omit_hi = str.split("seals 🦭 say hi", " ", "hi")
 
 ---
 
-### str.splitaround
-
+<h3>
 ```luau
 str.splitaround: (s: string, seps: string, ...: string): { string }
 ```
+</h3>
 
 <details>
 
@@ -297,11 +297,11 @@ local tokens = str.splitaround(line, " ", ".", "(", ":", ",", ")")
 
 ---
 
-### str.splitbefore
-
+<h3>
 ```luau
 str.splitbefore: (s: string, seps: string, ...: string): { string }
 ```
+</h3>
 
 <details>
 
@@ -328,11 +328,11 @@ print(splitted) -->
 
 ---
 
-### str.splitafter
-
+<h3>
 ```luau
 str.splitafter: (s: string, seps: string, ...: string): { string }
 ```
+</h3>
 
 <details>
 
@@ -358,11 +358,11 @@ local splitted = str.splitafter(httpheaders, "\r\n") -->
 
 ---
 
-### str.chars
-
+<h3>
 ```luau
 str.chars: (s: string): (...any) -> (number, string)
 ```
+</h3>
 
 Iterate over the human-readable characters (graphemes) of a string
 
@@ -370,11 +370,11 @@ This function counts by 'characters', whereas `str.graphemes` provides byte indi
 
 ---
 
-### str.graphemes
-
+<h3>
 ```luau
 str.graphemes: (s: string): (...any) -> (number, string)
 ```
+</h3>
 
 <details>
 

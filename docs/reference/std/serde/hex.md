@@ -9,18 +9,18 @@ Deal with hex data.
 
 ---
 
-### hex.encode
-
+<h3>
 ```luau
 hex.encode: (data: buffer | string) -> string,
 ```
+</h3>
 
 ---
 
-### hex.decode
-
+<h3>
 ```luau
 hex.decode: (encoded: string) -> buffer,
 ```
+</h3>
 
 ---

@@ -17,506 +17,506 @@ print(colors.blue("my blue text"))
 
 ---
 
-### colors.black
-
+<h3>
 ```luau
 colors.black: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.red
-
+<h3>
 ```luau
 colors.red: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.green
-
+<h3>
 ```luau
 colors.green: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.yellow
-
+<h3>
 ```luau
 colors.yellow: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.blue
-
+<h3>
 ```luau
 colors.blue: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.magenta
-
+<h3>
 ```luau
 colors.magenta: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.cyan
-
+<h3>
 ```luau
 colors.cyan: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.white
-
+<h3>
 ```luau
 colors.white: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.bold.black
-
+<h3>
 ```luau
 colors.bold.black: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.bold.red
-
+<h3>
 ```luau
 colors.bold.red: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.bold.green
-
+<h3>
 ```luau
 colors.bold.green: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.bold.yellow
-
+<h3>
 ```luau
 colors.bold.yellow: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.bold.blue
-
+<h3>
 ```luau
 colors.bold.blue: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.bold.magenta
-
+<h3>
 ```luau
 colors.bold.magenta: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.bold.cyan
-
+<h3>
 ```luau
 colors.bold.cyan: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.bold.white
-
+<h3>
 ```luau
 colors.bold.white: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.style.dim
-
+<h3>
 ```luau
 colors.style.dim: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.style.bold
-
+<h3>
 ```luau
 colors.style.bold: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.style.underline
-
+<h3>
 ```luau
 colors.style.underline: (text: string) -> string,
 ```
+</h3>
 
 ---
 
-### colors.codes.RESET
-
+<h3>
 ```luau
 colors.codes.RESET: "\x1b[0m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BLACK
-
+<h3>
 ```luau
 colors.codes.BLACK: "\x1b[30m",
 ```
+</h3>
 
 ---
 
-### colors.codes.RED
-
+<h3>
 ```luau
 colors.codes.RED: "\x1b[31m",
 ```
+</h3>
 
 ---
 
-### colors.codes.GREEN
-
+<h3>
 ```luau
 colors.codes.GREEN: "\x1b[32m",
 ```
+</h3>
 
 ---
 
-### colors.codes.YELLOW
-
+<h3>
 ```luau
 colors.codes.YELLOW: "\x1b[33m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BLUE
-
+<h3>
 ```luau
 colors.codes.BLUE: "\x1b[34m",
 ```
+</h3>
 
 ---
 
-### colors.codes.MAGENTA
-
+<h3>
 ```luau
 colors.codes.MAGENTA: "\x1b[35m",
 ```
+</h3>
 
 ---
 
-### colors.codes.CYAN
-
+<h3>
 ```luau
 colors.codes.CYAN: "\x1b[36m",
 ```
+</h3>
 
 ---
 
-### colors.codes.WHITE
-
+<h3>
 ```luau
 colors.codes.WHITE: "\x1b[37m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BOLD_BLACK
-
+<h3>
 ```luau
 colors.codes.BOLD_BLACK: "\x1b[1;30m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BOLD_RED
-
+<h3>
 ```luau
 colors.codes.BOLD_RED: "\x1b[1;31m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BOLD_GREEN
-
+<h3>
 ```luau
 colors.codes.BOLD_GREEN: "\x1b[1;32m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BOLD_YELLOW
-
+<h3>
 ```luau
 colors.codes.BOLD_YELLOW: "\x1b[1;33m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BOLD_BLUE
-
+<h3>
 ```luau
 colors.codes.BOLD_BLUE: "\x1b[1;34m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BOLD_MAGENTA
-
+<h3>
 ```luau
 colors.codes.BOLD_MAGENTA: "\x1b[1;35m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BOLD_CYAN
-
+<h3>
 ```luau
 colors.codes.BOLD_CYAN: "\x1b[1;36m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BOLD_WHITE
-
+<h3>
 ```luau
 colors.codes.BOLD_WHITE: "\x1b[1;37m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_BLACK
-
+<h3>
 ```luau
 colors.codes.BRIGHT_BLACK: "\x1b[90m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_RED
-
+<h3>
 ```luau
 colors.codes.BRIGHT_RED: "\x1b[91m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_GREEN
-
+<h3>
 ```luau
 colors.codes.BRIGHT_GREEN: "\x1b[92m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_YELLOW
-
+<h3>
 ```luau
 colors.codes.BRIGHT_YELLOW: "\x1b[93m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_BLUE
-
+<h3>
 ```luau
 colors.codes.BRIGHT_BLUE: "\x1b[94m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_MAGENTA
-
+<h3>
 ```luau
 colors.codes.BRIGHT_MAGENTA: "\x1b[95m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_CYAN
-
+<h3>
 ```luau
 colors.codes.BRIGHT_CYAN: "\x1b[96m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_WHITE
-
+<h3>
 ```luau
 colors.codes.BRIGHT_WHITE: "\x1b[97m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BLACK_BG
-
+<h3>
 ```luau
 colors.codes.BLACK_BG: "\x1b[40m",
 ```
+</h3>
 
 ---
 
-### colors.codes.RED_BG
-
+<h3>
 ```luau
 colors.codes.RED_BG: "\x1b[41m",
 ```
+</h3>
 
 ---
 
-### colors.codes.GREEN_BG
-
+<h3>
 ```luau
 colors.codes.GREEN_BG: "\x1b[42m",
 ```
+</h3>
 
 ---
 
-### colors.codes.YELLOW_BG
-
+<h3>
 ```luau
 colors.codes.YELLOW_BG: "\x1b[43m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BLUE_BG
-
+<h3>
 ```luau
 colors.codes.BLUE_BG: "\x1b[44m",
 ```
+</h3>
 
 ---
 
-### colors.codes.MAGENTA_BG
-
+<h3>
 ```luau
 colors.codes.MAGENTA_BG: "\x1b[45m",
 ```
+</h3>
 
 ---
 
-### colors.codes.CYAN_BG
-
+<h3>
 ```luau
 colors.codes.CYAN_BG: "\x1b[46m",
 ```
+</h3>
 
 ---
 
-### colors.codes.WHITE_BG
-
+<h3>
 ```luau
 colors.codes.WHITE_BG: "\x1b[47m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_BLACK_BG
-
+<h3>
 ```luau
 colors.codes.BRIGHT_BLACK_BG: "\x1b[100m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_RED_BG
-
+<h3>
 ```luau
 colors.codes.BRIGHT_RED_BG: "\x1b[101m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_GREEN_BG
-
+<h3>
 ```luau
 colors.codes.BRIGHT_GREEN_BG: "\x1b[102m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_YELLOW_BG
-
+<h3>
 ```luau
 colors.codes.BRIGHT_YELLOW_BG: "\x1b[103m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_BLUE_BG
-
+<h3>
 ```luau
 colors.codes.BRIGHT_BLUE_BG: "\x1b[104m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_MAGENTA_BG
-
+<h3>
 ```luau
 colors.codes.BRIGHT_MAGENTA_BG: "\x1b[105m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_CYAN_BG
-
+<h3>
 ```luau
 colors.codes.BRIGHT_CYAN_BG: "\x1b[106m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BRIGHT_WHITE_BG
-
+<h3>
 ```luau
 colors.codes.BRIGHT_WHITE_BG: "\x1b[107m",
 ```
+</h3>
 
 ---
 
-### colors.codes.BOLD
-
+<h3>
 ```luau
 colors.codes.BOLD: "\x1b[1m",
 ```
+</h3>
 
 ---
 
-### colors.codes.DIM
-
+<h3>
 ```luau
 colors.codes.DIM: "\x1b[2m",
 ```
+</h3>
 
 ---
 
-### colors.codes.UNDERLINE
-
+<h3>
 ```luau
 colors.codes.UNDERLINE: "\x1b[4m",
 ```
+</h3>
 
 ---
