@@ -65,48 +65,58 @@ although this is configurable with `thread.spawn`'s `ThreadSpawnOptions`. Readin
 
 ```
 
+thread.spawn: `(spawn_options: ThreadSpawnOptions) -> ThreadHandle`
+
+<details>
+
+<summary> See the docs </summary
+
 Spawns a new Rust Thread running Luau code in a new Luau VM.
 
 ## Usage
 
 ```luau
-    -- main.luau
-    local thread = require("@std/thread")
+        -- main.luau
+        local thread = require("@std/thread")
 
-    local urls = {
-        "https://sealfinder.net/api/random",
-        "https://example.com/endpoint",
-    }
-
-    local threadpool: { thread.ThreadHandle } = {}
-    for _, url in urls do
-        local handle = thread.spawn {
-            path = "./web_get.luau",
-            data = { url = url },
+        local urls = {
+            "https://sealfinder.net/api/random",
+            "https://example.com/endpoint",
         }
-        table.insert(threadpool, handle)
-    end
 
-    while true do
-        for index, handle in threadpool do
-            local response = handle:read()
-            if response then
-                print(response)
-                handle:join()
-                table.remove(threadpool, index)
+        local threadpool: { thread.ThreadHandle } = {}
+        for _, url in urls do
+            local handle = thread.spawn {
+                path = "./web_get.luau",
+                data = { url = url },
+            }
+            table.insert(threadpool, handle)
+        end
+
+        while true do
+            for index, handle in threadpool do
+                local response = handle:read()
+                if response then
+                    print(response)
+                    handle:join()
+                    table.remove(threadpool, index)
+                end
             end
         end
-    end
 
-    -- web_get.luau
-    if channel then -- make sure we're in a child thread
-        local http = require("@std/net/http")
-        local response = http.get {
-            url = channel.data.url,
-        }
-        channel:send(response)
-    end
+        -- web_get.luau
+        if channel then -- make sure we're in a child thread
+            local http = require("@std/net/http")
+            local response = http.get {
+                url = channel.data.url,
+            }
+            channel:send(response)
+        end
 ```
+
+</details>
+
+---
 
 thread.sleep: `(milliseconds: number) -> true`
 

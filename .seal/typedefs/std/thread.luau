@@ -1,4 +1,4 @@
-    --[=[
+--[=[
     Run Luau code in parallel in a new VM and communicate between threads via message passing.
 
     This allows for structured parallelism that you can use for both multiprocessing and as
@@ -58,61 +58,57 @@
 
     ```
 ]=]
-local thread = {}
-
---[=[
-    Spawns a new Rust Thread running Luau code in a new Luau VM.
-
-    ## Usage
-    ```luau
-    -- main.luau
-    local thread = require("@std/thread")
-
-    local urls = { 
-        "https://sealfinder.net/api/random", 
-        "https://example.com/endpoint",
-    }
-
-    local threadpool: { thread.ThreadHandle } = {}
-    for _, url in urls do
-        local handle = thread.spawn {
-            path = "./web_get.luau",
-            data = { url = url },
+export type thread = {
+    --[=[
+        Spawns a new Rust Thread running Luau code in a new Luau VM.
+    
+        ## Usage
+        ```luau
+        -- main.luau
+        local thread = require("@std/thread")
+    
+        local urls = { 
+            "https://sealfinder.net/api/random", 
+            "https://example.com/endpoint",
         }
-        table.insert(threadpool, handle)
-    end
-
-    while true do
-        for index, handle in threadpool do
-            local response = handle:read()
-            if response then
-                print(response)
-                handle:join()
-                table.remove(threadpool, index)
+    
+        local threadpool: { thread.ThreadHandle } = {}
+        for _, url in urls do
+            local handle = thread.spawn {
+                path = "./web_get.luau",
+                data = { url = url },
+            }
+            table.insert(threadpool, handle)
+        end
+    
+        while true do
+            for index, handle in threadpool do
+                local response = handle:read()
+                if response then
+                    print(response)
+                    handle:join()
+                    table.remove(threadpool, index)
+                end
             end
         end
-    end
+    
+        -- web_get.luau
+        if channel then -- make sure we're in a child thread
+            local http = require("@std/net/http")
+            local response = http.get {
+                url = channel.data.url,
+            }
+            channel:send(response)
+        end
+        ```
+    ]=]
+    spawn: (spawn_options: ThreadSpawnOptions) -> ThreadHandle,
 
-    -- web_get.luau
-    if channel then -- make sure we're in a child thread
-        local http = require("@std/net/http")
-        local response = http.get {
-            url = channel.data.url,
-        }
-        channel:send(response)
-    end
-    ```
-]=]
-function thread.spawn(spawn_options: ThreadSpawnOptions): ThreadHandle
-    return nil :: any
-end
-
---[=[
-    Literally the same as `time.wait`, except in milliseconds.
-]=]
-function thread.sleep(milliseconds: number): true
-    return nil :: any
-end
+    --[=[
+        Literally the same as `time.wait`, except in milliseconds.
+    ]=]
+    sleep: (milliseconds: number) -> true,
+}
 
 export type JsonSerializableTable = { [unknown]: unknown }
 
@@ -214,4 +210,4 @@ export type ThreadSpawnOptions = {
     }?
 }
 
-return thread
+return {} :: thread
