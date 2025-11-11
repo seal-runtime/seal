@@ -5,7 +5,15 @@
 
 `local process = require("@std/process")`
 
-Library for running child processes.
+Library for running other programs as child processes.
+
+To immediately terminate the current program, use `process.exit`.
+
+To execute a shell command, use `process.shell`.
+
+To start a program and wait for it to terminate, use `process.run`.
+
+To start a long-running program in parallel, use `process.spawn`.
 
 ## Usage
 
@@ -145,6 +153,8 @@ Spawns a long-running process in a non-blocking manner, returns a `ChildProcess`
 
 ## Usage
 
+A long-running program you want to listen to.
+
 ```luau
 local process = require("@std/process")
 local child = process.spawn({
@@ -155,6 +165,38 @@ local child = process.spawn({
 for line in child.stdout:lines() do
     local thing_changed = line:match("([%w]+) changed!")
     print(`Change detected: {thing_changed}`)
+end
+```
+
+Run multiple processes at the same time to finish faster.
+
+For example, `markdownlint-cli2` takes about 0.3 seconds to fix a file, so if you have 20+ files, and you
+fix each file one-at-a-time with `process.run`, it'll take 6+ seconds to do all files.
+
+But by using `process.spawn`, you can run multiple instances of the program at the same time, allowing you to
+fix all files in < 0.5 seconds (depending on your hardware and core count).
+
+```luau
+local paths: { string } = get_files()
+-- make a threadpool to keep track of what files are finished
+local handles: { [string]: process.ThreadHandle } = {}
+
+for _, path in paths do
+    local handle = process.spawn {
+        program = "markdownlint-cli2",
+        args = { "--fix", path }
+    }
+    handles[path] = handle
+end
+
+while #tt.keys(handles :: any) > 0 do
+    time.wait(0.1)
+    for path, handle in handles do
+        if not handle:alive() then
+            handles[path] = nil
+            print(`finished {path}`)
+        end
+    end
 end
 ```
 
@@ -236,19 +278,21 @@ If you provide a `default` function, `:unwrap_or` will return what it returns.
 
 ---
 
-## `export type` RunResultOk
+## `export type` Ok
 
 <h4>
 
 ```luau
-export type RunResultOk = {
+export type Ok = {
 ```
 
 </h4>
 
+ The process terminated with a successful exit code.
+
 ---
 
-### RunResultOk.ok
+### Ok.ok
 
 <h4>
 
@@ -260,7 +304,7 @@ ok: true,
 
 ---
 
-### RunResultOk.out
+### Ok.out
 
 <h4>
 
@@ -270,11 +314,11 @@ out: string,
 
 </h4>
 
- cleaned standard output of the process, shouldn't have trailing newlines or whitespace
+ cleaned standard output of the process, shouldn't have trailing whitespace/newlines.
 
 ---
 
-### RunResultOk.stdout
+### Ok.stdout
 
 <h4>
 
@@ -288,7 +332,7 @@ stdout: string,
 
 ---
 
-### RunResultOk.stderr
+### Ok.stderr
 
 <h4>
 
@@ -302,19 +346,21 @@ stderr: string,
 
 ---
 
-## `export type` RunResultErr
+## `export type` Err
 
 <h4>
 
 ```luau
-export type RunResultErr = {
+export type Err = {
 ```
 
 </h4>
 
+ The process terminated with a failing exit code.
+
 ---
 
-### RunResultErr.ok
+### Err.ok
 
 <h4>
 
@@ -326,7 +372,7 @@ ok: false,
 
 ---
 
-### RunResultErr.err
+### Err.err
 
 <h4>
 
@@ -336,9 +382,11 @@ err: string,
 
 </h4>
 
+ cleaned standard error of the process; shouldn't have trailing whitespace/newlines.
+
 ---
 
-### RunResultErr.stdout
+### Err.stdout
 
 <h4>
 
@@ -350,7 +398,7 @@ stdout: string,
 
 ---
 
-### RunResultErr.stderr
+### Err.stderr
 
 <h4>
 
