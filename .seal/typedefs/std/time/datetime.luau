@@ -31,6 +31,8 @@ export type datetime = {
         local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
         ```
     ]=]
+    parse: (source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
+    --- Common DateTime format strings.
     common_formats: {
         ISO_8601: "%Y-%m-%d %H:%M",
         RFC_2822: "%a, %d %b %Y %H:%M:%S %z",
@@ -46,7 +48,6 @@ export type datetime = {
         ["HH:MM (AM/PM)"]: "%I:%M %p",
         AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
     },
-    parse: (source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
     --[=[
         Constructs a `TimeSpan` from years. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
 

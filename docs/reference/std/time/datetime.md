@@ -42,12 +42,12 @@ Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
 
 ---
 
-### datetime.common_formats.ISO_8601
+### datetime.parse
 
 <h4>
 
 ```luau
-ISO_8601: "%Y-%m-%d %H:%M",
+function datetime.parse(source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
 ```
 
 </h4>
@@ -73,6 +73,20 @@ local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AU
 ```
 
 </details>
+
+---
+
+### datetime.common_formats.ISO_8601
+
+<h4>
+
+```luau
+ISO_8601: "%Y-%m-%d %H:%M",
+```
+
+</h4>
+
+ Common DateTime format strings.
 
 ---
 
@@ -166,18 +180,6 @@ LOGGING_12_HR: "%a %b %e %I:%M:%S %p %Z %Y",
 
 ```luau
 AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
-```
-
-</h4>
-
----
-
-### datetime.parse
-
-<h4>
-
-```luau
-function datetime.parse(source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
 ```
 
 </h4>
