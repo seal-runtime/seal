@@ -79,6 +79,7 @@ export type DirLib = setmetatable<{
             :list(false, function(path: string) 
                 return str.endswith(path, ".csv")
             end)
+        ```
     ]=]
     project: (n: number?) -> DirectoryEntry,
 }, {
