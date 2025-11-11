@@ -143,39 +143,12 @@ end
 <h4>
 
 ```luau
-function args.parse(program: string, tagline: string, info: ProgramInfo?) -> {
+function args.parse(program: string, tagline: string, info: ProgramInfo?) -> ArgParser,
 ```
 
 </h4>
 
----
-
-### args.simple
-
-<h4>
-
-```luau
-function args.simple(self: any, ...Arg) -> Parsed,
-```
-
-</h4>
-
- Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
-
----
-
-### args.commands
-
-<h4>
-
-```luau
-function args.commands(self: any, ...Command) -> Parsed,
-```
-
-</h4>
-
- Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
- generate commands.
+ Parse arguments, call either `:simple` or `:commands` on what this returns.
 
 ---
 
@@ -260,6 +233,47 @@ function args.default(...Arg) -> Command,
 </h4>
 
  Add a default command.
+
+---
+
+## `export type` ArgParser
+
+<h4>
+
+```luau
+export type ArgParser = {
+```
+
+</h4>
+
+---
+
+### ArgParser.simple
+
+<h4>
+
+```luau
+function ArgParser.simple(self: any, ...Arg) -> Parsed,
+```
+
+</h4>
+
+ Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
+
+---
+
+### ArgParser.commands
+
+<h4>
+
+```luau
+function ArgParser.commands(self: any, ...Command) -> Parsed,
+```
+
+</h4>
+
+ Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
+ generate commands.
 
 ---
 
@@ -365,36 +379,12 @@ help: string,
 
 ---
 
-### Command._args
-
-<h4>
-
-```luau
-_args: { Arg },
-```
-
-</h4>
-
----
-
 ### Command.args
 
 <h4>
 
 ```luau
 function Command.args(self: Command, ...Arg) -> Command,
-```
-
-</h4>
-
----
-
-### Command._aliases
-
-<h4>
-
-```luau
-_aliases: { [string]: true? },
 ```
 
 </h4>
@@ -481,6 +471,18 @@ function Parsed.help(self: Parsed) -> string,
 
 ```luau
 flags: { [string]: true? },
+```
+
+</h4>
+
+---
+
+### Parsed.args
+
+<h4>
+
+```luau
+args: { Arg },
 ```
 
 </h4>
@@ -643,36 +645,12 @@ help: string,
 
 ---
 
-### Positional._default
-
-<h4>
-
-```luau
-_default: any,
-```
-
-</h4>
-
----
-
 ### Positional.default
 
 <h4>
 
 ```luau
 function Positional.default(any) -> Positional,
-```
-
-</h4>
-
----
-
-### Positional._optional
-
-<h4>
-
-```luau
-_optional: boolean,
 ```
 
 </h4>
@@ -690,18 +668,6 @@ function Positional.optional(self: Positional) -> Positional,
 </h4>
 
  call this to turn the positional argument into an optional positional argument
-
----
-
-### Positional._validator
-
-<h4>
-
-```luau
-_validator: Validator?,
-```
-
-</h4>
 
 ---
 
@@ -782,18 +748,6 @@ help: string,
 
 ---
 
-### Flag._aliases
-
-<h4>
-
-```luau
-_aliases: { [string]: true? },
-```
-
-</h4>
-
----
-
 ### Flag.aliases
 
 <h4>
@@ -805,18 +759,6 @@ function Flag.aliases(self: Flag, ...string) -> Flag,
 </h4>
 
  flag aliases must start with `-` and cannot be `-h` (reserved for help)
-
----
-
-### Flag._default
-
-<h4>
-
-```luau
-_default: boolean?,
-```
-
-</h4>
 
 ---
 
@@ -894,36 +836,12 @@ help: string,
 
 ---
 
-### Named._default
-
-<h4>
-
-```luau
-_default: any,
-```
-
-</h4>
-
----
-
 ### Named.default
 
 <h4>
 
 ```luau
 function Named.default(self: Named, any) -> Named,
-```
-
-</h4>
-
----
-
-### Named._aliases
-
-<h4>
-
-```luau
-_aliases: { [string]: true? },
 ```
 
 </h4>
@@ -944,36 +862,12 @@ function Named.aliases(self: Named, ...string) -> Named,
 
 ---
 
-### Named._required
-
-<h4>
-
-```luau
-_required: boolean,
-```
-
-</h4>
-
----
-
 ### Named.required
 
 <h4>
 
 ```luau
 function Named.required(self: Named) -> Named,
-```
-
-</h4>
-
----
-
-### Named._validator
-
-<h4>
-
-```luau
-_validator: Validator?,
 ```
 
 </h4>
