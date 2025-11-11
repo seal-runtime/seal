@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD024 -->
 
-# luau.init
+# luau
 
 `local luau = require("@std/luau")`
 

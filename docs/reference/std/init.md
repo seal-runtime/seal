@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD024 -->
 
-# init
+# std
 
 `local std = require("@std")`
 

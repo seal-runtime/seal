@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD024 -->
 
-# net.init
+# net
 
 `local net = require("@std/net")`
 

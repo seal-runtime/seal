@@ -20,8 +20,6 @@ type StandardLibrary = {
     is: "Library",
     name: string,
     path: string,
-    defs: string,
-    docs: string,
     apis: { Api },
 }
 
@@ -59,10 +57,7 @@ for _, filepath in typedefs_paths do
     local library_path: string = filepath do
         library_path = str.trimback(library_path:gsub(fs.path.cwd() .. "/.seal/typedefs/", ""), ".luau")
     end
-    local library_name = str.trimfront(str.trimback(library_path, ".init.md", ".md"), "std/"):gsub("/", ".")
-
-    local top_defs: { string } = {}
-    local top_docs: { string } = {}
+    local library_name = str.trimfront(str.trimback(library_path, ".init"), "std/"):gsub("/", ".")
 
     local in_docs = false
     local reset_in_docs_next_iteration = false
@@ -228,8 +223,6 @@ for _, filepath in typedefs_paths do
         is = "Library",
         name = library_name,
         path = library_path,
-        docs = table.concat(top_docs, "\n"),
-        defs = table.concat(top_defs, "\n"),
         apis = apis_for_path
     }
 

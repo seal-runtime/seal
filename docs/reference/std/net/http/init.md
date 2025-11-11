@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD024 -->
 
-# net.http.init
+# net.http
 
 `local http = require("@std/net/http")`
 

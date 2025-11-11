@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD024 -->
 
-# crypt.init
+# crypt
 
 `local crypt = require("@std/crypt")`
 

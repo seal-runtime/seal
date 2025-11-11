@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD024 -->
 
-# fs.init
+# fs
 
 `local fs = require("@std/fs")`
 
