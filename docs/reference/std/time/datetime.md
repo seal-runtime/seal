@@ -5,32 +5,157 @@
 
 `local datetime = require("@std/time/datetime")`
 
- Constructs a `DateTime` from right now (based on system time) in your local timezone.
- Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
+A timezone-aware library for parsing `DateTime`s and doing `TimeSpan` arithmetic.
 
-- `timezone` defaults to `"UTC"` if not specified
-- `nanos` defaults to `0` if not specified
+See `datetime.parse`.
 
 ---
 
-## `export type` CommonFormatKeys
+### datetime.common_formats.ISO_8601
 
 <h4>
 
 ```luau
-type CommonFormatKeys = keyof<index<typeof(datetime), "common_formats">>
+ISO_8601: "%Y-%m-%d %H:%M",
 ```
 
 </h4>
 
 ---
 
-### CommonFormatKeys.datetime.parse
+### datetime.common_formats.RFC_2822
 
 <h4>
 
 ```luau
-function CommonFormatKeys.datetime.parse(source: string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime
+RFC_2822: "%a, %d %b %Y %H:%M:%S %z",
+```
+
+</h4>
+
+---
+
+### datetime.common_formats.RFC_3339
+
+<h4>
+
+```luau
+RFC_3339: "%Y-%m-%dT%H:%M:%S%:z",
+```
+
+</h4>
+
+---
+
+### datetime.common_formats.SHORT_DATE
+
+<h4>
+
+```luau
+SHORT_DATE: "%Y-%m-%d",
+```
+
+</h4>
+
+---
+
+### datetime.common_formats.SHORT_TIME
+
+<h4>
+
+```luau
+SHORT_TIME: "%H:%M",
+```
+
+</h4>
+
+---
+
+### datetime.common_formats.FULL_DATE_TIME
+
+<h4>
+
+```luau
+FULL_DATE_TIME: "%A, %B %d, %Y %H:%M:%S",
+```
+
+</h4>
+
+---
+
+### datetime.common_formats.LOGGING_24_HR
+
+<h4>
+
+```luau
+LOGGING_24_HR: "%a %b %e %H:%M:%S %Z %Y",
+```
+
+</h4>
+
+---
+
+### datetime.common_formats.LOGGING_12_HR
+
+<h4>
+
+```luau
+LOGGING_12_HR: "%a %b %e %I:%M:%S %p %Z %Y",
+```
+
+</h4>
+
+---
+
+### datetime.common_formats.AMERICAN_FULL_DATE_TIME
+
+<h4>
+
+```luau
+AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
+```
+
+</h4>
+
+---
+
+### datetime.now
+
+<h4>
+
+```luau
+function datetime.now() -> DateTime,
+```
+
+</h4>
+
+ Constructs a `DateTime` from right now (based on system time) in your local timezone.
+
+---
+
+### datetime.from
+
+<h4>
+
+```luau
+function datetime.from(timestamp: number, timezone: IanaTimezone, nanos: number?) -> DateTime,
+```
+
+</h4>
+
+Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
+
+- `timezone` defaults to `"UTC"` if not specified
+- `nanos` defaults to `0` if not specified
+
+---
+
+### datetime.parse
+
+<h4>
+
+```luau
+function datetime.parse(source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
 ```
 
 </h4>
@@ -59,12 +184,12 @@ local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AU
 
 ---
 
-### CommonFormatKeys.datetime.years
+### datetime.years
 
 <h4>
 
 ```luau
-function CommonFormatKeys.datetime.years(years: number, relative_to: DateTime?): TimeSpan
+function datetime.years(number, relative_to: DateTime?) -> TimeSpan,
 ```
 
 </h4>
@@ -98,12 +223,12 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-### CommonFormatKeys.datetime.months
+### datetime.months
 
 <h4>
 
 ```luau
-function CommonFormatKeys.datetime.months(months: number, relative_to: DateTime?): TimeSpan
+function datetime.months(number, relative_to: DateTime?) -> TimeSpan,
 ```
 
 </h4>
@@ -137,12 +262,12 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-### CommonFormatKeys.datetime.days
+### datetime.days
 
 <h4>
 
 ```luau
-function CommonFormatKeys.datetime.days(days: number): TimeSpan
+function datetime.days(number) -> TimeSpan,
 ```
 
 </h4>
@@ -151,12 +276,12 @@ function CommonFormatKeys.datetime.days(days: number): TimeSpan
 
 ---
 
-### CommonFormatKeys.datetime.hours
+### datetime.hours
 
 <h4>
 
 ```luau
-function CommonFormatKeys.datetime.hours(hours: number): TimeSpan
+function datetime.hours(number) -> TimeSpan,
 ```
 
 </h4>
@@ -165,12 +290,12 @@ function CommonFormatKeys.datetime.hours(hours: number): TimeSpan
 
 ---
 
-### CommonFormatKeys.datetime.minutes
+### datetime.minutes
 
 <h4>
 
 ```luau
-function CommonFormatKeys.datetime.minutes(minutes: number): TimeSpan
+function datetime.minutes(number) -> TimeSpan,
 ```
 
 </h4>
@@ -179,12 +304,12 @@ function CommonFormatKeys.datetime.minutes(minutes: number): TimeSpan
 
 ---
 
-### CommonFormatKeys.datetime.seconds
+### datetime.seconds
 
 <h4>
 
 ```luau
-function CommonFormatKeys.datetime.seconds(seconds: number): TimeSpan
+function datetime.seconds(number) -> TimeSpan,
 ```
 
 </h4>
@@ -193,17 +318,29 @@ function CommonFormatKeys.datetime.seconds(seconds: number): TimeSpan
 
 ---
 
-### CommonFormatKeys.datetime.milliseconds
+### datetime.milliseconds
 
 <h4>
 
 ```luau
-function CommonFormatKeys.datetime.milliseconds(milliseconds: number): TimeSpan
+function datetime.milliseconds(number) -> TimeSpan,
 ```
 
 </h4>
 
  Constructs a `TimeSpan` from milliseconds.
+
+---
+
+## `export type` CommonFormats
+
+<h4>
+
+```luau
+export type CommonFormats = index<datetime, "common_formats">
+```
+
+</h4>
 
 ---
 
