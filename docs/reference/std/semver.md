@@ -129,18 +129,6 @@ build: string?,
 
 ---
 
-## `export type` SemverImpl
-
-<h4>
-
-```luau
-type SemverImpl = typeof(semver)
-```
-
-</h4>
-
----
-
 ### semver.from
 
 <h4>
@@ -153,12 +141,12 @@ function semver.from(s: string): Semver
 
 ---
 
-### semver.satisfies
+### Semver.satisfies
 
 <h4>
 
 ```luau
-function semver.satisfies(self: Semver, semver_range: string): boolean
+function Semver.satisfies(self: Semver, semver_range: string): boolean
 ```
 
 </h4>
@@ -198,48 +186,48 @@ end
 
 ---
 
-### semver.__eq
+### Semver.__eq
 
 <h4>
 
 ```luau
-function semver.__eq(self: Semver, other: Semver): boolean
+function Semver.__eq(self: Semver, other: Semver): boolean
 ```
 
 </h4>
 
 ---
 
-### semver.__lt
+### Semver.__lt
 
 <h4>
 
 ```luau
-function semver.__lt(self: Semver, other: Semver): boolean
+function Semver.__lt(self: Semver, other: Semver): boolean
 ```
 
 </h4>
 
 ---
 
-### semver.__le
+### Semver.__le
 
 <h4>
 
 ```luau
-function semver.__le(self: Semver, other: Semver): boolean
+function Semver.__le(self: Semver, other: Semver): boolean
 ```
 
 </h4>
 
 ---
 
-### semver.__tostring
+### Semver.__tostring
 
 <h4>
 
 ```luau
-function semver.__tostring(self: Semver): string
+function Semver.__tostring(self: Semver): string
 ```
 
 </h4>
