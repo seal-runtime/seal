@@ -19,8 +19,8 @@ local function fix()
             continue
         end
     
-        if line:match("SemverImpl%.from") then
-            line = line:gsub("SemverImpl", "semver")
+        if line:match("SemverImpl%.") then
+            line = line:gsub("SemverImpl%.", "")
         elseif line:match("self: Semver") or line:match("###") then
             line = line:gsub("semver%.", "Semver.")
         end

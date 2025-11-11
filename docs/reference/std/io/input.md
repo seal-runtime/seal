@@ -6,16 +6,29 @@
 `local input = require("@std/io/input")`
 
  input handling lib
- gets input with an optional `raw_prompt` to display before getting said input.
 
 ---
 
-### io.input.tty
+### input.get
 
 <h4>
 
 ```luau
-function io.input.tty(stream: "Stdout" | "Stderr" | "Stdin"?): boolean
+function input.get(raw_prompt: string): string
+```
+
+</h4>
+
+ gets input with an optional `raw_prompt` to display before getting said input.
+
+---
+
+### input.tty
+
+<h4>
+
+```luau
+function input.tty(stream: "Stdout" | "Stderr" | "Stdin"?): boolean
 ```
 
 </h4>
@@ -37,12 +50,12 @@ If *seal* is being run in a child process, this will almost always return `false
 
 ---
 
-### io.input.rawline
+### input.rawline
 
 <h4>
 
 ```luau
-function io.input.rawline(prompt: string?): string
+function input.rawline(prompt: string?): string
 ```
 
 </h4>
@@ -53,12 +66,12 @@ But works with stdin in a child process/works while piped, making it a fallback 
 
 ---
 
-### io.input.readline
+### input.readline
 
 <h4>
 
 ```luau
-function io.input.readline(prompt: string): string | interrupt | error
+function input.readline(prompt: string): string | interrupt | error
 ```
 
 </h4>
@@ -105,12 +118,12 @@ end
 
 ---
 
-### io.input.interrupt
+### input.interrupt
 
 <h4>
 
 ```luau
-function io.input.interrupt(key: "CtrlC" | "CtrlD"): interrupt
+function input.interrupt(key: "CtrlC" | "CtrlD"): interrupt
 ```
 
 </h4>
@@ -119,12 +132,12 @@ Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 
 ---
 
-### io.input.rawmode
+### input.rawmode
 
 <h4>
 
 ```luau
-function io.input.rawmode(enabled: boolean)
+function input.rawmode(enabled: boolean)
 ```
 
 </h4>
@@ -147,12 +160,12 @@ might be writing to stdout or reading from stdin at the same time. This may caus
 
 ---
 
-### io.input.mouse
+### input.capture.mouse
 
 <h4>
 
 ```luau
-function io.input.mouse(enabled: boolean) -> (),
+function input.capture.mouse(enabled: boolean)
 ```
 
 </h4>
@@ -161,12 +174,12 @@ function io.input.mouse(enabled: boolean) -> (),
 
 ---
 
-### io.input.focus
+### input.capture.focus
 
 <h4>
 
 ```luau
-function io.input.focus(enabled: boolean) -> (),
+function input.capture.focus(enabled: boolean)
 ```
 
 </h4>
@@ -175,12 +188,12 @@ function io.input.focus(enabled: boolean) -> (),
 
 ---
 
-### io.input.paste
+### input.capture.paste
 
 <h4>
 
 ```luau
-function io.input.paste(enabled: boolean) -> (),
+function input.capture.paste(enabled: boolean)
 ```
 
 </h4>
@@ -189,12 +202,12 @@ function io.input.paste(enabled: boolean) -> (),
 
 ---
 
-### io.input.events
+### input.events
 
 <h4>
 
 ```luau
-function io.input.events(poll: Duration): () -> TerminalEvent
+function input.events(poll: Duration): () -> TerminalEvent
 ```
 
 </h4>
@@ -636,17 +649,5 @@ export type TerminalEvent =
 ```luau
 | Empty
 ```
-
----
-
-## `export type` input
-
-<h4>
-
-```luau
-type input = typeof(input)
-```
-
-</h4>
 
 ---

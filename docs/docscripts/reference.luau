@@ -189,8 +189,9 @@ for _, filepath in typedefs_paths do
                 continue
             end
 
-            local property_name, rest = string.match(trimmed_line, "([%w_]+): (.+)")
+            local property_name, rest = string.match(trimmed_line, "([%w_%.]+): (.+)")
             assert(property_name and rest, "unreachable")
+            property_name = str.trimfront(property_name, front_name .. ".") -- fixes input.input.capture.focus
 
             local name = front_name .. "." .. property_name
 
@@ -201,6 +202,10 @@ for _, filepath in typedefs_paths do
                 is = "Function"
             else
                 defs = `{property_name}: {rest}`
+            end
+
+            if filepath:match("io/input") then
+                print(front_name, property_name)
             end
 
             local new_api: Api = {

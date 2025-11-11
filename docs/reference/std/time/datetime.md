@@ -25,12 +25,12 @@ type CommonFormatKeys = keyof<index<typeof(datetime), "common_formats">>
 
 ---
 
-### CommonFormatKeys.parse
+### CommonFormatKeys.datetime.parse
 
 <h4>
 
 ```luau
-function CommonFormatKeys.parse(source: string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime
+function CommonFormatKeys.datetime.parse(source: string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime
 ```
 
 </h4>
@@ -59,12 +59,12 @@ local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AU
 
 ---
 
-### CommonFormatKeys.years
+### CommonFormatKeys.datetime.years
 
 <h4>
 
 ```luau
-function CommonFormatKeys.years(years: number, relative_to: DateTime?): TimeSpan
+function CommonFormatKeys.datetime.years(years: number, relative_to: DateTime?): TimeSpan
 ```
 
 </h4>
@@ -98,12 +98,12 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-### CommonFormatKeys.months
+### CommonFormatKeys.datetime.months
 
 <h4>
 
 ```luau
-function CommonFormatKeys.months(months: number, relative_to: DateTime?): TimeSpan
+function CommonFormatKeys.datetime.months(months: number, relative_to: DateTime?): TimeSpan
 ```
 
 </h4>
@@ -137,12 +137,12 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-### CommonFormatKeys.days
+### CommonFormatKeys.datetime.days
 
 <h4>
 
 ```luau
-function CommonFormatKeys.days(days: number): TimeSpan
+function CommonFormatKeys.datetime.days(days: number): TimeSpan
 ```
 
 </h4>
@@ -151,12 +151,12 @@ function CommonFormatKeys.days(days: number): TimeSpan
 
 ---
 
-### CommonFormatKeys.hours
+### CommonFormatKeys.datetime.hours
 
 <h4>
 
 ```luau
-function CommonFormatKeys.hours(hours: number): TimeSpan
+function CommonFormatKeys.datetime.hours(hours: number): TimeSpan
 ```
 
 </h4>
@@ -165,12 +165,12 @@ function CommonFormatKeys.hours(hours: number): TimeSpan
 
 ---
 
-### CommonFormatKeys.minutes
+### CommonFormatKeys.datetime.minutes
 
 <h4>
 
 ```luau
-function CommonFormatKeys.minutes(minutes: number): TimeSpan
+function CommonFormatKeys.datetime.minutes(minutes: number): TimeSpan
 ```
 
 </h4>
@@ -179,12 +179,12 @@ function CommonFormatKeys.minutes(minutes: number): TimeSpan
 
 ---
 
-### CommonFormatKeys.seconds
+### CommonFormatKeys.datetime.seconds
 
 <h4>
 
 ```luau
-function CommonFormatKeys.seconds(seconds: number): TimeSpan
+function CommonFormatKeys.datetime.seconds(seconds: number): TimeSpan
 ```
 
 </h4>
@@ -193,12 +193,12 @@ function CommonFormatKeys.seconds(seconds: number): TimeSpan
 
 ---
 
-### CommonFormatKeys.milliseconds
+### CommonFormatKeys.datetime.milliseconds
 
 <h4>
 
 ```luau
-function CommonFormatKeys.milliseconds(milliseconds: number): TimeSpan
+function CommonFormatKeys.datetime.milliseconds(milliseconds: number): TimeSpan
 ```
 
 </h4>
