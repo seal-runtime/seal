@@ -45,6 +45,18 @@ assert(first_version < second_version)
 
 ---
 
+## `export type` SemverFields
+
+<h4>
+
+```luau
+type SemverFields = {
+```
+
+</h4>
+
+---
+
 ### SemverFields.major
 
 <h4>
@@ -129,60 +141,105 @@ type SemverImpl = typeof(semver)
 
 ---
 
-## `export type` Semver
+### semver.from
 
 <h4>
 
 ```luau
-export type Semver = setmetatable<SemverFields, SemverImpl>
+function semver.from(s: string): Semver
 ```
 
 </h4>
 
 ---
 
-### Semver.from
+### semver.satisfies
 
 <h4>
 
 ```luau
-function Semver.from(s: string): Semver
+function semver.satisfies(self: Semver, semver_range: string): boolean
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Returns true if the `self` is compatible with (within the range of) semver_range.
+
+`semver_range` supports the following syntaxes:
+
+- `^` like `^0.1.0`, satisfied by any semvers greater than or equal to `0.1.0` but less than `0.2.0`,
+- `==` like `==0.1.0` for exact matches,
+- `<=` like `<=1.0.0` for upper bounds that are not necessarily equivalent to ^,
+- `>` like `<1.0.1` for lower bounds (exclusive),
+- Defaults to `^` when no operator provided (`0.2.1` defaults to `^0.2.1`),
+- Multiple constraints can be space-separated, e.g. `>=1.2.3 <2.0.0`, which all must be satisfied.
+
+Note that release candidates (rc.<number>) are ordered before full releases, therefore
+`0.2.0-rc.1` < `0.2.0`.
+
+## Usage
+
+```luau
+local semver = require("@std/semver")
+
+local some_version = semver.from(require("./config.luau").version)
+if some_version:satisfies("^0.1.0") then
+    print("compatible version!")
+else
+    print("incompatible version :(")
+end
+```
+
+</details>
+
+---
+
+### semver.__eq
+
+<h4>
+
+```luau
+function semver.__eq(self: Semver, other: Semver): boolean
 ```
 
 </h4>
 
 ---
 
-### Semver.string
+### semver.__lt
 
 <h4>
 
 ```luau
-string: " .. s)
+function semver.__lt(self: Semver, other: Semver): boolean
 ```
 
 </h4>
 
 ---
 
-### Semver.string
+### semver.__le
 
 <h4>
 
 ```luau
-string: {s}`)
+function semver.__le(self: Semver, other: Semver): boolean
 ```
 
 </h4>
 
 ---
 
-### Semver.FIXME
+### semver.__tostring
 
 <h4>
 
 ```luau
-FIXME: not optional fields not qualifying as optionals
+function semver.__tostring(self: Semver): string
 ```
 
 </h4>
@@ -228,98 +285,5 @@ type SemverVals =
 ```luau
 | "GREATER THAN NOT INCLUDING"
 ```
-
----
-
-### SemverVals.satisfies
-
-<h4>
-
-```luau
-function SemverVals.satisfies(self: Semver, semver_range: string): boolean
-```
-
-</h4>
-
-<details>
-
-<summary> See the docs </summary
-
-Returns true if the `self` is compatible with (within the range of) semver_range.
-
-`semver_range` supports the following syntaxes:
-
-- `^` like `^0.1.0`, satisfied by any semvers greater than or equal to `0.1.0` but less than `0.2.0`,
-- `==` like `==0.1.0` for exact matches,
-- `<=` like `<=1.0.0` for upper bounds that are not necessarily equivalent to ^,
-- `>` like `<1.0.1` for lower bounds (exclusive),
-- Defaults to `^` when no operator provided (`0.2.1` defaults to `^0.2.1`),
-- Multiple constraints can be space-separated, e.g. `>=1.2.3 <2.0.0`, which all must be satisfied.
-
-Note that release candidates (rc.<number>) are ordered before full releases, therefore
-`0.2.0-rc.1` < `0.2.0`.
-
-## Usage
-
-```luau
-local semver = require("@std/semver")
-
-local some_version = semver.from(require("./config.luau").version)
-if some_version:satisfies("^0.1.0") then
-    print("compatible version!")
-else
-    print("incompatible version :(")
-end
-```
-
-</details>
-
----
-
-### SemverVals.__eq
-
-<h4>
-
-```luau
-function SemverVals.__eq(self: Semver, other: Semver): boolean
-```
-
-</h4>
-
----
-
-### SemverVals.__lt
-
-<h4>
-
-```luau
-function SemverVals.__lt(self: Semver, other: Semver): boolean
-```
-
-</h4>
-
----
-
-### SemverVals.__le
-
-<h4>
-
-```luau
-function SemverVals.__le(self: Semver, other: Semver): boolean
-```
-
-</h4>
-
----
-
-### SemverVals.__tostring
-
-<h4>
-
-```luau
-function SemverVals.__tostring(self: Semver): string
-```
-
-</h4>
 
 ---

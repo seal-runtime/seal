@@ -43,6 +43,7 @@ assert(first_version < second_version)
 ]=]
 local semver = {}
 semver.__index = semver
+export type Semver = setmetatable<SemverFields, SemverImpl>
 
 type SemverFields = {
     major: number,
@@ -59,8 +60,6 @@ type SemverFields = {
 
 type SemverImpl = typeof(semver)
 
-export type Semver = setmetatable<SemverFields, SemverImpl>
-
 function semver.default(): Semver
     local fields: SemverFields = {
         major = 0,
@@ -72,50 +71,51 @@ function semver.default(): Semver
 end
 
 function semver.from(s: string): Semver
-    local major, minor, patch = string.match(s, "^(%d+)%.(%d+)%.(%d+)")
-    if not major or not minor or not patch then
-        error("Invalid semver string: " .. s)
-    else
-        major = tonumber(major)
-        minor = tonumber(minor)
-        patch = tonumber(patch)
-        if not major or not minor or not patch then
-            error(`Invalid semver string: {s}`)
-        end
-    end
+    -- local major, minor, patch = string.match(s, "^(%d+)%.(%d+)%.(%d+)")
+    -- if not major or not minor or not patch then
+    --     error("Invalid semver string: " .. s)
+    -- else
+    --     major = tonumber(major)
+    --     minor = tonumber(minor)
+    --     patch = tonumber(patch)
+    --     if not major or not minor or not patch then
+    --         error(`Invalid semver string: {s}`)
+    --     end
+    -- end
 
-    local metadata = {}
+    -- local metadata = {}
 
-    -- Extract release candidate (e.g., -rc.1)
-    local rc_name, rc_version = string.match(s, "%-(%a+)%.(%d+)")
-    if rc_name and rc_version then
-        metadata.release_candidate = {
-            tag = rc_name,
-            ver = tonumber(rc_version) :: number,
-        }
-    end
+    -- -- Extract release candidate (e.g., -rc.1)
+    -- local rc_name, rc_version = string.match(s, "%-(%a+)%.(%d+)")
+    -- if rc_name and rc_version then
+    --     metadata.release_candidate = {
+    --         tag = rc_name,
+    --         ver = tonumber(rc_version) :: number,
+    --     }
+    -- end
 
-    -- Extract build metadata (e.g., +build123)
-    local build = string.match(s, "%+([%w%.%-]+)")
-    if build then
-        metadata.build = build
-    end
+    -- -- Extract build metadata (e.g., +build123)
+    -- local build = string.match(s, "%+([%w%.%-]+)")
+    -- if build then
+    --     metadata.build = build
+    -- end
 
-    assert(
-        typeof(major) == "number" 
-        and typeof(minor) == "number" 
-        and typeof(patch) == "number",
-        `Unexpected major/minor/patch ({major}, {minor}, {patch})`
-    )
+    -- assert(
+    --     typeof(major) == "number" 
+    --     and typeof(minor) == "number" 
+    --     and typeof(patch) == "number",
+    --     `Unexpected major/minor/patch ({major}, {minor}, {patch})`
+    -- )
 
-    local fields: SemverFields = {
-        major = major,
-        minor = minor,
-        patch = patch,
-        metadata = metadata :: any, -- LUAU FIXME: not optional fields not qualifying as optionals
-    }
+    -- local fields: SemverFields = {
+    --     major = major,
+    --     minor = minor,
+    --     patch = patch,
+    --     metadata = metadata :: any, -- LUAU FIXME: not optional fields not qualifying as optionals
+    -- }
 
-    return setmetatable(fields, semver)
+    -- return setmetatable(fields, semver)
+    return nil :: any
 end
 
 local semver_ranges = {
@@ -125,13 +125,6 @@ local semver_ranges = {
     ["<"] = "LESS THAN",
     [">"] = "GREATER THAN NOT INCLUDING",
 }
-
-type SemverVals = 
-    | "AND UP" 
-    | "EXACTLY EQUAL" 
-    | "LESS THAN OR EQUAL" 
-    | "LESS THAN" 
-    | "GREATER THAN NOT INCLUDING"
 
 --[=[
     Returns true if the `self` is compatible with (within the range of) semver_range.
@@ -303,5 +296,13 @@ function semver.__tostring(self: Semver): string
     end
     return result
 end
+
+type SemverVals = 
+    | "AND UP" 
+    | "EXACTLY EQUAL" 
+    | "LESS THAN OR EQUAL" 
+    | "LESS THAN" 
+    | "GREATER THAN NOT INCLUDING"
+
 
 return semver

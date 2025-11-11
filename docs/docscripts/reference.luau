@@ -1,8 +1,8 @@
-local tt = require("@extra/tt")
 local fs = require("@std/fs")
-local process = require("@std/process")
+local tt = require("@extra/tt")
 local str = require("@std/str")
 local time = require("@std/time")
+local process = require("@std/process")
 
 local defs_path = fs.dir.project():join(".seal", "typedefs", "std")
 local refs_path = fs.dir.project():join("docs", "reference")
