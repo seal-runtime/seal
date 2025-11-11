@@ -5,21 +5,6 @@
     See `datetime.parse`.
 ]=]
 export type datetime = {
-    common_formats: {
-        ISO_8601: "%Y-%m-%d %H:%M",
-        RFC_2822: "%a, %d %b %Y %H:%M:%S %z",
-        RFC_3339: "%Y-%m-%dT%H:%M:%S%:z",
-        SHORT_DATE: "%Y-%m-%d",
-        SHORT_TIME: "%H:%M",
-        FULL_DATE_TIME: "%A, %B %d, %Y %H:%M:%S",
-        LOGGING_24_HR: "%a %b %e %H:%M:%S %Z %Y",
-        LOGGING_12_HR: "%a %b %e %I:%M:%S %p %Z %Y",
-        ["MM/DD/YYYY"]: "%m/%d/%Y",
-        ["MM/DD/YYYY HH:MM (AM/PM)"]: "%m/%d/%Y %I:%M %p",
-        ["MM/DD/YY"]: "%m/%d/%y",
-        ["HH:MM (AM/PM)"]: "%I:%M %p",
-        AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
-    },
     --- Constructs a `DateTime` from right now (based on system time) in your local timezone.
     now: () -> DateTime,
     --[=[
@@ -46,6 +31,21 @@ export type datetime = {
         local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
         ```
     ]=]
+        common_formats: {
+        ISO_8601: "%Y-%m-%d %H:%M",
+        RFC_2822: "%a, %d %b %Y %H:%M:%S %z",
+        RFC_3339: "%Y-%m-%dT%H:%M:%S%:z",
+        SHORT_DATE: "%Y-%m-%d",
+        SHORT_TIME: "%H:%M",
+        FULL_DATE_TIME: "%A, %B %d, %Y %H:%M:%S",
+        LOGGING_24_HR: "%a %b %e %H:%M:%S %Z %Y",
+        LOGGING_12_HR: "%a %b %e %I:%M:%S %p %Z %Y",
+        ["MM/DD/YYYY"]: "%m/%d/%Y",
+        ["MM/DD/YYYY HH:MM (AM/PM)"]: "%m/%d/%Y %I:%M %p",
+        ["MM/DD/YY"]: "%m/%d/%y",
+        ["HH:MM (AM/PM)"]: "%I:%M %p",
+        AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
+    },
     parse: (source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
     --[=[
         Constructs a `TimeSpan` from years. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!

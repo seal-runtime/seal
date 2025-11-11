@@ -11,6 +11,37 @@ See `datetime.parse`.
 
 ---
 
+### datetime.now
+
+<h4>
+
+```luau
+function datetime.now() -> DateTime,
+```
+
+</h4>
+
+ Constructs a `DateTime` from right now (based on system time) in your local timezone.
+
+---
+
+### datetime.from
+
+<h4>
+
+```luau
+function datetime.from(timestamp: number, timezone: IanaTimezone, nanos: number?) -> DateTime,
+```
+
+</h4>
+
+Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
+
+- `timezone` defaults to `"UTC"` if not specified
+- `nanos` defaults to `0` if not specified
+
+---
+
 ### datetime.common_formats.ISO_8601
 
 <h4>
@@ -20,6 +51,28 @@ ISO_8601: "%Y-%m-%d %H:%M",
 ```
 
 </h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Constructs a `DateTime` from a strtime string or `common_format`.
+
+All seal `DateTime`s are timezone aware, which prevents annoying and complex bugs down the line.
+
+- Specify `"AUTO"` as your `timezone` if your `format` string is timezone-aware by default (RFC 3339, has `%Q` or `%z/z/%Z` specifiers, etc.)
+- Specify `"UTC"` as your `timezone` if you want to treat `source` as UTC.
+
+## Usage
+
+```luau
+-- Parse a simple ISO 8601 timestamp that we're sure came from US/CST time.
+local dt = datetime.parse("2025-01-02 05:00", "ISO_8601", "US/Central")
+-- Parse an RFC 3339 timestamp that already has timezone offset info in it.
+local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
+```
+
+</details>
 
 ---
 
@@ -119,77 +172,24 @@ AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
 
 ---
 
-### datetime.now
+### datetime.common_formats.parse
 
 <h4>
 
 ```luau
-function datetime.now() -> DateTime,
+function datetime.common_formats.parse(source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
 ```
 
 </h4>
 
- Constructs a `DateTime` from right now (based on system time) in your local timezone.
-
 ---
 
-### datetime.from
+### datetime.common_formats.years
 
 <h4>
 
 ```luau
-function datetime.from(timestamp: number, timezone: IanaTimezone, nanos: number?) -> DateTime,
-```
-
-</h4>
-
-Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
-
-- `timezone` defaults to `"UTC"` if not specified
-- `nanos` defaults to `0` if not specified
-
----
-
-### datetime.parse
-
-<h4>
-
-```luau
-function datetime.parse(source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
-```
-
-</h4>
-
-<details>
-
-<summary> See the docs </summary
-
-Constructs a `DateTime` from a strtime string or `common_format`.
-
-All seal `DateTime`s are timezone aware, which prevents annoying and complex bugs down the line.
-
-- Specify `"AUTO"` as your `timezone` if your `format` string is timezone-aware by default (RFC 3339, has `%Q` or `%z/z/%Z` specifiers, etc.)
-- Specify `"UTC"` as your `timezone` if you want to treat `source` as UTC.
-
-## Usage
-
-```luau
--- Parse a simple ISO 8601 timestamp that we're sure came from US/CST time.
-local dt = datetime.parse("2025-01-02 05:00", "ISO_8601", "US/Central")
--- Parse an RFC 3339 timestamp that already has timezone offset info in it.
-local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
-```
-
-</details>
-
----
-
-### datetime.years
-
-<h4>
-
-```luau
-function datetime.years(number, relative_to: DateTime?) -> TimeSpan,
+function datetime.common_formats.years(number, relative_to: DateTime?) -> TimeSpan,
 ```
 
 </h4>
@@ -223,12 +223,12 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-### datetime.months
+### datetime.common_formats.months
 
 <h4>
 
 ```luau
-function datetime.months(number, relative_to: DateTime?) -> TimeSpan,
+function datetime.common_formats.months(number, relative_to: DateTime?) -> TimeSpan,
 ```
 
 </h4>
@@ -262,12 +262,12 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-### datetime.days
+### datetime.common_formats.days
 
 <h4>
 
 ```luau
-function datetime.days(number) -> TimeSpan,
+function datetime.common_formats.days(number) -> TimeSpan,
 ```
 
 </h4>
@@ -276,12 +276,12 @@ function datetime.days(number) -> TimeSpan,
 
 ---
 
-### datetime.hours
+### datetime.common_formats.hours
 
 <h4>
 
 ```luau
-function datetime.hours(number) -> TimeSpan,
+function datetime.common_formats.hours(number) -> TimeSpan,
 ```
 
 </h4>
@@ -290,12 +290,12 @@ function datetime.hours(number) -> TimeSpan,
 
 ---
 
-### datetime.minutes
+### datetime.common_formats.minutes
 
 <h4>
 
 ```luau
-function datetime.minutes(number) -> TimeSpan,
+function datetime.common_formats.minutes(number) -> TimeSpan,
 ```
 
 </h4>
@@ -304,12 +304,12 @@ function datetime.minutes(number) -> TimeSpan,
 
 ---
 
-### datetime.seconds
+### datetime.common_formats.seconds
 
 <h4>
 
 ```luau
-function datetime.seconds(number) -> TimeSpan,
+function datetime.common_formats.seconds(number) -> TimeSpan,
 ```
 
 </h4>
@@ -318,12 +318,12 @@ function datetime.seconds(number) -> TimeSpan,
 
 ---
 
-### datetime.milliseconds
+### datetime.common_formats.milliseconds
 
 <h4>
 
 ```luau
-function datetime.milliseconds(number) -> TimeSpan,
+function datetime.common_formats.milliseconds(number) -> TimeSpan,
 ```
 
 </h4>
