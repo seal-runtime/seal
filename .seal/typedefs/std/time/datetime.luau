@@ -31,7 +31,7 @@ export type datetime = {
         local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
         ```
     ]=]
-        common_formats: {
+    common_formats: {
         ISO_8601: "%Y-%m-%d %H:%M",
         RFC_2822: "%a, %d %b %Y %H:%M:%S %z",
         RFC_3339: "%Y-%m-%dT%H:%M:%S%:z",

@@ -172,24 +172,24 @@ AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
 
 ---
 
-### datetime.common_formats.parse
+### datetime.parse
 
 <h4>
 
 ```luau
-function datetime.common_formats.parse(source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
+function datetime.parse(source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
 ```
 
 </h4>
 
 ---
 
-### datetime.common_formats.years
+### datetime.years
 
 <h4>
 
 ```luau
-function datetime.common_formats.years(number, relative_to: DateTime?) -> TimeSpan,
+function datetime.years(number, relative_to: DateTime?) -> TimeSpan,
 ```
 
 </h4>
@@ -223,12 +223,12 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-### datetime.common_formats.months
+### datetime.months
 
 <h4>
 
 ```luau
-function datetime.common_formats.months(number, relative_to: DateTime?) -> TimeSpan,
+function datetime.months(number, relative_to: DateTime?) -> TimeSpan,
 ```
 
 </h4>
@@ -262,12 +262,12 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-### datetime.common_formats.days
+### datetime.days
 
 <h4>
 
 ```luau
-function datetime.common_formats.days(number) -> TimeSpan,
+function datetime.days(number) -> TimeSpan,
 ```
 
 </h4>
@@ -276,12 +276,12 @@ function datetime.common_formats.days(number) -> TimeSpan,
 
 ---
 
-### datetime.common_formats.hours
+### datetime.hours
 
 <h4>
 
 ```luau
-function datetime.common_formats.hours(number) -> TimeSpan,
+function datetime.hours(number) -> TimeSpan,
 ```
 
 </h4>
@@ -290,12 +290,12 @@ function datetime.common_formats.hours(number) -> TimeSpan,
 
 ---
 
-### datetime.common_formats.minutes
+### datetime.minutes
 
 <h4>
 
 ```luau
-function datetime.common_formats.minutes(number) -> TimeSpan,
+function datetime.minutes(number) -> TimeSpan,
 ```
 
 </h4>
@@ -304,12 +304,12 @@ function datetime.common_formats.minutes(number) -> TimeSpan,
 
 ---
 
-### datetime.common_formats.seconds
+### datetime.seconds
 
 <h4>
 
 ```luau
-function datetime.common_formats.seconds(number) -> TimeSpan,
+function datetime.seconds(number) -> TimeSpan,
 ```
 
 </h4>
@@ -318,12 +318,12 @@ function datetime.common_formats.seconds(number) -> TimeSpan,
 
 ---
 
-### datetime.common_formats.milliseconds
+### datetime.milliseconds
 
 <h4>
 
 ```luau
-function datetime.common_formats.milliseconds(number) -> TimeSpan,
+function datetime.milliseconds(number) -> TimeSpan,
 ```
 
 </h4>
