@@ -3,9 +3,11 @@
 ## Windows
 
 1. Download the [latest release](<https://github.com/deviaze/seal/releases/latest>) of *seal* for your system, or if you want the most up-to-date beta, download the newest [build artifact from GitHub Actions](https://github.com/deviaze/seal/actions).
-2. Move *seal* somewhere permanent; I recommend `C:\Users\<USERNAME>\.local\bin\seal.exe`. To add this directory to `$PATH`, open your PowerShell profile in VSCode by running `code $PROFILE` and then add `$env:Path += ";C:\Users\<USERNAME>\.local\bin"` somewhere near the bottom of the file.
-3. Close and reopen your Windows Terminal and make sure running `seal --help` displays *seal*'s help message. This should ensure *seal* is available in your `$PATH`.
-4. Webview dependencies (for GUI programs, when implemented) should already be installed via Microsoft Edge.
+2. Once you've downloaded *seal*, open your Downloads directory in Windows Terminal. On Windows 11, the easiest way to do this is to open your Downloads folder in File Explorer, right click in the directory with `seal.exe`, and click "Open in Terminal".
+3. To access *seal* from anywhere on your system, you should move *seal* somewhere permanent; I recommend `C:\Users\<USERNAME>\.local\bin\seal.exe`. To do this automatically, in Windows Terminal (PowerShell), run `mkdir ~\.local\bin; mv .\seal.exe ~\.local\bin\seal.exe`.
+4. To add this directory to `$PATH` for PowerShell, open your PowerShell profile in VSCode by running `code $PROFILE` and then add `$env:Path += ";C:\Users\<USERNAME>\.local\bin"` somewhere near the bottom of the file.
+5. Close and reopen your Windows Terminal and make sure running `seal --help` displays *seal*'s help message. This should ensure *seal* is available in your `$PATH`.
+6. Webview dependencies (for GUI programs, when implemented) should already be installed via Microsoft Edge.
 
 ## macOS
 
