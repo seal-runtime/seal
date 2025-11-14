@@ -32,3 +32,7 @@ See the [standard library reference](/docs/reference/std/) for all current featu
 
 - Integrated webview for cross-platform GUI applications.
 - Plug-and-play FFI 'crates' system that allows loading Rust dependencies at runtime.
+
+## Community
+
+[Join the Discord](https://discord.gg/3MJ37CFNWh) if you need help or want to contribute!
