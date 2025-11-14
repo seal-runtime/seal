@@ -74,3 +74,37 @@ To run a `.luau` file with seal, use `seal <filename_with_ext>` (like `seal ./ge
 ### Evaluating code from the command line
 
 To evaluate code with seal, use `seal eval '<string src>'`. `seal eval` comes with the `fs`, `http`, and `process` libs loaded in for convenience. An interactive REPL is planned for the future.
+
+## Compiling to a standalone application
+
+*seal* supports limited project compilation.
+
+Run `seal compile` to compile the seal project at your cwd, `seal compile -o binname` to compile it to a binary called `binname`, or `seal compile -o filename.luau` to bundle the entire codebase into a single Luau file.
+
+To ensure bundling succeeds, make sure your every required file in your project returns a single identifier or table.
+
+For example:
+
+```luau
+
+local library = {}
+
+-- bunch of code
+
+return library
+```
+
+works fine!
+
+But
+
+```luau
+
+return function()
+    -- bunch of code
+end
+```
+
+will probably not work.
+
+Additionally, keep in mind that behavior like `script:path()` *will change* in the bundled application! For example, if you check that `script:path() == script.entry_path` in a file called `setup.luau`, required by `main.luau` in your codebase, it will not trigger when you run `seal run` or `seal ./src/main.luau`, but it will *always* trigger when you run the project once bundled/compiled.

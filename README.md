@@ -2,8 +2,6 @@
 
 Use *seal* to write fun, maintainable, and easily-deployable programs in [Luau](https://luau.org), a simple, dependable, and extremely fast scripting language with good typechecking and tooling support.
 
-Check out the [standard library reference](docs/standard-library/index.md) for all current features and APIs.
-
 ## Goals
 
 - Provide a **simple but expressive API** that allows you to get straight into working on your script, shim, or project.
@@ -29,3 +27,11 @@ Check out the full [usage instructions](docs/usage.md) for more.
 
 ## Programming and Standard Library
 
+If you're new to Luau, check out *seal*'s [Luau Book](/docs/luau-book/index.md). For a few examples of using *seal* libraries, check out [the programming into](/docs/libraries_and_programming.md).
+
+Check out the [standard library reference](/docs/reference/std/) for all current features and APIs.
+
+## Roadmap
+
+- Integrated webview for GUI applications.
+- Crates system for FFI interop with Rust code at runtime.

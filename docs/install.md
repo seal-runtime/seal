@@ -1,13 +1,13 @@
 # Install
 
+*seal* is a command-line/terminal application. To install and use *seal*, you'll need to use a terminal, such as Windows Terminal with PowerShell on Windows, Terminal on macOS, Konsole on Linux, Termux on Android, etc. Some terminal experience is recommended, but as long as you're willing to learn and look up stuff as needed, you should easily be able to use and install *seal*.
+
 ## Windows
 
 1. Download the [latest release](<https://github.com/deviaze/seal/releases/latest>) of *seal* for your system, or if you want the most up-to-date beta, download the newest [build artifact from GitHub Actions](https://github.com/deviaze/seal/actions).
-2. Once you've downloaded *seal*, open your Downloads directory in Windows Terminal. On Windows 11, the easiest way to do this is to open your Downloads folder in File Explorer, right click in the directory with `seal.exe`, and click "Open in Terminal".
-3. To access *seal* from anywhere on your system, you should move *seal* somewhere permanent; I recommend `C:\Users\<USERNAME>\.local\bin\seal.exe`. To do this automatically, in Windows Terminal (PowerShell), run `mkdir ~\.local\bin; mv .\seal.exe ~\.local\bin\seal.exe`.
-4. To add this directory to `$PATH` for PowerShell, open your PowerShell profile in VSCode by running `code $PROFILE` and then add `$env:Path += ";C:\Users\<USERNAME>\.local\bin"` somewhere near the bottom of the file.
-5. Close and reopen your Windows Terminal and make sure running `seal --help` displays *seal*'s help message. This should ensure *seal* is available in your `$PATH`.
-6. Webview dependencies (for GUI programs, when implemented) should already be installed via Microsoft Edge.
+2. Once you've downloaded *seal*, you need to copy/move it somewhere in your `$PATH` to make it accessible in your terminal. If you don't know how to do this, don't worry, [read the tutorial on installing *seal* with *seal*](/docs/seal_install_script.md).
+3. Close and reopen your Windows Terminal and make sure running `seal --help` displays *seal*'s help message. This should ensure *seal* is available in your `$PATH`.
+4. Webview dependencies (for GUI programs, when implemented) should already be installed via Microsoft Edge.
 
 ## macOS
 
@@ -15,7 +15,7 @@
 2. Move *seal* to a location like `/usr/local/bin/seal` or `~/bin/seal`.
 3. Because *seal* is not signed/notarized, macOS will block it from running by default. To allow it, first run `./seal --help` to cause macOS to show a warning, and then go to Mac **System Settings → Privacy & Security** and check the bottom for a message like "seal was blocked from use because it is not from an identified developer." Click **Allow Anyway**.
 4. Go back to your terminal and try `./seal --help` again. This may cause another warning to pop up with another confirmation dialog. Click **Open**.
-5. To ensure *seal* is available everywhere, make sure it's added to your shell's `$PATH`. For example, if you placed it in `~/bin`, add `export PATH="$HOME/bin:$PATH"` to your shell config (.zshrc, .bash_profile, etc.)
+5. To ensure *seal* is available everywhere, make sure it's added to your shell's `$PATH`. For example, if you placed it in `~/bin`, add `export PATH="$HOME/bin:$PATH"` to your shell config (`.zshrc`, `.bash_profile`, etc.)
 6. Every time you update, redownload, or recompile *seal* you might have to redo those steps and explicitly allow it again. You can also disable Gatekeeper entirely if you want to (look up documentation for that if you're so inclined)
 7. Confirm *seal* works by running `seal --help`.
 8. I do not know about webview/GUI dependencies on macOS; will update this closer to webview implementation on that.
