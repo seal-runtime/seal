@@ -102,6 +102,7 @@ But
 
 return function()
     -- bunch of code
+    return thing
 end
 ```
 
