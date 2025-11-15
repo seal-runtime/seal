@@ -17,6 +17,8 @@ function aes.generatekey() -> string,
 
 </h4>
 
+ Generate an AES-256 key.
+
 ---
 
 ### aes.encrypt
@@ -29,6 +31,8 @@ function aes.encrypt(plaintext: string, key: string) -> string,
 
 </h4>
 
+ Encrypt plaintext with an AES-256 key
+
 ---
 
 ### aes.decrypt
@@ -40,6 +44,8 @@ function aes.decrypt(ciphertext: string, key: string) -> string,
 ```
 
 </h4>
+
+ Decrypt ciphertext with an AES-256 key.
 
 ---
 

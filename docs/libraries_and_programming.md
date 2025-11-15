@@ -1,217 +1,114 @@
 <!-- markdownlint-disable MD033 -->
 
-# Programming and Standard Library
+# Libraries and Programming
 
 If you're new to Luau, check out seal's [Luau Book](/docs/luau-book/index.md) and Luau's [official documentation](https://luau.org).
 
-Although seal provides some builtin globals (such as `p`, `pp`, `channel` (in a child thread), and `script`), most features are in the standard library. You can import stdlibs like so:
+Although seal provides some builtin globals (such as `p`, `pp`, `channel` (in a child thread), and `script`), most features are in the standard library. You can import standard libraries like so:
 
 ```luau
 local fs = require("@std/fs")
 local colors = require("@std/colors") -- (the most important one tbh)
 
 -- some libs are nested:
-local input = require("@std/io/input")
+local http = require("@std/net/http")
+local prompt = require("@std/io/prompt")
 ```
 
-Using Luau Language Server, you should be able to see documentation, usage examples, and typedefs for each standard library type/table/function by hovering over their variable names in your editor. For convenience, in **Project** codebases, all documentation is located in the `.seal/typedefs` directory generated alongside your project.
+With Luau Language Server, you should be able to see documentation, usage examples, and type definitions for each library when you hover over them in your editor.
 
-## Common tasks
+For convenience, all of *seal*'s type definitions and documentation are located in your project's `./.seal/typedefs` directory, and for script codebases, in your home directory's `~/.seal/typedefs` folder.
 
-<details>
+If you want to see documentation on the web, check out the [references](/docs/reference/) folder in this repository.
 
-<summary> Read and write files/directories </summary>
+## Programming
+
+You can use *seal* to write programs that interact with your filesystem, get and send things on the internet, connect other programs together (glue scripts), do multiple things at the same time, and more. In the future, you'll be able to write cross-platform GUI apps directly in *seal*!
 
 ### Read and write files/directories
 
+[@std/fs](/docs/reference/std/fs/init.md)
+
 ```luau
 local fs = require("@std/fs")
-local path = fs.path
+```
 
--- read files
-local content = fs.readfile("myfile.txt")
+<details>
+<summary>Examples</summary>
 
--- write a file from string (or buffer!)
-local seally_path = path.join(path.cwd(), "seally.txt")
+#### Read files
+
+```luau
+local content = fs.readfile("./myfile.txt")
+print(content)
+```
+
+Without erroring if the file doesn't exist or isn't found:
+
+```luau
+local content, result = fs.file.try_read("./myfile.txt")
+if content then
+    print(content)
+elseif result == "NotFound" then
+    print("file not found")
+elseif result == "PermissionDenied" then
+    print("permission denied")
+end
+```
+
+#### Create files and directories
+
+Write files to a path:
+
+```luau
+local seally_path = fs.path.join(script:parent(), "seally.txt")
 fs.writefile(seally_path, "did you know seals can bark?")
+```
 
--- remove it
-fs.removefile(seally_path)
+Write a new directory, creating any directories needed, without erroring if one doesn't exist:
 
--- make a new empty directory
-fs.makedir("./src")
--- write a new directory tree
+```luau
+fs.makedir("./src/elements", {
+    create_missing = true,
+    error_if_exists = false,
+})
+```
+
+Write a new directory tree, with content:
+
+```luau
 fs.writetree("./tests", fs.tree()
     :with_file("run_tests.luau", run_tests_src)
     :with_tree("cases", fs.tree()
         :with_file("case1", cases[1])
     )
 )
--- remove both
-fs.removetree("./src"); fs.removetree("./tests")
 ```
 
-#### Iterate through a directory's entries
+#### List all files and iterate through a directory
+
+List all files in a directory, recursively:
 
 ```luau
-local entries = fs.entries(path.join(script:parent(), "other_dir"))
-for entry_path, entry in entries do
-    if entry.type == "File" then
-        print(`file at '{entry_path}' says {entry:read()}!`)
-    elseif entry.type == "Directory" then
-        local recursive_list = entry:list(true) -- you can also add a filter function if you want
-        print(`directory at {colors.blue(`'{entry_path}'`)} has these entries, recursively:`)
-        print(recursive_list)
-    end
-end
+local files = fs.listdir("./src", true)
 ```
 
-#### Check if a file exists
+#### Remove files and directories
 
 ```luau
--- because you want to read it
-local content, result = fs.file.try_read(mypath)
-if content then
-    print(content)
-elseif result == "NotFound" then
-    print(`{mypath} not found`)
-else
-    warn(`unexpected error reading {mypath}: {result}`)
-end
-
--- because you just want to make sure it exists
-if fs.path.exists(mypath) then
-    print("yes it exists")
-end
-
--- because you want to make sure it's not a directory
-if fs.is(mypath) == "File" then
-    print("yes it's a file")
-end
+fs.removefile(fs.path.join(script:parent(), "seally.txt"))
+fs.removetree("./src/old")
 ```
 
 </details>
 
-<!-- #### Read and write files/directories -->
+## Cookbook
 
-<details>
-<summary> Send http requests </summary>
+Some fun things you could write with *seal*
 
-#### Send http requests
+- Automatically launch a program when you modify anything in a specific folder.
+- Automatically back up everything in a folder every few hours to your server.
+- GUI automation with programs like `kdotool` or AutoHotKey. Why write unreadable AHK when you can write Luau to write and run the AHK for you?
+- Custom touchpad gestures on Linux (.. I've done this before; need to port it to *seal*)
+- A background script that reminds you to drink water every hour.
 
-```luau
-local http = require("@std/net/http")
-
-local seal_data = http.get("https://sealfinder.net/api/get"):unwrap_json()
-local post_response = http.post {
-    url = "https://mycatlist.me/api/add_cat/post",
-    headers = {
-        Authorization = `Bearer {TOKEN}`,
-    },
-    body = {
-        name = "Taz",
-        age = 12,
-    }, -- pass a table? seal serializes it for you (and sets Content-Type: application/json)!
-}
-```
-
-</details>
-
-<details>
-<summary> Running other programs and shell commands </summary>
-
-#### Spawning processes ~~(ffi at home)~~
-
-```luau
-local process = require("@std/process")
--- run a shell command
-local output = process.shell("seal ./cats.luau"):unwrap()
-
--- run a program directly (waits til it completes)
-local result = process.run {
-    program = "seal",
-    args = { "./cats.luau" },
-}:unwrap()
-
--- spawn a program as a long-running child process
-local child = process.spawn {
-    program = "somewatcher",
-    args = { "./somefile.json" }
-}
-if you_want_to_block_main_thread then
-    for line in child.stdout:lines() do
-        print(line)
-    end
-else
-    local text: string? = child.stdout:read(24)
-end
-```
-
-</details>
-
-<details>
-
-<summary> Prompting user input </summary>
-
-### Confirm an action
-
-```luau
-local prompt = require("@std/io/prompt")
-
-if prompt.confirm("are roses red") then
-    print("violets are blue")
-end
-```
-
-### Ask a question
-
-```luau
-local prompt = require("@std/io/prompt")
-
-local response = prompt.text("What's your name?")
-print(`Hello {response}!`)
-```
-
-</details>
-
-<details>
-
-<summary> Concurrency and Parallelism </summary>
-
-### Simple Structured Parallelism
-
-seal is sans-tokio and sans-async for performance and simplicity, but provides access to Real Rust Threads with a relatively simple API. Each thread has its own Luau VM, which allows you to execute code in parallel. To send messages between threads, you can use the `:send()` and `:read()` methods located on both `channel`s (child threads) and `JoinHandle`s (parent threads), which seamlessly serialize, transmit, and deserialize Luau data tables between threads (VMs) for you! For better performance, you can use their `bytes` APIs to exchange buffers without the serialization overhead.
-
-```luau
--- parent.luau
-local thread = require("@std/thread")
-
-local handle = thread.spawn {
-    path = "./child.luau",
-    data = {
-        url = "https://example.net",
-    }
-}
- -- do something else
-local res = handle:read_await()
-
-handle:join() -- don't forget to join your handles!
-```
-
-Child threads have a global `channel` exposed, which you can use to send data to the main thread:
-
-```luau
--- child.luau
-local http = require("@std/net/http")
-if channel then
-    local data = channel.data :: { url: string }
-    local response = http.get(data.url):unwrap_json()
-    channel:send(response)
-end
-```
-
-### Concurrency
-
-Although *seal* doesn't have a `task` library to make coroutine scheduling more ergonomic, you can absolutely use Luau's `coroutine` library for concurrency. Just keep in mind that standard library functions, including `fs.readfile`, `time.wait`, and `http.get` can completely block the VM. This means you can use coroutines to interleave operations, but you can't use them as an alternative to `thread.spawn` in terms of making an inherently blocking operation non-blocking.
-
-</details>
