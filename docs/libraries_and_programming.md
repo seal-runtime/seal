@@ -25,7 +25,7 @@ If you want to see documentation on the web, check out the [references](/docs/re
 
 You can use *seal* to write programs that interact with your filesystem, get and send things on the internet, connect other programs together (glue scripts), do multiple things at the same time, and more. In the future, you'll be able to write cross-platform GUI apps directly in *seal*!
 
-### Read and write files/directories
+## Read and write files/directories
 
 [@std/fs](/docs/reference/std/fs/init.md)
 
@@ -36,7 +36,7 @@ local fs = require("@std/fs")
 <details>
 <summary>Examples</summary>
 
-#### Read files
+### Read files
 
 ```luau
 local content = fs.readfile("./myfile.txt")
@@ -56,7 +56,7 @@ elseif result == "PermissionDenied" then
 end
 ```
 
-#### Create files and directories
+### Create files and directories
 
 Write files to a path:
 
@@ -85,7 +85,7 @@ fs.writetree("./tests", fs.tree()
 )
 ```
 
-#### List all files and iterate through a directory
+### List all files and iterate through a directory
 
 List all files in a directory, recursively:
 
@@ -103,7 +103,7 @@ for _, path in fs.listdir("./src") do
 end
 ```
 
-#### Remove files and directories
+### Remove files and directories
 
 Files, erroring if the file doesn't exist:
 
@@ -135,13 +135,13 @@ if partial then
 end
 ```
 
-#### Path library
+### Path library
 
 [@std/fs/path](/docs/reference/std/fs/path.md)
 
 Contains useful functions for getting the user's home directory, cwd, project directories, normalizing and canonicalizing paths (handling Windows edge cases for you!), and of course, joining paths together in a cross-platform compatible way.
 
-#### Full examples using `fs` with other libraries
+### Full examples using `fs` with other libraries
 
 Removing files older than *n* weeks (fs and datetime):
 
@@ -153,7 +153,7 @@ Uploading a file whenever it gets added to a folder (file watching):
 
 </details>
 
-### Getting and sending stuff on the internet
+## Getting and sending stuff on the internet
 
 [@std/net/http](/docs/reference/std/net/http/init.md)
 
@@ -164,7 +164,7 @@ local http = require("@std/net/http")
 <details>
 <summary>Examples</summary>
 
-#### Get stuff off the internet (HTTP GET)
+### Get stuff off the internet (HTTP GET)
 
 ```luau
 local response = http.get {
@@ -197,7 +197,7 @@ end
 
 </details>
 
-### Running other programs and shell commands ~~(ffi at home)~~
+## Running other programs and shell commands ~~(ffi at home)~~
 
 [@std/process](/docs/reference/std/process.md)
 
@@ -255,7 +255,7 @@ end
 
 </details>
 
-### Prompt user input
+## Prompt user input
 
 [@std/io/prompt](/docs/reference/std/io/prompt.md)
 
@@ -268,7 +268,7 @@ Lower-level access to the terminal, including setting rawmode and listening for 
 <details>
 <summary>Examples</summary>
 
-#### Confirm an action
+### Confirm an action
 
 ```luau
 local prompt = require("@std/io/prompt")
@@ -278,7 +278,7 @@ if prompt.confirm("are roses red") then
 end
 ```
 
-#### Ask a question
+### Ask a question
 
 ```luau
 local prompt = require("@std/io/prompt")
@@ -289,15 +289,15 @@ print(`Hello {response}!`)
 
 </details>
 
-### Concurrency and Parallelism
+## Concurrency and Parallelism
 
 *seal* is not an async runtime, and doesn't bind to `tokio` or similar for performance and simplicity, but it still supports concurrency and parallelism!
 
-#### Concurrency
+### Concurrency
 
 Although *seal* doesn't have a `task` library to make coroutine scheduling more ergonomic, you can absolutely use Luau's `coroutine` library for concurrency. Just keep in mind that standard library functions, including `fs.readfile`, `time.wait`, and `http.get` can completely block the VM. This means you can use coroutines to interleave operations, but you can't use them as an alternative to `thread.spawn` in terms of making an inherently blocking operation non-blocking.
 
-#### Parallelism
+### Parallelism
 
 [@std/thread](/docs/reference/std/thread.md)
 
@@ -308,7 +308,7 @@ To send messages between threads, use the `:send` and `:read` methods located on
 For better performance, use the `bytes` APIs to exchange `buffer`s without serialization overhead.
 
 <details>
-</summary>Example</summary>
+<summary>Example</summary>
 
 ```luau
 -- parent.luau
