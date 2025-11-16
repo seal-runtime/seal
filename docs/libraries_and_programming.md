@@ -25,6 +25,16 @@ If you want to see documentation on the web, check out the [references](/docs/re
 
 You can use *seal* to write programs that interact with your filesystem, get and send things on the internet, connect other programs together (glue scripts), do multiple things at the same time, and more. In the future, you'll be able to write cross-platform GUI apps directly in *seal*!
 
+### Cookbook
+
+Some fun things you could write with *seal*
+
+- Automatically launch a program when you modify anything in a specific folder.
+- Automatically back up everything in a folder every few hours to your server.
+- GUI automation with programs like `kdotool` or AutoHotKey. Why write unreadable AHK when you can write Luau to write and run the AHK for you?
+- Custom touchpad gestures on Linux (.. I've done this before; need to port it to *seal*)
+- A background script that reminds you to drink water every hour.
+
 ## Read and write files/directories
 
 [@std/fs](/docs/reference/std/fs/init.md)
@@ -203,6 +213,10 @@ end
 
 Library for running other programs as child processes and exiting the current program (`process.exit`).
 
+```luau
+local process = require("@std/process")
+```
+
 <details>
 <summary>Examples</summary>
 
@@ -265,6 +279,11 @@ Higher-level terminal prompt and validation functions.
 
 Lower-level access to the terminal, including setting rawmode and listening for terminal events.
 
+```luau
+local prompt = require("@std/io/prompt")
+local input = require("@std/io/input")
+```
+
 <details>
 <summary>Examples</summary>
 
@@ -300,6 +319,10 @@ Although *seal* doesn't have a `task` library to make coroutine scheduling more 
 ### Parallelism
 
 [@std/thread](/docs/reference/std/thread.md)
+
+```luau
+local thread = require("@std/thread")
+```
 
 *seal* provides access to Real Rust Threads with a relatively simple API. Each Rust thread spawns its own Luau VM, which allows you to execute Luau code in parallel.
 
@@ -339,13 +362,3 @@ end
 ```
 
 </details>
-
-## Cookbook
-
-Some fun things you could write with *seal*
-
-- Automatically launch a program when you modify anything in a specific folder.
-- Automatically back up everything in a folder every few hours to your server.
-- GUI automation with programs like `kdotool` or AutoHotKey. Why write unreadable AHK when you can write Luau to write and run the AHK for you?
-- Custom touchpad gestures on Linux (.. I've done this before; need to port it to *seal*)
-- A background script that reminds you to drink water every hour.
