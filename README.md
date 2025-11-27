@@ -28,7 +28,7 @@ Check out the full [usage instructions](docs/usage.md) for more.
 
 If you're new to Luau, check out *seal*'s [Luau Book](/docs/luau-book/index.md). For a few examples of using *seal* libraries, check out [the programming intro](/docs/libraries_and_programming.md).
 
-See the [standard library reference](/docs/reference/std/) for all current features and APIs.
+See the [standard library reference](/docs/reference/) for all current features and APIs.
 
 ## Roadmap
 
