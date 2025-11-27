@@ -51,29 +51,23 @@ local function process_raw_values(
             end
             table.insert(result, "{\n")
             for key, val in value do
-                -- result ..= current_indent
                 table.insert(result, current_indent)
                 table.insert(result, "    ")
                 -- handle key stringification
                 if typeof(key) == "string" then
                     -- we can omit brackets if key is an identifier-like key (like "meow1234" which is vs "cats are cool" which isn't)
                     if string.match(key, IDENTIFIER_PATTERN) then
-                        -- result ..= key
                         table.insert(result, key)
                     else
-                        -- result ..= "[\"" .. key .. "\"]"
-                        table.insert(result, "[\"" .. key .. "\"]")
+                        table.insert(result, "[\"" .. key :: string .. "\"]") -- LUAU FIXME: error type regression here
                     end
                 elseif typeof(key) == "number" then
                     if mlua.isint(key) then
-                        -- result ..= "[" .. tostring(key) .. "]"
                         table.insert(result, "[" .. tostring(key) .. "]")
                     else -- is a LuaNumber
                         if math.round(key) == key then
-                            -- result ..= "[" .. tostring(key) .. ".0]"
                             table.insert(result, "[" .. tostring(key) .. ".0]")
                         else
-                            -- result ..= "[" .. tostring(key) .. "]"
                             table.insert(result, "[" .. tostring(key) .. "]")
                         end
                     end
@@ -82,7 +76,6 @@ local function process_raw_values(
                     local key_tableid = get_table_id(key)
                     local seen_key_name = seen_tables[key_tableid]
                     if seen_key_name then
-                        -- result ..= "[cyclic(" .. seen_key_name .. ")]"
                         table.insert(result, "[cyclic(" .. seen_key_name .. ")]")
                     else
                         -- according to ariel et al, people probably want to see addresses in debug mode
@@ -91,52 +84,40 @@ local function process_raw_values(
                         -- but pretty print should show full table
                     end
                 else
-                    -- result ..= "[" .. process_raw_values(key, seen_tables, depth + 1) .. "]"
                     table.insert(result, "[" .. process_raw_values(key, seen_tables, depth + 1) .. "]")
                 end
                 table.insert(result, " = ")
-                -- result ..= " = "
                 -- handle val stringification
                 if typeof(val) == "table" then
                     local val = val :: { [any]: any }
                     local val_tableid = get_table_id(val)
                     local seen_val_name = seen_tables[val_tableid]
                     if seen_val_name then
-                        -- result ..= "cyclic(" .. seen_val_name .. ")"
                         table.insert(result, "cyclic(" .. seen_val_name .. ")")
                     else
-                        -- result ..= process_raw_values(val, seen_tables, depth + 1)
                         table.insert(result, process_raw_values(val, seen_tables, depth + 1))
                     end
                 elseif typeof(val) == "string" then -- no need for extra recursive call for common case
-                    -- result ..= '"' .. val .. '"'
-                    table.insert(result, '"' .. val .. '"')
+                    table.insert(result, '"' .. val :: string .. '"') -- LUAU FIXME: error type on val
                 else
-                    -- result ..= process_raw_values(val, seen_tables, depth + 1)
                     table.insert(result, process_raw_values(val, seen_tables, depth + 1))
                 end
-                -- result ..= ",\n"
                 table.insert(result, ",\n")
             end
         end
-        -- result ..= current_indent ..  "}"
         table.insert(result, current_indent ..  "}")
     elseif typeof(value) == "string" then
         -- LUAU FIXME: need to cast to string here to fix error type
         table.insert(result, (if depth == 0 then value else  '"' .. value .. '"') :: string)
     elseif typeof(value) == "boolean" then
-        -- result ..= tostring(value)
         table.insert(result, tostring(value))
     elseif typeof(value) == "number" then
         if mlua.isint(value) then
-            -- result ..= tostring(value)
             table.insert(result, tostring(value))
         else
             if math.round(value) == value then
-                -- result ..= tostring(value) .. ".0"
                 table.insert(result, tostring(value) .. ".0")
             else
-                -- result ..= tostring(value)
                 table.insert(result, tostring(value))
             end
         end

@@ -23,9 +23,9 @@
     "**/typedefs/**": "defs/${dirname}/${filename}",
     "**/standard-library-reference/**": "refs/${dirname}/${filename}"
   },
-  "luau-lsp.types.definitionFiles": [
-    "./.seal/typedefs/globals.d.luau"
-  ],
+  "luau-lsp.types.definitionFiles": {
+    "@seal": "./.seal/typedefs/globals.d.luau"
+  },
   "luau-lsp.types.documentationFiles": ["./.seal/typedefs/docs.json"],
   "luau-lsp.fflags.enableNewSolver": true,
   "luau-lsp.fflags.enableByDefault": true,

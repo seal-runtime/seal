@@ -1,7 +1,7 @@
 local err = require("@std/err")
 local cheese = {}
 
-function cheese.retry(f: () -> (), tries: number?)
+function cheese.retry(f: () -> (any), tries: number?)
     tries = tries or 3
     local current = 0
     local last_err: error
