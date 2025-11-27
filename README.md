@@ -1,6 +1,8 @@
 # *seal*, the cutest scripting runtime
 
-Use *seal* to write fun, maintainable, and easily-deployable programs in [Luau](https://luau.org), a simple, dependable, and extremely fast scripting language with typechecking and tooling support.
+Use *seal* to write fun, maintainable, and easily-deployable programs in [Luau](https://luau.org), a simple, dependable, and fast scripting language with typechecking and tooling support.
+
+Docs: [Usage](/docs/usage.md) | [Programming](/docs/libraries_and_programming.md) | [API Reference](/docs/reference/)
 
 ## Goals
 

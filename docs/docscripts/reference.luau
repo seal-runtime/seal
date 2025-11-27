@@ -33,6 +33,9 @@ local function setup()
     
     -- burn existing libraries
     for _, existing in fs.listdir(refs_path) do
+        if (fs.path.child(existing) :: string) == "README.md" then
+            continue
+        end
         if fs.is(existing) == "File" then
             fs.removefile(existing)
         elseif fs.is(existing) == "Directory" then
