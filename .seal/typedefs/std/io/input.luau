@@ -1,5 +1,6 @@
 --- input handling lib
 local input = {}
+export type input = typeof(input)
 
 --- gets input with an optional `raw_prompt` to display before getting said input.
 @[deprecated { use = "io.prompt.text OR io.input.readline OR io.input.rawline" }]
@@ -94,14 +95,17 @@ function input.rawmode(enabled: boolean)
     return nil :: any
 end
 
-input.capture = {} :: {
-    --- Allows `MouseEvents` to be reported by `input.events()`.
-    mouse: (enabled: boolean) -> (),
-    --- Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
-    focus: (enabled: boolean) -> (),
-    --- Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
-    paste: (enabled: boolean) -> (),
-}
+input.capture = {}
+
+--- Allows `MouseEvents` to be reported by `input.events()`.
+function input.capture.mouse(enabled: boolean)
+end
+--- Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
+function input.capture.focus(enabled: boolean)
+end
+--- Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
+function input.capture.paste(enabled: boolean)
+end
 
 --[=[
     Listens for raw terminal events from stdin, returning an iterator over those events.
@@ -211,7 +215,5 @@ export type TerminalEvent =
     | PasteEvent
     | FocusGained | FocusLost 
     | Empty
-
-type input = typeof(input)
 
 return input :: input

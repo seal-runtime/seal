@@ -260,9 +260,9 @@ function args.flag(name: string, help: string): Result<Flag>
         _aliases = {},
         aliases = function(self: Flag, ...: string)
             for index, alias in {...} do
-                local checked_alias = ecall(function()
+                local checked_alias: string = (ecall :: any)(function()
                     return check_alias(alias, index, function_name)
-                end)()
+                end)() -- LUAU FIXME: generics broken
                 self._aliases[checked_alias] = true
             end
             return self

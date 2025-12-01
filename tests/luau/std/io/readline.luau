@@ -17,6 +17,7 @@ local function runsealwithprompt(prompt: string)
     local dir = fs.dir.ensure(fs.path.join(fs.path.home(), "Downloads"))
     local path = dir:join("promptsrc.luau")
     fs.writefile(path, src)
+    time.wait(0.125)
     local child = process.spawn {
         program = env.executable_path,
         args = { path }

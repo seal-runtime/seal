@@ -112,7 +112,7 @@ local function readupto()
     fs.file.try_remove(poem_path)
 end
 
-readupto()
+cheese.retry(readupto, 3)
 
 local function readloop()
     local child = spawn_longrunning()
@@ -142,7 +142,7 @@ local function mixingreads()
     child:kill()	
 end
 
-mixingreads()
+cheese.retry(mixingreads, 2)
 
 local function readexactbasic()
     local child, poem_path = spawn_poem(222, 32, "back")

@@ -131,13 +131,8 @@
     ```
 ]=]
 export type args = {
-    parse: (program: string, tagline: string, info: ProgramInfo?) -> {
-        --- Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
-        simple: (self: any, ...Arg) -> Parsed,
-        --- Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
-        --- generate commands.
-        commands: (self: any, ...Command) -> Parsed,
-    },
+    --- Parse arguments, call either `:simple` or `:commands` on what this returns.
+    parse: (program: string, tagline: string, info: ProgramInfo?) -> ArgParser,
     --- Add a positional argument
     positional: (name: string, help: string) -> Positional,
     --- Add a named argument `--name=value` (or when aliased to -n, `-n value`). Named arguments must start with `--`
@@ -150,6 +145,14 @@ export type args = {
     list: (name: string, help: string) -> ArgList,
     --- Add a default command.
     default: (...Arg) -> Command,
+}
+
+export type ArgParser = {
+    --- Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
+    simple: (self: any, ...Arg) -> Parsed,
+    --- Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
+    --- generate commands.
+    commands: (self: any, ...Command) -> Parsed,
 }
 
 export type ProgramInfo = {
@@ -165,9 +168,7 @@ export type Command = {
     name: string,
     is: "Command",
     help: string,
-    _args: { Arg },
     args: (self: Command, ...Arg) -> Command,
-    _aliases: { [string]: true? },
     --- Aliases for your command, like `seal r -> seal run`
     aliases: (self: Command, ...string) -> Command,
 }
@@ -178,6 +179,7 @@ export type Parsed = {
     expect: <T>(self: Parsed, name: string, assertion: string?) -> T,
     help: (self: Parsed) -> string,
     flags: { [string]: true? },
+    args: { Arg },
 }
 
 export type ArgList = {
@@ -199,12 +201,9 @@ export type Positional = {
     name: string,
     is: "Positional",
     help: string,
-    _default: any,
     default: (any) -> Positional,
-    _optional: boolean,
     --- call this to turn the positional argument into an optional positional argument
     optional: (self: Positional) -> Positional,
-    _validator: Validator?,
     --- validate the argument's input by passing a function that returns either the transformed
     --- validated input (such as converting input strings from p -> project) or an error object.
     validate: (self: Positional, validator: Validator) -> Positional,
@@ -216,10 +215,8 @@ export type Flag = {
     name: string,
     is: "Flag",
     help: string,
-    _aliases: { [string]: true? },
     --- flag aliases must start with `-` and cannot be `-h` (reserved for help)
     aliases: (self: Flag, ...string) -> Flag,
-    _default: boolean?,
     default: (self: Flag, boolean) -> Flag,
     value: boolean,
 }
@@ -228,14 +225,10 @@ export type Named = {
     name: string,
     is: "Named",
     help: string,
-    _default: any,
     default: (self: Named, any) -> Named,
-    _aliases: { [string]: true? },
     --- aliases must start with `-` and cannot be `-h` (reserved for help)
     aliases: (self: Named, ...string) -> Named,
-    _required: boolean,
     required: (self: Named) -> Named,
-    _validator: Validator?,
     validate: (self: Named, validator: Validator) -> Named,
     value: any,
 }

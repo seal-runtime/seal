@@ -28,7 +28,7 @@ pub fn setup_sigabrt_handler() {
     // - Behavior has been tested on x86_64 Arch Linux.
     #[cfg(unix)]
     unsafe {
-        signal(SIGABRT, handle_sigabrt as usize);
+        signal(SIGABRT, handle_sigabrt as *const () as usize);
     }
 }
 

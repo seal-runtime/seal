@@ -1,0 +1,1152 @@
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD024 -->
+
+# process
+
+`local process = require("@std/process")`
+
+Library for running other programs as child processes.
+
+To immediately terminate the current program, use `process.exit`.
+
+To execute a shell command, use `process.shell`.
+
+To start a program and wait for it to terminate, use `process.run`.
+
+To start a long-running program in parallel, use `process.spawn`.
+
+## Usage
+
+```luau
+local process = require("@std/process")
+
+-- run a simple program with args
+local result = process.run {
+    program = "markdownlint-cli2",
+    args = { "--fix", "myfile.md" },
+}
+
+-- a shell command
+local files = process.shell("ls -l"):unwrap()
+
+-- a long running child process
+local child = process.spawn({
+    program = "someutil --watch",
+    shell = "sh",
+})
+
+for line in child.stdout:lines() do
+    local thing_changed = line:match("([%w]+) changed!")
+    print(`Change detected: {thing_changed}`)
+end
+```
+
+---
+
+### process.run
+
+<h4>
+
+```luau
+function process.run(options: RunOptions) -> RunResult,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Runs a program, yields until it completes, and returns its results.
+
+Takes a RunOptions table:
+
+```luau
+type RunOptions = {
+    program: string,
+    --- optional args you want to pass
+    args: { string }?,
+    --- the name or path of the shell, omit to run without shell
+    shell: string?
+    --- path to the the working directory you want your command to execute in
+    cwd: string?,
+}
+```
+
+### Blocks
+
+Until the process exits.
+
+### Usage
+
+```luau
+local process = require("@std/process")
+local result = process.run {
+    program = "lune",
+    args = {"run", somefile},
+}
+if result.ok then
+    print(result.stdout)
+end
+```
+
+</details>
+
+---
+
+### process.shell
+
+<h4>
+
+```luau
+function process.shell(command: string) -> RunResult,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Launches a shell command in a child process.
+
+Uses the same shell you're using to run `seal` (so your aliases should available, except on Windows,
+where it's a bit more complicated).
+
+To find your current shell, `process.shell` checks your `SHELL` environment variable, and
+if not found, defaults to `sh` on Unix-like systems and `powershell` (Windows PowerShell) on Windows.
+
+On Windows, arguments aren't necessarily separated by whitespace like on Linux, and every program
+might accept arguments in a slightly different way, so be careful and use `process.run` with `args`
+when in doubt.
+
+Note that spawning processes (even starting the `powershell` process) is slow on Windows,
+so I recommend sticking to `process.run` with `args` unless you need shell behavior for your usecase.
+
+### Usage
+
+```luau
+local process = require("@std/process")
+local file_stuff: {string} = process.shell("ls -l"):unwrap()
+print(file_stuff)
+```
+
+</details>
+
+---
+
+### process.spawn
+
+<h4>
+
+```luau
+function process.spawn(options: SpawnOptions) -> ChildProcess,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Spawns a long-running process in a non-blocking manner, returns a `ChildProcess` that contains handles to the spawned process' stdout, stderr, and stdin.
+
+## Usage
+
+A long-running program you want to listen to.
+
+```luau
+local process = require("@std/process")
+local child = process.spawn({
+    program = "someutil --watch",
+    shell = "sh",
+})
+
+for line in child.stdout:lines() do
+    local thing_changed = line:match("([%w]+) changed!")
+    print(`Change detected: {thing_changed}`)
+end
+```
+
+Run multiple processes at the same time to finish faster.
+
+For example, `markdownlint-cli2` takes about 0.3 seconds to fix a file, so if you have 20+ files, and you
+fix each file one-at-a-time with `process.run`, it'll take 6+ seconds to do all files.
+
+But by using `process.spawn`, you can run multiple instances of the program at the same time, allowing you to
+fix all files in < 0.5 seconds (depending on your hardware and core count).
+
+```luau
+local paths: { string } = get_files()
+-- make a threadpool to keep track of what files are finished
+local handles: { [string]: process.ThreadHandle } = {}
+
+for _, path in paths do
+    local handle = process.spawn {
+        program = "markdownlint-cli2",
+        args = { "--fix", path }
+    }
+    handles[path] = handle
+end
+
+while #tt.keys(handles :: any) > 0 do
+    time.wait(0.1)
+    for path, handle in handles do
+        if not handle:alive() then
+            handles[path] = nil
+            print(`finished {path}`)
+        end
+    end
+end
+```
+
+</details>
+
+---
+
+### process.setexitcallback
+
+<h4>
+
+```luau
+function process.setexitcallback((number) -> ()) -> (),
+```
+
+</h4>
+
+Doesn't work.
+
+---
+
+### process.exit
+
+<h4>
+
+```luau
+function process.exit(code: number?) -> never,
+```
+
+</h4>
+
+Immediately terminate the current program with exit `code`.
+
+Typically exit code 0 means success and exit code 1 means failure.
+
+---
+
+## `export type` RunResult
+
+<h4>
+
+```luau
+export type RunResult = {
+```
+
+</h4>
+
+---
+
+### RunResult.unwrap
+
+<h4>
+
+```luau
+function RunResult.unwrap(self: RunResult) -> string,
+```
+
+</h4>
+
+ Returns the `RunResult`'s `stdout` if it was successful, stripping trailing whitespace and newlines.
+ Errors if the RunResult was unsuccessful.
+
+---
+
+### RunResult.unwrap_or
+
+<h4>
+
+```luau
+function RunResult.unwrap_or(self: RunResult, default: string | (result: RunResult) -> string) -> string
+```
+
+</h4>
+
+Returns the `RunResult`'s `stdout` if it was successful, otherwise returns a default value.
+
+The `default` can be either a string or a function that takes in the `RunResult` and returns a string.
+If you provide a `default` function, `:unwrap_or` will return what it returns.
+
+---
+
+## `export type` Ok
+
+<h4>
+
+```luau
+export type Ok = {
+```
+
+</h4>
+
+ The process terminated with a successful exit code.
+
+---
+
+### Ok.ok
+
+<h4>
+
+```luau
+ok: true,
+```
+
+</h4>
+
+---
+
+### Ok.out
+
+<h4>
+
+```luau
+out: string,
+```
+
+</h4>
+
+ cleaned standard output of the process, shouldn't have trailing whitespace/newlines.
+
+---
+
+### Ok.stdout
+
+<h4>
+
+```luau
+stdout: string,
+```
+
+</h4>
+
+ the raw standard output (stdout) generated by the process; this includes trailing newlines and whitespace
+
+---
+
+### Ok.stderr
+
+<h4>
+
+```luau
+stderr: string,
+```
+
+</h4>
+
+ the raw standard error (stderr) generated by the process; this includes trailing newlines and whitespace
+
+---
+
+## `export type` Err
+
+<h4>
+
+```luau
+export type Err = {
+```
+
+</h4>
+
+ The process terminated with a failing exit code.
+
+---
+
+### Err.ok
+
+<h4>
+
+```luau
+ok: false,
+```
+
+</h4>
+
+---
+
+### Err.err
+
+<h4>
+
+```luau
+err: string,
+```
+
+</h4>
+
+ cleaned standard error of the process; shouldn't have trailing whitespace/newlines.
+
+---
+
+### Err.stdout
+
+<h4>
+
+```luau
+stdout: string,
+```
+
+</h4>
+
+---
+
+### Err.stderr
+
+<h4>
+
+```luau
+stderr: string,
+```
+
+</h4>
+
+---
+
+## `export type` RunOptions
+
+<h4>
+
+```luau
+export type RunOptions = {
+```
+
+</h4>
+
+---
+
+### RunOptions.program
+
+<h4>
+
+```luau
+program: string,
+```
+
+</h4>
+
+---
+
+### RunOptions.args
+
+<h4>
+
+```luau
+args: { string }?,
+```
+
+</h4>
+
+ an optional list of arguments to pass into the program; on Windows, you should use this instead of trying to pass whitespace-separated arguments in `program`
+
+---
+
+### RunOptions.shell
+
+<h4>
+
+```luau
+shell: string?,
+```
+
+</h4>
+
+ specify a shell to run the program with; otherwise runs it as a bare process with no shell
+
+---
+
+### RunOptions.cwd
+
+<h4>
+
+```luau
+cwd: string?,
+```
+
+</h4>
+
+ path to the the working directory you want your command to execute in, defaults to your shell's cwd
+
+---
+
+## `export type` SpawnOptions
+
+<h4>
+
+```luau
+export type SpawnOptions = {
+```
+
+</h4>
+
+---
+
+### SpawnOptions.program
+
+<h4>
+
+```luau
+program: string,
+```
+
+</h4>
+
+ the program you want to run, must be available in $PATH or be an absolute path to an executable
+
+---
+
+### SpawnOptions.args
+
+<h4>
+
+```luau
+args: { string }?,
+```
+
+</h4>
+
+ an optional list of arguments to pass into the program; on Windows, you should use this instead of trying to pass whitespace-separated arguments in `program`
+
+---
+
+### SpawnOptions.shell
+
+<h4>
+
+```luau
+shell: string?,
+```
+
+</h4>
+
+---
+
+### SpawnOptions.cwd
+
+<h4>
+
+```luau
+cwd: string?,
+```
+
+</h4>
+
+ path to the the working directory you want your command to execute in, defaults to your shell's cwd
+
+---
+
+### SpawnOptions.stream.stdout_capacity
+
+<h4>
+
+```luau
+stdout_capacity: number?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+A `ChildProcessStream` captures incoming bytes from your `ChildProcess`' output streams (either stdout or stderr),
+and caches them in its `inner` buffer. Each stream is spawned in a separate Rust thread to facilitate
+consistently nonblocking, dependable reads, allowing most `ChildProcess.stream:read` methods to be fully nonblocking unless
+specifically requested otherwise.
+
+## Options
+
+### Stream capacity
+
+To prevent memory leaks (if you spawn a child process and never read from stdout or stderr), each stream's inner buffer capacity is capped,
+and adjustable by setting `stdout_capacity` and `stderr_capacity`, respectively.
+
+By default, `stdout` streams are capped to 2048 bytes and `stderr` streams to 1028.
+
+When more bytes are read from the stream than can fit in the buffer, old bytes are drained (and lost!) so the buffer
+can remain the same size (preventing memory leaks).
+
+By increasing stream capacity, you allow more bytes to be read/consumable at the same time without losing data if you infrequently read from the buffer.
+
+If you're reading from stdout in really tight loops, and your ChildProcess only spits out data in chunks of 512 bytes at a time, you can definitely
+decrease your stream capacity to 512 bytes (or slightly larger just in case), to reduce allocations.
+
+## Truncation
+
+By default, seal truncates bytes from the front of inner, causing old data to be lost first. Set `truncate == "back"` to override this behavior (and preserve old data at the expense of incoming data)
+ inner buffer capacity of `ChildProcess.stdout`, default 2048
+
+</details>
+
+---
+
+### SpawnOptions.stream.stderr_capacity
+
+<h4>
+
+```luau
+stderr_capacity: number?,
+```
+
+</h4>
+
+ inner buffer capacity of `ChildProcess.stderr`, default 1024
+
+---
+
+### SpawnOptions.stream.stdout_truncate
+
+<h4>
+
+```luau
+function SpawnOptions.stream.stdout_truncate("front" | "back")?,
+```
+
+</h4>
+
+ what side of stdout should be truncated when full? defaults to "front"
+
+---
+
+### SpawnOptions.stream.stderr_truncate
+
+<h4>
+
+```luau
+function SpawnOptions.stream.stderr_truncate("front" | "back")?,
+```
+
+</h4>
+
+ what side of stderr should be truncated when full? defaults to "front"
+
+---
+
+## `export type` ChildProcessStream
+
+<h4>
+
+```luau
+export type ChildProcessStream = setmetatable<{
+```
+
+</h4>
+
+ Represents the stdout and stderr streams of a `ChildProcess`, both ran in parallel threads
+ and streamed for nonblocking behavior.
+
+---
+
+### ChildProcessStream.read
+
+<h4>
+
+```luau
+function ChildProcessStream.read(self: ChildProcessStream, count: number?, timeout: number?) -> string?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Reads up to `count` bytes from the stream for up to `timeout` seconds, retrying while the stream remains empty.
+
+- If `count` is unspecified or nil, reads the entire stream instead of stopping at `count` bytes.
+- If `timeout` is unspecified or nil, keeps retrying *forever* while the stream is empty and the reader is still alive.
+- If `timeout > 0`, keeps retrying for `timeout` seconds while the stream is empty and the reader is still alive.
+
+### Returns
+
+Returns as soon as anything gets written to the stream, consuming and returning the available bytes without
+any intermediate utf8 coercion/validation. Returns `nil` if `timeout` seconds elapse and the stream remains empty.
+
+If you want to wait until a specific number of bytes are available, use `:read_exact` instead.
+
+### Blocks
+
+Blocks the current VM until the stream's not empty, `timeout` seconds elapse, or the reader thread exits.
+
+To prevent this function from blocking, pass a `timeout` of 0 seconds!
+
+## Usage
+
+Keep reading until data appears (default behavior):
+
+```luau
+local first_message = child.stdout:read() :: string
+print(first_message)
+```
+
+Read the first 256 bytes once data appears:
+
+```luau
+local first_part = child.stdout:read(256) :: string
+```
+
+Get everything currently in the stream without blocking:
+
+```luau
+local current_data = child.stdout:read(nil, 0.0)
+```
+
+</details>
+
+---
+
+### ChildProcessStream.read_exact
+
+<h4>
+
+```luau
+function ChildProcessStream.read_exact(self: ChildProcessStream, count: number, timeout: number?) -> string?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Reads exactly `count` bytes from the stream, retrying until `count` bytes are available or `timeout` seconds elapse.
+
+Bytes are not consumed from the stream until exactly `count` bytes are available.
+
+- If `timeout` is unspecified or nil, keeps retrying *forever* while the stream is empty and the reader is still alive.
+- If `timeout > 0`, keeps retrying for `timeout` seconds while the stream is empty and the reader is still alive.
+
+### Returns
+
+A string of exactly `count` length without any intermediate utf-8 coercion/validation, or `nil` if exactly `count` bytes couldn't be read from the stream.
+
+### Blocks
+
+Blocks the current VM until `count` bytes are found, `timeout` seconds elapse, or the reader thread exits.
+
+Pass a timeout of `0` seconds to make this function nonblocking.
+
+## Usage
+
+Read exactly 512 bytes as soon as 512 bytes are available:
+
+```luau
+local first_512 = child.stdout:read_exact(512)
+```
+
+Read from both streams every 0.5 seconds, byte by byte, without otherwise blocking the VM:
+
+```luau
+local stdout_chars: { string } = {}
+local stderr_chars: { string } = {}
+while time.wait(0.5) and child:alive() do
+    local stdout_char = child.stdout:read_exact(1, 0.0)
+    if stdout_char then
+        table.insert(stdout_chars, stdout_char)
+    end
+    local stderr_char = child.stderr:read_exact(1, 0.0)
+    if stderr_char then
+        table.insert(stderr_chars, stderr_char)
+    end
+end
+```
+
+</details>
+
+---
+
+### ChildProcessStream.read_to
+
+<h4>
+
+```luau
+function ChildProcessStream.read_to(self: ChildProcessStream, term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Keep reading from the stream until search `term` is encountered. This is especially useful if you're trying to read line-by-line,
+or until a specific delimiter is encountered.
+
+By default, blocks the current VM (Rust Thread) until `term` is found, and doesn't consume any bytes from the stream until `term` is found.
+
+- If `inclusive == true`, includes `term` with the resulting string, otherwise strips it from the result.
+- If `timeout` is specified, `allow_partial` is unspecified or false, and `term` isn't found before `timeout` seconds elapse, returns `nil` without consuming any bytes from the stream.
+- If `timeout` is specified, `allow_partial` is true, and `term` isn't found before `timeout` seconds elapse, consumes and returns the entire contents of the stream.
+- `allow_partial` doesn't do anything if `timeout` is unspecified.
+
+### Returns
+
+The stream's contents without any intermediate utf8 conversion/validation.
+Returns `nil` if `timeout` elapses and the search term hasn't been found.
+
+### Blocks
+
+Blocks the current VM until `term` is found, `timeout` seconds elapse, or the reader thread exits.
+
+</details>
+
+---
+
+### ChildProcessStream.fill
+
+<h4>
+
+```luau
+function ChildProcessStream.fill(self: ChildProcessStream, target: buffer, target_offset: number?, timeout: number?) -> number,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Fill the `target` buffer with as many bytes as possible from the stream. Retries until the stream is nonempty or `timeout` seconds elapse.
+
+- `target_offset` defaults to `0` if unspecified or nil.
+
+### Returns
+
+The number of bytes successfully consumed from the stream and read into the `target` buffer.
+
+This function returns as soon as anything is written to the stream; use `:fill_exact` instead to return as soon as a specific number
+of bytes are available in the stream.
+
+### Errors
+
+- If `target_offset` is greater than the buffer's length.
+
+This function should not overfill the target buffer! A maximum of `buffer.len(target) - buffer_offset` bytes should be consumed.
+
+## Usage
+
+```luau
+local buffy = buffer.create(1024)
+local offset = 0
+while child:alive() and offset < 1024 do
+    local count = child.stdout:fill(buffy, offset)
+    offset += count
+end
+```
+
+</details>
+
+---
+
+### ChildProcessStream.fill_exact
+
+<h4>
+
+```luau
+function ChildProcessStream.fill_exact(self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Read exactly `count` bytes into the `target` buffer at `target_offset`, retrying until `count` bytes are available or `timeout` seconds elapse.
+
+- `target_offset` defaults to `0` if unspecified or nil.
+
+### Returns
+
+`true` if `count` bytes were successfully read and consumed from the stream, `false` otherwise.
+
+### Errors
+
+- If `target_offset` + `count` > buffer length - 1; this usually means a logic bug. Remember to clamp your offsets!
+
+### Blocks
+
+Blocks the current VM until `count` bytes are available in the stream or `timeout` seconds elapse.
+
+Pass a `timeout` of `0` seconds to prevent this function from blocking!
+
+</details>
+
+---
+
+### ChildProcessStream.len
+
+<h4>
+
+```luau
+function ChildProcessStream.len(self: ChildProcessStream) -> number,
+```
+
+</h4>
+
+ Returns the current length/size of the stream's inner buffer.
+
+---
+
+### ChildProcessStream.capacity
+
+<h4>
+
+```luau
+function ChildProcessStream.capacity(self: ChildProcessStream) -> number,
+```
+
+</h4>
+
+ Returns the maximum capacity of the stream's inner buffer.
+
+---
+
+### ChildProcessStream.lines
+
+<h4>
+
+```luau
+function ChildProcessStream.lines(self: ChildProcessStream, timeout: number?) -> (() -> string),
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Iterate over the lines in the stream, blocking the current VM (Rust Thread) until all lines are read or the timeout has been reached.
+
+If a `timeout` is specified, `:lines()` will stop iterating once a line hasn't been seen for `timeout` seconds, allowing you to
+early-interrupt when new data hasn't been seen for a while.
+
+Unlike `:iter`, this method cleans up `\r` prefixes and trailing `\n`s.
+
+## Usage
+
+### In a loop
+
+```luau
+local process = require("@std/process")
+local child = process.spawn({
+    program = "someutil --watch",
+    shell = "sh",
+})
+
+for line in child.stdout:lines() do
+    local thing_changed = line:match("([%w]+) changed!")
+    print(`Change detected: {thing_changed}`)
+end
+```
+
+### As iterator
+
+```luau
+local process = require("@std/process")
+local child = process.spawn {
+    program = "somewatcher --watch",
+    shell = "sh",
+}
+
+local next_line = child.stdout:lines()
+local first_line = next_line()
+local second_line = next_line()
+```
+
+</details>
+
+---
+
+### ChildProcessStream.iter
+
+<h4>
+
+```luau
+function ChildProcessStream.iter(self: ChildProcessStream, timeout: number?, write_delay_ms: number?) -> () -> string,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Iterate over the stream with more granular options:
+
+To prevent nonterminating iteration without an explicit `break`, you can provide a `timeout`, which stops iteration
+when new data hasn't been seen for `timeout` seconds.
+
+When iteration attempts to read from an empty stream, it waits `write_delay_ms` milliseconds (default 5) before trying again.
+Increase this value if you see weird chunking behavior (you want to see more data each iteration),
+or decrease this value if your child process outputs quickly and you want iteration to go faster.
+
+This function does *not* strip preceding '\r's and trailing '\n's (unlike `:lines()` and generalized iteration).
+
+</details>
+
+---
+
+### ChildProcessStream.__iter
+
+<h4>
+
+```luau
+function ChildProcessStream.__iter(self: ChildProcessStream) -> () -> string,
+```
+
+</h4>
+
+Iterate over the lines of the `ChildProcessStream` with generalized iteration, blocking until `break` or the reader thread exits.
+
+Basically equivalent to `ChildProcessStream:lines()` except with generalized iteration you can't specify a `timeout`.
+
+---
+
+## `export type` ChildProcessStdin
+
+<h4>
+
+```luau
+type ChildProcessStdin = {
+```
+
+</h4>
+
+---
+
+### ChildProcessStdin.write
+
+<h4>
+
+```luau
+function ChildProcessStdin.write(self: ChildProcessStdin, data: string) -> error?,
+```
+
+</h4>
+
+Attempts to write to the child process' stdin; if an error occurs (usually a broken pipe), returns a seal `error` userdata.
+
+---
+
+### ChildProcessStdin.close
+
+<h4>
+
+```luau
+function ChildProcessStdin.close(self: ChildProcessStdin) -> (),
+```
+
+</h4>
+
+Explicitly closes the child process stdin; this signals EOF for some programs that read multiple lines from stdin.
+
+Errors if it can't flush the child process' stdin before closing.
+
+## Usage
+
+```luau
+local child = process.spawn {
+    program = "python3",
+    args = { "-" },
+}
+child.stdin:write(PYTHON_SRC)
+child.stdin:close()
+```
+
+---
+
+## `export type` ChildProcess
+
+<h4>
+
+```luau
+export type ChildProcess = {
+```
+
+</h4>
+
+---
+
+### ChildProcess.id
+
+<h4>
+
+```luau
+id: number,
+```
+
+</h4>
+
+---
+
+### ChildProcess.alive
+
+<h4>
+
+```luau
+function ChildProcess.alive(self: ChildProcess) -> boolean,
+```
+
+</h4>
+
+---
+
+### ChildProcess.kill
+
+<h4>
+
+```luau
+function ChildProcess.kill(self: ChildProcess) -> (),
+```
+
+</h4>
+
+---
+
+### ChildProcess.stdout
+
+<h4>
+
+```luau
+stdout: ChildProcessStream,
+```
+
+</h4>
+
+---
+
+### ChildProcess.stderr
+
+<h4>
+
+```luau
+stderr: ChildProcessStream,
+```
+
+</h4>
+
+---
+
+### ChildProcess.stdin
+
+<h4>
+
+```luau
+stdin: ChildProcessStdin,
+```
+
+</h4>
+
+---
+
+Autogenerated from [std/process.luau](/.seal/typedefs/std/process.luau).
+
+*seal* is best experienced with inline, in-editor documentation. Please see the linked typedefs file if this documentation is confusing, too verbose, or inaccurate.

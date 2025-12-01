@@ -1,7 +1,7 @@
 --[=[
     A time library with `time.wait` and functions for creating `Duration` objects.
 ]=]
-type time = {
+export type time = {
     --- Blocks the current VM for approximately `seconds`, accurate to millisecond-ish precision.
     --- Implemented with Rust's `thread::sleep`.
     wait: (seconds: number) -> true,

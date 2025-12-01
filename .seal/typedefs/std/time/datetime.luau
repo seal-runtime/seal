@@ -1,126 +1,110 @@
-local datetime = {
-    common_formats = {
-        ISO_8601 = "%Y-%m-%d %H:%M" :: "%Y-%m-%d %H:%M",
-        RFC_2822 = "%a, %d %b %Y %H:%M:%S %z" :: "%a, %d %b %Y %H:%M:%S %z",
-        RFC_3339 = "%Y-%m-%dT%H:%M:%S%:z" :: "%Y-%m-%dT%H:%M:%S%:z",
-        SHORT_DATE = "%Y-%m-%d" :: "%Y-%m-%d",
-        SHORT_TIME = "%H:%M" :: "%H:%M",
-        FULL_DATE_TIME = "%A, %B %d, %Y %H:%M:%S" :: "%A, %B %d, %Y %H:%M:%S",
-        LOGGING_24_HR = "%a %b %e %H:%M:%S %Z %Y" :: "%a %b %e %H:%M:%S %Z %Y",
-        LOGGING_12_HR = "%a %b %e %I:%M:%S %p %Z %Y" :: "%a %b %e %I:%M:%S %p %Z %Y",
-        ["MM/DD/YYYY"] = "%m/%d/%Y" :: "%m/%d/%Y",
-        ["MM/DD/YYYY HH:MM (AM/PM)"] = "%m/%d/%Y %I:%M %p" :: "%m/%d/%Y %I:%M %p",
-        ["MM/DD/YY"] = "%m/%d/%y" :: "%m/%d/%y",
-        ["HH:MM (AM/PM)"] = "%I:%M %p" :: "%I:%M %p",
-        AMERICAN_FULL_DATE_TIME = "%A, %B %d, %Y %I:%M:%S %p" :: "%A, %B %d, %Y %I:%M:%S %p",
-    }
+
+--[=[
+    A timezone-aware library for parsing `DateTime`s and doing `TimeSpan` arithmetic.
+
+    See `datetime.parse`.
+]=]
+export type datetime = {
+    --- Constructs a `DateTime` from right now (based on system time) in your local timezone.
+    now: () -> DateTime,
+    --[=[
+        Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
+
+        - `timezone` defaults to `"UTC"` if not specified
+        - `nanos` defaults to `0` if not specified
+    ]=]
+    from: (timestamp: number, timezone: IanaTimezone, nanos: number?) -> DateTime,
+    --[=[
+        Constructs a `DateTime` from a strtime string or `common_format`.
+
+        All seal `DateTime`s are timezone aware, which prevents annoying and complex bugs down the line. 
+        
+        - Specify `"AUTO"` as your `timezone` if your `format` string is timezone-aware by default (RFC 3339, has `%Q` or `%z/z/%Z` specifiers, etc.)
+        - Specify `"UTC"` as your `timezone` if you want to treat `source` as UTC.
+
+        ## Usage
+
+        ```luau
+        -- Parse a simple ISO 8601 timestamp that we're sure came from US/CST time.
+        local dt = datetime.parse("2025-01-02 05:00", "ISO_8601", "US/Central")
+        -- Parse an RFC 3339 timestamp that already has timezone offset info in it.
+        local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
+        ```
+    ]=]
+    parse: (source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
+    --- Common DateTime format strings.
+    common_formats: {
+        ISO_8601: "%Y-%m-%d %H:%M",
+        RFC_2822: "%a, %d %b %Y %H:%M:%S %z",
+        RFC_3339: "%Y-%m-%dT%H:%M:%S%:z",
+        SHORT_DATE: "%Y-%m-%d",
+        SHORT_TIME: "%H:%M",
+        FULL_DATE_TIME: "%A, %B %d, %Y %H:%M:%S",
+        LOGGING_24_HR: "%a %b %e %H:%M:%S %Z %Y",
+        LOGGING_12_HR: "%a %b %e %I:%M:%S %p %Z %Y",
+        ["MM/DD/YYYY"]: "%m/%d/%Y",
+        ["MM/DD/YYYY HH:MM (AM/PM)"]: "%m/%d/%Y %I:%M %p",
+        ["MM/DD/YY"]: "%m/%d/%y",
+        ["HH:MM (AM/PM)"]: "%I:%M %p",
+        AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
+    },
+    --[=[
+        Constructs a `TimeSpan` from years. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
+
+        ## how relatives work
+        ```luau
+        local now = datetime.now()
+
+        -- you don't need to specify relative here, because we know it's relative to `now`
+        local next_year = now + datetime.years(1)
+
+        -- you don't need to specify relative here, because operands execute left to right
+        local next_year = now + datetime.years(1) + datetime.months(2)
+
+        -- you NEED to specify relative here because we don't know what it's relative to
+        local span = datetime.years(1, datetime.now()) + datetime.seconds(10)
+
+        -- only one of the operands needs to have a relative date (and it's inherited by the resulting `TimeSpan`)
+        local span2 = datetime.years(1) + datetime.months(1, datetime.now())
+        assert(span2.relative_to ~= nil, "should have relative DateTime")
+        ```
+    ]=]
+    years: (number, relative_to: DateTime?) -> TimeSpan,
+    --[=[
+        Constructs a `TimeSpan` from months. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
+
+        ## how relatives work
+        ```luau
+        local now = datetime.now()
+
+        -- you don't need to specify relative here, because we know it's relative to `now`
+        local next_year = now + datetime.years(1)
+
+        -- you don't need to specify relative here, because operands execute left to right
+        local next_year = now + datetime.years(1) + datetime.months(2)
+
+        -- you NEED to specify relative here because we don't know what it's relative to
+        local span = datetime.years(1, datetime.now()) + datetime.seconds(10)
+
+        -- only one of the operands needs to have a relative date (and it's inherited by the resulting `TimeSpan`)
+        local span2 = datetime.years(1) + datetime.months(1, datetime.now())
+        assert(span2.relative_to ~= nil, "should have relative DateTime")
+        ```
+    ]=]
+    months: (number, relative_to: DateTime?) -> TimeSpan,
+    --- Constructs a `TimeSpan` from days. Assumes every day is 24 hours.
+    days: (number) -> TimeSpan,
+    --- Constructs a `TimeSpan` from hours.
+    hours: (number) -> TimeSpan,
+    --- Constructs a `TimeSpan` from minutes.
+    minutes: (number) -> TimeSpan,
+    --- Constructs a `TimeSpan` from seconds.
+    seconds: (number) -> TimeSpan,
+    --- Constructs a `TimeSpan` from milliseconds.
+    milliseconds: (number) -> TimeSpan,
 }
 
---- Constructs a `DateTime` from right now (based on system time) in your local timezone.
-function datetime.now(): DateTime
-	return nil :: any
-end
-
---- Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
----
---- - `timezone` defaults to `"UTC"` if not specified
---- - `nanos` defaults to `0` if not specified
-function datetime.from(timestamp: number, timezone: IanaTimezone?, nanos: number?)
-    return nil :: any
-end
-
-type CommonFormatKeys = keyof<index<typeof(datetime), "common_formats">>
-
---[=[
-    Constructs a `DateTime` from a strtime string or `common_format`.
-
-    All seal `DateTime`s are timezone aware, which prevents annoying and complex bugs down the line. 
-    
-    - Specify `"AUTO"` as your `timezone` if your `format` string is timezone-aware by default (RFC 3339, has `%Q` or `%z/z/%Z` specifiers, etc.)
-    - Specify `"UTC"` as your `timezone` if you want to treat `source` as UTC.
-
-    ## Usage
-
-    ```luau
-    -- Parse a simple ISO 8601 timestamp that we're sure came from US/CST time.
-    local dt = datetime.parse("2025-01-02 05:00", "ISO_8601", "US/Central")
-    -- Parse an RFC 3339 timestamp that already has timezone offset info in it.
-    local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
-    ```
-]=]
-function datetime.parse(source: string, format: string | CommonFormatKeys, timezone: IanaTimezone): DateTime
-    return nil :: any
-end
-
---[=[
-    Constructs a `TimeSpan` from years. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
-
-    ## how relatives work
-    ```luau
-    local now = datetime.now()
-
-    -- you don't need to specify relative here, because we know it's relative to `now`
-    local next_year = now + datetime.years(1)
-
-    -- you don't need to specify relative here, because operands execute left to right
-    local next_year = now + datetime.years(1) + datetime.months(2)
-
-    -- you NEED to specify relative here because we don't know what it's relative to
-    local span = datetime.years(1, datetime.now()) + datetime.seconds(10)
-
-    -- only one of the operands needs to have a relative date (and it's inherited by the resulting `TimeSpan`)
-    local span2 = datetime.years(1) + datetime.months(1, datetime.now())
-    assert(span2.relative_to ~= nil, "should have relative DateTime")
-    ```
-]=]
-function datetime.years(years: number, relative_to: DateTime?): TimeSpan
-    return nil :: any
-end
-
---[=[
-    Constructs a `TimeSpan` from months. Months and years *must* be relative to a `DateTime` do any `TimeSpan` arithmetic!
-
-    ## how relatives work
-    ```luau
-    local now = datetime.now()
-
-    -- you don't need to specify relative here, because we know it's relative to `now`
-    local next_year = now + datetime.years(1)
-
-    -- you don't need to specify relative here, because operands execute left to right
-    local next_year = now + datetime.years(1) + datetime.months(2)
-
-    -- you NEED to specify relative here because we don't know what it's relative to
-    local span = datetime.years(1, datetime.now()) + datetime.seconds(10)
-
-    -- only one of the operands needs to have a relative date (and it's inherited by the resulting `TimeSpan`)
-    local span2 = datetime.years(1) + datetime.months(1, datetime.now())
-    assert(span2.relative_to ~= nil, "should have relative DateTime")
-    ```
-]=]
-function datetime.months(months: number, relative_to: DateTime?): TimeSpan
-    return nil :: any
-end
---- Constructs a `TimeSpan` from days. Assumes every day is 24 hours.
-function datetime.days(days: number): TimeSpan
-    return nil :: any
-end
---- Constructs a `TimeSpan` from hours.
-function datetime.hours(hours: number): TimeSpan
-    return nil :: any
-end
---- Constructs a `TimeSpan` from minutes.
-function datetime.minutes(minutes: number): TimeSpan
-    return nil :: any
-end
---- Constructs a `TimeSpan` from seconds.
-function datetime.seconds(seconds: number): TimeSpan
-    return nil :: any
-end
---- Constructs a `TimeSpan` from milliseconds.
-function datetime.milliseconds(milliseconds: number): TimeSpan
-    return nil :: any
-end
+export type CommonFormats = index<datetime, "common_formats">
 
 export type IanaTimezone =
     | "AUTO" -- timezone info already included in input data
@@ -721,5 +705,4 @@ export type IanaTimezone =
     | "WET"
     | "Zulu"
 
-
-return datetime
+return {} :: datetime

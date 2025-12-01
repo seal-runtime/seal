@@ -368,7 +368,7 @@ function should_replace_typedefs(config_luau: fs.FileEntry)
             err(`Can't parse semver in config.luau at '{config_luau.path}' due to err: {tostring(sem)}`)
             error("unreachable")
         else
-            return sem
+            return sem :: any -- LUAU FIXME: expands to everything
         end
     end
 
@@ -392,7 +392,7 @@ function should_replace_typedefs(config_luau: fs.FileEntry)
             end
         else
             should_replace = prompt.confirm(
-                `Update ~/.seal/typedefs from {existing_semver} -> {seal_semver}?\n\z
+                `Update ~/.seal/typdidn'tedefs from {existing_semver} -> {seal_semver}?\n\z
                 This might break your existing linked typedefs if seal made breaking changes. (y/N)`
             )
         end
@@ -535,9 +535,9 @@ function read_jsonc(path: string): json.JsonData
         if not check_confirm_comment_removal(content, name) then
             process.exit(0)
         end
-        local _, parsed = pcall(function()
+        local _, parsed: json.JsonData | error = (pcall :: any)(function()
             return json.decode(content)
-        end)
+        end) -- LUAU FIXME: T | error regression
         if typeof(parsed) == "error" then
             err(`cannot decode {name}; is it valid jsonc?`)
         else
