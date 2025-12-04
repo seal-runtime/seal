@@ -5,32 +5,7 @@ use crate::prelude::*;
 use crate::compile;
 use crate::std_fs::validate_path;
 
-fn interop_mlua_isint(_luau: &Lua, n: LuaValue) -> LuaValueResult {
-    match n {
-        LuaValue::Integer(_i) => {
-            Ok(LuaValue::Boolean(true))
-        },
-        LuaValue::Number(_n) => {
-            Ok(LuaValue::Boolean(false))
-        },
-        other => {
-            wrap_err!("interop.mlua.isint(n: number) expected n to be a number, got: {:#?}", other)
-        }
-    }
-}
-
-fn interop_mlua_iserror(_luau: &Lua, value: LuaValue) -> LuaValueResult {
-    match value {
-        LuaValue::Error(_err) => {
-            Ok(LuaValue::Boolean(true))
-        },
-        _other => {
-            Ok(LuaValue::Boolean(false))
-        }
-    }
-}
-
-fn interop_standalone_check(_luau: &Lua, value: LuaValue) -> LuaResult<bool> {
+fn standalone_check(_luau: &Lua, value: LuaValue) -> LuaResult<bool> {
     let function_name = "standalone.check(path: string)";
     let path = match value {
         LuaValue::String(path) => {
@@ -43,7 +18,7 @@ fn interop_standalone_check(_luau: &Lua, value: LuaValue) -> LuaResult<bool> {
     Ok(compile::is_standalone(Some(path)))
 }
 
-fn interop_standalone_extract(luau: &Lua, value: LuaValue) -> LuaValueResult {
+fn standalone_extract(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "standalone.extract(path: string)";
     let path = match value {
         LuaValue::String(path) => {
@@ -60,7 +35,7 @@ fn interop_standalone_extract(luau: &Lua, value: LuaValue) -> LuaValueResult {
     }
 }
 
-fn interop_standalone_eval(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+fn standalone_eval(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "standalone.eval(path: string, chunk_name: string)";
     let path = match multivalue.pop_front() {
         Some(LuaValue::String(path)) => {
@@ -97,24 +72,10 @@ fn interop_standalone_eval(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValu
     }
 }
 
-pub fn create_standalone(luau: &Lua) -> LuaResult<LuaTable> {
-    TableBuilder::create(luau)?
-        .with_function("check", interop_standalone_check)?
-        .with_function("extract", interop_standalone_extract)?
-        .with_function("eval", interop_standalone_eval)?
-        .build_readonly()
-}
-
-pub fn create_mlua(luau: &Lua) -> LuaResult<LuaTable> {
-    TableBuilder::create(luau)?
-        .with_function("isint", interop_mlua_isint)?
-        .with_function("iserror", interop_mlua_iserror)?
-        .build_readonly()
-}
-
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_value("mlua", create_mlua(luau)?)?
-        .with_value("standalone", create_standalone(luau)?)?
+        .with_function("check", standalone_check)?
+        .with_function("extract", standalone_extract)?
+        .with_function("eval", standalone_eval)?
         .build_readonly()
 }

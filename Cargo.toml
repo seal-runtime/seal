@@ -9,7 +9,8 @@ edition = "2024"
 # If this breaks we'll pin to a commit and risk lagging behind Luau
 # but mlua's main branch is relatively stable and hasn't broken for us before nor for other projects.
 # we need to enable error-send so we can propogate errors across threads in std_thread.rs
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send"] }
+mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send"] , branch = "ffi" }
+
 regex = "1.11.1"
 # needed for seal setup (really useful!)
 include_dir = { version = "0.7.4" }
@@ -57,6 +58,7 @@ atty = "0.2.14"
 rustyline = "17.0.2"
 # hidden password handling so i dont have to implement it myself with crossterm
 rpassword = "7.4.0"
+libloading = "0.9.0"
 
 [profile.dev.package.num-bigint-dig]
 opt-level = 3 # otherwise rsa keygen takes forever
@@ -65,3 +67,9 @@ opt-level = 3 # otherwise rsa keygen takes forever
 # reason: no autocomplete on inlined args + inconsistent syntax in macro (exprs not permitted); 
 # better to be consistent in not using inlined format args, and if it's ridiculous, split it up or just write it in luau
 uninlined_format_args = "allow"
+
+[workspace]
+members = [
+    "tests/rust/crates/simple",
+    "tests/rust/crates/webview"
+]
