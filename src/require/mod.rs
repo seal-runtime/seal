@@ -129,8 +129,9 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
             )
         },
         "@interop" => ok_table(interop::create(luau)),
-        "@interop/standalone" => ok_table(interop::create_standalone(luau)),
+        "@interop/standalone" => ok_table(interop::standalone::create(luau)),
         "@interop/mlua" => ok_table(interop::create_mlua(luau)),
+        "@interop/extern" => ok_table(interop::externs::create(luau)),
 
         "@internal/setup" => ok_table(setup::create_internal(luau)),
 

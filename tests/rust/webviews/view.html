@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      .top-bar {
+        height: 20px;
+        background-color: #008AD8;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding-right: 6px;
+        font-family: sans-serif;
+      }
+
+      .close-btn {
+        width: 16px;
+        height: 16px;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 16px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .close-btn:hover {
+        background-color: darkred;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-bar">
+      <!-- <div class="close-btn" onclick="window.ipc.postMessage('close-webview')">×</div> -->
+      <div class="close-btn" onclick="window.webkit.messageHandlers.external.postMessage('close-webview')">×</div>
+
+    </div>
+    <div>
+      <h1>Main</h1>
+      <form>
+        <label for="message">Your Message:</label><br>
+        <textarea id="custom-text" name="custom-text" rows="4" cols="50" placeholder="Text here..."></textarea><br>
+      </form>
+    </div>
+    <script>
+      const textarea = document.getElementById('custom-text');
+
+      textarea.addEventListener('keyup', () => {
+        const content = textarea.value;
+        window.webkit.messageHandlers.external.postMessage(JSON.stringify({ type: "text-update", content }));
+      });
+
+      let mouseX = 0;
+      let mouseY = 0;
+
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      setInterval(() => {
+        const payload = {
+          type: "mouse-position",
+          x: mouseX,
+          y: mouseY
+        };
+        window.webkit.messageHandlers.external.postMessage(JSON.stringify(payload));
+      }, 250);
+    </script>
+  </body>
+</html>

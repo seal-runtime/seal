@@ -1,8 +1,14 @@
+#![allow(dead_code)]
+
 use mluau::prelude::*;
+
+pub mod table_helpers;
+pub mod colors;
+pub mod err;
 
 pub const MAX_TABLE_SIZE: usize = 134_217_728;
 
-pub use crate::{std_io::colors as colors, wrap_err, table_helpers::TableBuilder};
+pub use crate::{wrap_err, prelude::table_helpers::TableBuilder};
 
 pub type LuaValueResult = LuaResult<LuaValue>;
 pub type LuaEmptyResult = LuaResult<()>;
