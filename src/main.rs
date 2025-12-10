@@ -1,4 +1,5 @@
 #![feature(default_field_values)]
+#![feature(slice_pattern)]
 use crate::{prelude::*, setup::SetupOptions};
 use mluau::prelude::*;
 

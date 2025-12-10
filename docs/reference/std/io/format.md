@@ -65,6 +65,20 @@ Removes ANSI color codes from a pretty formatted string.
 
 ---
 
+### format.hexdump
+
+<h4>
+
+```luau
+function format.hexdump(data: string | buffer) -> string,
+```
+
+</h4>
+
+Returns a hexdump-formatted string of the provided string or buffer, similar to `dp`.
+
+---
+
 ### format.__call
 
 <h4>

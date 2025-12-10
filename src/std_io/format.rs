@@ -107,6 +107,18 @@ pub fn pretty(luau: &Lua, value: LuaValue) -> LuaResult<String> {
     Ok(result)
 }
 
+pub fn hexdump(_luau: &Lua, value: LuaValue) -> LuaResult<String> {
+    let hex_cfg = pretty_hex::HexConfig {title: true, width: 8, group: 0, ..pretty_hex::HexConfig::default() };
+    let bytes = match value {
+        LuaValue::String(s) => s.as_bytes().to_owned(),
+        LuaValue::Buffer(buffy) => buffy.to_vec(),
+        other => {
+            return wrap_err!("format.hexdump(data: string | buffer) expected data to be a string or buffer, got: {:?}", other);
+        }
+    };
+    Ok(pretty_hex::config_hex(&bytes, hex_cfg))
+}
+
 pub fn __call_format(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
     let function_name = "io.format(item: unknown)";
     pop_self(&mut multivalue, function_name)?;
@@ -125,6 +137,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("simple", simple)?
         .with_function("debug", debug)?
         .with_function("uncolor", uncolor)?
+        .with_function("hexdump", hexdump)?
         .with_metatable(TableBuilder::create(luau)?
             .with_function("__call", __call_format)?
             .build_readonly()?

@@ -11,4 +11,8 @@ serde.toml = require("@std/serde/toml")
 
 serde.yaml = require("@std/serde/yaml")
 
+serde.lz4 = require("@std/serde/lz4")
+
+serde.zstd = require("@std/serde/zstd")
+
 return serde
