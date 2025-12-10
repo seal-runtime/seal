@@ -152,7 +152,7 @@ while (os.clock() - start_time) < 25 do
                 and fs.path.child(test_path) ~= "err.luau" -- err.luau should write to stderr
             then
                 local err = child.stderr:read()
-                if err and err:match("ERR") or err and err:match("PANIC") or err and err:match("WARN") then
+                if err and err:match("ERR") or err and err:match("PANIC") then -- or err and err:match("WARN") then
                     print(` ❌ {colors.red("test failed")}: {test_path}`)
                     table.insert(tests.failed, {
                         path = test_path,

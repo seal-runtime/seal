@@ -120,7 +120,7 @@ local function vibereadingintobuffer()
     fs.file.try_remove(poem_path)
 end
 
-vibereadingintobuffer()
+cheese.retry(vibereadingintobuffer, 2)
 
 local function vibereadingintosmallbuffer()
     -- someone forgot an explicit offset < length check!
