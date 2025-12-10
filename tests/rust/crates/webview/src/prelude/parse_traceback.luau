@@ -15,10 +15,6 @@ local function parse_traceback(traceback: string): string
 		:gsub(": in %?", ": in top level")
 		:gsub(cwd :: string, ".")
 
-	if string.match(new_traceback, "runtime error: userdata:") then
-		new_traceback = new_traceback:gsub("runtime error: userdata: [%w%s]+\n", "runtime error in extern library\n")
-	end
-
 	return new_traceback
 end
 
