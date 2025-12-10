@@ -22,6 +22,10 @@ pub fn process_debug_values(value: LuaValue, result: &mut String, depth: usize) 
             let formatted_string = format!("{:?}", s);
             result.push_str(&formatted_string);
         },
+        LuaValue::Buffer(buffy) => {
+            let hex_cfg = pretty_hex::HexConfig {title: false, width: 8, group: 0, ..pretty_hex::HexConfig::default() };
+            result.push_str(&pretty_hex::config_hex(&buffy.to_vec(), hex_cfg));
+        },
         LuaValue::UserData(data) => {
             match data.call_method::<LuaString>("__dp", ()) {
                 Ok(dp_output) => {
