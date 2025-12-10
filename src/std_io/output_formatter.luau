@@ -220,10 +220,14 @@ local function stringify_simple_type(value: any): string
         local first_part = string.sub(function_id, 1, #function_id - 5)
         return BOLD_RED .. "function" .. RESET .. LEFT_ANGLED .. RED .. "0x" ..  first_part .. colors.bold.red(last_five) .. RESET .. RED .. RIGHT_ANGLED
     elseif type(value) == "buffer" then
-        local buffer_id = string.match(tostring(value), ID_CATCHER_PATTERN)
-        local last_five = string.sub(buffer_id, #buffer_id - 4, # buffer_id)
-        local first_part = string.sub(buffer_id, 1, #buffer_id - 5)
-        return BOLD_MAGENTA .. "buffer" .. RESET .. LEFT_ANGLED .. MAGENTA .. "0x" .. first_part .. colors.bold.magenta(last_five) .. RESET .. MAGENTA .. RIGHT_ANGLED
+        if buffer.len(value) > 512 then
+            local buffer_id = string.match(tostring(value), ID_CATCHER_PATTERN)
+            local last_five = string.sub(buffer_id, #buffer_id - 4, # buffer_id)
+            local first_part = string.sub(buffer_id, 1, #buffer_id - 5)
+            return BOLD_MAGENTA .. "buffer" .. RESET .. LEFT_ANGLED .. MAGENTA .. "0x" .. first_part .. colors.bold.magenta(last_five) .. RESET .. MAGENTA .. RIGHT_ANGLED
+        else
+            return BOLD_MAGENTA .. "buffer" .. RESET .. LEFT_ANGLED .. GREEN .. '"' .. buffer.tostring(value) .. '"' .. RESET .. RESET .. MAGENTA .. RIGHT_ANGLED
+        end
     elseif mlua.iserror(value) or typeof(value) == "error" then
         local stringified_error = tostring(value)
         local errsplit = string.split(stringified_error, "\n")

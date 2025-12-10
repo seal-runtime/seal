@@ -18,6 +18,10 @@ export type format = setmetatable<{
         Removes ANSI color codes from a pretty formatted string.
     ]=]
     uncolor: (s: string) -> string,
+    --[=[
+        Returns a hexdump-formatted string of the provided string or buffer, similar to `dp`.
+    ]=]
+    hexdump: (data: string | buffer) -> string,
 }, { 
     __call: (self: any, item: unknown) -> string,
 }>
