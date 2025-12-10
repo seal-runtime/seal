@@ -28,7 +28,10 @@ enum Shell {
 
 impl From<String> for Shell {
     fn from(s: String) -> Self {
-        let shell_name = Path::new(&s).file_name().and_then(|name| name.to_str()).unwrap_or(&s); // If file_name fails, fall back to the original
+        let shell_name = Path::new(&s)
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or(&s); // If file_name fails, fall back to the original
 
         match shell_name {
             "pwsh" => Shell::Pwsh,
@@ -321,7 +324,8 @@ fn create_run_result_table(luau: &Lua, output: Output) -> LuaValueResult {
                     let s = trim_end_or_return(&stdout);
                     Ok(LuaValue::String(luau.create_string(s)?))
                 } else {
-                    wrap_err!("Attempt to :unwrap() a failed RunResult! Use :unwrap_or to specify a default value")
+                    let readable_stderr = String::from_utf8_lossy(&stderr);
+                    wrap_err!("Attempt to :unwrap() a failed RunResult! Use :unwrap_or to specify a default value.\n  Process terminated with stderr:\n  {}", readable_stderr)
                 }
             }
         })?
