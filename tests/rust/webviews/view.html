@@ -38,36 +38,37 @@
 
     </div>
     <div>
-      <h1>Main</h1>
-      <form>
+      <h1>hello from seal!</h1>
+      <img src="./tests/rust/webviews/seal_hugs.png">
+      <!-- <form>
         <label for="message">Your Message:</label><br>
         <textarea id="custom-text" name="custom-text" rows="4" cols="50" placeholder="Text here..."></textarea><br>
-      </form>
+      </form> -->
     </div>
     <script>
-      const textarea = document.getElementById('custom-text');
+      // const textarea = document.getElementById('custom-text');
 
-      textarea.addEventListener('keyup', () => {
-        const content = textarea.value;
-        window.webkit.messageHandlers.external.postMessage(JSON.stringify({ type: "text-update", content }));
-      });
+      // textarea.addEventListener('keyup', () => {
+      //   const content = textarea.value;
+      //   window.webkit.messageHandlers.external.postMessage(JSON.stringify({ type: "text-update", content }));
+      // });
 
-      let mouseX = 0;
-      let mouseY = 0;
+      // let mouseX = 0;
+      // let mouseY = 0;
 
-      document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-      });
+      // document.addEventListener('mousemove', (e) => {
+      //   mouseX = e.clientX;
+      //   mouseY = e.clientY;
+      // });
 
-      setInterval(() => {
-        const payload = {
-          type: "mouse-position",
-          x: mouseX,
-          y: mouseY
-        };
-        window.webkit.messageHandlers.external.postMessage(JSON.stringify(payload));
-      }, 250);
+      // setInterval(() => {
+      //   const payload = {
+      //     type: "mouse-position",
+      //     x: mouseX,
+      //     y: mouseY
+      //   };
+      //   window.webkit.messageHandlers.external.postMessage(JSON.stringify(payload));
+      // }, 250);
     </script>
   </body>
 </html>

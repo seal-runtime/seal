@@ -4,6 +4,16 @@ use table_helpers::TableBuilder;
 use std::{ffi::c_int};
 use mluau::prelude::{*};
 
+// fn some_iterator(luau: &Lua, value: LuaValue) -> LuaResult<LuaValue> {
+//     let starting_value = match value {
+//         LuaValue::Number(n) => n,
+//         LuaValue::Integer(i) => i as f64,
+//         other => {
+//             return LuaError::external(format!(""))
+//         }
+//     };
+// }
+
 fn hello(luau: &Lua, name: String) -> LuaResult<LuaValue> {
     format!("We say hello to dear {}", name).into_lua(luau)
 }
