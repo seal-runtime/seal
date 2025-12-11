@@ -110,6 +110,9 @@ local function setup(config: SetupConfig?)
                 ["**/init.client.luau"] = "${dirname}",
                 ["**/init.server.luau"] = "${dirname}"
             },
+            ["luau-lsp.fflags.override"] = {
+                ["LuauInstantiationUsesGenericPolarity"] = "false",
+            },
         }
 
         local settings_path = cwd:join(".vscode", "settings.json")
@@ -137,6 +140,9 @@ local function setup(config: SetupConfig?)
                         ["fflags"] = {
                             ["enable_by_default"] = true,
                             ["enable_new_solver"] = true,
+                            ["override"] = {
+                                ["LuauInstantiationUsesGenericPolarity"] = "false",
+                            }
                         },
                         ["definitions"] = { globals_path },
                         ["documentation"] = { global_docs_path },
