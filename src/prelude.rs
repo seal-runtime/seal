@@ -173,74 +173,111 @@ pub fn create_table_with_capacity(luau: &Lua, n_array: usize, n_records: usize) 
     unsafe { luau.create_table_with_capacity(n_array, n_records) }
 }
 
-// HACK
-pub fn temp_transform_luau_src<S: AsChunk>(chunk: S) -> String {
-    let bytes = chunk.source().unwrap().to_vec();
-    let mut out = String::with_capacity(bytes.len());
+use std::str;
 
-    let mut i = 0;
+// WARNING: AI GENERATED WILL BE REMOVED ONCE MLUAU UPDATES
+// HACK: strip Luau generic call syntax <<...>> before function calls,
+// while preserving UTF-8 and leaving all comment forms untouched.
+pub fn temp_transform_luau_src<S: AsChunk>(chunk: S) -> String {
+    // Get bytes from the chunk (Cow<[u8]>), then decode as UTF-8.
+    let cow = match chunk.source() {
+        Ok(cow) => cow,
+        Err(_) => return String::new(),
+    };
+    let bytes = cow.as_ref();
+    let src_str = match str::from_utf8(bytes) {
+        Ok(s) => s,
+        Err(_) => return String::from_utf8_lossy(bytes).into_owned(),
+    };
+
+    let mut out = String::with_capacity(src_str.len());
+    let mut chars = src_str.chars().peekable();
+
     let mut in_line_comment = false;
     let mut in_block_comment = false;
+    let mut block_eq_count = 0;
 
-    while i < bytes.len() {
-        // Handle end of line comment
+    while let Some(c) = chars.next() {
+        // Inside a line comment: copy verbatim until newline
         if in_line_comment {
-            if bytes[i] == b'\n' {
+            out.push(c);
+            if c == '\n' {
                 in_line_comment = false;
             }
-            out.push(bytes[i] as char);
-            i += 1;
             continue;
         }
 
-        // Handle end of block comment
+        // Inside a block/doc comment: copy verbatim until closing ]=...]
         if in_block_comment {
-            if i + 1 < bytes.len() && bytes[i] == b']' && bytes[i + 1] == b']' {
-                in_block_comment = false;
-                out.push(bytes[i] as char);
-                out.push(bytes[i + 1] as char);
-                i += 2;
-                continue;
+            out.push(c);
+            if c == ']' {
+                // check for ]=...]
+                let mut temp = chars.clone();
+                let mut eq_seen = 0;
+                while temp.peek() == Some(&'=') {
+                    temp.next();
+                    eq_seen += 1;
+                }
+                if eq_seen == block_eq_count && temp.peek() == Some(&']') {
+                    // consume '=' signs and final ']'
+                    for _ in 0..eq_seen {
+                        out.push(chars.next().unwrap());
+                    }
+                    out.push(chars.next().unwrap());
+                    in_block_comment = false;
+                }
             }
-            out.push(bytes[i] as char);
-            i += 1;
             continue;
         }
 
         // Detect start of comments
-        if i + 1 < bytes.len() && bytes[i] == b'-' && bytes[i + 1] == b'-' {
-            if i + 3 < bytes.len() && bytes[i + 2] == b'[' && bytes[i + 3] == b'[' {
-                in_block_comment = true;
+        if c == '-' && chars.peek() == Some(&'-') {
+            out.push(c);
+            out.push(chars.next().unwrap()); // consume second '-'
+
+            if chars.peek() == Some(&'[') {
+                // lookahead for --[=*[ 
+                let mut temp = chars.clone();
+                temp.next(); // consume '['
+                let mut eq_count = 0;
+                while temp.peek() == Some(&'=') {
+                    temp.next();
+                    eq_count += 1;
+                }
+                if temp.peek() == Some(&'[') {
+                    // it's a block/doc comment
+                    in_block_comment = true;
+                    block_eq_count = eq_count;
+                } else {
+                    in_line_comment = true;
+                }
             } else {
                 in_line_comment = true;
             }
-            out.push(bytes[i] as char);
-            out.push(bytes[i + 1] as char);
-            i += 2;
             continue;
         }
 
-        // Detect << … >> outside comments
-        if i + 1 < bytes.len() && bytes[i] == b'<' && bytes[i + 1] == b'<' {
-            i += 2;
+        // Detect and skip << ... >> outside comments, supporting nested << >>
+        if c == '<' && chars.peek() == Some(&'<') {
+            chars.next(); // consume second '<'
             let mut depth = 1;
-            while i < bytes.len() && depth > 0 {
-                if i + 1 < bytes.len() && bytes[i] == b'<' && bytes[i + 1] == b'<' {
+            while let Some(c2) = chars.next() {
+                if c2 == '<' && chars.peek() == Some(&'<') {
+                    chars.next();
                     depth += 1;
-                    i += 2;
-                } else if i + 1 < bytes.len() && bytes[i] == b'>' && bytes[i + 1] == b'>' {
+                } else if c2 == '>' && chars.peek() == Some(&'>') {
+                    chars.next();
                     depth -= 1;
-                    i += 2;
-                } else {
-                    i += 1;
+                    if depth == 0 {
+                        break;
+                    }
                 }
             }
             continue;
         }
 
         // Normal character
-        out.push(bytes[i] as char);
-        i += 1;
+        out.push(c);
     }
 
     out
@@ -286,6 +323,60 @@ local result = new<< {
 "#;
         let expected = r#"
 local result = new("arg")
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn preserves_documentation_comment_with_equals() {
+        let src = r#"
+--[=[ This is a doc comment with <<notype>> inside ]=]
+local x = foo<<T>>()
+"#;
+        let expected = r#"
+--[=[ This is a doc comment with <<notype>> inside ]=]
+local x = foo()
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn preserves_nested_equals_doc_comment() {
+        let src = r#"
+--[==[ Another doc comment
+with <<stuff>> inside ]==]
+local y = bar<<U>>("test")
+"#;
+        let expected = r#"
+--[==[ Another doc comment
+with <<stuff>> inside ]==]
+local y = bar("test")
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn preserves_line_comment_with_generics() {
+        let src = r#"
+-- this is a comment <<notype>>
+local z = baz<<V>>() 
+"#;
+        let expected = r#"
+-- this is a comment <<notype>>
+local z = baz() 
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn preserves_block_comment_with_generics() {
+        let src = r#"
+--[[ block comment <<ignored>> ]]
+local w = qux<<W>>(42)
+"#;
+        let expected = r#"
+--[[ block comment <<ignored>> ]]
+local w = qux(42)
 "#;
         assert_eq!(temp_transform_luau_src(src), expected);
     }

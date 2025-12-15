@@ -1,6 +1,6 @@
 local net = {}
 
 net.http = require("@std/net/http")
-net.socket = require("@std/net/socket")
+net.websocket = require("@std/net/websocket")
 
 return net

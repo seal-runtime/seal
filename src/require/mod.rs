@@ -156,22 +156,34 @@ fn load_std_semver(luau: &Lua) -> LuaResult<LuaTable> {
     luau.load(temp_transform_luau_src(STD_SEMVER_SRC)).eval::<LuaTable>() // <<>> HACK
 }
 
+const RESOLVER_SRC: &str = include_str!("./resolver.luau");
 pub fn get_resolver(luau: &Lua) -> LuaResult<LuaTable> {
-    let resolver_src = include_str!("./resolver.luau");
-    let LuaValue::Table(resolver) = luau.load(temp_transform_luau_src(resolver_src)).eval()? else { // <<>> HACK
+    let LuaValue::Table(resolver) = luau.load(temp_transform_luau_src(RESOLVER_SRC)).eval()? else { // <<>> HACK
         panic!("require resolver didnt return table??");
     };
     Ok(resolver)
 }
 
+fn get_resolver_function(luau: &Lua) -> LuaResult<LuaFunction> {
+    let f = luau.named_registry_value::<Option<LuaFunction>>("require.resolver.resolve")?;
+    if let Some(resolve) = f {
+        Ok(resolve)
+    } else {
+        let LuaValue::Table(resolver) = luau.load(temp_transform_luau_src(RESOLVER_SRC)).eval()? else { // <<>> HACK
+            panic!("require resolver didnt return table??");
+        };
+        let LuaValue::Function(resolve) = resolver.raw_get("resolve")? else {
+            panic!("require resolver.resolve not a function??");
+        };
+
+        luau.set_named_registry_value("require.resolver.resolve", &resolve)?;
+
+        Ok(resolve)
+    }
+}
+
 fn resolve_path(luau: &Lua, path: String) -> LuaResult<String> {
-    let resolver_src = include_str!("./resolver.luau");
-    let LuaValue::Table(resolver) = luau.load(temp_transform_luau_src(resolver_src)).eval()? else { // <<>> HACK
-        panic!("require resolver didnt return table??");
-    };
-    let LuaValue::Function(resolve) = resolver.raw_get("resolve")? else {
-        panic!("require resolver.resolve not a function??");
-    };
+    let resolve = get_resolver_function(luau)?;
     match resolve.call::<LuaValue>(path.to_owned()) {
         Ok(LuaValue::Table(result_table)) => {
             if let LuaValue::String(path) = result_table.raw_get("path")? {
