@@ -92,6 +92,7 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std/net/http" => ok_table(std_net::http::create(luau)),
         "@std/net/http/server" => ok_table(std_net::serve::create(luau)),
         "@std/net/request" => ok_function(std_net::http::request, luau),
+        "@std/net/socket" => ok_table(std_net::socket::create(luau)),
 
         "@std/crypt" => ok_table(std_crypt::create(luau)),
         "@std/crypt/aes" => ok_table(std_crypt::create_aes(luau)),

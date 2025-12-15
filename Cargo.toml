@@ -61,6 +61,8 @@ rustyline = "17.0.2"
 rpassword = "7.4.0"
 zstd = "0.13.3"
 pretty-hex = "0.4.1"
+tungstenite = { version = "0.28.0", features = ["native-tls"] }
+url = "2.5.7"
 
 [profile.dev.package.num-bigint-dig]
 opt-level = 3 # otherwise rsa keygen takes forever

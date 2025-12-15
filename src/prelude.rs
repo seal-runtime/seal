@@ -172,3 +172,83 @@ pub fn create_table_with_capacity(luau: &Lua, n_array: usize, n_records: usize) 
     #[allow(unused_unsafe)]
     unsafe { luau.create_table_with_capacity(n_array, n_records) }
 }
+
+// HACK
+pub fn temp_transform_luau_src<S: AsRef<str>>(src: S) -> String {
+    let s = src.as_ref();
+    let mut out = String::with_capacity(s.len());
+
+    let mut i = 0;
+    let bytes = s.as_bytes();
+
+    while i < bytes.len() {
+        if i + 1 < bytes.len() && bytes[i] == b'<' && bytes[i + 1] == b'<' {
+            // Found start of << ... >>
+            i += 2;
+            let mut depth = 1;
+            while i < bytes.len() && depth > 0 {
+                if i + 1 < bytes.len() && bytes[i] == b'<' && bytes[i + 1] == b'<' {
+                    depth += 1;
+                    i += 2;
+                } else if i + 1 < bytes.len() && bytes[i] == b'>' && bytes[i + 1] == b'>' {
+                    depth -= 1;
+                    i += 2;
+                } else {
+                    i += 1;
+                }
+            }
+            // Skip everything until after the closing >>
+            continue;
+        } else {
+            out.push(bytes[i] as char);
+            i += 1;
+        }
+    }
+
+    out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn strips_simple_single_line() {
+        let src = "foo<<int>>(123)";
+        let expected = "foo(123)";
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn strips_multiple_type_params_single_line() {
+        let src = "bar<<A,B>>{\"x\"}";
+        let expected = "bar{\"x\"}";
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn strips_multiline_block() {
+        let src = r#"
+local result = new<< {
+  create: <T>(self: T) -> string,
+} >>()
+"#;
+        let expected = r#"
+local result = new()
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn strips_nested_multiline_block() {
+        let src = r#"
+local result = new<< {
+  inner: <<X>>(self: X) -> (),
+} >>("arg")
+"#;
+        let expected = r#"
+local result = new("arg")
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+}

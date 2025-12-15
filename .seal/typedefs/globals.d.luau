@@ -37,6 +37,38 @@ declare class interrupt
     code: "CtrlC" | "CtrlD"
 end
 
+declare extern type WebsocketMessage with
+    function is_binary(self): boolean
+    function is_utf8(self): boolean
+    function type(self): "Binary" | "Text" | "Close" | "Ping" | "Pong" | "Frame"
+    function as_string(self): string
+    function as_bytes(self): buffer
+    -- function try_json(self): { [unknown]: unknown }?
+    try_json: <T>(self: WebsocketMessage) -> T | error
+    function expect_json(self): { [unknown]: unknown }
+end
+
+--- weebsocket
+declare extern type Websocket with
+    --[=[
+        Read a (stringified) message from the websocket, blocking until a message is read.
+
+        If the message is json, you'll want to decode it explicitly with `json.decode`, handling any error cases.
+    ]=]
+    function read(self): WebsocketMessage
+    --[=[
+        Send a `message` through the websocket.
+
+        The message can be a `string`, a `buffer` (for binary data), or a table, which will be serialized to json (similarly to http.post/etc)
+    ]=]
+    function send(self, message: string | { [any]: any } | buffer): ()
+    --- Returns `true` if we can currently read from the websocket.
+    function readable(self): boolean
+    --- Returns `true` if we can currently write to the websocket.
+    function sendable(self): boolean
+    function close(self): ()
+end
+
 type COMMON_FORMATS =
     | "ISO_8601"
     | "RFC_2822"
