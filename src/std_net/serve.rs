@@ -85,7 +85,7 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
         let mut buf_reader = BufReader::new(&stream);
         let mut content_length: Option<usize> = None;
         let mut lines: Vec<String> = Vec::new();
-        
+
         // handle header and break upon hitting \r\n\r\n aka time to start body
         for header in buf_reader.by_ref().lines() {
             match header {
@@ -128,7 +128,7 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
 
     if invalid_request {
         // commented all of this out because it gets garbled when returned through https
-        
+
         // let response = r#"{"ok": false, "err": "invalid utf-8 request"}"#;
         // let response_headers = format!(
         //     "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n",
@@ -142,10 +142,10 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
         //     return Ok(LuaNil);
         // }
         return Ok(LuaNil);
-    }  
+    }
 
     let request_text = lines.join("\n");
-    
+
     let first_line_re = Regex::new(r"^(?P<method>\w+)\s+(?P<path>\S+)\s+HTTP/1\.[01]$").unwrap();
     let captures = match first_line_re.captures(&lines[0]) {
         Some(captures) => captures,
@@ -267,9 +267,9 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
     }
 
     // Respond with the specified content
-    let response = format!("{} {} {}\r\nContent-Type: {}\r\n{}Content-Length: {}\r\n\r\n{}", 
+    let response = format!("{} {} {}\r\nContent-Type: {}\r\n{}Content-Length: {}\r\n\r\n{}",
         http_version, status_code, reason_phrase, content_type, additional_headers, body.len(), body);
-    
+
     // now we actually send and write to stream
     // if someone passed in body = somebuffer then we have to write the buffer to the stream separately
     match buffer_body {

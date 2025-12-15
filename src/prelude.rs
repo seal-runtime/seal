@@ -1,5 +1,5 @@
 // pub use crate::{LuaValueResult, LuaEmptyResult, LuaMultiResult, colors, wrap_err};
-use mluau::prelude::*;
+use mluau::{AsChunk, prelude::*};
 
 pub const MAX_TABLE_SIZE: usize = 134_217_728;
 
@@ -71,7 +71,7 @@ impl DebugInfo {
                 function_name = if function_name == "" then "top level" else function_name,
             }
         "#;
-        let LuaValue::Table(info) = luau.load(SLN_SRC).set_name("gettin da debug info").eval()? else {
+        let LuaValue::Table(info) = luau.load(temp_transform_luau_src(SLN_SRC)).set_name("gettin da debug info").eval()? else { // <<>> HACK
             return wrap_err!("{}: can't get debug info", function_name);
         };
         let source = match info.raw_get("source")? {
@@ -174,16 +174,54 @@ pub fn create_table_with_capacity(luau: &Lua, n_array: usize, n_records: usize) 
 }
 
 // HACK
-pub fn temp_transform_luau_src<S: AsRef<str>>(src: S) -> String {
-    let s = src.as_ref();
-    let mut out = String::with_capacity(s.len());
+pub fn temp_transform_luau_src<S: AsChunk>(chunk: S) -> String {
+    let bytes = chunk.source().unwrap().to_vec();
+    let mut out = String::with_capacity(bytes.len());
 
     let mut i = 0;
-    let bytes = s.as_bytes();
+    let mut in_line_comment = false;
+    let mut in_block_comment = false;
 
     while i < bytes.len() {
+        // Handle end of line comment
+        if in_line_comment {
+            if bytes[i] == b'\n' {
+                in_line_comment = false;
+            }
+            out.push(bytes[i] as char);
+            i += 1;
+            continue;
+        }
+
+        // Handle end of block comment
+        if in_block_comment {
+            if i + 1 < bytes.len() && bytes[i] == b']' && bytes[i + 1] == b']' {
+                in_block_comment = false;
+                out.push(bytes[i] as char);
+                out.push(bytes[i + 1] as char);
+                i += 2;
+                continue;
+            }
+            out.push(bytes[i] as char);
+            i += 1;
+            continue;
+        }
+
+        // Detect start of comments
+        if i + 1 < bytes.len() && bytes[i] == b'-' && bytes[i + 1] == b'-' {
+            if i + 3 < bytes.len() && bytes[i + 2] == b'[' && bytes[i + 3] == b'[' {
+                in_block_comment = true;
+            } else {
+                in_line_comment = true;
+            }
+            out.push(bytes[i] as char);
+            out.push(bytes[i + 1] as char);
+            i += 2;
+            continue;
+        }
+
+        // Detect << … >> outside comments
         if i + 1 < bytes.len() && bytes[i] == b'<' && bytes[i + 1] == b'<' {
-            // Found start of << ... >>
             i += 2;
             let mut depth = 1;
             while i < bytes.len() && depth > 0 {
@@ -197,12 +235,12 @@ pub fn temp_transform_luau_src<S: AsRef<str>>(src: S) -> String {
                     i += 1;
                 }
             }
-            // Skip everything until after the closing >>
             continue;
-        } else {
-            out.push(bytes[i] as char);
-            i += 1;
         }
+
+        // Normal character
+        out.push(bytes[i] as char);
+        i += 1;
     }
 
     out

@@ -6,7 +6,6 @@ use url::Url;
 use std::net::TcpStream;
 use tungstenite::{Message, stream::MaybeTlsStream};
 
-
 struct WebsocketMessage {
     inner: Message,
 }
@@ -21,6 +20,9 @@ impl WebsocketMessage {
     }
 }
 impl LuaUserData for WebsocketMessage {
+    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
+        fields.add_meta_field("__type", "WebsocketMessage");
+    }
     fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
         methods.add_method("is_binary", |_luau, it, _: LuaValue| {
             if let Message::Binary(_) = it.inner {
@@ -201,7 +203,7 @@ impl LuaUserData for WebsocketWrapper {
             message.get_userdata(luau)
         });
         methods.add_method_mut("send", |luau: &Lua, it: &mut WebsocketWrapper, value: LuaValue| {
-            let function_name = "WebSocket:send(message: string)";
+            let function_name = "Websocket:send(message: string)";
             match value {
                 LuaValue::String(s) => it.send(s.to_string_lossy()),
                 LuaValue::Table(t) => {
@@ -228,7 +230,7 @@ impl LuaUserData for WebsocketWrapper {
     }
 }
 
-fn socket_connect(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+fn websocket_connect(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "socket.connect(url: string)";
 
     let url = match multivalue.pop_front() {
@@ -315,6 +317,6 @@ fn socket_connect(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("connect", socket_connect)?
+        .with_function("connect", websocket_connect)?
         .build_readonly()
 }

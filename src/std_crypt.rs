@@ -63,7 +63,7 @@ fn aes_encrypt(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
         Ok(encrypted_bytes) => base64_standard.encode(encrypted_bytes),
         Err(err) => {
             return wrap_err!("crypt.aes.encrypt: unable to encrypt: {}", err)
-        } 
+        }
     };
     Ok(LuaValue::String(
         luau.create_string(encrypted_text)?
@@ -304,9 +304,9 @@ fn password_hash(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let mut hash = vec![0u8; SHA256_OUTPUT_LEN];
     pbkdf2::derive(
         PBKDF2_HMAC_SHA256,
-        PBKDF2_ITERATIONS, 
-        &salt, 
-        password_raw.as_bytes(), 
+        PBKDF2_ITERATIONS,
+        &salt,
+        password_raw.as_bytes(),
         &mut hash,
     );
 

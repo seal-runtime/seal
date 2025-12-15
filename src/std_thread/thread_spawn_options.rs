@@ -150,7 +150,7 @@ impl ThreadSpawnOptions {
                         io::ErrorKind::NotFound => wrap_err!("{}: File/directory not found: '{}'", function_name, src_path.display()),
                         io::ErrorKind::PermissionDenied => wrap_err!("{}: Permission denied: '{}'", function_name, src_path.display()),
                         _ => wrap_err!("{}: Error on path: '{}': {}", function_name, src_path.display(), err)
-                        
+
                     }
                 };
             }

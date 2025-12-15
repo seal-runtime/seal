@@ -33,7 +33,7 @@ fn zstd_compress(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
         Ok(compressed) => compressed,
         Err(err) => {
             return wrap_err!("{}: unable to compress bytes: {}", function_name, err);
-        } 
+        }
     };
 
     ok_buffy(compressed, luau)

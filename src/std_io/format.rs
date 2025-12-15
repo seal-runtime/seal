@@ -23,7 +23,7 @@ pub fn process_debug_values(value: LuaValue, result: &mut String, depth: usize) 
             result.push_str(&formatted_string);
         },
         LuaValue::Buffer(buffy) => {
-            let hex_cfg = pretty_hex::HexConfig {title: false, width: 8, group: 0, ..pretty_hex::HexConfig::default() };
+            let hex_cfg = pretty_hex::HexConfig {title: true, width: 8, group: 0, ..pretty_hex::HexConfig::default() };
             result.push_str(&pretty_hex::config_hex(&buffy.to_vec(), hex_cfg));
         },
         LuaValue::UserData(data) => {
@@ -63,7 +63,7 @@ fn debug(luau: &Lua, stuff: LuaMultiValue) -> LuaResult<LuaString> {
 
 const OUTPUT_FORMATTER_SRC: &str = include_str!("./output_formatter.luau");
 pub fn simple(luau: &Lua, value: LuaValue) -> LuaValueResult {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
+    let r: LuaTable = luau.load(temp_transform_luau_src(OUTPUT_FORMATTER_SRC)).eval()?; // <<>> HACK
     let format_simple: LuaFunction = r.raw_get("simple")?;
     let result = match format_simple.call::<LuaString>(value) {
         Ok(text) => text.to_string_lossy(),
@@ -96,7 +96,7 @@ fn uncolor(luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 pub fn pretty(luau: &Lua, value: LuaValue) -> LuaResult<String> {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
+    let r: LuaTable = luau.load(temp_transform_luau_src(OUTPUT_FORMATTER_SRC)).eval()?; // <<>> HACK
     let format_pretty: LuaFunction = r.raw_get("pretty")?;
     let result = match format_pretty.call::<LuaString>(value) {
         Ok(text) => text.to_string_lossy(),

@@ -91,13 +91,13 @@ fn prompt_confirm(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> 
     };
 
     if !message.is_empty() && !message.contains(": ") {
-        message.push_str(if default { 
+        message.push_str(if default {
             " [Y/n]: "
-        } else { 
+        } else {
             " [y/N]: "
         });
     }
-    
+
     loop {
         let line = prompt_line(luau, &message, function_name)?;
         match line.trim().to_lowercase().as_str() {
@@ -246,7 +246,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("confirm", prompt_confirm)?
         .build()?;
 
-    let prompt_table = match luau.load(PROMPT_DOT_LUAU_SRC).eval::<LuaTable>() {
+    let prompt_table = match luau.load(temp_transform_luau_src(PROMPT_DOT_LUAU_SRC)).eval::<LuaTable>() { // <<>> HACK
         Ok(t) => t,
         Err(err) => {
             panic!("std/cli/prompt's prompt.luau did a bad: {}", err);

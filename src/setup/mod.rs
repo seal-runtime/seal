@@ -86,7 +86,7 @@ pub fn run(options: SetupOptions) -> LuaEmptyResult {
     let cwd = std_env::get_cwd("seal setup")?;
     let temp_luau = Lua::default();
     globals::set_globals(&temp_luau, cwd.to_string_lossy())?;
-    let setup_table = match temp_luau.load(SETUP_SRC).set_name("seal setup").eval::<LuaValue>() {
+    let setup_table = match temp_luau.load(temp_transform_luau_src(SETUP_SRC)).set_name("seal setup").eval::<LuaValue>() { // <<>> HACK
         Ok(t) => match t {
             LuaValue::Table(t) => t,
             other => {

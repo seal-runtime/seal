@@ -26,7 +26,7 @@ impl SealConfig {
                 if std_env::get_cwd(function_name)?
                     .join("src")
                     .join("main.luau")
-                    .exists() 
+                    .exists()
                 {
                     return Ok(Some(SealConfig { entry_path: String::from("./src/main.luau"), test_path: None }))
                 } else {
@@ -55,7 +55,7 @@ impl SealConfig {
             },
         };
 
-        let sealconfig = match luau.load(sealconfig_src).eval::<LuaValue>() {
+        let sealconfig = match luau.load(temp_transform_luau_src(sealconfig_src)).eval::<LuaValue>() { // <<>> HACK
             Ok(LuaValue::Table(config)) => config,
             Ok(other) => {
                 return wrap_err!("{}: config.luau at '{}' returned something that isn't a table: {:?}", function_name, current_path.display(), other);

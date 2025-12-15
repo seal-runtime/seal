@@ -38,14 +38,47 @@ declare class interrupt
 end
 
 declare extern type WebsocketMessage with
+    --- Returns `true` if `message:type() == "Binary"`
     function is_binary(self): boolean
+    --- Returns `true` if `message:type() == "Text"`
     function is_utf8(self): boolean
+    --- Returns the internal `Tungstenite::Message` type of the message
     function type(self): "Binary" | "Text" | "Close" | "Ping" | "Pong" | "Frame"
+    --- Returns the message's contents as a `string` without any intermediate utf8 coercion.
     function as_string(self): string
+    --- Returns the message's contents as a `buffer`
     function as_bytes(self): buffer
-    -- function try_json(self): { [unknown]: unknown }?
+    --[=[
+        Try to parse the message as JSON, returning an `error` if decoding the message was unsuccessful.
+
+        ## Usage
+
+        ```luau
+        type ReturnType = {
+            field1: string,
+        }
+        local message = websocket:read()
+        if message:is_utf8() then
+            local contents = message:try_json<<ReturnType>>()
+            if typeof(contents) == "error" then
+                print("not a json")
+            else
+                print(contents.field1) -- no type error
+            end
+        end
+        ```
+    ]=]
     try_json: <T>(self: WebsocketMessage) -> T | error
-    function expect_json(self): { [unknown]: unknown }
+    --[=[
+        Converts message to json of the provided `T`
+
+        ## Errors
+
+        - if the message is actually binary
+        - if the message cannot be decoded from json
+    ]=]
+    expect_json: <T>(self: WebsocketMessage) -> T
+    -- function expect_json(self): { [unknown]: unknown }
 end
 
 --- weebsocket

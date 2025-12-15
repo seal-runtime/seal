@@ -12,8 +12,8 @@ for _, file in rust_files do
         local loading_identifier = string.match(line, "luau%.load%(([%w_]+)%)")
         if loading_identifier then
             line = line:gsub("luau%.load%(([%w_]+)%)", `luau.load(temp_transform_luau_src({loading_identifier}))`) .. " // <<>> HACK"
-            print(line)
         end
+        table.insert(lines, line)
     end
-    -- fs.writefile(file, table.concat(lines, "\n"))
+    fs.writefile(file, table.concat(lines, "\n"))
 end

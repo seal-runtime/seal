@@ -105,7 +105,7 @@ pub fn read_file_into_buffer(luau: &Lua, entry_path: &str, mut multivalue: LuaMu
             count
         }
     };
-    
+
     if (buffer_offset + count) > buffer_size {
         return wrap_err!("{}: target buffer too small! buffer_offset + count is {}, which is larger than the provided buffer ({})", function_name_and_args, buffer_offset + count, buffer_size);
     } else if (file_offset + count) > file_size {
@@ -155,7 +155,7 @@ pub fn read_file_into_buffer(luau: &Lua, entry_path: &str, mut multivalue: LuaMu
         Ok(LuaValue::Buffer(luau.create_buffer(rust_buffer)?))
     }
 }
-        
+
 fn file_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "FileEntry:readbytes(file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?)";
     let entry = match multivalue.pop_front() {
@@ -182,14 +182,14 @@ fn file_append(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
 
     let mut file = match OpenOptions::new()
         .append(true)
-        .open(&entry_path) 
+        .open(&entry_path)
     {
         Ok(file) => file,
         Err(err) => {
             return wrap_io_read_errors_empty(err, "FileEntry:append", &entry_path);
         }
     };
-    
+
     let content = match multivalue.pop_front() {
         Some(LuaValue::String(content)) => {
             content.as_bytes().to_owned()

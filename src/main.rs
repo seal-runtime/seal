@@ -57,20 +57,20 @@ enum SealCommand {
     * `seal ./hi.luau meow1 meow2`
     */
     Default { filename: String },
-    /** 
+    /**
     Evaluate some string `src` with `seal`; `fs`, `http`, and `process` libs are already loaded in for convenience.
-    
+
     ## Examples:
     * `seal eval 'print("hi")'`
-    * `seal eval 'print(process.shell({ program = "seal -h" }):unwrap())'` 
-    */ 
+    * `seal eval 'print(process.shell({ program = "seal -h" }):unwrap())'`
+    */
     Eval(Args),
-    /** 
+    /**
     Run `seal` at the project (at your cwd)'s entrypoint, usually `./src/main.luau` unless configured otherwise.
-    
+
     ## Examples:
     * `seal run arg1 arg2`
-    */ 
+    */
     Run,
     /// `seal setup` | `seal project` | `seal script` | `seal setup custom <args>`
     Setup(SetupOptions),
@@ -139,7 +139,7 @@ fn main() -> LuaResult<()> {
             Ok(None)
         },
         SealCommand::CommandHelp(command) => command.help(),
-        help @ SealCommand::DefaultHelp | 
+        help @ SealCommand::DefaultHelp |
         help @ SealCommand::HelpCommandHelp |
         help @ SealCommand::SealConfigHelp => help.help(),
         SealCommand::Repl => {
@@ -155,7 +155,7 @@ fn main() -> LuaResult<()> {
         Err(err) => display_error_and_exit(err),
     };
 
-    match luau.load(src).set_name(chunk_name).exec() {
+    match luau.load(temp_transform_luau_src(src)).set_name(chunk_name).exec() { // <<>> HACK
         Ok(_) => Ok(()),
         Err(err) => display_error_and_exit(err),
     }
@@ -168,7 +168,7 @@ fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoad
     let Some(chunk_name) = require::get_chunk_name_for_module(&requested_path, function_name)? else {
         return wrap_err!("'{}' not found; does it exist and is it either a .luau file or directory with an init.luau?", requested_path);
     };
-    
+
     let luau = Lua::default();
     if let Err(err) = luau.sandbox(true) {
         return wrap_err!("{}: unable to enable Luau safeenv (sandbox mode) on chunk '{}' due to err: {}", function_name, chunk_name, err);
@@ -202,7 +202,7 @@ fn seal_eval(mut args: Args) -> LuauLoadResult {
     let luau = Lua::default();
     let globals = luau.globals();
     globals::set_globals(&luau, String::from("eval"))?;
-    
+
     // eval comes with a few libs builtin
     globals.raw_set("fs", ok_table(std_fs::create(&luau))?)?;
     globals.raw_set("process", ok_table(std_process::create(&luau))?)?;

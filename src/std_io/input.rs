@@ -209,7 +209,7 @@ fn input_rawmode(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
 
     if let Err(err) = if enabled {
         crossterm::terminal::enable_raw_mode()
-    } else { 
+    } else {
         crossterm::terminal::disable_raw_mode()
     } {
         return wrap_err!("{}: unable to enable/disable raw mode due to err: {}", function_name, err);
@@ -229,7 +229,7 @@ fn create_event_table(luau: &Lua, event: Event) -> LuaResult<LuaTable> {
         // t.raw_set("meta", modifiers.contains(KeyModifiers::META))?;
         Ok(t)
     }
-    
+
     match event {
         Event::Key(KeyEvent { code, modifiers, .. }) => {
             t.raw_set("is", "Key")?;
@@ -286,7 +286,7 @@ fn input_capture_mouse(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
     } {
         return wrap_err!("{}: cannot {} terminal mouse capture due to err: {}", function_name, if should_capture { "enable" } else { "disable" }, err);
     }
-    
+
     Ok(())
 }
 
@@ -312,7 +312,7 @@ fn input_capture_focus(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
     } {
         return wrap_err!("{}: cannot {} terminal focus capture due to err: {}", function_name, if should_capture { "enable" } else { "disable" }, err);
     }
-    
+
     Ok(())
 }
 
@@ -338,7 +338,7 @@ fn input_capture_paste(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
     } {
         return wrap_err!("{}: cannot {} terminal bracketed paste capture due to err: {}", function_name, if should_capture { "enable" } else { "disable" }, err);
     }
-    
+
     Ok(())
 }
 
@@ -364,7 +364,7 @@ pub fn input_events(luau: &Lua, value: LuaValue) -> LuaResult<LuaFunction> {
             return wrap_err!("{} expected poll to be a Duration, got: {:?}", function_name, other);
         }
     };
-    
+
     let empty_event_table = TableBuilder::create(luau)?
         .with_value("is", "Empty")?
         .build_readonly()?;

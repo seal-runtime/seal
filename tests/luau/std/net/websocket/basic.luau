@@ -1,12 +1,12 @@
 local format = require("@std/io/format")
-local socket = require("@std/net/socket")
+local websocket = require("@std/net/websocket")
 
-local websocket = socket.connect("wss://ws-feed.exchange.coinbase.com")
-assert(typeof(websocket) == "Websocket", `got typeof Websocket: {typeof(websocket)}`)
+local socket = websocket.connect("wss://ws-feed.exchange.coinbase.com")
+assert(typeof(socket) == "Websocket", `got typeof Websocket: {typeof(socket)}`)
 
-assert(websocket:sendable() == true, "we should be able to send messages through the websocket")
+assert(socket:sendable() == true, "we should be able to send messages through the websocket")
 
-websocket:send({
+socket:send({
     type = "subscribe",
     channels = {
         { name = "ticker", product_ids = { "BTC-USD" } }
@@ -37,12 +37,12 @@ local first = true
 local start_time = os.clock()
 
 while (os.clock() - start_time) < 6 do
-    local message = websocket:read()
+    local message = socket:read()
     if not message:is_utf8() then
         warn(`message not utf8, got: {format.hexdump(message:as_bytes())}`)
         continue
     end
-    
+
     local response = message:try_json<<CoinbaseResponse>>()
     if typeof(response) == "error" then
         warn(`unable to decode json for message {message:as_string()} due to err: {tostring(response)}`)
@@ -55,4 +55,8 @@ while (os.clock() - start_time) < 6 do
     else
         assert(response.type == "ticker", "type should be ticker from api")
     end
+
+    print(response)
 end
+
+socket:close()

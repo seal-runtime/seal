@@ -9,6 +9,7 @@ pub mod lz4;
 pub mod zstd;
 pub mod gzip;
 pub mod zlib;
+pub mod url;
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
@@ -18,5 +19,6 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_value("lz4", lz4::create(luau)?)?
         .with_value("zstd", zstd::create(luau)?)?
         .with_value("zlib", zlib::create(luau)?)?
+        .with_value("url", url::create(luau)?)?
         .build_readonly()
 }

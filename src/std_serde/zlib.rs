@@ -10,7 +10,7 @@ use flate2::read::ZlibDecoder;
 
 fn zlib_compress(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "zlib.compress(data: string | buffer, level: \"Default\" | \"Fast\" | \"Best\"?)";
-    
+
     let data = match multivalue.pop_front() {
         Some(LuaValue::Buffer(buffy)) => {
             buffy.to_vec()
@@ -70,13 +70,13 @@ fn zlib_decompress(luau: &Lua, value: LuaValue) -> LuaValueResult {
     };
 
     let mut decoder = ZlibDecoder::new(Cursor::new(encoded));
-    
+
     let mut decompressed = Vec::new();
     if let Err(err) = decoder.read_to_end(&mut decompressed) {
         return wrap_err!("{}: unable to decompress due to err: {}", function_name, err);
     }
 
-    ok_buffy(decompressed, luau)    
+    ok_buffy(decompressed, luau)
 }
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {

@@ -11,7 +11,7 @@ fn encode(_luau: &Lua, value: LuaValue) -> LuaResult<String> {
             return wrap_err!("{} expected t to be a table, got: {:?}", function_name, other);
         }
     };
-    
+
     let toml_value = luau_to_toml(LuaValue::Table(table_to_encode), function_name)?;
     let encoded = match toml::to_string::<TomlValue>(&toml_value) {
         Ok(e) => e,

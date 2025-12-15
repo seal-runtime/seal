@@ -26,7 +26,7 @@ impl TimeSpan {
         let clamped = years.clamp(-19_998, 19_998);
         if let Some(relative) = relative_to {
             Self::relative_to(
-                Span::new().years(clamped), 
+                Span::new().years(clamped),
                 relative
             )
         } else {
@@ -37,7 +37,7 @@ impl TimeSpan {
         let clamped = months.clamp(-239_976, 239_976);
         if let Some(relative) = relative_to {
             Self::relative_to(
-                Span::new().months(clamped), 
+                Span::new().months(clamped),
                 relative
             )
         } else {

@@ -102,7 +102,7 @@ fn get_safe_globals(luau: &Lua) -> LuaResult<LuaTable> {
         // luau standard libraries
         "math", "table", "string", "coroutine", "bit32", "utf8", "os", "debug", "buffer", "vector",
         // some useful functions
-        "assert", "error", "getmetatable", "setmetatable", "next", "ipairs", "pairs", "rawequal", "rawget", "rawset", "setmetatable", 
+        "assert", "error", "getmetatable", "setmetatable", "next", "ipairs", "pairs", "rawequal", "rawget", "rawset", "setmetatable",
         "tonumber", "tostring", "type", "typeof", "pcall", "xpcall", "unpack", "print"
         // note that require is purposely not included
     ];
@@ -125,13 +125,13 @@ unsafe fn eval(luau: &Lua, src: Vec<u8>, eval_options: EvalOptions) -> LuaValueR
     let name = eval_options.name.unwrap_or("luau.load".to_string());
     let chunk = match eval_options.stdlib {
         EvalStdlib::Safe => {
-            luau.load(src).set_name(name).set_environment(get_safe_globals(luau)?)
+            luau.load(temp_transform_luau_src(src)).set_name(name).set_environment(get_safe_globals(luau)?) // <<>> HACK
         },
         EvalStdlib::None => {
-            luau.load(src).set_name(name).set_environment(luau.create_table()?)
+            luau.load(temp_transform_luau_src(src)).set_name(name).set_environment(luau.create_table()?) // <<>> HACK
         },
         EvalStdlib::Seal => {
-            luau.load(src).set_name(name)
+            luau.load(temp_transform_luau_src(src)).set_name(name) // <<>> HACK
         }
     };
     let res = match chunk.eval::<LuaValue>() {

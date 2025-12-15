@@ -24,7 +24,7 @@ fn lz4_compress(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 fn lz4_decompress(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "lz4.decompress(compressed: string | buffer, expected_size: number)";
-    
+
     let bytes = match multivalue.pop_front() {
         Some(LuaValue::Buffer(buffy)) => {
             buffy.to_vec()
