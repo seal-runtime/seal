@@ -33,6 +33,9 @@ declare channel: {
 --- an error returned from mluau, can be tostringed
 declare class error end
 
+--- Represents the JSON `null`, which can be stored in tables.
+declare extern type null with end
+
 declare class interrupt
     code: "CtrlC" | "CtrlD"
 end
@@ -78,8 +81,22 @@ declare extern type WebsocketMessage with
         - if the message cannot be decoded from json
     ]=]
     expect_json: <T>(self: WebsocketMessage) -> T
-    -- function expect_json(self): { [unknown]: unknown }
 end
+
+type WebsocketCloseCode =
+    | "Normal"
+    | "Away"
+    | "Protocol"
+    | "Unsupported"
+    | "Status"
+    | "Abnormal"
+    | "Invalid"
+    | "Policy"
+    | "Size"
+    | "Extension"
+    | "Error"
+    | "Tls"
+    | number
 
 --- weebsocket
 declare extern type Websocket with
@@ -99,7 +116,7 @@ declare extern type Websocket with
     function readable(self): boolean
     --- Returns `true` if we can currently write to the websocket.
     function sendable(self): boolean
-    function close(self): ()
+    function close(self, code: WebsocketCloseCode?, reason: string?): ()
 end
 
 type COMMON_FORMATS =

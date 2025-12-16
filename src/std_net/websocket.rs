@@ -4,7 +4,7 @@ use mluau::prelude::*;
 use url::Url;
 
 use std::net::TcpStream;
-use tungstenite::{Message, stream::MaybeTlsStream};
+use tungstenite::{Message, protocol::{CloseFrame, frame::coding::CloseCode}, stream::MaybeTlsStream};
 
 struct WebsocketMessage {
     inner: Message,
@@ -174,8 +174,11 @@ impl WebsocketWrapper {
     fn can_send(&self) -> bool {
         self.inner.can_write()
     }
-    fn close(&mut self) -> LuaEmptyResult {
-        match self.inner.close(None) {
+    fn close(&mut self, code: CloseCode, reason: Option<String>) -> LuaEmptyResult {
+        match self.inner.close(Some(CloseFrame {
+            code,
+            reason: reason.unwrap_or_default().into(),
+        })) {
             Ok(_) => Ok(()),
             Err(err) => {
                 wrap_err!("unable to close websocket due to err: {}", err)
@@ -224,8 +227,48 @@ impl LuaUserData for WebsocketWrapper {
                 }
             }
         });
-        methods.add_method_mut("close", |_luau, it, _: LuaValue| {
-            it.close()
+        methods.add_method_mut("close", |_luau, it, mut multivalue: LuaMultiValue| -> LuaEmptyResult {
+            let function_name = "Websocket:close(code: CloseCode?, reason: string?)";
+            let close_code = match multivalue.pop_front() {
+                None | Some(LuaNil) => CloseCode::Normal,
+                Some(LuaValue::String(code)) => {
+                    match code.as_bytes().as_ref() {
+                        b"Normal" => CloseCode::Normal,
+                        b"Away" => CloseCode::Away,
+                        b"Protocol" => CloseCode::Protocol,
+                        b"Unsupported" => CloseCode::Unsupported,
+                        b"Status" => CloseCode::Status,
+                        b"Abnormal" => CloseCode::Abnormal,
+                        b"Invalid" => CloseCode::Invalid,
+                        b"Policy" => CloseCode::Policy,
+                        b"Size" => CloseCode::Size,
+                        b"Extension" => CloseCode::Extension,
+                        b"Error" => CloseCode::Error,
+                        b"Tls" => CloseCode::Tls,
+                        _ => {
+                            return wrap_err!("{}: unexpected CloseCode string, got: {}", function_name, &code.display());
+                        }
+                    }
+                },
+                Some(LuaValue::Integer(i)) => {
+                    CloseCode::Library(i as u16)
+                },
+                Some(LuaValue::Number(f)) => {
+                    let c = float_to_u64(f, function_name, "code")?;
+                    CloseCode::Library(c as u16)
+                },
+                Some(other) => {
+                    return wrap_err!("{} expected exit code to be a string (CloseCode), number (integer), or nil, got: {:?}", function_name, other);
+                }
+            };
+            let close_reason = match multivalue.pop_front() {
+                Some(LuaValue::String(reason)) => Some(reason.to_string_lossy()),
+                Some(LuaNil) | None => None,
+                Some(other) => {
+                    return wrap_err!("{} expected close reason to be a string or nil, got: {:?}", function_name, other);
+                }
+            };
+            it.close(close_code, close_reason)
         });
     }
 }
