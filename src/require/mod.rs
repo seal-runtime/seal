@@ -41,7 +41,9 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
                     }
                 }
             };
-            let result: LuaValue = luau.load(temp_transform_luau_src(data)).set_name(&path).eval()?; // <<>> HACK
+
+            let chunk = Chunk::Src(data);
+            let result: LuaValue = luau.load(chunk).set_name(&path).eval()?;
             require_cache.raw_set(path.clone(), result)?;
             // this is pretty cursed but let's just read the data we just wrote to the cache to get a new LuaValue
             // that can be returned without breaking the borrow checker or cloning
@@ -148,28 +150,32 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
 
 const STD_STR_SRC: &str = include_str!("../std_str.luau");
 fn load_std_str(luau: &Lua) -> LuaResult<LuaTable> {
-    luau.load(temp_transform_luau_src(STD_STR_SRC)).eval::<LuaTable>() // <<>> HACK
+    let chunk = Chunk::Src(STD_STR_SRC.to_owned());
+    luau.load(chunk).eval::<LuaTable>()
 }
 
 const STD_SEMVER_SRC: &str = include_str!("../std_semver.luau");
 fn load_std_semver(luau: &Lua) -> LuaResult<LuaTable> {
-    luau.load(temp_transform_luau_src(STD_SEMVER_SRC)).eval::<LuaTable>() // <<>> HACK
+    let chunk = Chunk::Src(STD_SEMVER_SRC.to_owned());
+    luau.load(chunk).eval::<LuaTable>() // <<>> HACK
 }
 
 const RESOLVER_SRC: &str = include_str!("./resolver.luau");
 pub fn get_resolver(luau: &Lua) -> LuaResult<LuaTable> {
-    let LuaValue::Table(resolver) = luau.load(temp_transform_luau_src(RESOLVER_SRC)).eval()? else { // <<>> HACK
+    let chunk = Chunk::Src(RESOLVER_SRC.to_owned());
+    let LuaValue::Table(resolver) = luau.load(chunk).eval()? else {
         panic!("require resolver didnt return table??");
     };
     Ok(resolver)
 }
 
-fn get_resolver_function(luau: &Lua) -> LuaResult<LuaFunction> {
+fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
     let f = luau.named_registry_value::<Option<LuaFunction>>("require.resolver.resolve")?;
     if let Some(resolve) = f {
         Ok(resolve)
     } else {
-        let LuaValue::Table(resolver) = luau.load(temp_transform_luau_src(RESOLVER_SRC)).eval()? else { // <<>> HACK
+        let chunk = Chunk::Src(RESOLVER_SRC.to_owned());
+        let LuaValue::Table(resolver) = luau.load(chunk).eval()? else {
             panic!("require resolver didnt return table??");
         };
         let LuaValue::Function(resolve) = resolver.raw_get("resolve")? else {
@@ -183,7 +189,7 @@ fn get_resolver_function(luau: &Lua) -> LuaResult<LuaFunction> {
 }
 
 fn resolve_path(luau: &Lua, path: String) -> LuaResult<String> {
-    let resolve = get_resolver_function(luau)?;
+    let resolve = cached_resolver(luau)?;
     match resolve.call::<LuaValue>(path.to_owned()) {
         Ok(LuaValue::Table(result_table)) => {
             if let LuaValue::String(path) = result_table.raw_get("path")? {

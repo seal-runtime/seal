@@ -7,13 +7,23 @@ local rust_files = fs.listdir("./src", true, function(p)
 end)
 
 for _, file in rust_files do
-    local lines: { string } = {}
-    for _, line in fs.readlines(file) do
-        local loading_identifier = string.match(line, "luau%.load%(([%w_]+)%)")
+    for index, line in fs.readlines(file) do
+        local loading_identifier = string.match(line, "luau%.load%(temp")
         if loading_identifier then
-            line = line:gsub("luau%.load%(([%w_]+)%)", `luau.load(temp_transform_luau_src({loading_identifier}))`) .. " // <<>> HACK"
+            print(`[{file}]:{index}`)
+            print(line)
         end
-        table.insert(lines, line)
     end
-    fs.writefile(file, table.concat(lines, "\n"))
 end
+
+-- for _, file in rust_files do
+--     local lines: { string } = {}
+--     for _, line in fs.readlines(file) do
+--         local loading_identifier = string.match(line, "luau%.load%(([%w_]+)%)")
+--         if loading_identifier then
+--             line = line:gsub("luau%.load%(([%w_]+)%)", `luau.load(temp_transform_luau_src({loading_identifier}))`) .. " // <<>> HACK"
+--         end
+--         table.insert(lines, line)
+--     end
+--     fs.writefile(file, table.concat(lines, "\n"))
+-- end

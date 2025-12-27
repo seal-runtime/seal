@@ -209,7 +209,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
             .build_readonly()?
         )?;
 
-        match new_luau.load(temp_transform_luau_src(src)).set_name(options.chunk_name).exec() { // <<>> HACK
+        let chunk = Chunk::Src(src);
+        match new_luau.load(chunk).set_name(options.chunk_name).exec() {
             Ok(_) => Ok(()),
             Err(err) => {
                 let formatted_err = LuaError::external(format!("{}{}{}\n Error occurred in thread '{}', which was spawned at {}", colors::RED, err, colors::RESET, thread_name, options.spawned_at));

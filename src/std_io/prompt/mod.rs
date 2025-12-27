@@ -246,7 +246,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("confirm", prompt_confirm)?
         .build()?;
 
-    let prompt_table = match luau.load(temp_transform_luau_src(PROMPT_DOT_LUAU_SRC)).eval::<LuaTable>() { // <<>> HACK
+    let chunk = Chunk::Src(PROMPT_DOT_LUAU_SRC.to_owned());
+    let prompt_table = match luau.load(chunk).eval::<LuaTable>() { // <<>> HACK
         Ok(t) => t,
         Err(err) => {
             panic!("std/cli/prompt's prompt.luau did a bad: {}", err);

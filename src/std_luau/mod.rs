@@ -1,5 +1,5 @@
 use mluau::prelude::*;
-use crate::prelude::*;
+use crate::{Chunk, prelude::*};
 
 use mluau::Compiler;
 
@@ -123,15 +123,20 @@ fn get_safe_globals(luau: &Lua) -> LuaResult<LuaTable> {
 /// with illegal instruction & core dump. caller is responsible for making sure valid bytecode is passed
 unsafe fn eval(luau: &Lua, src: Vec<u8>, eval_options: EvalOptions) -> LuaValueResult {
     let name = eval_options.name.unwrap_or("luau.load".to_string());
+    let code = match String::from_utf8(src) {
+        Ok(src) => Chunk::Src(src),
+        Err(err) => Chunk::Bytecode(err.into_bytes()),
+    };
+
     let chunk = match eval_options.stdlib {
         EvalStdlib::Safe => {
-            luau.load(temp_transform_luau_src(src)).set_name(name).set_environment(get_safe_globals(luau)?) // <<>> HACK
+            luau.load(code).set_name(name).set_environment(get_safe_globals(luau)?)
         },
         EvalStdlib::None => {
-            luau.load(temp_transform_luau_src(src)).set_name(name).set_environment(luau.create_table()?) // <<>> HACK
+            luau.load(code).set_name(name).set_environment(luau.create_table()?)
         },
         EvalStdlib::Seal => {
-            luau.load(temp_transform_luau_src(src)).set_name(name) // <<>> HACK
+            luau.load(code).set_name(name)
         }
     };
     let res = match chunk.eval::<LuaValue>() {

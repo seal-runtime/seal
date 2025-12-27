@@ -1,9 +1,32 @@
-// pub use crate::{LuaValueResult, LuaEmptyResult, LuaMultiResult, colors, wrap_err};
 use mluau::{AsChunk, prelude::*};
+use std::borrow::Cow;
 
 pub const MAX_TABLE_SIZE: usize = 134_217_728;
-
 pub use crate::{std_io::colors as colors, wrap_err, table_helpers::TableBuilder};
+
+/// Chunk of Luau code, either sourcecode (valid utf8) or bytecode (never valid utf8)
+/// this is needed because passing invalid bytecode to luau.load causes segfaults at runtime
+/// If we apply any transformations on code before luau.load we need to ensure only src
+/// gets transformed and not bytecode. This newtype wrapper implements `AsChunk` to handle any such
+/// transformations in one place.
+pub enum Chunk {
+    Src(String),
+    Bytecode(Vec<u8>)
+}
+impl AsChunk for Chunk {
+    fn source<'a>(&self) -> std::io::Result<std::borrow::Cow<'a, [u8]>>
+    where
+        Self: 'a 
+    {
+        Ok(match self {
+            Chunk::Src(src) => {
+                let src = temp_transform_luau_src(src); // <<>> HACK
+                Cow::Owned(src.as_bytes().to_owned())
+            },
+            Chunk::Bytecode(bytecode) => Cow::Owned(bytecode.to_owned()),
+        })
+    }
+}
 
 pub type LuaValueResult = LuaResult<LuaValue>;
 pub type LuaEmptyResult = LuaResult<()>;
@@ -71,7 +94,8 @@ impl DebugInfo {
                 function_name = if function_name == "" then "top level" else function_name,
             }
         "#;
-        let LuaValue::Table(info) = luau.load(temp_transform_luau_src(SLN_SRC)).set_name("gettin da debug info").eval()? else { // <<>> HACK
+        let chunk = Chunk::Src(SLN_SRC.to_owned());
+        let LuaValue::Table(info) = luau.load(chunk).set_name("gettin da debug info").eval()? else { // <<>> HACK
             return wrap_err!("{}: can't get debug info", function_name);
         };
         let source = match info.raw_get("source")? {
@@ -178,17 +202,18 @@ use std::str;
 // WARNING: AI GENERATED WILL BE REMOVED ONCE MLUAU UPDATES
 // HACK: strip Luau generic call syntax <<...>> before function calls,
 // while preserving UTF-8 and leaving all comment forms untouched.
-pub fn temp_transform_luau_src<S: AsChunk>(chunk: S) -> String {
+pub fn temp_transform_luau_src<S: AsRef<str>>(chunk: S) -> String {
     // Get bytes from the chunk (Cow<[u8]>), then decode as UTF-8.
-    let cow = match chunk.source() {
-        Ok(cow) => cow,
-        Err(_) => return String::new(),
-    };
-    let bytes = cow.as_ref();
-    let src_str = match str::from_utf8(bytes) {
-        Ok(s) => s,
-        Err(_) => return String::from_utf8_lossy(bytes).into_owned(),
-    };
+    // let cow = match chunk.source() {
+    //     Ok(cow) => cow,
+    //     Err(_) => return String::new(),
+    // };
+    // let bytes = cow.as_ref();
+    // let src_str = match str::from_utf8(bytes) {
+    //     Ok(s) => s,
+    //     Err(_) => return String::from_utf8_lossy(bytes).into_owned(),
+    // };
+    let src_str = chunk.as_ref();
 
     let mut out = String::with_capacity(src_str.len());
     let mut chars = src_str.chars().peekable();

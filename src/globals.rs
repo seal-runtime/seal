@@ -55,7 +55,8 @@ const SCRIPT_PATH_SRC: &str = r#"
 "#;
 
 pub fn get_debug_name(luau: &Lua) -> LuaResult<String> {
-    luau.load(temp_transform_luau_src(SCRIPT_PATH_SRC)).eval::<String>() // <<>> HACK
+    let chunk = Chunk::Src(SCRIPT_PATH_SRC.to_owned());
+    luau.load(chunk).eval::<String>()
 }
 
 pub fn get_script_path(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult {
@@ -66,7 +67,8 @@ pub fn get_script_path(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult
 
 pub fn get_script_parent(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult {
     let requiring_parent = {
-        let result: LuaString = luau.load(temp_transform_luau_src(SCRIPT_PATH_SRC)).eval()?; // <<>> HACK
+        let chunk = Chunk::Src(SCRIPT_PATH_SRC.to_owned());
+        let result: LuaString = luau.load(chunk).eval()?;
         let script_path = result.to_string_lossy();
         match std::path::PathBuf::from(script_path).parent() {
             Some(parent) => parent.to_string_lossy().to_string(),

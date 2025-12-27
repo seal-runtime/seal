@@ -27,11 +27,9 @@ pub fn debug_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<LuaSt
     luau.create_string(&result)
 }
 
-const OUTPUT_FORMATTER_SRC: &str = include_str!("./output_formatter.luau");
-
 pub fn simple_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
-    let r: LuaTable = luau.load(temp_transform_luau_src(OUTPUT_FORMATTER_SRC)).eval()?; // <<>> HACK
-    let format_simple: LuaFunction = r.raw_get("simple")?;
+    let formatter: LuaTable = format::cached_formatter(luau)?;
+    let format_simple: LuaFunction = formatter.raw_get("simple")?;
     let mut result = String::from("");
 
     while let Some(value) = multivalue.pop_front() {
@@ -55,8 +53,8 @@ pub fn simple_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> Lua
 }
 
 pub fn pretty_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<()> {
-    let r: LuaTable = luau.load(temp_transform_luau_src(OUTPUT_FORMATTER_SRC)).eval()?; // <<>> HACK
-    let format_pretty: LuaFunction = r.raw_get("pretty")?;
+    let formatter = format::cached_formatter(luau)?;
+    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
     let mut result = String::from("");
 
     while let Some(value) = multivalue.pop_front() {
@@ -78,10 +76,10 @@ pub fn pretty_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<()> 
 }
 
 pub fn pretty_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
-    let r: LuaTable = luau.load(temp_transform_luau_src(OUTPUT_FORMATTER_SRC)).eval()?; // <<>> HACK
-    let format_pretty: LuaFunction = r.raw_get("pretty")?;
+    let formatter = format::cached_formatter(luau)?;
+    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
+    
     let mut result = String::from("");
-
     while let Some(value) = multivalue.pop_front() {
         match format_pretty.call::<LuaString>(value) {
             Ok(text) => {

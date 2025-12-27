@@ -337,7 +337,8 @@ fn fs_readtree(luau: &Lua, value: LuaValue) -> LuaValueResult {
             return wrap_err!("{} expected path to be a string, got: {:?}", function_name, other);
         }
     };
-    let read_tree_fn: LuaFunction = luau.load(temp_transform_luau_src(READ_TREE_SRC)).eval()?; // <<>> HACK
+    let chunk = Chunk::Src(READ_TREE_SRC.to_owned());
+    let read_tree_fn: LuaFunction = luau.load(chunk).eval()?;
     let result = match read_tree_fn.call::<LuaValue>(path) {
         Ok(LuaValue::Table(t)) => t,
         Ok(other) => {

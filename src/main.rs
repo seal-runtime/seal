@@ -41,7 +41,7 @@ use globals::SEAL_VERSION;
 type LuauLoadResult = LuaResult<Option<LuauLoadInfo>>;
 struct LuauLoadInfo {
     luau: Lua,
-    src: Vec<u8>,
+    code: Chunk,
     /// chunk_name is basically the entry_path except it's always an absolute path
     chunk_name: String,
 }
@@ -149,13 +149,13 @@ fn main() -> LuaResult<()> {
         SealCommand::ExecStandalone(bytecode) => seal_standalone(bytecode),
     };
 
-    let LuauLoadInfo { luau, src, chunk_name } = match info_result {
+    let LuauLoadInfo { luau, code, chunk_name } = match info_result {
         Ok(Some(info)) => info,
         Ok(None) => return Ok(()),
         Err(err) => display_error_and_exit(err),
     };
 
-    match luau.load(temp_transform_luau_src(src)).set_name(chunk_name).exec() { // <<>> HACK
+    match luau.load(code).set_name(chunk_name).exec() {
         Ok(_) => Ok(()),
         Err(err) => display_error_and_exit(err),
     }
@@ -188,7 +188,7 @@ fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoad
         src = src[first_newline_pos + 1..].to_string();
     }
 
-    Ok(Some(LuauLoadInfo { luau, src: src.as_bytes().to_owned(), chunk_name }))
+    Ok(Some(LuauLoadInfo { luau, code: Chunk::Src(src), chunk_name }))
 }
 
 fn seal_eval(mut args: Args) -> LuauLoadResult {
@@ -210,7 +210,7 @@ fn seal_eval(mut args: Args) -> LuauLoadResult {
 
     Ok(Some(LuauLoadInfo {
         luau,
-        src: src.as_bytes().to_owned(),
+        code: Chunk::Src(src),
         // relative require probs wont work atm
         chunk_name: std_env::get_cwd("seal eval")?
             .to_string_lossy()
@@ -369,7 +369,7 @@ fn seal_standalone(bytecode: Vec<u8>) -> LuauLoadResult {
     globals::set_globals(&luau, &entry_path)?;
     Ok(Some(LuauLoadInfo {
         luau,
-        src: bytecode,
+        code: Chunk::Bytecode(bytecode),
         chunk_name: entry_path
     }))
 }
