@@ -257,7 +257,7 @@ function str.unindent(s: string, whitespace_type: "Tabs" | "Spaces", count: numb
     return nil :: any
 end
 
-local internal = (require)("@std/str_internal")
+-- local internal = (require)("@std/str_internal")
 
 --[=[
     `str.split` is an improvement on luau's `string.split` in that it can split by multiple different strings (not just one single character)

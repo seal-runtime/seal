@@ -15,7 +15,7 @@ impl WrappedError {
         }
     }
     pub fn with_traceback(message: String, luau: &Lua) -> LuaResult<Self> {
-        let traceback = Some(err::parse_traceback(luau.traceback()?));
+        let traceback = Some(err::parse_traceback(luau.traceback(None, 0)?.to_string_lossy()));
         Ok(Self {
             message,
             traceback,
@@ -120,9 +120,27 @@ fn err_format(luau: &Lua, value: LuaValue) -> LuaValueResult {
     ok_string(formatted, luau)
 }
 
-fn err_traceback(luau: &Lua, _: LuaValue) -> LuaValueResult {
-    let traceback = luau.traceback()?;
-    ok_string(err::parse_traceback(traceback), luau)
+fn err_traceback(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    let function_name = "err.traceback(message: string?, level: number?)";
+    let message = match multivalue.pop_front() {
+        Some(LuaValue::String(msg)) => Some(msg.to_string_lossy()),
+        Some(LuaNil) | None => None,
+        Some(other) => {
+            return wrap_err!("{}: expected message to be a string or nil/unspecified, got: {:?}", function_name, other);
+        }
+    };
+
+    let level = match multivalue.pop_front() {
+        Some(LuaValue::Integer(i)) => int_to_usize(i, function_name, "level")?,
+        Some(LuaValue::Number(f)) => float_to_usize(f, function_name, "level")?,
+        Some(LuaNil) | None => 0,
+        Some(other) => {
+            return wrap_err!("{}: expected level to be a positive integer (defaults to 0), got: {:?}", function_name, other);
+        }
+    };
+
+    let traceback = luau.traceback(message.as_deref(), level)?.to_string_lossy();
+    ok_string(traceback, luau)
 }
 
 fn err_throw(_luau: &Lua, value: LuaValue) -> LuaValueResult {
