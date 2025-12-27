@@ -59,7 +59,7 @@ impl DateTime {
         let mut format_string = Self::get_format_string(format_string).to_string();
 
         // all Zoned DateTimes must have a %Q specifier, so we expose it as the third param
-        // if user explicitly specifies "AUTO" as their timezone that means format string already 
+        // if user explicitly specifies "AUTO" as their timezone that means format string already
         // contains %Q or z/%z; jiff will throw an error if users use "AUTO" and don't include tz info
         if iana_timezone != "AUTO" && !format_string.contains("%Q") {
             format_string.push_str(" %Q");
@@ -135,7 +135,7 @@ impl LuaUserData for DateTime {
             ok_string(format!("DateTime<{:?}>", this.inner), luau)
         });
 
-        methods.add_method("format", |luau: &Lua, this: &DateTime, value: LuaValue| -> LuaValueResult { 
+        methods.add_method("format", |luau: &Lua, this: &DateTime, value: LuaValue| -> LuaValueResult {
             let function_name = "DateTime:format(format: string)";
             let format_string = match value {
                 LuaValue::String(s) => s.to_string_lossy(),

@@ -23,7 +23,7 @@ pub fn process_debug_values(value: LuaValue, result: &mut String, depth: usize) 
             result.push_str(&formatted_string);
         },
         LuaValue::Buffer(buffy) => {
-            let hex_cfg = pretty_hex::HexConfig {title: false, width: 8, group: 0, ..pretty_hex::HexConfig::default() };
+            let hex_cfg = pretty_hex::HexConfig {title: true, width: 8, group: 0, ..pretty_hex::HexConfig::default() };
             result.push_str(&pretty_hex::config_hex(&buffy.to_vec(), hex_cfg));
         },
         LuaValue::UserData(data) => {
@@ -62,9 +62,26 @@ fn debug(luau: &Lua, stuff: LuaMultiValue) -> LuaResult<LuaString> {
 }
 
 const OUTPUT_FORMATTER_SRC: &str = include_str!("./output_formatter.luau");
+
+pub fn cached_formatter(luau: &Lua) -> LuaResult<LuaTable> {
+    let f = luau.named_registry_value::<Option<LuaTable>>("format.formatter")?;
+    if let Some(resolve) = f {
+        Ok(resolve)
+    } else {
+        let chunk = Chunk::Src(OUTPUT_FORMATTER_SRC.to_owned());
+        let LuaValue::Table(formatter) = luau.load(chunk).eval()? else {
+            panic!("output_formatter.luau didnt return table??");
+        };
+
+        luau.set_named_registry_value("format.formatter", &formatter)?;
+
+        Ok(formatter)
+    }
+}
+
 pub fn simple(luau: &Lua, value: LuaValue) -> LuaValueResult {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
-    let format_simple: LuaFunction = r.raw_get("simple")?;
+    let formatter = cached_formatter(luau)?;
+    let format_simple: LuaFunction = formatter.raw_get("simple")?;
     let result = match format_simple.call::<LuaString>(value) {
         Ok(text) => text.to_string_lossy(),
         Err(err) => {
@@ -96,8 +113,8 @@ fn uncolor(luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 pub fn pretty(luau: &Lua, value: LuaValue) -> LuaResult<String> {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
-    let format_pretty: LuaFunction = r.raw_get("pretty")?;
+    let formatter = cached_formatter(luau)?;
+    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
     let result = match format_pretty.call::<LuaString>(value) {
         Ok(text) => text.to_string_lossy(),
         Err(err) => {

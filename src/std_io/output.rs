@@ -20,20 +20,18 @@ pub fn debug_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<LuaSt
 
     let debug_info = DebugInfo::from_caller(luau, function_name)?;
     println!(
-        "{}[DEBUG]{} {}:{} in {}{}\n{}", 
-        colors::BOLD_RED, colors::RESET, debug_info.source.replace("string ", ""), debug_info.line, debug_info.function_name, colors::RESET, 
+        "{}[DEBUG]{} {}:{} in {}{}\n{}",
+        colors::BOLD_RED, colors::RESET, debug_info.source.replace("string ", ""), debug_info.line, debug_info.function_name, colors::RESET,
         &result
     );
     luau.create_string(&result)
 }
 
-const OUTPUT_FORMATTER_SRC: &str = include_str!("./output_formatter.luau");
-
 pub fn simple_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
-    let format_simple: LuaFunction = r.raw_get("simple")?;
+    let formatter: LuaTable = format::cached_formatter(luau)?;
+    let format_simple: LuaFunction = formatter.raw_get("simple")?;
     let mut result = String::from("");
-    
+
     while let Some(value) = multivalue.pop_front() {
         match format_simple.call::<LuaString>(value) {
             Ok(text) => {
@@ -55,8 +53,8 @@ pub fn simple_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> Lua
 }
 
 pub fn pretty_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<()> {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
-    let format_pretty: LuaFunction = r.raw_get("pretty")?;
+    let formatter = format::cached_formatter(luau)?;
+    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
     let mut result = String::from("");
 
     while let Some(value) = multivalue.pop_front() {
@@ -78,10 +76,10 @@ pub fn pretty_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<()> 
 }
 
 pub fn pretty_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
-    let format_pretty: LuaFunction = r.raw_get("pretty")?;
+    let formatter = format::cached_formatter(luau)?;
+    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
+    
     let mut result = String::from("");
-
     while let Some(value) = multivalue.pop_front() {
         match format_pretty.call::<LuaString>(value) {
             Ok(text) => {
@@ -112,7 +110,7 @@ pub fn clear(_luau: &Lua, _value: LuaValue) -> LuaValueResult {
     };
     match clear_command.spawn() {
         Ok(_) => {
-            // this is pretty cursed, but yields long enough for the clear to have been completed 
+            // this is pretty cursed, but yields long enough for the clear to have been completed
             // otherwise the next print() calls get erased
             std::thread::sleep(std::time::Duration::from_millis(20));
             Ok(LuaNil)

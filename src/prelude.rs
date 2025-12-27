@@ -1,9 +1,32 @@
-// pub use crate::{LuaValueResult, LuaEmptyResult, LuaMultiResult, colors, wrap_err};
-use mluau::prelude::*;
+use mluau::{AsChunk, prelude::*};
+use std::borrow::Cow;
 
 pub const MAX_TABLE_SIZE: usize = 134_217_728;
-
 pub use crate::{std_io::colors as colors, wrap_err, table_helpers::TableBuilder};
+
+/// Chunk of Luau code, either sourcecode (valid utf8) or bytecode (never valid utf8)
+/// this is needed because passing invalid bytecode to luau.load causes segfaults at runtime
+/// If we apply any transformations on code before luau.load we need to ensure only src
+/// gets transformed and not bytecode. This newtype wrapper implements `AsChunk` to handle any such
+/// transformations in one place.
+pub enum Chunk {
+    Src(String),
+    Bytecode(Vec<u8>)
+}
+impl AsChunk for Chunk {
+    fn source<'a>(&self) -> std::io::Result<std::borrow::Cow<'a, [u8]>>
+    where
+        Self: 'a 
+    {
+        Ok(match self {
+            Chunk::Src(src) => {
+                let src = temp_transform_luau_src(src); // <<>> HACK
+                Cow::Owned(src.as_bytes().to_owned())
+            },
+            Chunk::Bytecode(bytecode) => Cow::Owned(bytecode.to_owned()),
+        })
+    }
+}
 
 pub type LuaValueResult = LuaResult<LuaValue>;
 pub type LuaEmptyResult = LuaResult<()>;
@@ -71,7 +94,8 @@ impl DebugInfo {
                 function_name = if function_name == "" then "top level" else function_name,
             }
         "#;
-        let LuaValue::Table(info) = luau.load(SLN_SRC).set_name("gettin da debug info").eval()? else {
+        let chunk = Chunk::Src(SLN_SRC.to_owned());
+        let LuaValue::Table(info) = luau.load(chunk).set_name("gettin da debug info").eval()? else { // <<>> HACK
             return wrap_err!("{}: can't get debug info", function_name);
         };
         let source = match info.raw_get("source")? {
@@ -171,4 +195,214 @@ pub fn create_table_with_capacity(luau: &Lua, n_array: usize, n_records: usize) 
     // This API should be marked unsafe... but isn't.. so we explicitly treat it as unsafe here.
     #[allow(unused_unsafe)]
     unsafe { luau.create_table_with_capacity(n_array, n_records) }
+}
+
+use std::str;
+
+// WARNING: AI GENERATED WILL BE REMOVED ONCE MLUAU UPDATES
+// HACK: strip Luau generic call syntax <<...>> before function calls,
+// while preserving UTF-8 and leaving all comment forms untouched.
+pub fn temp_transform_luau_src<S: AsRef<str>>(chunk: S) -> String {
+    // Get bytes from the chunk (Cow<[u8]>), then decode as UTF-8.
+    // let cow = match chunk.source() {
+    //     Ok(cow) => cow,
+    //     Err(_) => return String::new(),
+    // };
+    // let bytes = cow.as_ref();
+    // let src_str = match str::from_utf8(bytes) {
+    //     Ok(s) => s,
+    //     Err(_) => return String::from_utf8_lossy(bytes).into_owned(),
+    // };
+    let src_str = chunk.as_ref();
+
+    let mut out = String::with_capacity(src_str.len());
+    let mut chars = src_str.chars().peekable();
+
+    let mut in_line_comment = false;
+    let mut in_block_comment = false;
+    let mut block_eq_count = 0;
+
+    while let Some(c) = chars.next() {
+        // Inside a line comment: copy verbatim until newline
+        if in_line_comment {
+            out.push(c);
+            if c == '\n' {
+                in_line_comment = false;
+            }
+            continue;
+        }
+
+        // Inside a block/doc comment: copy verbatim until closing ]=...]
+        if in_block_comment {
+            out.push(c);
+            if c == ']' {
+                // check for ]=...]
+                let mut temp = chars.clone();
+                let mut eq_seen = 0;
+                while temp.peek() == Some(&'=') {
+                    temp.next();
+                    eq_seen += 1;
+                }
+                if eq_seen == block_eq_count && temp.peek() == Some(&']') {
+                    // consume '=' signs and final ']'
+                    for _ in 0..eq_seen {
+                        out.push(chars.next().unwrap());
+                    }
+                    out.push(chars.next().unwrap());
+                    in_block_comment = false;
+                }
+            }
+            continue;
+        }
+
+        // Detect start of comments
+        if c == '-' && chars.peek() == Some(&'-') {
+            out.push(c);
+            out.push(chars.next().unwrap()); // consume second '-'
+
+            if chars.peek() == Some(&'[') {
+                // lookahead for --[=*[ 
+                let mut temp = chars.clone();
+                temp.next(); // consume '['
+                let mut eq_count = 0;
+                while temp.peek() == Some(&'=') {
+                    temp.next();
+                    eq_count += 1;
+                }
+                if temp.peek() == Some(&'[') {
+                    // it's a block/doc comment
+                    in_block_comment = true;
+                    block_eq_count = eq_count;
+                } else {
+                    in_line_comment = true;
+                }
+            } else {
+                in_line_comment = true;
+            }
+            continue;
+        }
+
+        // Detect and skip << ... >> outside comments, supporting nested << >>
+        if c == '<' && chars.peek() == Some(&'<') {
+            chars.next(); // consume second '<'
+            let mut depth = 1;
+            while let Some(c2) = chars.next() {
+                if c2 == '<' && chars.peek() == Some(&'<') {
+                    chars.next();
+                    depth += 1;
+                } else if c2 == '>' && chars.peek() == Some(&'>') {
+                    chars.next();
+                    depth -= 1;
+                    if depth == 0 {
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
+        // Normal character
+        out.push(c);
+    }
+
+    out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn strips_simple_single_line() {
+        let src = "foo<<int>>(123)";
+        let expected = "foo(123)";
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn strips_multiple_type_params_single_line() {
+        let src = "bar<<A,B>>{\"x\"}";
+        let expected = "bar{\"x\"}";
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn strips_multiline_block() {
+        let src = r#"
+local result = new<< {
+  create: <T>(self: T) -> string,
+} >>()
+"#;
+        let expected = r#"
+local result = new()
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn strips_nested_multiline_block() {
+        let src = r#"
+local result = new<< {
+  inner: <<X>>(self: X) -> (),
+} >>("arg")
+"#;
+        let expected = r#"
+local result = new("arg")
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn preserves_documentation_comment_with_equals() {
+        let src = r#"
+--[=[ This is a doc comment with <<notype>> inside ]=]
+local x = foo<<T>>()
+"#;
+        let expected = r#"
+--[=[ This is a doc comment with <<notype>> inside ]=]
+local x = foo()
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn preserves_nested_equals_doc_comment() {
+        let src = r#"
+--[==[ Another doc comment
+with <<stuff>> inside ]==]
+local y = bar<<U>>("test")
+"#;
+        let expected = r#"
+--[==[ Another doc comment
+with <<stuff>> inside ]==]
+local y = bar("test")
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn preserves_line_comment_with_generics() {
+        let src = r#"
+-- this is a comment <<notype>>
+local z = baz<<V>>() 
+"#;
+        let expected = r#"
+-- this is a comment <<notype>>
+local z = baz() 
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
+
+    #[test]
+    fn preserves_block_comment_with_generics() {
+        let src = r#"
+--[[ block comment <<ignored>> ]]
+local w = qux<<W>>(42)
+"#;
+        let expected = r#"
+--[[ block comment <<ignored>> ]]
+local w = qux(42)
+"#;
+        assert_eq!(temp_transform_luau_src(src), expected);
+    }
 }

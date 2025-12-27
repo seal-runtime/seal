@@ -41,7 +41,9 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
                     }
                 }
             };
-            let result: LuaValue = luau.load(data).set_name(&path).eval()?;
+
+            let chunk = Chunk::Src(data);
+            let result: LuaValue = luau.load(chunk).set_name(&path).eval()?;
             require_cache.raw_set(path.clone(), result)?;
             // this is pretty cursed but let's just read the data we just wrote to the cache to get a new LuaValue
             // that can be returned without breaking the borrow checker or cloning
@@ -86,12 +88,14 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std/serde/lz4" => ok_table(std_serde::lz4::create(luau)),
         "@std/serde/zstd" => ok_table(std_serde::zstd::create(luau)),
         "@std/serde/zlib" => ok_table(std_serde::zlib::create(luau)),
+        "@std/serde/url" => ok_table(std_serde::url::create(luau)),
         "@std/json" => ok_table(std_json::create(luau)),
 
         "@std/net" => ok_table(std_net::create(luau)),
         "@std/net/http" => ok_table(std_net::http::create(luau)),
         "@std/net/http/server" => ok_table(std_net::serve::create(luau)),
         "@std/net/request" => ok_function(std_net::http::request, luau),
+        "@std/net/websocket" => ok_table(std_net::websocket::create(luau)),
 
         "@std/crypt" => ok_table(std_crypt::create(luau)),
         "@std/crypt/aes" => ok_table(std_crypt::create_aes(luau)),
@@ -146,30 +150,46 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
 
 const STD_STR_SRC: &str = include_str!("../std_str.luau");
 fn load_std_str(luau: &Lua) -> LuaResult<LuaTable> {
-    luau.load(STD_STR_SRC).eval::<LuaTable>()
+    let chunk = Chunk::Src(STD_STR_SRC.to_owned());
+    luau.load(chunk).eval::<LuaTable>()
 }
 
 const STD_SEMVER_SRC: &str = include_str!("../std_semver.luau");
 fn load_std_semver(luau: &Lua) -> LuaResult<LuaTable> {
-    luau.load(STD_SEMVER_SRC).eval::<LuaTable>()
+    let chunk = Chunk::Src(STD_SEMVER_SRC.to_owned());
+    luau.load(chunk).eval::<LuaTable>() // <<>> HACK
 }
 
+const RESOLVER_SRC: &str = include_str!("./resolver.luau");
 pub fn get_resolver(luau: &Lua) -> LuaResult<LuaTable> {
-    let resolver_src = include_str!("./resolver.luau");
-    let LuaValue::Table(resolver) = luau.load(resolver_src).eval()? else {
+    let chunk = Chunk::Src(RESOLVER_SRC.to_owned());
+    let LuaValue::Table(resolver) = luau.load(chunk).eval()? else {
         panic!("require resolver didnt return table??");
     };
     Ok(resolver)
 }
 
+fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
+    let f = luau.named_registry_value::<Option<LuaFunction>>("require.resolver.resolve")?;
+    if let Some(resolve) = f {
+        Ok(resolve)
+    } else {
+        let chunk = Chunk::Src(RESOLVER_SRC.to_owned());
+        let LuaValue::Table(resolver) = luau.load(chunk).eval()? else {
+            panic!("require resolver didnt return table??");
+        };
+        let LuaValue::Function(resolve) = resolver.raw_get("resolve")? else {
+            panic!("require resolver.resolve not a function??");
+        };
+
+        luau.set_named_registry_value("require.resolver.resolve", &resolve)?;
+
+        Ok(resolve)
+    }
+}
+
 fn resolve_path(luau: &Lua, path: String) -> LuaResult<String> {
-    let resolver_src = include_str!("./resolver.luau");
-    let LuaValue::Table(resolver) = luau.load(resolver_src).eval()? else {
-        panic!("require resolver didnt return table??");
-    };
-    let LuaValue::Function(resolve) = resolver.raw_get("resolve")? else {
-        panic!("require resolver.resolve not a function??");
-    };
+    let resolve = cached_resolver(luau)?;
     match resolve.call::<LuaValue>(path.to_owned()) {
         Ok(LuaValue::Table(result_table)) => {
             if let LuaValue::String(path) = result_table.raw_get("path")? {

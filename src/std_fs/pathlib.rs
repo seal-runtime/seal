@@ -118,7 +118,7 @@ pub fn normalize_path<P: AsRef<str>>(path: P) -> String {
     }.to_owned();
 
     // fix C: to be C:\ for path joining
-    if is_windows_drive_path { 
+    if is_windows_drive_path {
         root.push('\\');
     }
 
@@ -133,7 +133,7 @@ pub fn normalize_path<P: AsRef<str>>(path: P) -> String {
         match component {
             "." => continue, // skip redundant . in middle of ./animals/cats/./meow.jpg
             ".." => {
-                if let Some(last) = new_components.last() 
+                if let Some(last) = new_components.last()
                     && *last != ".." // redundant .. we can normalize by popping last parent
                 {
                     let _ = new_components.pop();

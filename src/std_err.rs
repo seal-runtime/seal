@@ -51,7 +51,7 @@ pub fn ecall(luau: &Lua, f: LuaFunction) -> LuaValueResult {
     let result = luau.create_function(move |_: &Lua, multivalue: LuaMultiValue| {
         let result = f.call::<LuaMultiValue>(multivalue)?;
         if !result.is_empty()
-            && let Some(front) = result.front() 
+            && let Some(front) = result.front()
         {
             match front {
                 LuaValue::UserData(ud) => {

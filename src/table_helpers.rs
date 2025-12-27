@@ -108,7 +108,7 @@ impl<'luau> TableBuilder<'luau> {
         F: FnMut(&Lua, A) -> LuaResult<R> + 'static,
     {
         let f = self.luau.create_function_mut(func)?;
-        self.with_value(key, LuaValue::Function(f)) 
+        self.with_value(key, LuaValue::Function(f))
     }
 
     /*

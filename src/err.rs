@@ -57,7 +57,7 @@ pub fn setup_panic_hook() {
         let payload = info.payload().downcast_ref::<&str>().map(|s| s.to_string())
             .or_else(|| info.payload().downcast_ref::<String>().cloned())
             .unwrap_or_else(|| "Unknown error running the custom panic hook, please report this to the manager (deviaze)".to_string());
-        
+
         // eprintln!("{}[ERR]{}{} {}{}", colors::BOLD_RED, colors::RESET, colors::RED, payload, colors::RESET);
         eprintln!("{}[PANIC! IN THE SEAL INTERNALS]: {}{}{}{}", colors::BOLD_RED, colors::RESET, colors::YELLOW, payload, colors::RESET);
         if let Some(location) = info.location() {

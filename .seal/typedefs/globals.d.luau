@@ -33,8 +33,90 @@ declare channel: {
 --- an error returned from mluau, can be tostringed
 declare class error end
 
+--- Represents the JSON `null`, which can be stored in tables.
+declare extern type null with end
+
 declare class interrupt
     code: "CtrlC" | "CtrlD"
+end
+
+declare extern type WebsocketMessage with
+    --- Returns `true` if `message:type() == "Binary"`
+    function is_binary(self): boolean
+    --- Returns `true` if `message:type() == "Text"`
+    function is_utf8(self): boolean
+    --- Returns the internal `Tungstenite::Message` type of the message
+    function type(self): "Binary" | "Text" | "Close" | "Ping" | "Pong" | "Frame"
+    --- Returns the message's contents as a `string` without any intermediate utf8 coercion.
+    function as_string(self): string
+    --- Returns the message's contents as a `buffer`
+    function as_bytes(self): buffer
+    --[=[
+        Try to parse the message as JSON, returning an `error` if decoding the message was unsuccessful.
+
+        ## Usage
+
+        ```luau
+        type ReturnType = {
+            field1: string,
+        }
+        local message = websocket:read()
+        if message:is_utf8() then
+            local contents = message:try_json<<ReturnType>>()
+            if typeof(contents) == "error" then
+                print("not a json")
+            else
+                print(contents.field1) -- no type error
+            end
+        end
+        ```
+    ]=]
+    try_json: <T>(self: WebsocketMessage) -> T | error
+    --[=[
+        Converts message to json of the provided `T`
+
+        ## Errors
+
+        - if the message is actually binary
+        - if the message cannot be decoded from json
+    ]=]
+    expect_json: <T>(self: WebsocketMessage) -> T
+end
+
+type WebsocketCloseCode =
+    | "Normal"
+    | "Away"
+    | "Protocol"
+    | "Unsupported"
+    | "Status"
+    | "Abnormal"
+    | "Invalid"
+    | "Policy"
+    | "Size"
+    | "Extension"
+    | "Error"
+    | "Tls"
+    | number
+
+--- weebsocket
+declare extern type Websocket with
+    --[=[
+        Read a (stringified) message from the websocket, blocking until a message is read.
+
+        If the message is json, you'll want to decode it explicitly with `json.decode`, handling any error cases.
+    ]=]
+    function read(self): WebsocketMessage
+    --[=[
+        Send a `message` through the websocket.
+
+        The message can be a `string`, a `buffer` (for binary data), or a table, which will be serialized to json (similarly to http.post/etc)
+    ]=]
+    function send(self, message: string | { [any]: any } | buffer): ()
+    --- Returns `true` if we can currently read from the websocket.
+    function readable(self): boolean
+    --- Returns `true` if we can currently write to the websocket.
+    function sendable(self): boolean
+    function close(self, code: WebsocketCloseCode?, reason: string?): ()
 end
 
 type COMMON_FORMATS =

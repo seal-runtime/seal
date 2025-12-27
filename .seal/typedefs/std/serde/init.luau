@@ -15,4 +15,6 @@ serde.lz4 = require("@std/serde/lz4")
 
 serde.zstd = require("@std/serde/zstd")
 
+serde.url = require("@std/serde/url")
+
 return serde

@@ -38,7 +38,7 @@ pub fn listdir(luau: &Lua, dir_path: String, mut multivalue: LuaMultiValue, func
             return wrap_io_read_errors(err, function_name, &dir_path);
         }
     };
-    
+
     if metadata.is_dir() {
         let entries_list = luau.create_table()?;
         if recursive {

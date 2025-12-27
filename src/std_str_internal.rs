@@ -39,10 +39,10 @@ enum SplitMode {
 }
 
 fn split_separators(
-    luau: &Lua, 
-    s_bytes: &[u8], 
-    multivalue: LuaMultiValue, 
-    function_name: &'static str, 
+    luau: &Lua,
+    s_bytes: &[u8],
+    multivalue: LuaMultiValue,
+    function_name: &'static str,
     mode: SplitMode
 ) -> LuaResult<LuaTable> {
     let mut separators = Vec::new();
@@ -240,7 +240,7 @@ fn str_splitafter(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 }
 
 type GraphemePair = Option<(usize, String)>;
-/// returns an iterator function you can call multiple times to get the next grapheme of String `s` 
+/// returns an iterator function you can call multiple times to get the next grapheme of String `s`
 /// without loading the whole String into memory
 fn graphemes(s: String, function_name: &'static str) -> Box<dyn FnMut() -> LuaResult<GraphemePair>> {
     let mut current_byte: usize = 0;
@@ -259,7 +259,7 @@ fn graphemes(s: String, function_name: &'static str) -> Box<dyn FnMut() -> LuaRe
             },
             Err(err) => {
                 wrap_err!(
-                    "{}: bytes around and after {} could not be converted to utf-8 graphemes: {}", 
+                    "{}: bytes around and after {} could not be converted to utf-8 graphemes: {}",
                     function_name, current_byte, err
                 )
             }
@@ -285,8 +285,8 @@ fn str_graphemes(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
     let mut next_grapheme = graphemes(s, function_name);
 
-    let iter_fn = 
-        luau.create_function_mut(move | luau: &Lua, _value: LuaValue| -> LuaMultiResult 
+    let iter_fn =
+        luau.create_function_mut(move | luau: &Lua, _value: LuaValue| -> LuaMultiResult
     {
         let Some((current_byte, grapheme)) = next_grapheme()? else {
             return Ok(LuaMultiValue::from_vec(vec![LuaNil]));

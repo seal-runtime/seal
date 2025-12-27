@@ -201,7 +201,7 @@ impl Stream {
                     return Ok(LuaNil)
                 } else if let Some(timeout) = timeout
                     && let Some(start_time) = start_time
-                    && start_time.elapsed() >= timeout    
+                    && start_time.elapsed() >= timeout
                 {
                     return Ok(LuaNil);
                 } else {
@@ -259,7 +259,7 @@ impl Stream {
                     return Ok(LuaNil)
                 } else if let Some(timeout) = timeout
                     && let Some(start_time) = start_time
-                    && start_time.elapsed() >= timeout    
+                    && start_time.elapsed() >= timeout
                 {
                     return Ok(LuaNil);
                 } else {
@@ -475,7 +475,7 @@ impl Stream {
                     return Ok(LuaValue::Integer(0));
                 } else if let Some(timeout) = timeout
                     && let Some(start_time) = start_time
-                    && start_time.elapsed() >= timeout    
+                    && start_time.elapsed() >= timeout
                 {
                     return Ok(LuaValue::Integer(0));
                 } else {
@@ -569,7 +569,7 @@ impl Stream {
                     return Ok(LuaValue::Boolean(false));
                 } else if let Some(timeout) = timeout
                     && let Some(start_time) = start_time
-                    && start_time.elapsed() >= timeout    
+                    && start_time.elapsed() >= timeout
                 {
                     return Ok(LuaValue::Boolean(false));
                 } else {

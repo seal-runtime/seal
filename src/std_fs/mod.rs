@@ -51,11 +51,11 @@ pub fn validate_path_without_checking_fs(path: &LuaString, function_name: &str) 
 }
 
 /// `fs.readfile(path: string): string`
-/// 
-/// note that we allow reading invalid utf8 files instead of failing (requiring fs.readbytes) 
+///
+/// note that we allow reading invalid utf8 files instead of failing (requiring fs.readbytes)
 /// or replacing with utf8 replacement character
-/// 
-/// this is because Luau allows strings to be of arbitrary encoding unlike Rust, where they have to be utf8 
+///
+/// this is because Luau allows strings to be of arbitrary encoding unlike Rust, where they have to be utf8
 pub fn fs_readfile(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let file_path = match value {
         LuaValue::String(file_path) => {
@@ -81,7 +81,7 @@ pub fn fs_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult
         Some(LuaValue::String(file_path)) => {
             validate_path(&file_path, function_name_and_args)?
         },
-        Some(other) => 
+        Some(other) =>
             return wrap_err!("{} expected path to be a string, got: {:#?}", function_name_and_args, other),
         None => {
             return wrap_err!("{} incorrectly called with zero arguments", function_name_and_args);
@@ -283,7 +283,7 @@ pub fn fs_copy(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
     };
     let source_pathbuf = PathBuf::from(&source_path);
     let mut destination_pathbuf = PathBuf::from(&destination_path);
-    
+
     if source_pathbuf.is_file() && destination_pathbuf.is_dir() {
         // copying a file into a directory shouldn't require you to type the filename again
         let source_filename = match source_pathbuf.file_name() {
@@ -337,7 +337,8 @@ fn fs_readtree(luau: &Lua, value: LuaValue) -> LuaValueResult {
             return wrap_err!("{} expected path to be a string, got: {:?}", function_name, other);
         }
     };
-    let read_tree_fn: LuaFunction = luau.load(READ_TREE_SRC).eval()?;
+    let chunk = Chunk::Src(READ_TREE_SRC.to_owned());
+    let read_tree_fn: LuaFunction = luau.load(chunk).eval()?;
     let result = match read_tree_fn.call::<LuaValue>(path) {
         Ok(LuaValue::Table(t)) => t,
         Ok(other) => {

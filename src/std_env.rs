@@ -22,18 +22,18 @@ pub fn get_current_shell() -> String {
         if let Ok(shell_path) = env::var("SHELL") {
             return shell_path;
         }
-        
+
         // Check specifically for PowerShell executables
         let pwsh_cmd = "pwsh";
         let powershell_cmd = "powershell";
-        
+
         // check if regular powershell installed bc pwsh 7 blows up
         if let Ok(output) = Command::new("where").arg(powershell_cmd).output()
             && output.status.success() {
                 let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
                 return path;
             }
-        
+
         // check if new/oss/powershell 7 installed; it might blow up with threading error tho
         if let Ok(output) = Command::new("where").arg(pwsh_cmd).output()
             && output.status.success() {
@@ -56,7 +56,7 @@ pub fn get_current_shell() -> String {
         ""
     };
 
-    if !which_cmd.is_empty() 
+    if !which_cmd.is_empty()
         && let Ok(output) = Command::new(which_cmd)
             .arg("sh")
             .output()
@@ -165,7 +165,7 @@ fn env_environment_removevar(_luau: &Lua, value: LuaValue) -> LuaValueResult {
     };
 
     // SAFETY: removing env variable unsafe in multithreaded linux
-    // this could cause ub if mixed with thread.spawns 
+    // this could cause ub if mixed with thread.spawns
     unsafe { env::remove_var(&key); }
 
     match env::var(&key) {

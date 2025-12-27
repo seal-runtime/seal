@@ -10,7 +10,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         // .with_value("raw", std::env::args_os().collect::<Vec<u8>>())?
         .build()?;
 
-    let prompt_table = match luau.load(ARGS_DOT_LUAU).eval::<LuaTable>() {
+    let chunk = Chunk::Src(ARGS_DOT_LUAU.to_owned());
+    let prompt_table = match luau.load(chunk).eval::<LuaTable>() {
         Ok(t) => t,
         Err(err) => {
             panic!("std/args' args.luau did a bad: {}", err);

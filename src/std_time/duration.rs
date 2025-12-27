@@ -5,7 +5,7 @@ use jiff::SignedDuration;
 /// using SignedDuration instead of std::time::Duration
 /// this is because we want to allow time.days(3) - time.days(5)
 pub struct TimeDuration {
-    pub inner: SignedDuration, 
+    pub inner: SignedDuration,
 }
 
 const SECONDS_IN_A_YEAR: f64 = 31_536_000.0;
@@ -225,7 +225,7 @@ impl LuaUserData for TimeDuration {
                 None => wrap_err!("{}: underflow when subtracting durations", function_name),
             }
         });
-        
+
         methods.add_meta_method(LuaMetaMethod::Eq, |_, this, other| {
             let function_name = "TimeDuration.__eq(self, other: TimeDuration)";
             match other {
@@ -258,8 +258,7 @@ impl LuaUserData for TimeDuration {
                 other => wrap_err!("{} expected TimeDuration, got {:?}", function_name, other),
             }
         });
-        
+
     }
 }
-
 

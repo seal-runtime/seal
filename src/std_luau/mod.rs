@@ -1,5 +1,5 @@
 use mluau::prelude::*;
-use crate::prelude::*;
+use crate::{Chunk, prelude::*};
 
 use mluau::Compiler;
 
@@ -102,7 +102,7 @@ fn get_safe_globals(luau: &Lua) -> LuaResult<LuaTable> {
         // luau standard libraries
         "math", "table", "string", "coroutine", "bit32", "utf8", "os", "debug", "buffer", "vector",
         // some useful functions
-        "assert", "error", "getmetatable", "setmetatable", "next", "ipairs", "pairs", "rawequal", "rawget", "rawset", "setmetatable", 
+        "assert", "error", "getmetatable", "setmetatable", "next", "ipairs", "pairs", "rawequal", "rawget", "rawset", "setmetatable",
         "tonumber", "tostring", "type", "typeof", "pcall", "xpcall", "unpack", "print"
         // note that require is purposely not included
     ];
@@ -123,15 +123,20 @@ fn get_safe_globals(luau: &Lua) -> LuaResult<LuaTable> {
 /// with illegal instruction & core dump. caller is responsible for making sure valid bytecode is passed
 unsafe fn eval(luau: &Lua, src: Vec<u8>, eval_options: EvalOptions) -> LuaValueResult {
     let name = eval_options.name.unwrap_or("luau.load".to_string());
+    let code = match String::from_utf8(src) {
+        Ok(src) => Chunk::Src(src),
+        Err(err) => Chunk::Bytecode(err.into_bytes()),
+    };
+
     let chunk = match eval_options.stdlib {
         EvalStdlib::Safe => {
-            luau.load(src).set_name(name).set_environment(get_safe_globals(luau)?)
+            luau.load(code).set_name(name).set_environment(get_safe_globals(luau)?)
         },
         EvalStdlib::None => {
-            luau.load(src).set_name(name).set_environment(luau.create_table()?)
+            luau.load(code).set_name(name).set_environment(luau.create_table()?)
         },
         EvalStdlib::Seal => {
-            luau.load(src).set_name(name)
+            luau.load(code).set_name(name)
         }
     };
     let res = match chunk.eval::<LuaValue>() {
