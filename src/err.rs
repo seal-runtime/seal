@@ -64,7 +64,7 @@ pub fn setup_panic_hook() {
             eprintln!("panic occurred at: [\"{}\"]:{}:{}", location.file(), location.line(), location.column());
         }
         eprintln!(
-            "{}\nseal panicked. seal is not supposed to panic, so you've found a bug.\nPlease report it here: https://github.com/deviaze/seal{}",
+            "{}\nseal panicked. seal is not supposed to panic, so you've found a bug.\nPlease report it here: https://github.com/seal-runtime/seal/issues{}",
             colors::RED, colors::RESET
         );
     }));
