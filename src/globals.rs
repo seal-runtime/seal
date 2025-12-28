@@ -5,8 +5,29 @@ use crate::prelude::*;
 use crate::std_err::ecall;
 use crate::{require, std_io};
 
-pub fn error(_luau: &Lua, error_value: LuaValue) -> LuaValueResult {
-    wrap_err!("{}", error_value.to_string()?)
+pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    let function_name = "error(message: string | unknown, level: number?)";
+    let message = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s.to_string_lossy(),
+        Some(LuaNil) | None => String::default(),
+        Some(other) => std_io::format::pretty(luau, other)?,
+    };
+
+    let level = match multivalue.pop_front() {
+        Some(LuaValue::Number(f)) => Some(float_to_usize(f, function_name, "level")?),
+        Some(LuaValue::Integer(i)) => Some(int_to_usize(i, function_name, "level")?),
+        Some(LuaNil) | None => None,
+        Some(other) => {
+            return wrap_err!("{}: level expected to be number or nil/unspecified, got: {:?}", function_name, other);
+        }
+    };
+
+    if let Some(level) = level {
+        let traceback = luau.traceback(Some(&message), level)?.to_string_lossy();
+        Err(LuaError::runtime(traceback))
+    } else {
+        wrap_err!("{}", message)
+    }
 }
 
 pub fn warn(luau: &Lua, warn_value: LuaValue) -> LuaValueResult {

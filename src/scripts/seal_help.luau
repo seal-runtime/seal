@@ -55,12 +55,12 @@ local TAGLINE = format_lines(
 local FAQ = format_lines(
     `{DIM_DASH} To {colors.bold.white "run a file"} with seal, simply run {code "seal ./myfile.luau"}`,
     `{DIM_DASH} To start a {colors.bold.white "new project"} with seal, run {code "seal setup"}`,
-    `{DIM_DASH} To view standard library documentation, check out {code ".seal/typedefs"}`
+    `{DIM_DASH} To view standard library documentation, check out {code ".seal/typedefs"}\n  or online at {colors.blue("https://github.com/seal-runtime/seal/tree/main/docs/reference")}`
 )
 
 local END_LINE = format_lines(
     "",
-    `To submit a feature request or report a bug: {UNDERLINE}https://github.com/deviaze/seal{colors.codes.RESET}`,
+    `To submit a feature request or report a bug: {UNDERLINE}https://github.com/seal-runtime/seal{colors.codes.RESET}`,
     "Thank you for using seal :)"
 )
 
@@ -74,11 +74,12 @@ function help.default()
         "",
         colors.bold.yellow "Commands:" .. dim " (use seal help <command> for detailed info about a specific command)",
         `  { command("seal", nil, "BOLD_BLUE")}  {req "filename.luau"} {opt "...args"} {DIM_DASH} run a file {dim "(must end with .luau or be directory w/ init.luau)"}.`,
-        `  { command("setup", "s", "BOLD_CYAN")} {DIM_DASH} a new project in your current directory; sets up all you need to get started with seal.`,
-        `  { command("eval ", "e", "BOLD_RED")}  '{req "src"}'    {DIM_DASH} evaluate luau code from a string, right in your terminal.`,
-        `  { command("run  ", "r", "BOLD_GREEN")}  {opt "...args"}  {DIM_DASH} run the {colors.bold.white("current project")} at its entrypoint; similar to { code "cargo run"} in Rust.`,
-        `  { command("test ", "t", "BRIGHT_GREEN")}  {opt "...args"}  {DIM_DASH} runs 'test_path' from your { code ".seal/config.luau"}.`,
-        `  { command("help ", "h", "BOLD_WHITE")}  {opt "command"}  {DIM_DASH} display help, of a specific command if specified.`,
+        `  { command("setup  ", "s", "BOLD_CYAN")} {DIM_DASH} a new project in your current directory; sets up all you need to get started with seal.`,
+        `  { command("eval   ", "e", "BOLD_RED")}  '{req "src"}'    {DIM_DASH} evaluate luau code from a string, right in your terminal.`,
+        `  { command("run    ", "r", "BOLD_GREEN")}  {opt "...args"}  {DIM_DASH} run the {colors.bold.white("current project")} at its entrypoint; similar to { code "cargo run"} in Rust.`,
+        `  { command("compile", " ", "BOLD_YELLOW")}  {opt "...args"}  {DIM_DASH} compile/bundle a project into a standalone executable/single Luau file.`,
+        `  { command("test   ", "t", "BRIGHT_GREEN")}  {opt "...args"}  {DIM_DASH} runs 'test_path' from your { code ".seal/config.luau"}.`,
+        `  { command("help   ", "h", "BOLD_WHITE")}  {opt "command"}  {DIM_DASH} display help, of a specific command if specified.`,
         "",
         colors.bold.magenta("Flags:"),
         `  {dim "--help | -h"} - same as seal help; can be used like seal {dim "--help"} or seal <command> {dim "--help"}`,

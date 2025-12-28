@@ -151,13 +151,13 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
 const STD_STR_SRC: &str = include_str!("../std_str.luau");
 fn load_std_str(luau: &Lua) -> LuaResult<LuaTable> {
     let chunk = Chunk::Src(STD_STR_SRC.to_owned());
-    luau.load(chunk).eval::<LuaTable>()
+    luau.load(chunk).set_name("std/str").eval::<LuaTable>()
 }
 
 const STD_SEMVER_SRC: &str = include_str!("../std_semver.luau");
 fn load_std_semver(luau: &Lua) -> LuaResult<LuaTable> {
     let chunk = Chunk::Src(STD_SEMVER_SRC.to_owned());
-    luau.load(chunk).eval::<LuaTable>() // <<>> HACK
+    luau.load(chunk).set_name("std/semver").eval::<LuaTable>() // <<>> HACK
 }
 
 const RESOLVER_SRC: &str = include_str!("./resolver.luau");
