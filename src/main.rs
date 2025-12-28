@@ -161,6 +161,21 @@ fn main() -> LuaResult<()> {
     }
 }
 
+fn set_jit(luau: &Lua) -> bool {
+    let should_jit = match std::env::var("SEAL_NO_JIT") {
+        Ok(var) if var.to_lowercase() == "true" => false,
+        Ok(var) if var.to_lowercase() == "false" => true,
+        Ok(_) => true,
+        Err(_) => true,
+    };
+
+    if should_jit {
+        luau.enable_jit(should_jit);
+    }
+
+    should_jit
+}
+
 fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoadResult {
     if requested_path.ends_with(".lua") {
         return wrap_err!("{}: wrong language! seal only runs .luau files", function_name);
@@ -187,6 +202,8 @@ fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoad
     if src.starts_with("#!") && let Some(first_newline_pos) = src.find('\n') {
         src = src[first_newline_pos + 1..].to_string();
     }
+
+    set_jit(&luau);
 
     Ok(Some(LuauLoadInfo { luau, code: Chunk::Src(src), chunk_name }))
 }
@@ -367,6 +384,9 @@ fn seal_standalone(bytecode: Vec<u8>) -> LuauLoadResult {
     let entry_path = std::env::current_exe().unwrap_or_default();
     let entry_path = entry_path.to_string_lossy().into_owned();
     globals::set_globals(&luau, &entry_path)?;
+
+    set_jit(&luau);
+
     Ok(Some(LuauLoadInfo {
         luau,
         code: Chunk::Bytecode(bytecode),
