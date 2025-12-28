@@ -189,6 +189,8 @@ fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoad
         return wrap_err!("{}: unable to enable Luau safeenv (sandbox mode) on chunk '{}' due to err: {}", function_name, chunk_name, err);
     };
 
+    set_jit(&luau);
+
     globals::set_globals(&luau, chunk_name.clone())?;
 
     let mut src = match fs::read_to_string(&chunk_name) {
@@ -202,8 +204,6 @@ fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoad
     if src.starts_with("#!") && let Some(first_newline_pos) = src.find('\n') {
         src = src[first_newline_pos + 1..].to_string();
     }
-
-    set_jit(&luau);
 
     Ok(Some(LuauLoadInfo { luau, code: Chunk::Src(src), chunk_name }))
 }
@@ -383,9 +383,10 @@ fn seal_standalone(bytecode: Vec<u8>) -> LuauLoadResult {
     let luau = Lua::new();
     let entry_path = std::env::current_exe().unwrap_or_default();
     let entry_path = entry_path.to_string_lossy().into_owned();
-    globals::set_globals(&luau, &entry_path)?;
 
     set_jit(&luau);
+
+    globals::set_globals(&luau, &entry_path)?;
 
     Ok(Some(LuauLoadInfo {
         luau,
