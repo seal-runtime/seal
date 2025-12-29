@@ -169,9 +169,7 @@ fn set_jit(luau: &Lua) -> bool {
         Err(_) => true,
     };
 
-    if should_jit {
-        luau.enable_jit(should_jit);
-    }
+    luau.enable_jit(should_jit);
 
     should_jit
 }
