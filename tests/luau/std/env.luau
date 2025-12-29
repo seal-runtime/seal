@@ -1,5 +1,5 @@
 local env = require("@std/env")
-local vars = require("@std/env/vars")
+local _vars = require("@std/env/vars")
 
 local function iterate_args()
     for _, arg in env.args do
