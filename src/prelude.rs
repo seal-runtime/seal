@@ -78,6 +78,16 @@ pub fn pop_self(multivalue: &mut LuaMultiValue, function_name: &'static str) -> 
     }
 }
 
+pub fn deprecate<S: std::fmt::Display>(api: S, use_instead: S, luau: &Lua) -> LuaEmptyResult {
+    let r = std::env::var("SEAL_ALLOW_DEPRECATED");
+    if let Ok(allow) = r && &allow.to_lowercase() == "true" {
+    } else {
+        let info = DebugInfo::from_caller(luau, "deprecate")?;
+        eprintln!("{}[DEPRECATED]{} {} will be removed, use {} instead ({}:{})", colors::BOLD_YELLOW, colors::RESET, api, use_instead, info.source, info.line);
+    }
+    Ok(())
+}
+
 pub struct DebugInfo {
     pub source: String,
     pub line: String,

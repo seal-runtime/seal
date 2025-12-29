@@ -7,6 +7,8 @@ use mluau::prelude::*;
 use crate::compile;
 use crate::prelude::*;
 
+pub mod vars;
+
 pub fn get_current_shell() -> String {
     #[cfg(target_family = "unix")]
     {
@@ -104,6 +106,7 @@ fn env_cwd(luau: &Lua, _: LuaValue) -> LuaValueResult {
 }
 
 fn env_environment_getvar(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    deprecate("env.getvar", "env.vars.get", luau)?;
     let var_name = match value {
         LuaValue::String(var) => var.to_string_lossy(),
         other => {
@@ -122,7 +125,8 @@ fn env_environment_getvar(luau: &Lua, value: LuaValue) -> LuaValueResult {
     }
 }
 
-fn env_environment_setvar(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+fn env_environment_setvar(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    deprecate("env.setvar", "env.vars.set", luau)?;
     let key = match multivalue.pop_front() {
         Some(LuaValue::String(key)) => key.to_string_lossy(),
         Some(other) => {
@@ -153,10 +157,10 @@ fn env_environment_setvar(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValu
             wrap_err!("env.setvar: unable to set environment variable '{}': {}", key, err)
         }
     }
-
 }
 
-fn env_environment_removevar(_luau: &Lua, value: LuaValue) -> LuaValueResult {
+fn env_environment_removevar(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    deprecate("env.removevar", "env.vars.unset", luau)?;
     let key = match value {
         LuaValue::String(key) => key.to_string_lossy(),
         other => {
@@ -213,6 +217,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("getvar", env_environment_getvar)?
         .with_function("setvar", env_environment_setvar)?
         .with_function("removevar", env_environment_removevar)?
+        .with_value("vars", vars::create(luau)?)?
         .with_function("cwd", env_cwd)?
         .build_readonly()
 }

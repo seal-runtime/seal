@@ -61,6 +61,7 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std/fs/dir" => ok_table(std_fs::dirlib::create(luau)),
 
         "@std/env" => ok_table(std_env::create(luau)),
+        "@std/env/vars" => ok_table(std_env::vars::create(luau)),
 
         "@std/err" => ok_table(std_err::create(luau)),
 
