@@ -155,6 +155,10 @@ fn main() -> LuaResult<()> {
         Err(err) => display_error_and_exit(err),
     };
 
+    if let Err(err) = std_env::vars::initialize_dotenv() {
+        display_error_and_exit(err);
+    }
+
     match luau.load(code).set_name(chunk_name).exec() {
         Ok(_) => Ok(()),
         Err(err) => display_error_and_exit(err),
@@ -163,8 +167,8 @@ fn main() -> LuaResult<()> {
 
 fn set_jit(luau: &Lua) -> bool {
     let should_jit = match std::env::var("SEAL_NO_JIT") {
-        Ok(var) if var.to_lowercase() == "true" => false,
-        Ok(var) if var.to_lowercase() == "false" => true,
+        Ok(var) if var.eq_ignore_ascii_case("true") => false,
+        Ok(var) if var.eq_ignore_ascii_case("false") => true,
         Ok(_) => true,
         Err(_) => true,
     };
