@@ -31,8 +31,8 @@ end
 local function parse_traceback(traceback: string): string
     local is_tty = input.tty()
     local pretty: boolean do
-        local pretty_var = env.getvar("SEAL_PRETTY_ERRORS")
-        local seal_no_colors = env.getvar("SEAL_NO_COLORS")
+        local pretty_var = env.vars.get("SEAL_PRETTY_ERRORS")
+        local seal_no_colors = env.vars.get("SEAL_NO_COLORS")
 
         if pretty_var and string.lower(pretty_var) == "true" then
             pretty = true
@@ -236,7 +236,7 @@ local function parse_traceback(traceback: string): string
         end
 
         if not is_runtime_error and not is_error_error then
-            local seal_need_help = env.getvar("SEAL_NEED_HELP")
+            local seal_need_help = env.vars.get("SEAL_NEED_HELP")
             if seal_need_help == nil or (seal_need_help and string.lower(seal_need_help) == "true") then
                 table.insert(lines, `\nNeed help? {colors.style.dim("(set SEAL_NEED_HELP=FALSE to hide)")}\z
                 \n  Check the docs:   {colors.blue("https://github.com/seal-runtime/seal/tree/main/docs/reference")}\z

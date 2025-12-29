@@ -108,8 +108,8 @@ type EnvAndCliArgs = {}; local back: TableOfContents do
 	end
 
 	-- get and set environment variables
-	local PATH: string? = env.getvar("PATH")
-	env.setvar("hi", "true")
+	local PATH: string? = env.vars.get("PATH")
+	env.vars.set("hi", "true")
 end
 
 -- use @std/process to spawn child processes, shell commands, including in a nonblocking manner!
