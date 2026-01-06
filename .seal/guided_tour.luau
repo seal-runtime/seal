@@ -127,8 +127,7 @@ type SpawningChildProcesses = {}; local back: TableOfContents do
 		args = { "--version" }
 	}
 
-	print(if result.ok then result.stdout
-          else result.stderr)
+	print(if result.ok then result.stdout else result.stderr)
 	-- if you want to assume your process run attempt succeeded (and error otherwise), use :unwrap()
 	local stdout = result:unwrap()
 
@@ -142,7 +141,7 @@ type SpawningChildProcesses = {}; local back: TableOfContents do
 	local handle = process.spawn {
 		program = `seal eval '{waiting_src}'`,
 		shell = if env.os == "Windows" then "pwsh" else "sh"
-	}
+	} :: process.PipedChild
 
 	local text = ""
 	while handle:alive() do

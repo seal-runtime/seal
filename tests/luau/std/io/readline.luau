@@ -29,6 +29,7 @@ end
 
 local function rawlinefallback()
     local child = runsealwithprompt("how are you?: ")
+    assert(child.stdout ~= nil and child.stderr ~= nil and child.stdin ~= nil, "everything is piped")
     
     while time.wait(0.12) and child:alive() do
         local res = child.stdout:read(nil, 0)

@@ -97,17 +97,22 @@ export type process = {
     shell: (command: string) -> RunResult,
     --[=[
     Spawns a long-running process in a non-blocking manner, returns a `ChildProcess` that contains handles to the spawned process' stdout, stderr, and stdin.
+    
+    There are three primary usecases for `process.spawn`:
+    1. Listening to the output of a long-running process.
+    2. Running another program in the background while your program does work.
+    3. Launching multiple instances of the same program in parallel.
 
     ## Usage
 
-    A long-running program you want to listen to.
+    Listen to the output of a long-running process:
 
     ```luau
     local process = require("@std/process")
     local child = process.spawn({
         program = "someutil --watch",
         shell = "sh",
-    })
+    }) :: process.PipedChild
 
     for line in child.stdout:lines() do
         local thing_changed = line:match("([%w]+) changed!")
@@ -115,7 +120,7 @@ export type process = {
     end
     ```
 
-    Run multiple processes at the same time to finish faster.
+    Run multiple processes at the same time to finish faster:
 
     For example, `markdownlint-cli2` takes about 0.3 seconds to fix a file, so if you have 20+ files, and you
     fix each file one-at-a-time with `process.run`, it'll take 6+ seconds to do all files.
@@ -125,14 +130,14 @@ export type process = {
 
     ```luau
     local paths: { string } = get_files()
-    -- make a threadpool to keep track of what files are finished
-    local handles: { [string]: process.ThreadHandle } = {}
+    -- make a childpool to keep track of what files are finished
+    local handles: { [string]: process.PipedChild } = {}
     
     for _, path in paths do
         local handle = process.spawn {
             program = "markdownlint-cli2",
             args = { "--fix", path }
-        }
+        } :: process.PipedChild
         handles[path] = handle
     end
 
@@ -148,10 +153,6 @@ export type process = {
     ```
     ]=]
     spawn: (options: SpawnOptions) -> ChildProcess,
-    --[=[
-        Doesn't work.
-    ]=]
-    setexitcallback: ((number) -> ()) -> (),
     --[=[
         Immediately terminate the current program with exit `code`.
 
@@ -193,6 +194,8 @@ export type Err = {
     stderr: string,
 }
 
+export type Stdio = "Pipe" | "Inherit" | "Ignore"
+
 export type RunOptions = {
     program: string,
     --- an optional list of arguments to pass into the program; on Windows, you should use this instead of trying to pass whitespace-separated arguments in `program`
@@ -201,6 +204,11 @@ export type RunOptions = {
     shell: string?,
     --- path to the the working directory you want your command to execute in, defaults to your shell's cwd
     cwd: string?,
+    stdio: {
+        stdout: Stdio?,
+        stderr: Stdio?,
+        stdin: Stdio?,
+    }? | Stdio?
 }
 
 export type SpawnOptions = {
@@ -243,11 +251,22 @@ export type SpawnOptions = {
         stdout_capacity: number?,
         --- inner buffer capacity of `ChildProcess.stderr`, default 1024
         stderr_capacity: number?,
-        --- what side of stdout should be truncated when full? defaults to "front"
-        stdout_truncate: ("front" | "back")?,
-        --- what side of stderr should be truncated when full? defaults to "front"
-        stderr_truncate: ("front" | "back")?,
+        --- what side of stdout should be truncated when full? defaults to "Front"
+        stdout_truncate: ("Front" | "Back")?,
+        --- what side of stderr should be truncated when full? defaults to "Front"
+        stderr_truncate: ("Front" | "Back")?,
     }?,
+    --[=[
+        By default, the child process's stdio is *piped*.
+        
+
+        because it's actually being written to a separate handle controlled by *seal*.
+    ]=]
+    stdio: {
+        stdout: Stdio?,
+        stderr: Stdio?,
+        stdin: Stdio?,
+    }? | Stdio?
 }
 --- Represents the stdout and stderr streams of a `ChildProcess`, both ran in parallel threads
 --- and streamed for nonblocking behavior.
@@ -433,7 +452,7 @@ export type ChildProcessStream = setmetatable<{
         local child = process.spawn({
             program = "someutil --watch",
             shell = "sh",
-        })
+        }) :: process.PipedChild
 
         for line in child.stdout:lines() do
             local thing_changed = line:match("([%w]+) changed!")
@@ -450,9 +469,11 @@ export type ChildProcessStream = setmetatable<{
             shell = "sh",
         }
 
-        local next_line = child.stdout:lines()
-        local first_line = next_line()
-        local second_line = next_line()
+        if child.stdout then
+            local next_line = child.stdout:lines()
+            local first_line = next_line()
+            local second_line = next_line()
+        end
         ```
     ]=]
     lines: (self: ChildProcessStream, timeout: number?) -> (() -> string),
@@ -495,19 +516,40 @@ type ChildProcessStdin = {
         ```luau
         local child = process.spawn {
             program = "python3",
-            args = { "-" },
+            args = { "-" }, -- allows python3 to accept source code from stdin
         }
+        assert(child.stdin ~= nil, "stdin is piped")
+
         child.stdin:write(PYTHON_SRC)
-        child.stdin:close()
+        child.stdin:close() -- send EOF to python so it evaluates the source code
         ```
     ]=]
     close: (self: ChildProcessStdin) -> (),
 }
 
+--[=[
+    A handle to a child process created by `process.spawn`, with optional handles
+    to the child's stdout, stderr, and stdin output/input streams.
+
+    By default, stdout, stderr, and stdin are piped; cast the result of `process.spawn` to
+    `process.PipedChild` to reflect this.
+]=]
 export type ChildProcess = {
     id: number,
-    alive: (self: ChildProcess) -> boolean,
-    kill: (self: ChildProcess) -> (),
+    alive: (self: ChildProcess | PipedChild) -> boolean,
+    kill: (self: ChildProcess | PipedChild) -> (),
+    stdout: ChildProcessStream?,
+    stderr: ChildProcessStream?,
+    stdin: ChildProcessStdin?,
+}
+
+--[=[
+    Default kind of `ChildProcess` created by `process.spawn` pipes for stdout, stderr, and stdin.
+]=]
+export type PipedChild = {
+    id: number,
+    alive: (self: ChildProcess | PipedChild) -> boolean,
+    kill: (self: ChildProcess | PipedChild) -> (),
     stdout: ChildProcessStream,
     stderr: ChildProcessStream,
     stdin: ChildProcessStdin,

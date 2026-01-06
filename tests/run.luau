@@ -129,12 +129,12 @@ local tests: Tests = {
     ignored_functions_by_path = ignored_by_path,
 }
 
-local test_pool: { [string]: process.ChildProcess } = {} do
+local test_pool: { [string]: process.PipedChild } = {} do
     for _, test_path in tests.queue do
         local child = process.spawn {
             program = env.executable_path, -- usually ./target/debug/seal or ./target/release/seal
             args = { test_path }
-        }
+        } :: process.PipedChild
         test_pool[test_path] = child
     end
 end

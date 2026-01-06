@@ -10,7 +10,7 @@ end
 local child = process.spawn {
     program = "libinput debug-events --show-keycodes",
     shell = "sh",
-}
+} :: process.PipedChild
 
 -- ensure seal's running in sudo (administrator mode) so we can see keycodes
 local err = child.stderr:read(128, 0.25)

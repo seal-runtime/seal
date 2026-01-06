@@ -10,6 +10,7 @@ local function watchception()
         program = env.executable_path,
         args = { ception_path }
     }
+    assert(child.stdout ~= nil and child.stderr ~= nil, "stdio should be piped")
 
     local t0 = os.clock()
     local not_first = child.stdout:read(nil, 0.0)
