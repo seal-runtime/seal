@@ -33,7 +33,7 @@ local files = process.shell("ls -l"):unwrap()
 local child = process.spawn({
     program = "someutil --watch",
     shell = "sh",
-})
+}) :: process.PipedChild
 
 for line in child.stdout:lines() do
     local thing_changed = line:match("([%w]+) changed!")
@@ -151,16 +151,22 @@ function process.spawn(options: SpawnOptions) -> ChildProcess,
 
 Spawns a long-running process in a non-blocking manner, returns a `ChildProcess` that contains handles to the spawned process' stdout, stderr, and stdin.
 
+There are three primary usecases for `process.spawn`:
+
+1. Listening to the output of a long-running process.
+2. Running another program in the background while your program does work.
+3. Launching multiple instances of the same program in parallel.
+
 ## Usage
 
-A long-running program you want to listen to.
+Listen to the output of a long-running process:
 
 ```luau
 local process = require("@std/process")
 local child = process.spawn({
     program = "someutil --watch",
     shell = "sh",
-})
+}) :: process.PipedChild
 
 for line in child.stdout:lines() do
     local thing_changed = line:match("([%w]+) changed!")
@@ -168,7 +174,7 @@ for line in child.stdout:lines() do
 end
 ```
 
-Run multiple processes at the same time to finish faster.
+Run multiple processes at the same time to finish faster:
 
 For example, `markdownlint-cli2` takes about 0.3 seconds to fix a file, so if you have 20+ files, and you
 fix each file one-at-a-time with `process.run`, it'll take 6+ seconds to do all files.
@@ -178,14 +184,14 @@ fix all files in < 0.5 seconds (depending on your hardware and core count).
 
 ```luau
 local paths: { string } = get_files()
--- make a threadpool to keep track of what files are finished
-local handles: { [string]: process.ThreadHandle } = {}
+-- make a childpool to keep track of what files are finished
+local handles: { [string]: process.PipedChild } = {}
 
 for _, path in paths do
     local handle = process.spawn {
         program = "markdownlint-cli2",
         args = { "--fix", path }
-    }
+    } :: process.PipedChild
     handles[path] = handle
 end
 
@@ -201,20 +207,6 @@ end
 ```
 
 </details>
-
----
-
-### process.setexitcallback
-
-<h4>
-
-```luau
-function process.setexitcallback((number) -> ()) -> (),
-```
-
-</h4>
-
-Doesn't work.
 
 ---
 
@@ -410,6 +402,18 @@ stderr: string,
 
 ---
 
+## `export type` Stdio
+
+<h4>
+
+```luau
+export type Stdio = "Pipe" | "Inherit" | "Ignore"
+```
+
+</h4>
+
+---
+
 ## `export type` RunOptions
 
 <h4>
@@ -419,6 +423,8 @@ export type RunOptions = {
 ```
 
 </h4>
+
+Options for `process.run`; implicitly added to `process.shell` as well.
 
 ---
 
@@ -431,6 +437,8 @@ program: string,
 ```
 
 </h4>
+
+ the program you want to run, must be available in $PATH or be an absolute path to an executable
 
 ---
 
@@ -453,12 +461,24 @@ args: { string }?,
 <h4>
 
 ```luau
-shell: string?,
+function RunOptions.shell(true | string)?,
 ```
 
 </h4>
 
- specify a shell to run the program with; otherwise runs it as a bare process with no shell
+<details>
+
+<summary> See the docs </summary
+
+Specify a shell to run `program` with; if unspecified or nil,
+defaults to running it as a bare process with no shell (behavior may differ on Windows vs. Unix-like).
+
+If `shell == true`, performs some magic (like checking `$SHELL`) to try and figure out
+what your current shell is, defaulting to WindowsPowerShell on Windows and `sh` on Unix-like.
+
+Be careful with shell escapes w/ user-provided values; can be a security risk.
+
+</details>
 
 ---
 
@@ -473,6 +493,112 @@ cwd: string?,
 </h4>
 
  path to the the working directory you want your command to execute in, defaults to your shell's cwd
+
+---
+
+### RunOptions.stdio.stdout
+
+<h4>
+
+```luau
+stdout: Stdio?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Control whether the child process reads and writes to its own terminal (`"Pipe"`) or
+to the terminal you're running *seal* in (`"Inherit"`).
+
+By default, stdio is *piped*; this means the process reads and writes from separate
+stdin, stdout, and stderr streams that you can read once the process completes.
+
+If you want everything the process says to be displayed on your terminal (and not
+read from the process programmatically), use `"Inherit"`.
+
+If you want anything the process says to get ignored (redirected to `/dev/null`), use `"Ignore"`.
+
+This field `stdio` can be either a string (if you want all streams to share the same behavior)
+or a table (if you want different per-stream behavior).
+
+</details>
+
+---
+
+### RunOptions.stdio.stderr
+
+<h4>
+
+```luau
+stderr: Stdio?,
+```
+
+</h4>
+
+---
+
+### RunOptions.stdio.stdin
+
+<h4>
+
+```luau
+stdin: Stdio?,
+```
+
+</h4>
+
+---
+
+### RunOptions.stdio.env.clear
+
+<h4>
+
+```luau
+clear: boolean?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Override environment variables of the spawned `ChildProcess`.
+By default, the spawned process inherits its environment from the current process;
+so all environment variables visible to *seal* will be visible to it unless removed or cleared.
+
+- To clear *all* environment variables for the spawned `ChildProcess` so
+that the spawned process does not inherit from *seal*'s environment, set `env.clear = true`.
+- To add additional environment variables, define a map of them (`{ [string]: string }`)
+in `env.add`.
+- To prevent specific environment variables from being inherited
+by the child process, list them in `env.remove`.
+
+The order is clear, add, remove (so clearing the environment doesn't prevent variables from being
+added).
+
+## Errors
+
+- if you pass a table to `env` without keys `clear`, `add`, and/or `remove`.
+- if `env.add` is present and isn't `{ [string]: string }`
+- if `env.remove` is present and isn't `{ string }`.
+
+</details>
+
+---
+
+### RunOptions.stdio.env.add.remove
+
+<h4>
+
+```luau
+remove: { string }?,
+```
+
+</h4>
 
 ---
 
@@ -521,10 +647,24 @@ args: { string }?,
 <h4>
 
 ```luau
-shell: string?,
+function SpawnOptions.shell(true | string)?,
 ```
 
 </h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Specify a shell to run `program` with; if unspecified or nil,
+defaults to running it as a bare process with no shell (behavior may differ on Windows vs. Unix-like).
+
+If `shell == true`, performs some magic (like checking `$SHELL`) to try and figure out
+what your current shell is, defaulting to WindowsPowerShell on Windows and `sh` on Unix-like.
+
+Be careful with shell escapes w/ user-provided values; can be a security risk.
+
+</details>
 
 ---
 
@@ -556,7 +696,7 @@ stdout_capacity: number?,
 
 <summary> See the docs </summary
 
-A `ChildProcessStream` captures incoming bytes from your `ChildProcess`' output streams (either stdout or stderr),
+A `ChildProcessStream` captures incoming bytes from a `ChildProcess`' output stream (either stdout or stderr),
 and caches them in its `inner` buffer. Each stream is spawned in a separate Rust thread to facilitate
 consistently nonblocking, dependable reads, allowing most `ChildProcess.stream:read` methods to be fully nonblocking unless
 specifically requested otherwise.
@@ -606,12 +746,12 @@ stderr_capacity: number?,
 <h4>
 
 ```luau
-function SpawnOptions.stream.stdout_truncate("front" | "back")?,
+function SpawnOptions.stream.stdout_truncate("Front" | "Back")?,
 ```
 
 </h4>
 
- what side of stdout should be truncated when full? defaults to "front"
+ what side of stdout should be truncated when full? defaults to "Front"
 
 ---
 
@@ -620,12 +760,119 @@ function SpawnOptions.stream.stdout_truncate("front" | "back")?,
 <h4>
 
 ```luau
-function SpawnOptions.stream.stderr_truncate("front" | "back")?,
+function SpawnOptions.stream.stderr_truncate("Front" | "Back")?,
 ```
 
 </h4>
 
- what side of stderr should be truncated when full? defaults to "front"
+ what side of stderr should be truncated when full? defaults to "Front"
+
+---
+
+### SpawnOptions.stream.stdio.stdout
+
+<h4>
+
+```luau
+stdout: Stdio?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Control whether the child process reads and writes to its own terminal (`"Pipe"`) or
+to the terminal you're running *seal* in (`"Inherit"`).
+
+By default, the child process's stdio is *piped*; this means the process
+reads and writes from separate stdin, stdout, and stderr streams that you
+can access through the `ChildProcessStream` API.
+
+If you want everything the process says to be displayed on your terminal (and not
+read from the process programmatically), use `"Inherit"`.
+
+If you want anything the `ChildProcess` says to get ignored (redirected to `/dev/null`), use `"Ignore"`.
+
+This field `stdio` can be either a string (if you want all streams to share the same behavior)
+or a table (if you want different per-stream behavior).
+
+</details>
+
+---
+
+### SpawnOptions.stream.stdio.stderr
+
+<h4>
+
+```luau
+stderr: Stdio?,
+```
+
+</h4>
+
+---
+
+### SpawnOptions.stream.stdio.stdin
+
+<h4>
+
+```luau
+stdin: Stdio?,
+```
+
+</h4>
+
+---
+
+### SpawnOptions.stream.stdio.env.clear
+
+<h4>
+
+```luau
+clear: boolean?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Override environment variables of the spawned `ChildProcess`.
+By default, the spawned process inherits its environment from the current process;
+so all environment variables visible to *seal* will be visible to it unless removed or cleared.
+
+- To clear *all* environment variables for the spawned `ChildProcess` so
+that the spawned process does not inherit from *seal*'s environment, set `env.clear = true`.
+- To add additional environment variables, define a map of them (`{ [string]: string }`)
+in `env.add`.
+- To prevent specific environment variables from being inherited
+by the child process, list them in `env.remove`.
+
+The order is clear, add, remove (so clearing the environment doesn't prevent variables from being
+added).
+
+## Errors
+
+- if you pass a table to `env` without keys `clear`, `add`, and/or `remove`.
+- if `env.add` is present and isn't `{ [string]: string }`
+- if `env.remove` is present and isn't `{ string }`.
+
+</details>
+
+---
+
+### SpawnOptions.stream.stdio.env.add.remove
+
+<h4>
+
+```luau
+remove: { string }?,
+```
+
+</h4>
 
 ---
 
@@ -939,7 +1186,7 @@ local process = require("@std/process")
 local child = process.spawn({
     program = "someutil --watch",
     shell = "sh",
-})
+}) :: process.PipedChild
 
 for line in child.stdout:lines() do
     local thing_changed = line:match("([%w]+) changed!")
@@ -956,9 +1203,11 @@ local child = process.spawn {
     shell = "sh",
 }
 
-local next_line = child.stdout:lines()
-local first_line = next_line()
-local second_line = next_line()
+if child.stdout then
+    local next_line = child.stdout:lines()
+    local first_line = next_line()
+    local second_line = next_line()
+end
 ```
 
 </details>
@@ -1046,6 +1295,10 @@ function ChildProcessStdin.close(self: ChildProcessStdin) -> (),
 
 </h4>
 
+<details>
+
+<summary> See the docs </summary
+
 Explicitly closes the child process stdin; this signals EOF for some programs that read multiple lines from stdin.
 
 Errors if it can't flush the child process' stdin before closing.
@@ -1055,11 +1308,15 @@ Errors if it can't flush the child process' stdin before closing.
 ```luau
 local child = process.spawn {
     program = "python3",
-    args = { "-" },
+    args = { "-" }, -- allows python3 to accept source code from stdin
 }
+assert(child.stdin ~= nil, "stdin is piped")
+
 child.stdin:write(PYTHON_SRC)
-child.stdin:close()
+child.stdin:close() -- send EOF to python so it evaluates the source code
 ```
+
+</details>
 
 ---
 
@@ -1073,6 +1330,12 @@ export type ChildProcess = {
 
 </h4>
 
+A handle to a child process created by `process.spawn`, with optional handles
+to the child's stdout, stderr, and stdin output/input streams.
+
+By default, stdout, stderr, and stdin are piped; cast the result of `process.spawn` to
+`process.PipedChild` to reflect this.
+
 ---
 
 ### ChildProcess.id
@@ -1085,6 +1348,8 @@ id: number,
 
 </h4>
 
+ The process id (`pid`) of the spawned `ChildProcess`
+
 ---
 
 ### ChildProcess.alive
@@ -1092,7 +1357,7 @@ id: number,
 <h4>
 
 ```luau
-function ChildProcess.alive(self: ChildProcess) -> boolean,
+function ChildProcess.alive(self: ChildProcess | PipedChild) -> boolean,
 ```
 
 </h4>
@@ -1104,7 +1369,7 @@ function ChildProcess.alive(self: ChildProcess) -> boolean,
 <h4>
 
 ```luau
-function ChildProcess.kill(self: ChildProcess) -> (),
+function ChildProcess.kill(self: ChildProcess | PipedChild) -> (),
 ```
 
 </h4>
@@ -1116,7 +1381,7 @@ function ChildProcess.kill(self: ChildProcess) -> (),
 <h4>
 
 ```luau
-stdout: ChildProcessStream,
+stdout: ChildProcessStream?,
 ```
 
 </h4>
@@ -1128,7 +1393,7 @@ stdout: ChildProcessStream,
 <h4>
 
 ```luau
-stderr: ChildProcessStream,
+stderr: ChildProcessStream?,
 ```
 
 </h4>
@@ -1136,6 +1401,94 @@ stderr: ChildProcessStream,
 ---
 
 ### ChildProcess.stdin
+
+<h4>
+
+```luau
+stdin: ChildProcessStdin?,
+```
+
+</h4>
+
+---
+
+## `export type` PipedChild
+
+<h4>
+
+```luau
+export type PipedChild = {
+```
+
+</h4>
+
+Default kind of `ChildProcess` created by `process.spawn` pipes for stdout, stderr, and stdin.
+
+---
+
+### PipedChild.id
+
+<h4>
+
+```luau
+id: number,
+```
+
+</h4>
+
+ The process id (`pid`) of the spawned `ChildProcess`
+
+---
+
+### PipedChild.alive
+
+<h4>
+
+```luau
+function PipedChild.alive(self: ChildProcess | PipedChild) -> boolean,
+```
+
+</h4>
+
+---
+
+### PipedChild.kill
+
+<h4>
+
+```luau
+function PipedChild.kill(self: ChildProcess | PipedChild) -> (),
+```
+
+</h4>
+
+---
+
+### PipedChild.stdout
+
+<h4>
+
+```luau
+stdout: ChildProcessStream,
+```
+
+</h4>
+
+---
+
+### PipedChild.stderr
+
+<h4>
+
+```luau
+stderr: ChildProcessStream,
+```
+
+</h4>
+
+---
+
+### PipedChild.stdin
 
 <h4>
 
