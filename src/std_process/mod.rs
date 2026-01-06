@@ -154,8 +154,11 @@ fn run_command(options: RunOptions) -> io::Result<Output> {
         command.current_dir(cwd);
     }
 
-    let (stdout_stdio, stderr_stdio, stdin_stdio) = options.stdio.into_std_stdio();
-    command.stdout(stdout_stdio).stderr(stderr_stdio).stdin(stdin_stdio);
+    if let Some(extra) = options.extra_envs {
+        extra.apply(&mut command);
+    }
+
+    options.stdio.apply(&mut command);
 
     command.output()
 }
@@ -180,7 +183,7 @@ fn process_run(luau: &Lua, run_options: LuaValue) -> LuaValueResult {
             // we want to throw an error if the program was unable to spawn at all
             // this is because when a user calls process.run/shell, they expect their program to actually run
             // and we don't want the 'ok' or 'err' value to serve two purposes (program failed to execute vs program executed with error)
-            wrap_err!("{} was unable to run the program '{}': {}", function_name, program_to_run, err)
+            wrap_err!("{} was unable to run the program '{}' due to err {}; did you forget to set shell = true?", function_name, program_to_run, err)
         }
     }
 }
@@ -200,7 +203,8 @@ fn process_shell(luau: &Lua, shell_command: LuaValue) -> LuaValueResult {
         args: None,
         shell: Some(Shell::from(shell_name.clone())),
         cwd: None,
-        stdio: options::StdioTriple::default()
+        stdio: options::StdioTriple::default(),
+        extra_envs: None
     };
 
     match run_command(run_options) {
@@ -248,13 +252,16 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
             command.current_dir(cwd);
         }
 
-        let (stdout_stdio, stderr_stdio, stdin_stdio) = options.stdio.into_std_stdio();
-        command.stdout(stdout_stdio).stderr(stderr_stdio).stdin(stdin_stdio);
+        if let Some(extra) = options.extra_envs {
+            extra.apply(&mut command);
+        }
+
+        options.stdio.apply(&mut command);
 
         match command.spawn() {
             Ok(child) => child,
             Err(err) => {
-                return wrap_err!("process.spawn failed to execute process: {}", err);
+                return wrap_err!("process.spawn failed to execute process: {} (did you forget to set shell = true | string)", err);
             }
         }
     };

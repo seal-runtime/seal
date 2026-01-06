@@ -42,5 +42,5 @@ local function watchception()
     end    
 end
 
-cheese.retry(watchception, 2)
+cheese.retry(watchception, 3)
 

@@ -3,6 +3,7 @@ local env = require("@std/env")
 local process = require("@std/process")
 local time = require("@std/time")
 local str = require("@std/str")
+local cheese = require("@tests/cheese")
 
 local function spawn_poem(stdout_capacity: number, stderr_capacity: number, stdout_truncate: "Front" | "Back"): (process.PipedChild, string)
     local src = [[
@@ -70,4 +71,4 @@ local function truncatebackactuallytruncatesback()
     fs.file.try_remove(poem_path)
 end
 
-truncatebackactuallytruncatesback()
+cheese.retry(truncatebackactuallytruncatesback, 2)

@@ -1,5 +1,8 @@
 use std::path::{Path, PathBuf};
+use std::collections::HashMap as Map;
 
+use crate::std_env::get_current_shell;
+use crate::std_io::format::hexdump;
 use crate::{prelude::*, std_process::stream::TruncateSide};
 use mluau::prelude::*;
 
@@ -37,6 +40,9 @@ impl From<String> for Shell {
 }
 
 impl Shell {
+    pub fn current() -> Self {
+        Shell::from(get_current_shell())
+    }
     pub fn program_name(&self) -> &str {
         match self {
             Shell::Pwsh => "pwsh",
@@ -117,8 +123,120 @@ impl StdioTriple {
         };
         Ok(v)
     }
-    pub fn into_std_stdio(self) -> (std::process::Stdio, std::process::Stdio, std::process::Stdio) {
+    fn into_std_stdio(self) -> (std::process::Stdio, std::process::Stdio, std::process::Stdio) {
         (self.0.into_std_stdio(), self.1.into_std_stdio(), self.2.into_std_stdio())
+    }
+    pub fn apply(self, command: &mut std::process::Command) {
+        let (stdout_stdio, stderr_stdio, stdin_stdio) = self.into_std_stdio();
+        command.stdout(stdout_stdio).stderr(stderr_stdio).stdin(stdin_stdio);
+    }
+}
+
+pub struct ExtraEnvs {
+    pub clear: bool,
+    pub add: Option<Map<String, String>>,
+    pub remove: Option<Vec<String>>,
+}
+impl ExtraEnvs {
+    pub fn apply(self, command: &mut std::process::Command) {
+        if self.clear {
+            command.env_clear();
+        }
+        if let Some(vars) = self.add {
+            command.envs(vars);
+        }
+        if let Some(rem) = self.remove {
+            for var in rem {
+                command.env_remove(var);
+            }
+        }
+    }
+    fn map_from_table(luau: &Lua, vars: LuaTable, function_name: &'static str, what: &'static str) -> LuaResult<Map<String, String>> {
+        let mut map = Map::new();
+        for pair in vars.pairs::<LuaValue, LuaValue>() {
+            let (key, value) = pair?;
+            match (key, value) {
+                (LuaValue::String(key), LuaValue::String(value)) => {
+                    if key.to_str().is_err() {
+                        return wrap_err!("{}: environment key bad utf8 (smh): {}", function_name, hexdump(luau, key.into_lua(luau)?)?);
+                    }
+                    if value.to_str().is_err() {
+                        return wrap_err!("{}: environment value bad utf8 (smh): {}", function_name, hexdump(luau, value.into_lua(luau)?)?);
+                    }
+                    map.insert(key.to_string_lossy(), value.to_string_lossy());
+                },
+                (key, value) => {
+                    return wrap_err!("{}: {}Options.env.add: key/value not pair of string to string, got ({:?}, {:?})", function_name, what, key, value);
+                }
+            }
+        }
+        Ok(map)
+    }
+    fn list_from_table(luau: &Lua, table: LuaTable, function_name: &'static str, what: &'static str) -> LuaResult<Vec<String>> {
+        let cap = table.len()?;
+        let mut list = Vec::with_capacity(int_to_usize(cap, function_name, "list capacity")?);
+        for pair in table.pairs::<LuaValue, LuaValue>() {
+            let (index, value) = pair?;
+            match (index, value) {
+                (LuaValue::Integer(i), LuaValue::String(s)) => {
+                    if s.to_str().is_err() {
+                        return wrap_err!("{}: env variable to remove at index {} is bad utf8: {}", function_name, i, hexdump(luau, s.into_lua(luau)?)?)
+                    }
+                    list.push(s.to_string_lossy());
+                },
+                (LuaValue::Integer(i), other) => {
+                    return wrap_err!("{}: env variable to remove at index {} should be a string, got: {:?}", function_name, i, other);
+                },
+                (key, value) => {
+                    return wrap_err!("{}: {}Options.env.remove: index/value pair not integer to string, got: ({:?}, {:?})", function_name, what, key, value);
+                }
+            }
+        }
+        Ok(list)
+    }
+    fn from_options(luau: &Lua, options: &LuaTable, function_name: &'static str, what: &'static str) -> LuaResult<Option<Self>> {
+        let env_table = match options.raw_get("env")? {
+            LuaValue::Table(t) => t,
+            LuaNil => {
+                return Ok(None);
+            },
+            other => {
+                return wrap_err!("{}: expected {}Options.env to be nil or a table with propertiesgot: {:?}", function_name, what, other);
+            }
+        };
+        let clear = match env_table.raw_get("clear")? {
+            LuaValue::Boolean(b) => b,
+            LuaNil => false,
+            other => {
+                return wrap_err!("{}: expected {}Options.env.clear to be a boolean or nil (default false), got: {:?}", function_name, what, other);
+            }
+        };
+
+        let add = match env_table.raw_get("add")? {
+            LuaValue::Table(add) => {
+                Some(Self::map_from_table(luau, add, function_name, what)?)
+            },
+            LuaNil => None,
+            other => {
+                return wrap_err!("{}: expected {}Options.env.add to be a map of strings to strings or nil, got: {:?}", function_name, what, other);
+            }
+        };
+
+        let remove = match env_table.raw_get("remove")? {
+            LuaValue::Table(rem) => {
+                Some(Self::list_from_table(luau, rem, function_name, what)?)
+            },
+            LuaNil => None,
+            other => {
+                return wrap_err!("{}: expected {}Options.env.remove to be {{ string }} or nil, got: {:?}", function_name, what, other);
+            }
+        };
+
+        Ok(Some(Self {
+            clear,
+            add,
+            remove
+        }))
     }
 }
 
@@ -128,6 +246,7 @@ pub struct RunOptions {
     pub shell: Option<Shell>,
     pub cwd: Option<PathBuf>,
     pub stdio: StdioTriple,
+    pub extra_envs: Option<ExtraEnvs>
 }
 
 impl RunOptions {
@@ -159,9 +278,10 @@ impl RunOptions {
 
         let shell = match run_options.raw_get("shell")? {
             LuaValue::String(shell) => Some(Shell::from(shell.to_string_lossy())),
+            LuaValue::Boolean(b) if b => Some(Shell::current()),
             LuaValue::Nil => None,
             other => {
-                return wrap_err!("{}Options.shell expected to be a string or nil, got: {:#?}", what, other);
+                return wrap_err!("{}Options.shell expected to be a string or true or nil, got: {:?}", what, other);
             }
         };
 
@@ -189,13 +309,15 @@ impl RunOptions {
         };
 
         let triple = StdioTriple::from_value(run_options.raw_get("stdio")?, function_name)?;
+        let extra_envs = ExtraEnvs::from_options(luau, run_options, function_name, what)?;
 
         Ok(Self {
             program,
             args,
             shell,
             cwd,
-            stdio: triple
+            stdio: triple,
+            extra_envs
         })
     }
 }
@@ -206,15 +328,13 @@ pub struct SpawnOptions {
     pub args: Option<Vec<String>>,
     pub shell: Option<Shell>,
     pub cwd: Option<PathBuf>,
+    pub stdio: StdioTriple,
+    pub extra_envs: Option<ExtraEnvs>,
     
     pub stdout_capacity: usize,
     pub stderr_capacity: usize,
     pub stdout_truncate: TruncateSide,
     pub stderr_truncate: TruncateSide,
-
-    #[allow(dead_code)]
-    pub detached: bool,
-    pub stdio: StdioTriple,
 }
 
 impl SpawnOptions {
@@ -254,7 +374,8 @@ impl SpawnOptions {
             args, 
             shell, 
             cwd, 
-            stdio 
+            stdio ,
+            extra_envs
         } = RunOptions::from_table(luau, &spawn_options, function_name, "Spawn")?;
 
         let (
@@ -264,13 +385,13 @@ impl SpawnOptions {
             stderr_truncate
         ) = Self::extract_stream_fields(spawn_options.raw_get("stream")?)?;
 
-        let detached = match spawn_options.raw_get("detached")? {
-            LuaValue::Boolean(b) => b,
-            LuaNil => false,
-            other => {
-                return wrap_err!("{} expected SpawnOptions.detached to be a boolean or nil (default false), got: {:?}", function_name, other);
-            }
-        };
+        // let detached = match spawn_options.raw_get("detached")? {
+        //     LuaValue::Boolean(b) => b,
+        //     LuaNil => false,
+        //     other => {
+        //         return wrap_err!("{} expected SpawnOptions.detached to be a boolean or nil (default false), got: {:?}", function_name, other);
+        //     }
+        // };
 
         Ok(Self {
             program,
@@ -278,11 +399,11 @@ impl SpawnOptions {
             shell,
             cwd,
             stdio,
+            extra_envs,
             stdout_capacity,
             stderr_capacity,
             stdout_truncate,
             stderr_truncate,
-            detached
         })
     }
 }

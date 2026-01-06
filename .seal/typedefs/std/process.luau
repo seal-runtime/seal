@@ -29,7 +29,7 @@
     local child = process.spawn({
         program = "someutil --watch",
         shell = "sh",
-    })
+    }) :: process.PipedChild
 
     for line in child.stdout:lines() do
         local thing_changed = line:match("([%w]+) changed!")
@@ -196,19 +196,74 @@ export type Err = {
 
 export type Stdio = "Pipe" | "Inherit" | "Ignore"
 
+--[=[
+    Options for `process.run`; implicitly added to `process.shell` as well.
+]=]
 export type RunOptions = {
+    --- the program you want to run, must be available in $PATH or be an absolute path to an executable
     program: string,
     --- an optional list of arguments to pass into the program; on Windows, you should use this instead of trying to pass whitespace-separated arguments in `program`
     args: { string }?,
-    --- specify a shell to run the program with; otherwise runs it as a bare process with no shell
-    shell: string?,
+    --[=[
+        Specify a shell to run `program` with; if unspecified or nil, 
+        defaults to running it as a bare process with no shell (behavior may differ on Windows vs. Unix-like).
+
+        If `shell == true`, performs some magic (like checking `$SHELL`) to try and figure out
+        what your current shell is, defaulting to WindowsPowerShell on Windows and `sh` on Unix-like.
+
+        Be careful with shell escapes w/ user-provided values; can be a security risk.
+    ]=]
+    shell: (true | string)?,
     --- path to the the working directory you want your command to execute in, defaults to your shell's cwd
     cwd: string?,
+    --[=[
+        Control whether the child process reads and writes to its own terminal (`"Pipe"`) or
+        to the terminal you're running *seal* in (`"Inherit"`).
+
+        By default, stdio is *piped*; this means the process reads and writes from separate
+        stdin, stdout, and stderr streams that you can read once the process completes.
+
+        If you want everything the process says to be displayed on your terminal (and not
+        read from the process programmatically), use `"Inherit"`.
+
+        If you want anything the process says to get ignored (redirected to `/dev/null`), use `"Ignore"`.
+
+        This field `stdio` can be either a string (if you want all streams to share the same behavior)
+        or a table (if you want different per-stream behavior).
+    ]=]
     stdio: {
         stdout: Stdio?,
         stderr: Stdio?,
         stdin: Stdio?,
-    }? | Stdio?
+    }? | Stdio?,
+    --[=[
+        Override environment variables of the spawned `ChildProcess`.
+        By default, the spawned process inherits its environment from the current process;
+        so all environment variables visible to *seal* will be visible to it unless removed or cleared.
+
+        - To clear *all* environment variables for the spawned `ChildProcess` so
+        that the spawned process does not inherit from *seal*'s environment, set `env.clear = true`.
+        - To add additional environment variables, define a map of them (`{ [string]: string }`)
+        in `env.add`.
+        - To prevent specific environment variables from being inherited 
+        by the child process, list them in `env.remove`.
+
+        The order is clear, add, remove (so clearing the environment doesn't prevent variables from being
+        added).
+
+        ## Errors
+
+        - if you pass a table to `env` without keys `clear`, `add`, and/or `remove`.
+        - if `env.add` is present and isn't `{ [string]: string }` 
+        - if `env.remove` is present and isn't `{ string }`.
+    ]=]
+    env: {
+        clear: boolean?,
+        add: {
+            [string]: string
+        }?,
+        remove: { string }?,
+    }?
 }
 
 export type SpawnOptions = {
@@ -216,11 +271,20 @@ export type SpawnOptions = {
     program: string,
     --- an optional list of arguments to pass into the program; on Windows, you should use this instead of trying to pass whitespace-separated arguments in `program`
     args: { string }?,
-    shell: string?,
+    --[=[
+        Specify a shell to run `program` with; if unspecified or nil, 
+        defaults to running it as a bare process with no shell (behavior may differ on Windows vs. Unix-like).
+
+        If `shell == true`, performs some magic (like checking `$SHELL`) to try and figure out
+        what your current shell is, defaulting to WindowsPowerShell on Windows and `sh` on Unix-like.
+
+        Be careful with shell escapes w/ user-provided values; can be a security risk.
+    ]=]
+    shell: (true | string)?,
     --- path to the the working directory you want your command to execute in, defaults to your shell's cwd
     cwd: string?,
     --[=[
-        A `ChildProcessStream` captures incoming bytes from your `ChildProcess`' output streams (either stdout or stderr),
+        A `ChildProcessStream` captures incoming bytes from a `ChildProcess`' output stream (either stdout or stderr),
         and caches them in its `inner` buffer. Each stream is spawned in a separate Rust thread to facilitate
         consistently nonblocking, dependable reads, allowing most `ChildProcess.stream:read` methods to be fully nonblocking unless
         specifically requested otherwise.
@@ -257,16 +321,54 @@ export type SpawnOptions = {
         stderr_truncate: ("Front" | "Back")?,
     }?,
     --[=[
-        By default, the child process's stdio is *piped*.
-        
+        Control whether the child process reads and writes to its own terminal (`"Pipe"`) or
+        to the terminal you're running *seal* in (`"Inherit"`).
 
-        because it's actually being written to a separate handle controlled by *seal*.
+        By default, the child process's stdio is *piped*; this means the process
+        reads and writes from separate stdin, stdout, and stderr streams that you 
+        can access through the `ChildProcessStream` API.
+
+        If you want everything the process says to be displayed on your terminal (and not
+        read from the process programmatically), use `"Inherit"`.
+
+        If you want anything the `ChildProcess` says to get ignored (redirected to `/dev/null`), use `"Ignore"`.
+
+        This field `stdio` can be either a string (if you want all streams to share the same behavior)
+        or a table (if you want different per-stream behavior).
     ]=]
     stdio: {
         stdout: Stdio?,
         stderr: Stdio?,
         stdin: Stdio?,
-    }? | Stdio?
+    }? | Stdio?,
+    --[=[
+        Override environment variables of the spawned `ChildProcess`.
+        By default, the spawned process inherits its environment from the current process;
+        so all environment variables visible to *seal* will be visible to it unless removed or cleared.
+
+        - To clear *all* environment variables for the spawned `ChildProcess` so
+        that the spawned process does not inherit from *seal*'s environment, set `env.clear = true`.
+        - To add additional environment variables, define a map of them (`{ [string]: string }`)
+        in `env.add`.
+        - To prevent specific environment variables from being inherited 
+        by the child process, list them in `env.remove`.
+
+        The order is clear, add, remove (so clearing the environment doesn't prevent variables from being
+        added).
+
+        ## Errors
+
+        - if you pass a table to `env` without keys `clear`, `add`, and/or `remove`.
+        - if `env.add` is present and isn't `{ [string]: string }` 
+        - if `env.remove` is present and isn't `{ string }`.
+    ]=]
+    env: {
+        clear: boolean?,
+        add: {
+            [string]: string
+        }?,
+        remove: { string }?,
+    }?
 }
 --- Represents the stdout and stderr streams of a `ChildProcess`, both ran in parallel threads
 --- and streamed for nonblocking behavior.
@@ -535,6 +637,7 @@ type ChildProcessStdin = {
     `process.PipedChild` to reflect this.
 ]=]
 export type ChildProcess = {
+    --- The process id (`pid`) of the spawned `ChildProcess`
     id: number,
     alive: (self: ChildProcess | PipedChild) -> boolean,
     kill: (self: ChildProcess | PipedChild) -> (),
@@ -547,6 +650,7 @@ export type ChildProcess = {
     Default kind of `ChildProcess` created by `process.spawn` pipes for stdout, stderr, and stdin.
 ]=]
 export type PipedChild = {
+    --- The process id (`pid`) of the spawned `ChildProcess`
     id: number,
     alive: (self: ChildProcess | PipedChild) -> boolean,
     kill: (self: ChildProcess | PipedChild) -> (),

@@ -69,7 +69,6 @@ pub fn get_current_shell() -> String {
     }
 
     String::from("")
-    // panic!("Could not determine the current shell path");
 }
 
 pub fn get_cwd(function_name: &str) -> LuaResult<PathBuf> {
