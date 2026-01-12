@@ -7,15 +7,15 @@ local cheese = require("@tests/cheese")
 local seal_path = env.executable_path
 local longrunning_path = fs.path.join(script:parent(), "longrunning.luau")
 
-local function spawn_longrunning(): process.ChildProcess
+local function spawn_longrunning(): process.PipedChild
     local child = process.spawn {
         program = seal_path,
         args = { longrunning_path, "85", "50" },
-    }
+    } :: process.PipedChild
     return child
 end
 
-local function spawn_poem(): (process.ChildProcess, string)
+local function spawn_poem(): (process.PipedChild, string)
     local src = [[
     local fs = require("@std/fs")
     local time = require("@std/time")
@@ -49,7 +49,7 @@ local function spawn_poem(): (process.ChildProcess, string)
     local child = process.spawn {
         program = env.executable_path,
         args = { poem_path }
-    }
+    } :: process.PipedChild
     return child, poem_path
 end
 

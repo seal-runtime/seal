@@ -20,6 +20,25 @@ pub enum TruncateSide {
     Front,
     Back,
 }
+impl TruncateSide {
+    pub fn from_value(value: LuaValue, what: &'static str) -> LuaResult<Self> {
+        Ok(match value {
+            LuaValue::String(ref s) => {
+                match s.as_bytes().as_ref() {
+                    b"front" | b"Front" => Self::Front,
+                    b"back" | b"Back" => Self::Back,
+                    _ => {
+                        return wrap_err!("SpawnOptions.stream.{} must be \"Front\" or \"Back\" (defaults to \"Front\"), got: {:?}", what, value);
+                    }
+                }
+            },
+            LuaNil => TruncateSide::Front,
+            other => {
+                return wrap_err!("SpawnOptions.stream.{} must be \"Front\" or \"Back\" (defaults to \"Front\"), got: {:?}", what, other);
+            }
+        })
+    }
+}
 
 /// Multithreaded wrapper type that abstracts reading from a child process' stdout or stderr.
 ///

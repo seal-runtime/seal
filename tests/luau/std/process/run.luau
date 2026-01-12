@@ -60,3 +60,20 @@ local function computedresult()
 end
 
 computedresult()
+
+local function runinherit()
+	if env.os ~= "Windows" then
+		local ls_res = process.run {
+			program = "ls",
+			args = { "-l" },
+			stdio = "Inherit",
+		}
+		assert(
+			ls_res.stdout ~= nil and ls_res.stderr ~= "nil"
+			and ls_res.stdout == "" and ls_res.stderr == "", 
+			"should exist at least and be empty strings"
+		)
+	end
+end
+
+runinherit()

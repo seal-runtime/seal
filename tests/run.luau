@@ -54,6 +54,8 @@ local function new_test_queue(): { string }
         "./tests/luau/std/args/commands.luau",
         "./tests/luau/std/args/fakeseal.luau",
         "./tests/luau/globals/require/basic-requires/relative_data.luau",
+        "./tests/luau/std/process/spawn/inheriting/child.luau",
+        "./tests/luau/std/process/spawn/inheriting/runme.luau",
     }
     local file_list = fs.listdir(fs.path.join(".", "tests", "luau"), true, function(path: string)
         return 
@@ -129,12 +131,12 @@ local tests: Tests = {
     ignored_functions_by_path = ignored_by_path,
 }
 
-local test_pool: { [string]: process.ChildProcess } = {} do
+local test_pool: { [string]: process.PipedChild } = {} do
     for _, test_path in tests.queue do
         local child = process.spawn {
             program = env.executable_path, -- usually ./target/debug/seal or ./target/release/seal
             args = { test_path }
-        }
+        } :: process.PipedChild
         test_pool[test_path] = child
     end
 end

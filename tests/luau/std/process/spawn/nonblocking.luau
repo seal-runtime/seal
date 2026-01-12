@@ -11,6 +11,7 @@ local function test_reads()
 		program = seal_path,
 		args = { longrunning_path },
 	}
+    assert(child.stdout ~= nil and child.stderr ~= nil, "stdio should be piped")
 	
 	while true do
 		local r = child.stdout:read_exact(24)
@@ -29,6 +30,7 @@ local function test_lines()
 		program = seal_path,
 		args = { longrunning_path },
 	}
+    assert(child.stdout ~= nil and child.stderr ~= nil, "stdio should be piped")
 	
 	for line in child.stdout:lines() do
 		print(line)
@@ -41,6 +43,8 @@ local function test_stdin()
 		program = seal_path,
 		args = { stdin_path }
 	}
+    assert(child.stdout ~= nil and child.stderr ~= nil and child.stdin ~= nil, "stdio should be piped")
+
 	child.stdin:write("yes\n")
 	for line in child.stdout:lines() do
 		print(line)

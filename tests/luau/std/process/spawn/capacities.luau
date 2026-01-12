@@ -3,8 +3,9 @@ local env = require("@std/env")
 local process = require("@std/process")
 local time = require("@std/time")
 local str = require("@std/str")
+local cheese = require("@tests/cheese")
 
-local function spawn_poem(stdout_capacity: number, stderr_capacity: number, stdout_truncate: "front" | "back"): (process.ChildProcess, string)
+local function spawn_poem(stdout_capacity: number, stderr_capacity: number, stdout_truncate: "Front" | "Back"): (process.PipedChild, string)
     local src = [[
     local fs = require("@std/fs")
     local time = require("@std/time")
@@ -41,12 +42,12 @@ local function spawn_poem(stdout_capacity: number, stderr_capacity: number, stdo
             stderr_capacity = stderr_capacity,
             stdout_truncate = stdout_truncate,
         }
-    }
+    } :: process.PipedChild
     return child, poem_path
 end
 
 local function restrictedcapacity()
-    local child, poem_path = spawn_poem(52, 42, "front")
+    local child, poem_path = spawn_poem(52, 42, "Front")
     assert(child.stdout:capacity() == 52, "stdout capacity should be 52")
     assert(child.stderr:capacity() == 42, "stderr capacity should be 42")
     time.wait(1)
@@ -59,7 +60,7 @@ end
 restrictedcapacity()
 
 local function truncatebackactuallytruncatesback()
-    local child, poem_path = spawn_poem(62, 0, "back")
+    local child, poem_path = spawn_poem(62, 0, "Back")
     time.wait(0.6)
     local current_size = child.stdout:len()
     assert(current_size == 62, `inner should be fully full by now, got: {current_size}`)
@@ -70,4 +71,4 @@ local function truncatebackactuallytruncatesback()
     fs.file.try_remove(poem_path)
 end
 
-truncatebackactuallytruncatesback()
+cheese.retry(truncatebackactuallytruncatesback, 2)

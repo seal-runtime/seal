@@ -14,7 +14,11 @@ function cheese.retry(f: () -> (any), tries: number?)
             current += 1
         end
     end
-    err.throw(last_err)
+    if typeof(last_err) == "error" then
+        err.throw(last_err)
+    else
+        error(last_err)
+    end
 end
 
 return cheese

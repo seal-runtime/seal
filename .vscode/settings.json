@@ -34,4 +34,5 @@
   },
   "luau-lsp.inlayHints.variableTypes": false,
   "luau-lsp.plugin.enabled": false,
+  "stylua.disableVersionCheck": true,
 }
