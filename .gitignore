@@ -2,3 +2,4 @@
 /tests/data/ignore
 /meow.txt
 /core*
+/PANIC_IN_THE_SEAL_INTERNALS.log

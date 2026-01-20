@@ -20,38 +20,35 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
     if is_reserved(&path) {
         get_standard_library(luau, path)
     } else {
-        let path = resolve_path(luau, path)?;
+        let resolved_path = resolve_path(luau, path)?;
         // must use globals.get() due to safeenv
         let Ok(LuaValue::Table(require_cache)) = luau.globals().get("_REQUIRE_CACHE") else {
             return wrap_err!("require: you changed the type of or removed _REQUIRE_CACHE you goober why would you do that? do you want to seal the world burn?");
         };
-        let cached_result: Option<LuaValue> = require_cache.raw_get(path.clone())?;
 
-        if let Some(cached_result) = cached_result {
-            Ok(cached_result)
-        } else {
-            let data = match fs::read_to_string(&path) {
-                Ok(data) => data,
-                Err(err) => {
-                    match err.kind() {
-                        io::ErrorKind::NotFound => {
-                            return wrap_err!("require: no such file or directory for resolved path {}", path);
-                        },
-                        _other => {
-                            return wrap_err!("require: error reading file: {}", err);
-                        }
-                    }
-                }
-            };
+        let cached_result: Option<LuaValue> = require_cache.raw_get(resolved_path.clone())?;
 
-            let chunk = Chunk::Src(data);
-            let result: LuaValue = luau.load(chunk).set_name(&path).eval()?;
-            require_cache.raw_set(path.clone(), result)?;
-            // this is pretty cursed but let's just read the data we just wrote to the cache to get a new LuaValue
-            // that can be returned without breaking the borrow checker or cloning
-            let result = require_cache.raw_get(path.to_owned())?;
-            Ok(result)
+        if let Some(cached) = cached_result {
+            return Ok(cached);
         }
+
+        let src = match fs::read_to_string(&resolved_path) {
+            Ok(data) => data,
+            Err(err) if matches!(err.kind(), io::ErrorKind::NotFound) => {
+                return wrap_err!("require: no such file or directory: {}", &resolved_path);
+            },
+            Err(err) => {
+                return wrap_err!("require: unable to read file at '{}' due to err: {}", &resolved_path, err);
+            }
+        };
+
+        let chunk = Chunk::Src(src);
+
+        let value = luau.load(chunk).set_name(&resolved_path).eval::<LuaValue>()?;
+        
+        require_cache.raw_set(resolved_path.clone(), &value)?;
+
+        Ok(value)
     }
 }
 
@@ -207,7 +204,7 @@ fn resolve_path(luau: &Lua, path: String) -> LuaResult<String> {
             panic!("require: resolve() returned something that isn't a string or err table; this shouldn't be possible");
         },
         Err(err) => {
-            panic!("require: resolve() broke? this shouldn't happen; err: {}", err);
+            wrap_err!("require: error requiring file '{}': {}", path, err)
         }
     }
 }
