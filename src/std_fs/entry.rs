@@ -146,10 +146,14 @@ pub fn copy_to(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         match copy_dir(&entry_path, &destination_path) {
             Ok(unsuccessful) => {
                 if !unsuccessful.is_empty() {
-                    println!("DirectoryEntry:copy_to() didn't fully succeed:");
+                    let mut error_message = String::with_capacity(46 + 42 * unsuccessful.len());
+                    error_message.push_str("DirectoryEntry:copy_to() didn't fully succeed:");
                     for err in unsuccessful {
-                        println!("  {}", err);
+                        error_message.push_str("  ");
+                        error_message.push_str(&err.to_string());
+                        error_message.push('\n');
                     }
+                    puts!("{}", error_message)?;
                 }
                 Ok(())
             },

@@ -22,7 +22,9 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
     } else {
         let path = resolve_path(luau, path)?;
         // must use globals.get() due to safeenv
-        let require_cache: LuaTable = luau.globals().get("_REQUIRE_CACHE").unwrap();
+        let Ok(LuaValue::Table(require_cache)) = luau.globals().get("_REQUIRE_CACHE") else {
+            return wrap_err!("require: you changed the type of or removed _REQUIRE_CACHE you goober why would you do that? do you want to seal the world burn?");
+        };
         let cached_result: Option<LuaValue> = require_cache.raw_get(path.clone())?;
 
         if let Some(cached_result) = cached_result {

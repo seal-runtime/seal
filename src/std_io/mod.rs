@@ -7,6 +7,8 @@ pub mod input;
 pub mod output;
 pub mod format;
 pub mod prompt;
+#[macro_use]
+pub mod macros;
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?

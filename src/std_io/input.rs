@@ -13,6 +13,34 @@ use atty::Stream::{Stdout, Stderr, Stdin};
 use std::io::{self, Write};
 use std::time::Duration;
 
+use std::sync::OnceLock;
+
+#[derive(Debug)]
+pub struct ExpectSaneOutputStream {
+    inner: OnceLock<(bool, bool)>,
+}
+impl ExpectSaneOutputStream {
+    pub const fn uninitialized() -> Self {
+        Self {
+            inner: OnceLock::new()
+        }
+    }
+    pub fn initialize_and_check(&self) {
+        let stdout_sane = atty::is(Stdout);
+        let stderr_sane = atty::is(Stderr);
+
+        self.inner.set((stdout_sane, stderr_sane)).expect("ExpectSaneOutputStream already initialized smhmh");
+    }
+    pub fn stdout(&self) -> bool {
+        self.inner.get().expect("ExpectSaneOutputStream not initialized").0
+    }
+    pub fn stderr(&self) -> bool {
+        self.inner.get().expect("ExpectSaneOutputStream not initialized").1
+    }
+}
+
+pub static EXPECT_OUTPUT_STREAMS: ExpectSaneOutputStream = ExpectSaneOutputStream::uninitialized();
+
 enum InterruptCode {
     CtrlC,
     CtrlD,
@@ -59,8 +87,13 @@ impl LuaUserData for Interrupt {
 
 fn input_get(luau: &Lua, raw_prompt: Option<String>) -> LuaValueResult {
     if let Some(prompt) = raw_prompt {
-        print!("{}", prompt);
-        io::stdout().flush().unwrap();
+        put!("{}", prompt)?;
+        match io::stdout().flush() {
+            Ok(_) => {},
+            Err(err) => {
+                return wrap_err!("input.get: unable to flush stdout due to err: {}", err);
+            }
+        }
     }
 
     let mut input = String::new();
@@ -114,7 +147,7 @@ fn is_tty(_luau: &Lua, value: LuaValue) -> LuaResult<bool> {
 
 pub fn input_rawline(_: &Lua, raw_prompt: Option<String>) -> LuaResult<String> {
     if let Some(prompt) = raw_prompt {
-        print!("{}", prompt);
+        put!("{}", prompt)?;
         io::stdout().flush()?;
     }
 

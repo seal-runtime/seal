@@ -381,15 +381,18 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
                 let child_cell = Rc::clone(&child_cell);
                 move |_luau: &Lua, _value: LuaValue| -> LuaValueResult {
                     let function_name = "ChildProcess:alive()";
-                    match child_cell.try_borrow_mut() {
-                        Ok(ref mut child) => match child.try_wait().unwrap() {
-                            Some(_status_code) => Ok(LuaValue::Boolean(false)),
-                            None => Ok(LuaValue::Boolean(true)),
-                        },
-                        Err(_) => {
-                            wrap_err!("{}: child already borrowed", function_name)
+                    let Ok(mut child) = child_cell.try_borrow_mut() else {
+                        unreachable!("{}: child (pid {}) already borrowed; this is likely a seal bug because there isn't anything multithreaded that should touch this.", function_name, child_id);
+                    };
+
+                    match child.try_wait() {
+                        Ok(Some(_status)) => Ok(LuaValue::Boolean(false)),
+                        Ok(None) => Ok(LuaValue::Boolean(true)),
+                        Err(err) => {
+                            wrap_err!("{}: (heisenseal's child) cannot determine whether child (pid {}) is dead or alive due to err: {}", function_name, child_id, err)
                         }
                     }
+                    
                 }
             })?
             .with_function("kill", {

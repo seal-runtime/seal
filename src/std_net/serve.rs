@@ -63,7 +63,7 @@ fn server_serve(luau: &Lua, serve_config: LuaValue) -> LuaValueResult {
                 }
             }
             Err(e) => {
-                println!("Connection failed: {}", e);
+                puts!("Connection failed: {}", e)?;
             }
         }
     }
@@ -95,10 +95,10 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
                             if let Ok(length) = content_length_str.trim().parse::<usize>() {
                                 content_length = Some(length);
                             } else {
-                                eprintln!("Failed to parse Content-Length");
+                                eputs!("Failed to parse Content-Length")?;
                             }
                         } else {
-                            eprintln!("Content-Length header is malformed");
+                            eputs!("Content-Length header is malformed")?;
                         }
                     }
                     // handle body here by reading exact content length and append it to lines vec
@@ -146,6 +146,7 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
 
     let request_text = lines.join("\n");
 
+    #[allow(clippy::unwrap_used, reason = "this is a valid regex")]
     let first_line_re = Regex::new(r"^(?P<method>\w+)\s+(?P<path>\S+)\s+HTTP/1\.[01]$").unwrap();
     let captures = match first_line_re.captures(&lines[0]) {
         Some(captures) => captures,

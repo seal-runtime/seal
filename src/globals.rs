@@ -32,7 +32,7 @@ pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 
 pub fn warn(luau: &Lua, warn_value: LuaValue) -> LuaValueResult {
     let formatted_text = std_io::format::pretty(luau, warn_value)?;
-    eprintln!("{}[WARN]{} {}{}", colors::BOLD_YELLOW, colors::RESET, formatted_text, colors::RESET);
+    eputs!("{}[WARN]{} {}{}", colors::BOLD_YELLOW, colors::RESET, formatted_text, colors::RESET)?;
     Ok(LuaNil)
 }
 

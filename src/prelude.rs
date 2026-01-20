@@ -1,8 +1,13 @@
-use mluau::{AsChunk, prelude::*};
 use std::borrow::Cow;
 
+use mluau::prelude::*;
+use mluau::AsChunk;
+
 pub const MAX_TABLE_SIZE: usize = 134_217_728;
-pub use crate::{std_io::colors as colors, wrap_err, table_helpers::TableBuilder};
+pub use crate::{
+    std_io::colors as colors, wrap_err, table_helpers::TableBuilder,
+    put, puts, eput, eputs
+};
 
 /// Chunk of Luau code, either sourcecode (valid utf8) or bytecode (never valid utf8)
 /// this is needed because passing invalid bytecode to luau.load causes segfaults at runtime
@@ -80,14 +85,14 @@ pub fn pop_self(multivalue: &mut LuaMultiValue, function_name: &'static str) -> 
 
 pub fn deprecate<S: std::fmt::Display>(api: S, use_instead: S, luau: &Lua) -> LuaEmptyResult {
     let r = std::env::var("SEAL_ALLOW_DEPRECATED");
-    if let Ok(allow) = r && &allow.to_lowercase() == "true" {
+    if let Ok(allow) = r && allow.eq_ignore_ascii_case("true") {
+        Ok(())
     } else {
         let info = DebugInfo::from_caller(luau, "deprecate")?;
-        eprintln!("{}[DEPRECATED]{} {} will be removed, use {} instead ({}:{})", colors::BOLD_YELLOW, colors::RESET, api, use_instead, info.source, info.line);
+        eputs!("{}[DEPRECATED]{} {} will be removed, use {} instead ({}:{})", colors::BOLD_YELLOW, colors::RESET, api, use_instead, info.source, info.line)?;
+        Ok(())
     }
-    Ok(())
 }
-
 pub struct DebugInfo {
     pub source: String,
     pub line: String,
@@ -256,9 +261,9 @@ pub fn temp_transform_luau_src<S: AsRef<str>>(chunk: S) -> String {
                 if eq_seen == block_eq_count && temp.peek() == Some(&']') {
                     // consume '=' signs and final ']'
                     for _ in 0..eq_seen {
-                        out.push(chars.next().unwrap());
+                        out.push(chars.next().expect("we just called peek; chars.next() shouldn't return None"));
                     }
-                    out.push(chars.next().unwrap());
+                    out.push(chars.next().expect("we just called peek; chars.next() shouldn't return None"));
                     in_block_comment = false;
                 }
             }
@@ -268,7 +273,8 @@ pub fn temp_transform_luau_src<S: AsRef<str>>(chunk: S) -> String {
         // Detect start of comments
         if c == '-' && chars.peek() == Some(&'-') {
             out.push(c);
-            out.push(chars.next().unwrap()); // consume second '-'
+            // SAFETY: we just checked chars.peek(); chars.next() cannot return None
+            out.push(unsafe { chars.next().unwrap_unchecked() }); // consume second '-'
 
             if chars.peek() == Some(&'[') {
                 // lookahead for --[=*[ 

@@ -1,8 +1,12 @@
 use mluau::prelude::*;
 use crate::prelude::*;
+
 use crate::std_fs::pathlib::normalize_path;
-use std::{path::Path, time::Duration};
+
+use std::path::Path;
+use std::time::Duration;
 use std::sync::{Arc, Mutex};
+use std::io::Write;
 
 use notify::{event::{
     AccessKind, AccessMode,
@@ -13,6 +17,7 @@ use notify::{event::{
     RecursiveMode, Watcher
 };
 use crossbeam_channel::RecvTimeoutError;
+
 
 #[derive(Clone, Copy)]
 pub struct WatchOptions {
@@ -175,13 +180,15 @@ pub fn watch<P: AsRef<Path>>(luau: &Lua, paths: Vec<P>, options: WatchOptions, f
 
     let mut watcher = match notify::recommended_watcher(move |res: Result<Event, notify::Error>| {
         match res {
-            Ok(event) =>  {
+            Ok(event) => {
                 tx.send(event).unwrap_or_else(|err| {
-                    eprintln!("Unable to send event due to {}", err);
+                    let mut stderr = std::io::stderr().lock();
+                    let _ = writeln!(stderr, "Unable to send event due to err: {}", err);
                 });
             },
             Err(err) => {
-                eprintln!("Unable to send message due to {}", err);
+                let mut stderr = std::io::stderr().lock();
+                let _ = writeln!(stderr, "Unable to send message due to err: {}", err);
             }
         };
     }) {
