@@ -200,7 +200,10 @@ fn set_jit(luau: &Lua) -> bool {
         Err(_) => true,
     };
 
-    luau.enable_jit(should_jit);
+    #[cfg(not(target_os = "android"))]
+    {
+        luau.enable_jit(should_jit);
+    }
 
     should_jit
 }
