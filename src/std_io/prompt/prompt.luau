@@ -138,19 +138,20 @@ function prompt.pick(message: string, options: { string }, default: number?): er
             end
         end
 
-        while current < #options do -- go to bottom so we can start erasing rows
-            current += 1
-            output.write("\27[B")
-        end
-        for i = 1, (#options - 1) do
+        output.write("\x1b[999B\x1b[G")   -- move to absolute bottom left of terminal
+
+        for i = 1, (#options + 1) do
             output.write("\27[A")         -- move up one line
             output.write("\27[2K\27[G")   -- erase line and go to start
         end
 
-        output.write("\27[?25h") -- show cursor
-        
-        input.rawmode(false)
+        output.write(message .. options[index] .. "\n")
+        output.write("\r") -- return cursor to LHS
 
+        output.write("\27[?25h") -- show cursor
+
+        input.rawmode(false)
+    
         if interrupt_message then
             return err.wrap(interrupt_message)
         end
