@@ -192,6 +192,7 @@ fn main() -> LuaResult<()> {
     }
 }
 
+#[cfg_attr(target_os = "android", expect(unused_variables))]
 fn set_jit(luau: &Lua) -> bool {
     let should_jit = match std::env::var("SEAL_NO_JIT") {
         Ok(var) if var.eq_ignore_ascii_case("true") => false,
@@ -200,7 +201,10 @@ fn set_jit(luau: &Lua) -> bool {
         Err(_) => true,
     };
 
-    luau.enable_jit(should_jit);
+    #[cfg(not(target_os = "android"))]
+    {
+        luau.enable_jit(should_jit);
+    }
 
     should_jit
 }
