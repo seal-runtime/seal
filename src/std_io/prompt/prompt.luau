@@ -99,12 +99,14 @@ function prompt.pick(message: string, options: { string }, default: number?): er
         output.write("\27[?25l") -- hide cursor
 
         local current = default or 1
-        for option_index, option in options do -- write all the options down
+        -- write all options down putting green > next to default
+        for option_index, option in options do
             output.write(`{if option_index == current then colors.bold.green(">") else " "}  {colors.bold.blue(tostring(option_index))} {option}\r\n`)
         end
+        -- move cursor back up to default option
         for i = #options, 1, -1 do
-            output.write("\27[A")
-            if i == current then -- go back to the default
+            output.write("\27[A") -- go up 1
+            if i == current then
                 break 
             end
         end
@@ -134,6 +136,19 @@ function prompt.pick(message: string, options: { string }, default: number?): er
                     interrupt_message = "Prompt interrupted with Ctrl+D"
                     index = current
                     break
+                else
+                    local number_pressed = string.match(event.key, "([%d]+)")
+                    if not number_pressed then
+                        continue
+                    end
+
+                    number_pressed = tonumber(number_pressed)
+                    assert(number_pressed ~= nil, "%d pattern means number_pressed cannot be nil here")
+
+                    if options[number_pressed] then
+                        index = number_pressed
+                        break
+                    end
                 end
             end
         end
