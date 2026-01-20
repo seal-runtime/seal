@@ -19,11 +19,11 @@ pub fn debug_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<LuaSt
     }
 
     let debug_info = DebugInfo::from_caller(luau, function_name)?;
-    println!(
+    puts!(
         "{}[DEBUG]{} {}:{} in {}{}\n{}",
         colors::BOLD_RED, colors::RESET, debug_info.source.replace("string ", ""), debug_info.line, debug_info.function_name, colors::RESET,
         &result
-    );
+    )?;
     luau.create_string(&result)
 }
 
@@ -47,7 +47,7 @@ pub fn simple_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> Lua
         }
     }
 
-    println!("{}", &result);
+    puts!("{}", &result)?;
     let result = luau.create_string(&result)?;
     Ok(LuaValue::String(result))
 }
@@ -71,7 +71,7 @@ pub fn pretty_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<()> 
             result += ", ";
         }
     }
-    println!("{}", &result);
+    puts!("{}", &result)?;
     Ok(())
 }
 
@@ -94,7 +94,7 @@ pub fn pretty_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> Lua
             result += ", ";
         }
     }
-    println!("{}", &result);
+    puts!("{}", &result)?;
     Ok(result)
 }
 

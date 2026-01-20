@@ -309,9 +309,9 @@ pub fn fs_copy(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         match copy_dir(&source_pathbuf, &destination_pathbuf) {
             Ok(unsuccessful) => {
                 if !unsuccessful.is_empty() {
-                    eprintln!("{} didn't fully succeed:", function_name);
+                    eputs!("{} didn't fully succeed:", function_name)?;
                     for err in unsuccessful {
-                        eprintln!("  {}", err);
+                        eputs!("  {}", err)?;
                     }
                 }
                 Ok(())

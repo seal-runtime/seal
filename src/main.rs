@@ -1,5 +1,29 @@
 #![feature(default_field_values)]
-#![feature(slice_pattern)]
+#![feature(str_as_str)]
+
+#![deny(clippy::unwrap_used, reason = "
+    seal prefers explicit panic! or unreachable!
+    or even .expect in an expr context; all unwraps must be justified"
+)]
+// print/println! panics on io::ErrorKind::BrokenPipe
+// which can cause seal to panic in normal operation (seal ./myscript | less)
+#![warn(
+    clippy::print_stdout, 
+    reason="print!/println! can cause seal to panic in normal operation;
+    - if you're in a function that returns LuaResult/LVR, use put! or puts! instead
+    - otherwise you need to lock stdout and use writeln! and handle/ignore its Result:
+        let stdout = std::io::stdout().lock();
+        let _ = writeln!(stdout, <format string>, args);"
+)]
+#![warn(
+    clippy::print_stderr, 
+    reason="eprint!/eprintln! may cause seal to panic in normal operation;
+    - if you're in a function that returns LuaResult/LVR, use eput! or eputs! instead
+    - otherwise you need to lock stderr and use writeln! and ignore/handle its Result:
+        let stderr = std::io::stderr().lock();
+        let _ = writeln!(stderr, <format string>, args);"
+)]
+
 use crate::{prelude::*, setup::SetupOptions};
 use mluau::prelude::*;
 
@@ -22,6 +46,7 @@ mod globals;
 mod interop;
 mod require;
 mod std_crypt;
+#[macro_use]
 mod std_io;
 mod std_net;
 mod std_serde;
@@ -120,6 +145,12 @@ fn main() -> LuaResult<()> {
     err::setup_panic_hook(); // seal panic = seal bug; we shouldn't panic in normal operation
 
     let args: VecDeque<OsString> = env::args_os().collect();
+    
+    if let Err(err) = std_env::vars::initialize_dotenv() {
+        display_error_and_exit(err);
+    }
+
+    crate::std_io::input::EXPECT_OUTPUT_STREAMS.initialize_and_check();
 
     let command = match SealCommand::parse(args) {
         Ok(command) => command,
@@ -135,7 +166,7 @@ fn main() -> LuaResult<()> {
         SealCommand::Setup(options) => seal_setup(options),
         SealCommand::Test => seal_test(),
         SealCommand::Version => {
-            println!("{}", SEAL_VERSION);
+            puts!("{}", SEAL_VERSION)?;
             Ok(None)
         },
         SealCommand::CommandHelp(command) => command.help(),
@@ -154,10 +185,6 @@ fn main() -> LuaResult<()> {
         Ok(None) => return Ok(()),
         Err(err) => display_error_and_exit(err),
     };
-
-    if let Err(err) = std_env::vars::initialize_dotenv() {
-        display_error_and_exit(err);
-    }
 
     match luau.load(code).set_name(chunk_name).exec() {
         Ok(_) => Ok(()),
@@ -303,7 +330,7 @@ fn seal_compile(mut args: Args) -> LuauLoadResult {
                     return wrap_err!("{} - output switch (-o) provided but missing output file name/path", function_name);
                 }
             } else {
-                let entry_path = args.pop_front().unwrap(); // UNWRAP: args never empty here
+                let entry_path = args.pop_front().expect("args cannot be empty here");
                 if let Some(front) = args.front()
                     && let Some(front) = front.to_str()
                 {
@@ -332,7 +359,7 @@ fn seal_compile(mut args: Args) -> LuauLoadResult {
     if output_path.ends_with(".luau") {
         match fs::write(&output_path, bundled_src) {
             Ok(_) => {
-                println!("{} - bundled project sourcecode to '{}'", function_name, &output_path);
+                puts!("{} - bundled project sourcecode to '{}'", function_name, &output_path)?;
             },
             Err(err) => {
                 return wrap_err!("{} - unable to write to file '{}' due to err: {}", function_name, &output_path, err);
@@ -367,7 +394,7 @@ fn seal_compile(mut args: Args) -> LuauLoadResult {
         return wrap_err!("{} - error writing compiled program to file: {}", function_name, err);
     }
 
-    println!("{} - compiled to standalone program '{}'!", function_name, output_path);
+    puts!("{} - compiled to standalone program '{}'!", function_name, output_path)?;
 
     #[cfg(unix)]
     {
@@ -408,7 +435,7 @@ impl SealCommand {
 
         // show help if user runs seal w/out anything else
         let Some(first_arg) = args.pop_front() else {
-            eprintln!("seal: you didn't pass me anything :(\n  (expected file to run or command, displaying help)");
+            eputs!("seal: you didn't pass me anything :(\n  (expected file to run or command, displaying help)")?;
             return Ok(Self::DefaultHelp);
         };
 
@@ -459,7 +486,7 @@ impl SealCommand {
                 return wrap_err!("help not yet implemented for command {:#?}", other);
             },
         })?;
-        println!("{}", help_function.call::<String>(LuaNil)?);
+        puts!("{}", help_function.call::<String>(LuaNil)?)?;
         Ok(None)
     }
     fn next_is_help(&self, args: &Args) -> bool {

@@ -212,7 +212,12 @@ impl Stream {
         };
 
         loop {
-            let mut inner = self.inner.lock().unwrap();
+            let mut inner = match self.inner.lock() {
+                Ok(guard) => guard,
+                Err(err) => {
+                    unreachable!("{}: callers of this function shouldn't panic and cause this mutex to become poisoned; if they do, that's a bug we should propagate: {}", function_name, err);
+                }
+            };
             if inner.len() <= count {
                 if !&self.still_reading.load(Ordering::Relaxed) {
                     return Ok(LuaNil);
@@ -365,7 +370,13 @@ impl Stream {
                 false
             };
 
-            let mut inner = self.inner.lock().unwrap();
+            let mut inner = match self.inner.lock() {
+                Ok(guard) => guard,
+                Err(err) => {
+                    unreachable!("{}: callers of this function shouldn't panic and cause this mutex to become poisoned; if they do, that's a bug we should propagate: {}", function_name, err);
+                }
+            };
+
             if should_return_if_allow_partial {
                 let drained: Vec<u8> = inner.drain(..).collect();
                 return ok_string(&drained, luau);
@@ -486,7 +497,13 @@ impl Stream {
         };
 
         loop {
-            let mut inner = self.inner.lock().unwrap();
+            let mut inner = match self.inner.lock() {
+                Ok(guard) => guard,
+                Err(err) => {
+                    unreachable!("{}: callers of this function shouldn't panic and cause this mutex to become poisoned; if they do, that's a bug we should propagate: {}", function_name, err);
+                }
+            };
+
             if inner.is_empty() {
                 if !&self.still_reading.load(Ordering::Relaxed) {
                     return Ok(LuaValue::Integer(0));
@@ -580,7 +597,13 @@ impl Stream {
         };
 
         loop {
-            let mut inner = self.inner.lock().unwrap();
+            let mut inner = match self.inner.lock() {
+                Ok(guard) => guard,
+                Err(err) => {
+                    unreachable!("{}: callers of this function shouldn't panic and cause this mutex to become poisoned; if they do, that's a bug we should propagate: {}", function_name, err);
+                }
+            };
+            
             if inner.is_empty() || inner.len() - 1 < count {
                 if !&self.still_reading.load(Ordering::Relaxed) {
                     return Ok(LuaValue::Boolean(false));

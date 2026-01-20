@@ -94,6 +94,7 @@ pub fn simple(luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 pub fn strip_colors(input: &str) -> String {
+    #[allow(clippy::unwrap_used, reason = "this is a valid regex")]
     let re_colors = Regex::new(r"\x1b\[[0-9;]*m").unwrap();
     let without_colors = re_colors.replace_all(input, "");
     without_colors.to_string()
