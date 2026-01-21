@@ -47,5 +47,12 @@ export type output = {
     ewrite: (contents: string | buffer, flush: boolean?) -> error?,
     --- clears stdout akin to `cls` or `clear`.
     clear: () -> (),
+    --- Returns the size of the terminal as a vector of (column, rows, 0). Errors if terminal unavailable.
+    size: () -> vector,
+    --- Switch to crossterm's "Alternate" or "Main" terminal screen of stdout.
+    switch: (screen: "Alternate" | "Main") -> (),
+    resize: (cols: number, rows: number) -> (),
+    --- returns a vector of (column, rows, 0); might block if you're polling on unix
+    cursor: () -> vector,
 }
 return {} :: output

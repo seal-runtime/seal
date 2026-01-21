@@ -23,7 +23,7 @@ local function pickanimals()
     print(`you picked {animals[result]}`)
 end
 
--- pickanimals()
+pickanimals()
 
 -- checks if we fixed the issue where running prompt.confirm after prompt.pick
 -- causes prompt.pick not to remove all its previous output
