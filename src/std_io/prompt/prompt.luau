@@ -92,7 +92,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
     local index: number
     
     if input.tty() then
-        print(message)
+        print(`{message} {colors.style.dim("(up/down arrow keys to move, enter = select, r = redraw, numbers = jump)")}`)
 
         input.rawmode(true)
 
@@ -113,18 +113,57 @@ function prompt.pick(message: string, options: { string }, default: number?): er
 
         local interrupt_message: string?
 
+        local digits_buffer: { string } = {}
+
+        local function go_up(count: number, change_state: boolean)
+            for i = 1, math.abs(count) do
+                if change_state and (current - 1) == 0 then
+                    break
+                end
+                if change_state then
+                    output.write("\r ") -- erase the > at the start of the current line
+                end
+                output.write("\27[A") -- go up 1 visually
+                if change_state then
+                    current -= 1
+                    output.write("\r" .. colors.bold.green(">")) -- write a new > at the current line
+                end
+            end
+        end
+
+        local function go_down(count: number, change_state: boolean)
+            for i = 1, math.abs(count) do
+                if change_state and (current + 1) > #options then
+                    break
+                end
+                if change_state then
+                    output.write("\r ")
+                end
+                output.write("\27[B") -- go down 1 visually
+                if change_state then
+                    current += 1
+                    output.write("\r" .. colors.bold.green(">"))
+                end
+            end
+        end
+
+        local function show()
+            go_up(current, false)
+            output.write("\27[2K\27[G")
+            output.write(`{message}{options[current]} ({current}) buffer: {`[{table.concat(digits_buffer, ", ")}]`}`)
+            go_down(current, false)
+        end
+
         for event in input.events(time.milliseconds(20)) do
             if event.is == "Key" then
                 if event.key == "Up" and current - 1 > 0 then
-                    current -= 1
-                    output.write("\r ") -- erase the > at the start of the current line
-                    output.write("\27[A") -- go up 1 visually
-                    output.write("\r" .. colors.bold.green(">")) -- write a new > at the current line
+                    go_up(1, true)
+                    table.clear(digits_buffer)
+                    show()
                 elseif event.key == "Down" and current < #options then
-                    current += 1
-                    output.write("\r ")
-                    output.write("\27[B") -- go down 1 visually
-                    output.write("\r" .. colors.bold.green(">"))
+                    go_down(1, true)
+                    table.clear(digits_buffer)
+                    show()
                 elseif event.key == "Enter" then
                     index = current
                     break
@@ -136,26 +175,56 @@ function prompt.pick(message: string, options: { string }, default: number?): er
                     interrupt_message = "Prompt interrupted with Ctrl+D"
                     index = current
                     break
+                elseif event.key == "." then
+                    show()
+                elseif event.key == "r" then
+                    output.write("\r")
+                    input.rawmode(false)
+                    output.clear()
+                    return prompt.pick(message, options, default)
+                elseif event.key == "Backspace" and #digits_buffer > 0 then
+                    table.remove(digits_buffer, #digits_buffer)
                 else
                     local number_pressed = string.match(event.key, "([%d]+)")
                     if not number_pressed then
                         continue
                     end
 
-                    number_pressed = tonumber(number_pressed)
-                    assert(number_pressed ~= nil, "%d pattern means number_pressed cannot be nil here")
+                    table.insert(digits_buffer, number_pressed)
 
-                    if options[number_pressed] then
-                        index = number_pressed
-                        break
+                    local index_target = tonumber(table.concat(digits_buffer))
+                    assert(index_target ~= nil, "concating a bunch of %d strings should result in a valid number")
+
+                    -- if index_target > options, we assume the user meant to navigate to the number they just pressed
+                    -- instead of the combined one in the buffer
+                    if index_target == 0 or index_target > #options then
+                        table.clear(digits_buffer)
+                        table.insert(digits_buffer, number_pressed)
+
+                        local pressed_index = tonumber(number_pressed)
+                        assert(pressed_index ~= nil, "number from %d must not be nil")
+                        -- index_target = math.max(index_target, 1)
+                        index_target = math.clamp(pressed_index, 1, #options)
                     end
+
+                    local diff = index_target - current
+                    if diff > 0 then
+                        go_down(diff, true)
+                    else
+                        go_up(diff, true)
+                    end
+
+                    show()
                 end
             end
         end
 
-        output.write("\x1b[999B\x1b[G")   -- move to absolute bottom left of terminal
+        -- output.write("\x1b[999B\x1b[G")   -- move to absolute bottom left of terminal
+        -- move down from current to bottom of options
+        go_down((#options - current) + 1, false)
+        output.write("\r") -- make sure we're on the left before starting to erase
 
-        for i = 1, (#options + 1) do
+        for i = 1, (#options + 2) do
             output.write("\27[A")         -- move up one line
             output.write("\27[2K\27[G")   -- erase line and go to start
         end

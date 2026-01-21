@@ -1,3 +1,4 @@
+local fs = require("@std/fs")
 local input = require("@std/io/input")
 local prompt = require("@std/io/prompt")
 
@@ -22,7 +23,7 @@ local function pickanimals()
     print(`you picked {animals[result]}`)
 end
 
-pickanimals()
+-- pickanimals()
 
 -- checks if we fixed the issue where running prompt.confirm after prompt.pick
 -- causes prompt.pick not to remove all its previous output
@@ -30,7 +31,7 @@ local function confirmshadowspick()
     print("hi")
     print("bye")
     
-    local index = prompt.pick("which animal?", { "cats", "dogs", "seals" }, 1)
+    local index = prompt.pick("which animal?", { "cats", "dogs", "seals", "ostriches", "elephants", "badgers", "sloths" }, 1)
     local i2 = prompt.pick("second", { "first", "second", }, 2)
     if prompt.confirm("some action") then
         print("confirmed")
@@ -38,3 +39,11 @@ local function confirmshadowspick()
 end
 
 confirmshadowspick()
+
+local function manyoptions()
+    local files = fs.listdir(".")
+    print(`we have {#files}`)
+    local file = prompt.pick("pick a file in your cwd", files, 1)
+end
+
+manyoptions()
