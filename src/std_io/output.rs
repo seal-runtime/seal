@@ -187,11 +187,113 @@ pub fn output_ewrite(luau: &Lua, value: LuaValue) -> LuaValueResult {
     Ok(LuaNil)
 }
 
+fn output_size(_luau: &Lua, _: LuaValue) -> LuaValueResult {
+    let function_name = "output.size()";
+    let (cols, rows) = match crossterm::terminal::size() {
+        Ok(size) => size,
+        Err(err) => {
+            return wrap_err!("{}: unable to get terminal size due to err: {}", function_name, err);
+        }
+    };
+    
+    Ok(LuaValue::Vector(mluau::Vector::new(cols as f32, rows as f32, 0.0)))
+}
+
+fn output_switch(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
+    let function_name = "output.switch(screen: \"Alternate\" | \"Main\")";
+    use crossterm::execute;
+
+    let alternate = match value {
+        LuaValue::String(s) if s.as_bytes().eq_ignore_ascii_case(b"Alternate") => {
+            true
+        },
+        LuaValue::String(s) if s.as_bytes().eq_ignore_ascii_case(b"Main") => {
+            false
+        },
+        other => {
+            return wrap_err!("{} expected screen to be \"Alternate\" or \"Main\", got: {:?}", function_name, other);
+        }
+    };
+
+    if alternate {
+        if let Err(err) = execute!(std::io::stdout(), crossterm::terminal::EnterAlternateScreen) {
+            return wrap_err!("can't switch to Alternate screen due to err: {}", err);
+        }
+    } else {
+        if let Err(err) = execute!(std::io::stdout(), crossterm::terminal::LeaveAlternateScreen) {
+            return wrap_err!("can't switch to Main screen due to err: {}", err);
+        }
+    }
+
+    Ok(())
+}
+
+fn output_resize(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    let function_name = "output.resize(cols: number, rows: number)";
+    use crossterm::execute;
+
+    let cols: u16 = match multivalue.pop_front() {
+        Some(LuaValue::Number(f)) if f.is_sign_positive() => f.trunc() as u16,
+        Some(LuaValue::Integer(i)) if i.is_positive() => match u16::try_from(i) {
+            Ok(u) => u,
+            Err(err) => {
+                return wrap_err!("{}: can't convert 'cols' param from i64 to u16: {}", function_name, err);
+            }
+        },
+        Some(other) => {
+            return wrap_err!("{}: expected integer number, got {:?}", function_name, other);
+        },
+        None => {
+            return wrap_err!("{}: called without required argument 'cols' (expected integer number)", function_name);
+        }
+    };
+
+    let rows: u16 = match multivalue.pop_front() {
+        Some(LuaValue::Number(f)) if f.is_sign_positive() => f.trunc() as u16,
+        Some(LuaValue::Integer(i)) if i.is_positive() => match u16::try_from(i) {
+            Ok(u) => u,
+            Err(err) => {
+                return wrap_err!("{}: can't convert 'rows' param from i64 to u16: {}", function_name, err);
+            }
+        },
+        Some(other) => {
+            return wrap_err!("{}: expected integer number, got {:?}", function_name, other);
+        },
+        None => {
+            return wrap_err!("{}: called without required argument 'cols' (expected integer number)", function_name);
+        }
+    };
+
+    if let Err(err) = execute!(std::io::stdout(), crossterm::terminal::SetSize(cols, rows)) {
+        return wrap_err!("{}: unable to set terminal size due to err: {}", function_name, err);
+    }
+
+    Ok(())
+}
+
+fn output_cursor(_luau: &Lua, _: LuaValue) -> LuaValueResult {
+    let function_name = "output.cursor()";
+    
+    let (cols, rows) = match crossterm::cursor::position() {
+        Ok(pos) => pos,
+        Err(err) => {
+            return wrap_err!("{}: unable to get cursor position due to err: {}", function_name, err);
+        }
+    };
+
+    Ok(LuaValue::Vector(mluau::Vector::new(cols as f32, rows as f32, 0.0)))
+}
+
+
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function("clear", clear)?
         .with_function("write", output_write)?
         .with_function("ewrite", output_ewrite)?
         .with_function("sprint", simple_print_and_return)?
+        .with_function("size", output_size)?
+        .with_function("switch", output_switch)?
+        .with_function("resize", output_resize)?
+        .with_function("cursor", output_cursor)?
         .build_readonly()
 }
