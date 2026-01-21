@@ -7,13 +7,13 @@ use mluau::prelude::*;
 use super::format;
 use crate::std_err::WrappedError;
 
-pub fn debug_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<LuaString> {
+pub fn debug_print(luau: &Lua, multivalue: LuaMultiValue) -> LuaMultiResult {
     let function_name = "dp(...: any)";
-    let mut result = String::from("");
+    let mut result = String::new();
 
-    while let Some(value) = multivalue.pop_front() {
-        format::process_debug_values(value, &mut result, 0)?;
-        if !multivalue.is_empty() {
+    for (index, value) in multivalue.iter().enumerate() {
+        format::process_debug_values(&mut result, value, 0)?;
+        if index + 1 < multivalue.len() {
             result.push_str(", ");
         }
     }
@@ -24,78 +24,90 @@ pub fn debug_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<LuaSt
         colors::BOLD_RED, colors::RESET, debug_info.source.replace("string ", ""), debug_info.line, debug_info.function_name, colors::RESET,
         &result
     )?;
-    luau.create_string(&result)
+
+    Ok(multivalue)
 }
 
-pub fn simple_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+pub fn simple_print_and_return(luau: &Lua, multivalue: LuaMultiValue) -> LuaMultiResult {
     let formatter: LuaTable = format::cached_formatter(luau)?;
     let format_simple: LuaFunction = formatter.raw_get("simple")?;
-    let mut result = String::from("");
 
-    while let Some(value) = multivalue.pop_front() {
-        match format_simple.call::<LuaString>(value) {
-            Ok(text) => {
-                let text = text.to_string_lossy();
-                result += &text;
+    let mut output = String::from("");
+
+    for (index, value) in multivalue.iter().enumerate() {
+        let formatted = match format_simple.call::<LuaValue>(value) {
+            Ok(LuaValue::String(text)) => text.to_string_lossy(),
+            Ok(other) => {
+                panic!("p: format.simple returned a non-string, got: {:?}", other);
             },
             Err(err) => {
                 return wrap_err!("p: error printing: {}", err);
             }
         };
-        if !multivalue.is_empty() {
-            result += ", ";
+
+        output.push_str(&formatted);
+
+        if index + 1 < multivalue.len() {
+            output.push_str(", ");
         }
     }
 
-    puts!("{}", &result)?;
-    let result = luau.create_string(&result)?;
-    Ok(LuaValue::String(result))
+    puts!("{}", &output)?;
+
+    Ok(multivalue)
+}
+
+pub fn pretty_print_and_return(luau: &Lua, multivalue: LuaMultiValue) -> LuaMultiResult {
+    let formatter = format::cached_formatter(luau)?;
+    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
+    
+    let mut output = String::from("");
+
+    for (index, value) in multivalue.iter().enumerate() {
+        let formatted = match format_pretty.call::<LuaValue>(value) {
+            Ok(LuaValue::String(text)) => text.to_string_lossy(),
+            Ok(other) => {
+                panic!("pp: format.pretty returned a non-string, got: {:?}", other);
+            },
+            Err(err) => {
+                return wrap_err!("pp: error printing: {}", err);
+            }
+        };
+
+        output.push_str(&formatted);
+
+        if index + 1 < multivalue.len() {
+            output.push_str(", ");
+        }
+    }
+    
+    puts!("{}", &output)?;
+
+    Ok(multivalue)
 }
 
 pub fn pretty_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<()> {
     let formatter = format::cached_formatter(luau)?;
     let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
-    let mut result = String::from("");
+
+    let mut output = String::from("");
 
     while let Some(value) = multivalue.pop_front() {
         match format_pretty.call::<LuaString>(value) {
             Ok(text) => {
                 let text = text.to_string_lossy();
-                result += &text;
+                output += &text;
             },
             Err(err) => {
                 return wrap_err!("print: error printing: {}", err);
             }
         };
         if !multivalue.is_empty() {
-            result += ", ";
+            output += ", ";
         }
     }
-    puts!("{}", &result)?;
+    puts!("{}", &output)?;
     Ok(())
-}
-
-pub fn pretty_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
-    let formatter = format::cached_formatter(luau)?;
-    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
-    
-    let mut result = String::from("");
-    while let Some(value) = multivalue.pop_front() {
-        match format_pretty.call::<LuaString>(value) {
-            Ok(text) => {
-                let text = text.to_string_lossy();
-                result += &text;
-            },
-            Err(err) => {
-                return wrap_err!("pp: error printing: {}", err);
-            }
-        };
-        if !multivalue.is_empty() {
-            result += ", ";
-        }
-    }
-    puts!("{}", &result)?;
-    Ok(result)
 }
 
 pub fn clear(_luau: &Lua, _value: LuaValue) -> LuaValueResult {
