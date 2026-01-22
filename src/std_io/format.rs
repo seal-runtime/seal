@@ -3,7 +3,7 @@ use mluau::prelude::*;
 
 use regex::Regex;
 
-pub fn process_debug_values(value: LuaValue, result: &mut String, depth: usize) -> LuaResult<()> {
+pub fn process_debug_values(result: &mut String, value: &LuaValue, depth: usize) -> LuaResult<()> {
     let left_padding = " ".repeat(2 * depth);
     match value {
         LuaValue::Table(t) => {
@@ -12,7 +12,7 @@ pub fn process_debug_values(value: LuaValue, result: &mut String, depth: usize) 
                 for pair in t.pairs::<LuaValue, LuaValue>() {
                     let (k, v) = pair?;
                     result.push_str(&format!("  {left_padding}{:#?} = ", k));
-                    process_debug_values(v, result, depth + 1)?;
+                    process_debug_values(result, &v, depth + 1)?;
                     result.push('\n');
                 }
                 result.push_str(&format!("{left_padding}}}"));
@@ -52,7 +52,7 @@ fn debug(luau: &Lua, stuff: LuaMultiValue) -> LuaResult<LuaString> {
     let mut multi_values = stuff.clone();
 
     while let Some(value) = multi_values.pop_front() {
-        process_debug_values(value, &mut result, 0)?;
+        process_debug_values(&mut result, &value, 0)?;
         if !multi_values.is_empty() {
             result += ", ";
         }
