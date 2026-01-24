@@ -15,24 +15,15 @@ local webview = extern.load(fs.path.join(".", "target", "debug", "libseal_webvie
 }
 
 webview.create({
-    title = "meow",
+    title = "hypothetical seal install ui",
     content = fs.readfile(fs.path.join(script:parent(), "view.html")),
     size = {
-        x = 1024,
+        x = 720,
         y = 600,
     },
     on_message = function(message)
         local response = json.decode(message)
-        if response.type == "mouse-position" then
-            return nil
-        elseif response.type == "text-update" then
-            local text_content = response.content :: string
-            if string.match(text_content, "meow") then
-                return {
-                    content = "<h1> haha you said meow </h1>"
-                }
-            end
-        end
+        print(response)
         return nil
     end
 })

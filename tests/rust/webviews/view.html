@@ -3,20 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #0b1e39; /* dark blue */
+        color: #e6eef7; /* light text */
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
       .top-bar {
         height: 20px;
-        background-color: #008AD8;
+        background-color: #0f2a52;
         display: flex;
         justify-content: flex-end;
         align-items: center;
         padding-right: 6px;
-        font-family: sans-serif;
       }
 
       .close-btn {
         width: 16px;
         height: 16px;
-        background-color: red;
+        background-color: #d9534f;
         color: white;
         border-radius: 50%;
         text-align: center;
@@ -27,48 +37,90 @@
       }
 
       .close-btn:hover {
-        background-color: darkred;
+        background-color: #b52b27;
+      }
+
+      .container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .description-box {
+        background-color: #10294a;
+        border-radius: 8px;
+        padding: 16px 20px;
+        max-width: 420px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        color: #d7e3f4;
+        font-size: 15px;
+      }
+
+      .action-btn {
+        background-color: #1a4a7a;
+        color: #ffffff;
+        border: none;
+        padding: 12px 20px;
+        margin: 8px 0;
+        width: 260px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 15px;
+        transition: background-color 0.2s ease;
+      }
+
+      .action-btn:hover {
+        background-color: #2360a3;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 10px;
+        font-size: 13px;
+        color: #9fb4cc;
       }
     </style>
   </head>
+
   <body>
-    <div class="top-bar">
-      <!-- <div class="close-btn" onclick="window.ipc.postMessage('close-webview')">×</div> -->
-      <div class="close-btn" onclick="window.webkit.messageHandlers.external.postMessage('close-webview')">×</div>
+    <div class="container">
+      <h1>Thank you for installing seal (•ᴥ•) :3</h1>
 
+      <div class="description-box">
+        We've installed seal at (some location), see the following links to get started:<br>
+      </div>
+
+      <button class="action-btn" onclick="sendIPC('setup_global_defs')">
+        Setup global definitions in ~/.seal
+      </button>
+
+      <button class="action-btn" onclick="sendIPC('open_docs')">
+        Open documentation
+      </button>
+
+      <button class="action-btn" onclick="sendIPC('join_discord')">
+        Join the Discord
+      </button>
     </div>
-    <div>
-      <h1>hello from seal!</h1>
-      <img src="./tests/rust/webviews/seal_hugs.png">
-      <!-- <form>
-        <label for="message">Your Message:</label><br>
-        <textarea id="custom-text" name="custom-text" rows="4" cols="50" placeholder="Text here..."></textarea><br>
-      </form> -->
+
+    <div class="footer">
+      made with love by deviaze
     </div>
+
     <script>
-      // const textarea = document.getElementById('custom-text');
+      function sendIPC(action) {
+        const payload = JSON.stringify({
+          type: "action",
+          action: action
+        });
 
-      // textarea.addEventListener('keyup', () => {
-      //   const content = textarea.value;
-      //   window.webkit.messageHandlers.external.postMessage(JSON.stringify({ type: "text-update", content }));
-      // });
-
-      // let mouseX = 0;
-      // let mouseY = 0;
-
-      // document.addEventListener('mousemove', (e) => {
-      //   mouseX = e.clientX;
-      //   mouseY = e.clientY;
-      // });
-
-      // setInterval(() => {
-      //   const payload = {
-      //     type: "mouse-position",
-      //     x: mouseX,
-      //     y: mouseY
-      //   };
-      //   window.webkit.messageHandlers.external.postMessage(JSON.stringify(payload));
-      // }, 250);
+        window.webkit.messageHandlers.external.postMessage(payload);
+      }
     </script>
   </body>
 </html>
