@@ -55,7 +55,7 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
             Some(data) => deserialize_data_from_transit(&new_luau, data)?,
             None => LuaNil,
         };
-        
+
         globals::set_globals(&new_luau, options.chunk_name.clone())?;
         // must use globals.set() due to safeenv
         new_luau.globals().set("channel", TableBuilder::create(&new_luau)?
@@ -164,7 +164,7 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                             return wrap_err!("{} called without required argument 'data'", function_name);
                         }
                     };
-                    sender.send(data, function_name) 
+                    sender.send(data, function_name)
                 }
             })?
             .with_function("try_sendbytes", {
@@ -209,7 +209,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
             .build_readonly()?
         )?;
 
-        match new_luau.load(src).set_name(options.chunk_name).exec() {
+        let chunk = Chunk::Src(src);
+        match new_luau.load(chunk).set_name(options.chunk_name).exec() {
             Ok(_) => Ok(()),
             Err(err) => {
                 let formatted_err = LuaError::external(format!("{}{}{}\n Error occurred in thread '{}', which was spawned at {}", colors::RED, err, colors::RESET, thread_name, options.spawned_at));
@@ -325,7 +326,7 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                     Ok(_) => {
                         let success = true;
                         let multi = LuaMultiValue::from_vec(vec![
-                            LuaValue::Boolean(success), 
+                            LuaValue::Boolean(success),
                             LuaValue::String(luau.create_string("Sent")?),
                         ]);
                         Ok(multi)

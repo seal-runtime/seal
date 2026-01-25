@@ -266,37 +266,77 @@ local debug_name: string = override_debug_name or debug.info(3, "s") --[[
 	assert(current_path ~= nil, "current_path should not be nil at this point 2")
 
 	local trying_to_require_directory = false
-	local find_result: fs.FindResult = fs.find(current_path, { error_if_permission_denied = false })
-	if find_result.type == "Directory" then
+	local path_is = fs.is(current_path)
+	if path_is == "Directory" then
 		local possible_init_path = fs.path.join(current_path, "init.luau")
 		local possible_concat_path = current_path .. ".luau"
-		
-		local init_path_exists = fs.path.exists(possible_init_path)
-		local concat_path_exists = fs.path.exists(possible_concat_path)
 
-		if init_path_exists and concat_path_exists then
+		local init_path_is_file = fs.is(possible_init_path) == "File"
+		local concat_path_is_file = fs.is(possible_concat_path) == "File"
+
+		if init_path_is_file and concat_path_is_file then
 			-- both foo.luau and foo/init.luau exist (which one do we want??)
 			return {
 				err = `'{requested_path}' is ambiguous!! and can't be resolved.\nBoth '{possible_init_path}' and '{possible_concat_path}' exist; \z
 				rename either the directory '{fs.path.child(current_path)}/' or file '{fs.path.child(possible_concat_path)}' so we can figure out which one you meant`
 			}
-		elseif init_path_exists then
+		elseif init_path_is_file then
 			-- foo/init.luau exists
 			current_path = possible_init_path
-		elseif concat_path_exists then
-			-- foo/ exists and foo/init.luau doesn't exist BUT foo.luau exists (we should resolve to foo.luau)
+		elseif concat_path_is_file then
+			-- foo/ exists and foo/init.luau doesn't exist but foo.luau exists (we should resolve to foo.luau)
+			warn(`require: both folder '{current_path}' and file '{possible_concat_path}' exist; consider renaming one or both. Require resolving to the file.`)
 			current_path ..= ".luau"
 		else
 			trying_to_require_directory = true
 		end
-	elseif find_result.type == "NotFound" then
+	elseif path_is == "NotFound" then
+		-- can't find path/to/foo so let's put a file extension on it and try again
 		current_path ..= ".luau"
-	elseif find_result.type == "PermissionDenied" then
+	elseif path_is == "PermissionDenied" then
 		return {
-			err = `'{requested_path}' can't be required: requested path resolved to '{current_path}', \z
+			err = `requested path '{requested_path}' resolved to '{current_path}', \z
 			which cannot be required because permission denied :(`
 		}
+	elseif path_is == "File" then
+		-- it's probably a file alias @foo that resolved to foo.luau with an extension on it already
+	else
+		return {
+			err = `requested path '{requested_path}' resolved to '{current_path}', which is unexpectedly not a file nor a directory (got: {path_is})`
+		}
 	end
+
+	-- local trying_to_require_directory = false
+	-- local find_result: fs.FindResult = fs.find(current_path, { error_if_permission_denied = false })
+	-- if find_result.type == "Directory" then
+	-- 	local possible_init_path = fs.path.join(current_path, "init.luau")
+	-- 	local possible_concat_path = current_path .. ".luau"
+		
+	-- 	local init_path_exists = fs.path.exists(possible_init_path)
+	-- 	local concat_path_exists = fs.path.exists(possible_concat_path)
+
+	-- 	if init_path_exists and concat_path_exists then
+	-- 		-- both foo.luau and foo/init.luau exist (which one do we want??)
+	-- 		return {
+	-- 			err = `'{requested_path}' is ambiguous!! and can't be resolved.\nBoth '{possible_init_path}' and '{possible_concat_path}' exist; \z
+	-- 			rename either the directory '{fs.path.child(current_path)}/' or file '{fs.path.child(possible_concat_path)}' so we can figure out which one you meant`
+	-- 		}
+	-- 	elseif init_path_exists then
+	-- 		-- foo/init.luau exists
+	-- 		current_path = possible_init_path
+	-- 	elseif concat_path_exists then
+	-- 		-- foo/ exists and foo/init.luau doesn't exist BUT foo.luau exists (we should resolve to foo.luau)
+	-- 		current_path ..= ".luau"
+	-- 	else
+	-- 		trying_to_require_directory = true
+	-- 	end
+	-- elseif find_result.type == "NotFound" then
+	-- 	current_path ..= ".luau"
+	-- elseif find_result.type == "PermissionDenied" then
+	-- 	return {
+		
+	-- 	}
+	-- end
 
 	assert(current_path ~= nil, "current_path should not be nil at this point 2")
 
@@ -313,7 +353,7 @@ local debug_name: string = override_debug_name or debug.info(3, "s") --[[
 		return resolve(requested_path, debug_name, false)
 	elseif use_new_init_luau_semantics == false and string.match(requested_path, "%.%.?/") then
 		return {
-			err = `module '{requested_path}' not found: relative require from the init.luau at '{requiring_file_path}' resolved to '{current_path}', which wasn't found on the filesystem.\n`
+			err = `module '{requested_path}' not found: relative require from the file at '{requiring_file_path}' resolved to '{current_path}', which wasn't found on the filesystem.\n`
 				.. "  note on require resolution semantics:\n"
 				.. "    - old: './meow' means meow.luau is in the same directory as the requiring init.luau\n"
 				.. "    - new: './meow' means meow.luau is in the parent directory of the requiring init.luau\n"

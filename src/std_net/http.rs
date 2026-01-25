@@ -125,16 +125,16 @@ pub fn http_get(luau: &Lua, get_config: LuaValue) -> LuaValueResult {
                         };
                     }
                     let body = result.body_mut().read_to_string().unwrap_or(String::from(""));
-                    
+
                     let status_code_ok = {
                         #[allow(clippy::needless_bool)]
                         if status_code.starts_with("2") || status_code.starts_with("3") {
                             true
                         } else {
                             false
-                        } 
+                        }
                     };
-                    
+
                     let json_decode_body = {
                         let body_clone = body.clone();
                         move |luau: &Lua, _: LuaMultiValue| {
@@ -159,9 +159,18 @@ pub fn http_get(luau: &Lua, get_config: LuaValue) -> LuaValueResult {
                     let err_result = TableBuilder::create(luau)?
                         .with_value("ok", false)?
                         .with_value("err", err.to_string())?
-                        .with_function("unwrap_json", |_luau: &Lua, mut default: LuaMultiValue| {
-                            let response = default.pop_front().unwrap();
-                            let default = default.pop_back();
+                        .with_function("unwrap_json", |_luau: &Lua, mut multivalue: LuaMultiValue| {
+                            let function_name = "HttpResponse:unwrap_json(default: JsonData?)";
+                            let response = match multivalue.pop_front() {
+                                Some(LuaValue::Table(t)) => t,
+                                Some(LuaNil) | None => {
+                                    return wrap_err!("{}: incorrectly called without self", function_name);
+                                },
+                                Some(other) => {
+                                    return wrap_err!("{}: self is of the wrong type; expected table, got: {:?}", function_name, other);
+                                }
+                            };
+                            let default = multivalue.pop_back();
                             match default {
                                 Some(LuaValue::Nil) => {
                                     wrap_err!("net.get: attempted to unwrap an erred request; note: default argument provided but was nil. Erred request: {:#?}", response)
@@ -180,7 +189,7 @@ pub fn http_get(luau: &Lua, get_config: LuaValue) -> LuaValueResult {
             }
         }
         other => {
-           wrap_err!("net.get expected url: string or GetOptions, got {:?}", other)
+            wrap_err!("net.get expected url: string or GetOptions, got {:?}", other)
         }
     }
 }
@@ -267,16 +276,16 @@ pub fn http_post(luau: &Lua, post_config: LuaValue) -> LuaValueResult {
                         };
                     }
                     let body = result.body_mut().read_to_string().unwrap_or(String::from(""));
-                    
+
                     let status_code_ok = {
                         #[allow(clippy::needless_bool)]
                         if status_code.starts_with("2") || status_code.starts_with("3") {
                             true
                         } else {
                             false
-                        } 
+                        }
                     };
-                    
+
                     let json_decode_body = {
                         let body_clone = body.clone();
                         move |luau: &Lua, _: LuaMultiValue| {
@@ -317,7 +326,7 @@ pub fn http_post(luau: &Lua, post_config: LuaValue) -> LuaValueResult {
             }
         }
         other => {
-           wrap_err!("net.post expected PostConfig, got {:?}", other)
+            wrap_err!("net.post expected PostConfig, got {:?}", other)
         }
     }
 }
@@ -404,16 +413,16 @@ fn http_put(luau: &Lua, put_config: LuaValue) -> LuaValueResult {
                         };
                     }
                     let body = result.body_mut().read_to_string().unwrap_or(String::from(""));
-                    
+
                     let status_code_ok = {
                         #[allow(clippy::needless_bool)]
                         if status_code.starts_with("2") || status_code.starts_with("3") {
                             true
                         } else {
                             false
-                        } 
+                        }
                     };
-                    
+
                     let json_decode_body = {
                         let body_clone = body.clone();
                         move |luau: &Lua, _: LuaMultiValue| {
@@ -454,7 +463,7 @@ fn http_put(luau: &Lua, put_config: LuaValue) -> LuaValueResult {
             }
         }
         other => {
-           wrap_err!("net.put expected PutConfig, got {:?}", other)
+            wrap_err!("net.put expected PutConfig, got {:?}", other)
         }
     }
 }
@@ -541,16 +550,16 @@ fn http_patch(luau: &Lua, patch_config: LuaValue) -> LuaValueResult {
                         };
                     }
                     let body = result.body_mut().read_to_string().unwrap_or(String::from(""));
-                    
+
                     let status_code_ok = {
                         #[allow(clippy::needless_bool)]
                         if status_code.starts_with("2") || status_code.starts_with("3") {
                             true
                         } else {
                             false
-                        } 
+                        }
                     };
-                    
+
                     let json_decode_body = {
                         let body_clone = body.clone();
                         move |luau: &Lua, _: LuaMultiValue| {
@@ -591,7 +600,7 @@ fn http_patch(luau: &Lua, patch_config: LuaValue) -> LuaValueResult {
             }
         }
         other => {
-           wrap_err!("net.request: PATCH: expected PatchConfig, got {:?}", other)
+            wrap_err!("net.request: PATCH: expected PatchConfig, got {:?}", other)
         }
     }
 }
@@ -662,16 +671,16 @@ fn http_delete(luau: &Lua, delete_config: LuaValue) -> LuaValueResult {
                         };
                     }
                     let body = result.body_mut().read_to_string().unwrap_or(String::from(""));
-                    
+
                     let status_code_ok = {
                         #[allow(clippy::needless_bool)]
                         if status_code.starts_with("2") || status_code.starts_with("3") {
                             true
                         } else {
                             false
-                        } 
+                        }
                     };
-                    
+
                     let json_decode_body = {
                         let body_clone = body.clone();
                         move |luau: &Lua, _: LuaMultiValue| {
@@ -712,7 +721,7 @@ fn http_delete(luau: &Lua, delete_config: LuaValue) -> LuaValueResult {
             }
         }
         other => {
-           wrap_err!("net.request: DELETE: expected DeleteConfig, got {:?}", other)
+            wrap_err!("net.request: DELETE: expected DeleteConfig, got {:?}", other)
         }
     }
 }
@@ -729,7 +738,7 @@ pub fn request(luau: &Lua, request_options: LuaValue) -> LuaValueResult {
                             return wrap_err!("net.request expected `method` to be a valid HTTP verb, got: {}", other);
                         },
                     }
-                },                
+                },
                 Ok(other) => {
                     return wrap_err!(r#"net.request expected options.method (string "GET" | "POST" | "PUT" | "PATCH" | "DELETE),  got {:?}"#, other)
                 },

@@ -8,7 +8,7 @@ edition = "2024"
 crate-type = ["cdylib"]
 
 [dependencies]
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send", "unsafe-ffi"] , branch = "ffi" }
-# mluau = { path = "/home/deviaze/Repositories/mluau-ffi", features = ["luau", "serialize", "error-send", "unsafe-ffi"] }
-
+mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send" ]}
 libc = "0.2"
+bstr = "1.12.1"
+uuid = { version = "1.19.0", features = ["v4"] }

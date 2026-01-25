@@ -110,6 +110,7 @@ print(vector.create(1, 2, 3))
 local array_with_many_values = {}; for i = 1, 1001 do table.insert(array_with_many_values, i) end
 -- print(array_with_many_values)
 
+local env = require("@std/env")
 local fs = require("@std/fs")
 
 local src = fs.readfile("./src/err.rs")
@@ -120,3 +121,25 @@ local with_newline_strings = {
 	src = src,
 }
 print(with_newline_strings)
+
+local cats2 = pp(cats)
+assert(typeof(cats2) == "table", "pp should return table when passed table")
+
+local cats3 = p(cats)
+assert(typeof(cats3) == "table", "p should return table when passed table")
+
+local buffy2 = buffer.create(12)
+buffer.writef32(buffy2, 0, 22.5)
+local buffy3 = dp(buffy2)
+assert(typeof(buffy3) == "buffer", "dp should return buffer when passed buffer")
+
+-- local badstr = "\x12, \x1b \27 \x12 \2 \33"
+
+local badstr = buffer.tostring(fs.readbytes(env.executable_path, 1, 400))
+
+print("below this should have utf8 replacement char")
+print(badstr)
+print("below this is dp output")
+dp(badstr)
+
+-- dp(format.pretty({ cats = badstr }))

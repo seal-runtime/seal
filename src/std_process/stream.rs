@@ -20,6 +20,25 @@ pub enum TruncateSide {
     Front,
     Back,
 }
+impl TruncateSide {
+    pub fn from_value(value: LuaValue, what: &'static str) -> LuaResult<Self> {
+        Ok(match value {
+            LuaValue::String(ref s) => {
+                match s.as_bytes().as_ref() {
+                    b"front" | b"Front" => Self::Front,
+                    b"back" | b"Back" => Self::Back,
+                    _ => {
+                        return wrap_err!("SpawnOptions.stream.{} must be \"Front\" or \"Back\" (defaults to \"Front\"), got: {:?}", what, value);
+                    }
+                }
+            },
+            LuaNil => TruncateSide::Front,
+            other => {
+                return wrap_err!("SpawnOptions.stream.{} must be \"Front\" or \"Back\" (defaults to \"Front\"), got: {:?}", what, other);
+            }
+        })
+    }
+}
 
 /// Multithreaded wrapper type that abstracts reading from a child process' stdout or stderr.
 ///
@@ -193,7 +212,12 @@ impl Stream {
         };
 
         loop {
-            let mut inner = self.inner.lock().unwrap();
+            let mut inner = match self.inner.lock() {
+                Ok(guard) => guard,
+                Err(err) => {
+                    unreachable!("{}: callers of this function shouldn't panic and cause this mutex to become poisoned; if they do, that's a bug we should propagate: {}", function_name, err);
+                }
+            };
             if inner.len() <= count {
                 if !&self.still_reading.load(Ordering::Relaxed) {
                     return Ok(LuaNil);
@@ -201,7 +225,7 @@ impl Stream {
                     return Ok(LuaNil)
                 } else if let Some(timeout) = timeout
                     && let Some(start_time) = start_time
-                    && start_time.elapsed() >= timeout    
+                    && start_time.elapsed() >= timeout
                 {
                     return Ok(LuaNil);
                 } else {
@@ -259,7 +283,7 @@ impl Stream {
                     return Ok(LuaNil)
                 } else if let Some(timeout) = timeout
                     && let Some(start_time) = start_time
-                    && start_time.elapsed() >= timeout    
+                    && start_time.elapsed() >= timeout
                 {
                     return Ok(LuaNil);
                 } else {
@@ -346,7 +370,13 @@ impl Stream {
                 false
             };
 
-            let mut inner = self.inner.lock().unwrap();
+            let mut inner = match self.inner.lock() {
+                Ok(guard) => guard,
+                Err(err) => {
+                    unreachable!("{}: callers of this function shouldn't panic and cause this mutex to become poisoned; if they do, that's a bug we should propagate: {}", function_name, err);
+                }
+            };
+
             if should_return_if_allow_partial {
                 let drained: Vec<u8> = inner.drain(..).collect();
                 return ok_string(&drained, luau);
@@ -467,7 +497,13 @@ impl Stream {
         };
 
         loop {
-            let mut inner = self.inner.lock().unwrap();
+            let mut inner = match self.inner.lock() {
+                Ok(guard) => guard,
+                Err(err) => {
+                    unreachable!("{}: callers of this function shouldn't panic and cause this mutex to become poisoned; if they do, that's a bug we should propagate: {}", function_name, err);
+                }
+            };
+
             if inner.is_empty() {
                 if !&self.still_reading.load(Ordering::Relaxed) {
                     return Ok(LuaValue::Integer(0));
@@ -475,7 +511,7 @@ impl Stream {
                     return Ok(LuaValue::Integer(0));
                 } else if let Some(timeout) = timeout
                     && let Some(start_time) = start_time
-                    && start_time.elapsed() >= timeout    
+                    && start_time.elapsed() >= timeout
                 {
                     return Ok(LuaValue::Integer(0));
                 } else {
@@ -561,7 +597,13 @@ impl Stream {
         };
 
         loop {
-            let mut inner = self.inner.lock().unwrap();
+            let mut inner = match self.inner.lock() {
+                Ok(guard) => guard,
+                Err(err) => {
+                    unreachable!("{}: callers of this function shouldn't panic and cause this mutex to become poisoned; if they do, that's a bug we should propagate: {}", function_name, err);
+                }
+            };
+            
             if inner.is_empty() || inner.len() - 1 < count {
                 if !&self.still_reading.load(Ordering::Relaxed) {
                     return Ok(LuaValue::Boolean(false));
@@ -569,7 +611,7 @@ impl Stream {
                     return Ok(LuaValue::Boolean(false));
                 } else if let Some(timeout) = timeout
                     && let Some(start_time) = start_time
-                    && start_time.elapsed() >= timeout    
+                    && start_time.elapsed() >= timeout
                 {
                     return Ok(LuaValue::Boolean(false));
                 } else {

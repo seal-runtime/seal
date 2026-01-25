@@ -5,11 +5,11 @@ local str = require("@std/str")
 
 local cheese = require("@tests/cheese")
 
-local function spawn_longrunning(): process.ChildProcess
+local function spawn_longrunning(): process.PipedChild
 	local child = process.spawn {
 		program = env.executable_path,
 		args = { path.join(script:parent(), "longrunning.luau"), "60", "50" }
-	}
+	} :: process.PipedChild
 	return child
 end
 
@@ -40,8 +40,7 @@ local function interruptreadtowithtimeout()
 	local child = process.spawn {
 		program = env.executable_path,
 		args = { path.join(script:parent(), "long_waiter.luau") }
-	}
-	
+	} :: process.PipedChild
 	local start_time = os.clock()
 	-- long_waiter prints "meow" but only after 0.75 seconds, so if we read with a timeout of 0.15
 	-- we shouldn't expect to see "meow", we should see `nil`
@@ -59,7 +58,7 @@ local function interruptedreadallowpartial()
 	local child = process.spawn {
 		program = env.executable_path,
 		args = { path.join(script:parent(), "long_waiter.luau") }
-	}
+	} :: process.PipedChild
 
 	local start_time = os.clock()
 	-- long_waiter prints "meow" after 0.75 seconds, so if we interrupt with a 0.15 timeout

@@ -40,10 +40,10 @@ impl EncodeOptions {
 }
 
 pub fn encode(luau: &Lua, table_to_encode: LuaTable, encode_options: EncodeOptions) -> LuaResult<String> {
-    match if encode_options.pretty && !encode_options.sorted { 
-        serde_json::to_string_pretty(&table_to_encode) 
-    } else if !encode_options.pretty && !encode_options.sorted { 
-        serde_json::to_string(&table_to_encode) 
+    match if encode_options.pretty && !encode_options.sorted {
+        serde_json::to_string_pretty(&table_to_encode)
+    } else if !encode_options.pretty && !encode_options.sorted {
+        serde_json::to_string(&table_to_encode)
     } else {
         let mut json_value: serde_json::Value = luau.from_value(LuaValue::Table(table_to_encode))?;
         if encode_options.sorted {
@@ -87,7 +87,7 @@ pub fn json_encode(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<Strin
         }
     };
 
-    encode(luau, table_to_encode, encode_options)    
+    encode(luau, table_to_encode, encode_options)
 }
 
 pub fn json_raw_encode(_luau: &Lua, table: LuaValue) -> LuaResult<String> {

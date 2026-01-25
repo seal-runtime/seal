@@ -2,8 +2,8 @@ use mluau::prelude::*;
 use crate::prelude::*;
 use std::{fs, io, path::PathBuf};
 use super::{
-    entry::{self, wrap_io_read_errors}, 
-    validate_path, 
+    entry::{self, wrap_io_read_errors},
+    validate_path,
     validate_path_without_checking_fs
 };
 
@@ -170,10 +170,10 @@ pub fn find(luau: &Lua, mut multivalue: LuaMultiValue, function_name: &str) -> L
     let mut permission_denied = false;
 
     let metadata = {
-        match if follow_symlinks { 
-            fs::metadata(&search_path) 
-        } else { 
-            fs::symlink_metadata(&search_path) 
+        match if follow_symlinks {
+            fs::metadata(&search_path)
+        } else {
+            fs::symlink_metadata(&search_path)
         } {
             Ok(metadata) => Some(metadata),
             Err(err) => {

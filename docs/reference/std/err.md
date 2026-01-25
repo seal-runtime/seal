@@ -84,7 +84,7 @@ function err.format(err: error) -> string,
 <h4>
 
 ```luau
-function err.traceback() -> string,
+function err.traceback(message: string?, level: number?) -> string,
 ```
 
 </h4>

@@ -7,97 +7,107 @@ use mluau::prelude::*;
 use super::format;
 use crate::std_err::WrappedError;
 
-pub fn debug_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<LuaString> {
+pub fn debug_print(luau: &Lua, multivalue: LuaMultiValue) -> LuaMultiResult {
     let function_name = "dp(...: any)";
-    let mut result = String::from("");
+    let mut result = String::new();
 
-    while let Some(value) = multivalue.pop_front() {
-        format::process_debug_values(value, &mut result, 0)?;
-        if !multivalue.is_empty() {
+    for (index, value) in multivalue.iter().enumerate() {
+        format::process_debug_values(&mut result, value, 0)?;
+        if index + 1 < multivalue.len() {
             result.push_str(", ");
         }
     }
 
     let debug_info = DebugInfo::from_caller(luau, function_name)?;
-    println!(
-        "{}[DEBUG]{} {}:{} in {}{}\n{}", 
-        colors::BOLD_RED, colors::RESET, debug_info.source.replace("string ", ""), debug_info.line, debug_info.function_name, colors::RESET, 
+    puts!(
+        "{}[DEBUG]{} {}:{} in {}{}\n{}",
+        colors::BOLD_RED, colors::RESET, debug_info.source.replace("string ", ""), debug_info.line, debug_info.function_name, colors::RESET,
         &result
-    );
-    luau.create_string(&result)
+    )?;
+
+    Ok(multivalue)
 }
 
-const OUTPUT_FORMATTER_SRC: &str = include_str!("./output_formatter.luau");
+pub fn simple_print_and_return(luau: &Lua, multivalue: LuaMultiValue) -> LuaMultiResult {
+    let formatter: LuaTable = format::cached_formatter(luau)?;
+    let format_simple: LuaFunction = formatter.raw_get("simple")?;
 
-pub fn simple_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
-    let format_simple: LuaFunction = r.raw_get("simple")?;
-    let mut result = String::from("");
-    
-    while let Some(value) = multivalue.pop_front() {
-        match format_simple.call::<LuaString>(value) {
-            Ok(text) => {
-                let text = text.to_string_lossy();
-                result += &text;
+    let mut output = String::from("");
+
+    for (index, value) in multivalue.iter().enumerate() {
+        let formatted = match format_simple.call::<LuaValue>(value) {
+            Ok(LuaValue::String(text)) => text.to_string_lossy(),
+            Ok(other) => {
+                panic!("p: format.simple returned a non-string, got: {:?}", other);
             },
             Err(err) => {
                 return wrap_err!("p: error printing: {}", err);
             }
         };
-        if !multivalue.is_empty() {
-            result += ", ";
+
+        output.push_str(&formatted);
+
+        if index + 1 < multivalue.len() {
+            output.push_str(", ");
         }
     }
 
-    println!("{}", &result);
-    let result = luau.create_string(&result)?;
-    Ok(LuaValue::String(result))
+    puts!("{}", &output)?;
+
+    Ok(multivalue)
+}
+
+pub fn pretty_print_and_return(luau: &Lua, multivalue: LuaMultiValue) -> LuaMultiResult {
+    let formatter = format::cached_formatter(luau)?;
+    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
+    
+    let mut output = String::from("");
+
+    for (index, value) in multivalue.iter().enumerate() {
+        let formatted = match format_pretty.call::<LuaValue>(value) {
+            Ok(LuaValue::String(text)) => text.to_string_lossy(),
+            Ok(other) => {
+                panic!("pp: format.pretty returned a non-string, got: {:?}", other);
+            },
+            Err(err) => {
+                return wrap_err!("pp: error printing: {}", err);
+            }
+        };
+
+        output.push_str(&formatted);
+
+        if index + 1 < multivalue.len() {
+            output.push_str(", ");
+        }
+    }
+    
+    puts!("{}", &output)?;
+
+    Ok(multivalue)
 }
 
 pub fn pretty_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<()> {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
-    let format_pretty: LuaFunction = r.raw_get("pretty")?;
-    let mut result = String::from("");
+    let formatter = format::cached_formatter(luau)?;
+    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
+
+    let mut output = String::from("");
 
     while let Some(value) = multivalue.pop_front() {
         match format_pretty.call::<LuaString>(value) {
             Ok(text) => {
                 let text = text.to_string_lossy();
-                result += &text;
+                output += &text;
             },
             Err(err) => {
                 return wrap_err!("print: error printing: {}", err);
             }
         };
         if !multivalue.is_empty() {
-            result += ", ";
+            output += ", ";
         }
     }
-    println!("{}", &result);
+    puts!("{}", &output)?;
     Ok(())
-}
-
-pub fn pretty_print_and_return(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
-    let format_pretty: LuaFunction = r.raw_get("pretty")?;
-    let mut result = String::from("");
-
-    while let Some(value) = multivalue.pop_front() {
-        match format_pretty.call::<LuaString>(value) {
-            Ok(text) => {
-                let text = text.to_string_lossy();
-                result += &text;
-            },
-            Err(err) => {
-                return wrap_err!("pp: error printing: {}", err);
-            }
-        };
-        if !multivalue.is_empty() {
-            result += ", ";
-        }
-    }
-    println!("{}", &result);
-    Ok(result)
 }
 
 pub fn clear(_luau: &Lua, _value: LuaValue) -> LuaValueResult {
@@ -112,7 +122,7 @@ pub fn clear(_luau: &Lua, _value: LuaValue) -> LuaValueResult {
     };
     match clear_command.spawn() {
         Ok(_) => {
-            // this is pretty cursed, but yields long enough for the clear to have been completed 
+            // this is pretty cursed, but yields long enough for the clear to have been completed
             // otherwise the next print() calls get erased
             std::thread::sleep(std::time::Duration::from_millis(20));
             Ok(LuaNil)
@@ -189,11 +199,113 @@ pub fn output_ewrite(luau: &Lua, value: LuaValue) -> LuaValueResult {
     Ok(LuaNil)
 }
 
+fn output_size(_luau: &Lua, _: LuaValue) -> LuaValueResult {
+    let function_name = "output.size()";
+    let (cols, rows) = match crossterm::terminal::size() {
+        Ok(size) => size,
+        Err(err) => {
+            return wrap_err!("{}: unable to get terminal size due to err: {}", function_name, err);
+        }
+    };
+    
+    Ok(LuaValue::Vector(mluau::Vector::new(cols as f32, rows as f32, 0.0)))
+}
+
+fn output_switch(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
+    let function_name = "output.switch(screen: \"Alternate\" | \"Main\")";
+    use crossterm::execute;
+
+    let alternate = match value {
+        LuaValue::String(s) if s.as_bytes().eq_ignore_ascii_case(b"Alternate") => {
+            true
+        },
+        LuaValue::String(s) if s.as_bytes().eq_ignore_ascii_case(b"Main") => {
+            false
+        },
+        other => {
+            return wrap_err!("{} expected screen to be \"Alternate\" or \"Main\", got: {:?}", function_name, other);
+        }
+    };
+
+    if alternate {
+        if let Err(err) = execute!(std::io::stdout(), crossterm::terminal::EnterAlternateScreen) {
+            return wrap_err!("can't switch to Alternate screen due to err: {}", err);
+        }
+    } else {
+        if let Err(err) = execute!(std::io::stdout(), crossterm::terminal::LeaveAlternateScreen) {
+            return wrap_err!("can't switch to Main screen due to err: {}", err);
+        }
+    }
+
+    Ok(())
+}
+
+fn output_resize(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    let function_name = "output.resize(cols: number, rows: number)";
+    use crossterm::execute;
+
+    let cols: u16 = match multivalue.pop_front() {
+        Some(LuaValue::Number(f)) if f.is_sign_positive() => f.trunc() as u16,
+        Some(LuaValue::Integer(i)) if i.is_positive() => match u16::try_from(i) {
+            Ok(u) => u,
+            Err(err) => {
+                return wrap_err!("{}: can't convert 'cols' param from i64 to u16: {}", function_name, err);
+            }
+        },
+        Some(other) => {
+            return wrap_err!("{}: expected integer number, got {:?}", function_name, other);
+        },
+        None => {
+            return wrap_err!("{}: called without required argument 'cols' (expected integer number)", function_name);
+        }
+    };
+
+    let rows: u16 = match multivalue.pop_front() {
+        Some(LuaValue::Number(f)) if f.is_sign_positive() => f.trunc() as u16,
+        Some(LuaValue::Integer(i)) if i.is_positive() => match u16::try_from(i) {
+            Ok(u) => u,
+            Err(err) => {
+                return wrap_err!("{}: can't convert 'rows' param from i64 to u16: {}", function_name, err);
+            }
+        },
+        Some(other) => {
+            return wrap_err!("{}: expected integer number, got {:?}", function_name, other);
+        },
+        None => {
+            return wrap_err!("{}: called without required argument 'cols' (expected integer number)", function_name);
+        }
+    };
+
+    if let Err(err) = execute!(std::io::stdout(), crossterm::terminal::SetSize(cols, rows)) {
+        return wrap_err!("{}: unable to set terminal size due to err: {}", function_name, err);
+    }
+
+    Ok(())
+}
+
+fn output_cursor(_luau: &Lua, _: LuaValue) -> LuaValueResult {
+    let function_name = "output.cursor()";
+    
+    let (cols, rows) = match crossterm::cursor::position() {
+        Ok(pos) => pos,
+        Err(err) => {
+            return wrap_err!("{}: unable to get cursor position due to err: {}", function_name, err);
+        }
+    };
+
+    Ok(LuaValue::Vector(mluau::Vector::new(cols as f32, rows as f32, 0.0)))
+}
+
+
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function("clear", clear)?
         .with_function("write", output_write)?
         .with_function("ewrite", output_ewrite)?
         .with_function("sprint", simple_print_and_return)?
+        .with_function("size", output_size)?
+        .with_function("switch", output_switch)?
+        .with_function("resize", output_resize)?
+        .with_function("cursor", output_cursor)?
         .build_readonly()
 }

@@ -26,7 +26,7 @@ impl SealConfig {
                 if std_env::get_cwd(function_name)?
                     .join("src")
                     .join("main.luau")
-                    .exists() 
+                    .exists()
                 {
                     return Ok(Some(SealConfig { entry_path: String::from("./src/main.luau"), test_path: None }))
                 } else {
@@ -39,7 +39,7 @@ impl SealConfig {
             }
         }
 
-        let sealconfig_src = match fs::read(&current_path) {
+        let sealconfig_src = match fs::read_to_string(&current_path) {
             Ok(contents) => contents,
             Err(err) => {
                 // i just inlined wrap_io_read_errors lol
@@ -55,7 +55,8 @@ impl SealConfig {
             },
         };
 
-        let sealconfig = match luau.load(sealconfig_src).eval::<LuaValue>() {
+        let chunk = Chunk::Src(sealconfig_src);
+        let sealconfig = match luau.load(chunk).eval::<LuaValue>() {
             Ok(LuaValue::Table(config)) => config,
             Ok(other) => {
                 return wrap_err!("{}: config.luau at '{}' returned something that isn't a table: {:?}", function_name, current_path.display(), other);

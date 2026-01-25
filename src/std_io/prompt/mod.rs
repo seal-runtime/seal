@@ -91,13 +91,13 @@ fn prompt_confirm(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> 
     };
 
     if !message.is_empty() && !message.contains(": ") {
-        message.push_str(if default { 
+        message.push_str(if default {
             " [Y/n]: "
-        } else { 
+        } else {
             " [y/N]: "
         });
     }
-    
+
     loop {
         let line = prompt_line(luau, &message, function_name)?;
         match line.trim().to_lowercase().as_str() {
@@ -137,7 +137,7 @@ impl PasswordStyle {
 /// Prompts password masked by astricks with crossterm
 pub fn prompt_password_masked(message: &str, function_name: &str) -> LuaResult<String> {
     // print the prompt without newline
-    print!("{}", message);
+    put!("{}", message)?;
     if let Err(err) = io::stdout().flush() {
         return wrap_err!("{}: failed to flush stdout: {}", function_name, err);
     }
@@ -165,7 +165,7 @@ pub fn prompt_password_masked(message: &str, function_name: &str) -> LuaResult<S
                 KeyCode::Enter => break, // user pressed enter, we're done
                 KeyCode::Char(c) => {
                     buffer.push(c); // store the typed character
-                    print!("*"); // show asterisk instead of actual character
+                    put!("*")?; // show asterisk instead of actual character
                     if let Err(err) = io::stdout().flush() {
                         let _ = terminal::disable_raw_mode();
                         return wrap_err!("{}: failed to flush stdout: {}", function_name, err);
@@ -174,7 +174,7 @@ pub fn prompt_password_masked(message: &str, function_name: &str) -> LuaResult<S
                 KeyCode::Backspace => {
                     if buffer.pop().is_some() {
                         // move cursor back, overwrite with space, move back again
-                        print!("\x08 \x08");
+                        put!("\x08 \x08")?;
                         if let Err(err) = io::stdout().flush() {
                             let _ = terminal::disable_raw_mode();
                             return wrap_err!("{}: failed to flush stdout: {}", function_name, err);
@@ -191,7 +191,7 @@ pub fn prompt_password_masked(message: &str, function_name: &str) -> LuaResult<S
         return wrap_err!("{}: failed to disable raw mode: {}", function_name, err);
     }
 
-    println!(); // move to next line after password entry
+    puts!()?; // move to next line after password entry
 
     Ok(buffer)
 }
@@ -246,7 +246,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("confirm", prompt_confirm)?
         .build()?;
 
-    let prompt_table = match luau.load(PROMPT_DOT_LUAU_SRC).eval::<LuaTable>() {
+    let chunk = Chunk::Src(PROMPT_DOT_LUAU_SRC.to_owned());
+    let prompt_table = match luau.load(chunk).eval::<LuaTable>() { // <<>> HACK
         Ok(t) => t,
         Err(err) => {
             panic!("std/cli/prompt's prompt.luau did a bad: {}", err);

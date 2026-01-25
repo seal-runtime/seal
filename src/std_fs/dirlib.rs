@@ -79,7 +79,7 @@ fn fs_dir_call(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
             }
         }
     };
-    
+
     if metadata.is_dir() {
         entry::create(luau, &dir_path, function_name)
     } else {

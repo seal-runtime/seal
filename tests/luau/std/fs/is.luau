@@ -35,7 +35,8 @@ local function is()
         local child = process.spawn {
             program = "python3",
             args = { "-" }, -- read from stdin
-        }
+        } :: process.PipedChild
+
         child.stdin:write(MAKE_SOCKET_SRC)
         child.stdin:close()
         while child:alive() do

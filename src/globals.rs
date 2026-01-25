@@ -5,13 +5,34 @@ use crate::prelude::*;
 use crate::std_err::ecall;
 use crate::{require, std_io};
 
-pub fn error(_luau: &Lua, error_value: LuaValue) -> LuaValueResult {
-    wrap_err!("{}", error_value.to_string()?)
+pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    let function_name = "error(message: string | unknown, level: number?)";
+    let message = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s.to_string_lossy(),
+        Some(LuaNil) | None => String::default(),
+        Some(other) => std_io::format::pretty(luau, other)?,
+    };
+
+    let level = match multivalue.pop_front() {
+        Some(LuaValue::Number(f)) => Some(float_to_usize(f, function_name, "level")?),
+        Some(LuaValue::Integer(i)) => Some(int_to_usize(i, function_name, "level")?),
+        Some(LuaNil) | None => None,
+        Some(other) => {
+            return wrap_err!("{}: level expected to be number or nil/unspecified, got: {:?}", function_name, other);
+        }
+    };
+
+    if let Some(level) = level {
+        let traceback = luau.traceback(Some(&message), level)?.to_string_lossy();
+        Err(LuaError::runtime(traceback))
+    } else {
+        wrap_err!("{}", message)
+    }
 }
 
 pub fn warn(luau: &Lua, warn_value: LuaValue) -> LuaValueResult {
     let formatted_text = std_io::format::pretty(luau, warn_value)?;
-    eprintln!("{}[WARN]{} {}{}", colors::BOLD_YELLOW, colors::RESET, formatted_text, colors::RESET);
+    eputs!("{}[WARN]{} {}{}", colors::BOLD_YELLOW, colors::RESET, formatted_text, colors::RESET)?;
     Ok(LuaNil)
 }
 
@@ -22,7 +43,7 @@ pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
     // must use globals().get instead of globals().raw_get due to safeenv/sandbox (which requires newindex); raw_get incorrectly returns nil when safeenv enabled
     let luau_version: LuaString = globals.get("_VERSION")?;
     globals.raw_set("require", luau.create_function(require::require)?)?;
-    globals.raw_set("error", luau.create_function(error)?)?;	
+    globals.raw_set("error", luau.create_function(error)?)?;
     globals.raw_set("p", luau.create_function(std_io::output::simple_print_and_return)?)?;
     globals.raw_set("pp", luau.create_function(std_io::output::pretty_print_and_return)?)?;
     globals.raw_set("dp", luau.create_function(std_io::output::debug_print)?)?;
@@ -46,7 +67,7 @@ pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
 
 const SCRIPT_PATH_SRC: &str = r#"
     requiring_file = ""
-    local debug_name: string = (debug :: any).info(3, "s") --[[ this should give us the 
+    local debug_name: string = (debug :: any).info(3, "s") --[[ this should give us the
         debug name (set by luau.load().set_name) for the chunk that called require(),
         in the format `[string "./src/somewhere.luau"]`
     ]]
@@ -55,7 +76,8 @@ const SCRIPT_PATH_SRC: &str = r#"
 "#;
 
 pub fn get_debug_name(luau: &Lua) -> LuaResult<String> {
-    luau.load(SCRIPT_PATH_SRC).eval::<String>()
+    let chunk = Chunk::Src(SCRIPT_PATH_SRC.to_owned());
+    luau.load(chunk).eval::<String>()
 }
 
 pub fn get_script_path(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult {
@@ -66,7 +88,8 @@ pub fn get_script_path(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult
 
 pub fn get_script_parent(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult {
     let requiring_parent = {
-        let result: LuaString = luau.load(SCRIPT_PATH_SRC).eval()?;
+        let chunk = Chunk::Src(SCRIPT_PATH_SRC.to_owned());
+        let result: LuaString = luau.load(chunk).eval()?;
         let script_path = result.to_string_lossy();
         match std::path::PathBuf::from(script_path).parent() {
             Some(parent) => parent.to_string_lossy().to_string(),
@@ -118,7 +141,7 @@ pub fn get_script_project(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValue
             return wrap_err!("{} expected number of projects up to be a number or nil/unspecified, got: {:?}", function_name, other);
         }
     };
-    
+
     let requiring_file = get_debug_name(luau)?;
     match find_project(&requiring_file, projects_up) {
         Some(project) => ok_string(project.to_string_lossy().to_string(), luau),

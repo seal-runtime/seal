@@ -7,6 +7,8 @@ use mluau::prelude::*;
 use crate::compile;
 use crate::prelude::*;
 
+pub mod vars;
+
 pub fn get_current_shell() -> String {
     #[cfg(target_family = "unix")]
     {
@@ -22,18 +24,18 @@ pub fn get_current_shell() -> String {
         if let Ok(shell_path) = env::var("SHELL") {
             return shell_path;
         }
-        
+
         // Check specifically for PowerShell executables
         let pwsh_cmd = "pwsh";
         let powershell_cmd = "powershell";
-        
+
         // check if regular powershell installed bc pwsh 7 blows up
         if let Ok(output) = Command::new("where").arg(powershell_cmd).output()
             && output.status.success() {
                 let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
                 return path;
             }
-        
+
         // check if new/oss/powershell 7 installed; it might blow up with threading error tho
         if let Ok(output) = Command::new("where").arg(pwsh_cmd).output()
             && output.status.success() {
@@ -56,7 +58,7 @@ pub fn get_current_shell() -> String {
         ""
     };
 
-    if !which_cmd.is_empty() 
+    if !which_cmd.is_empty()
         && let Ok(output) = Command::new(which_cmd)
             .arg("sh")
             .output()
@@ -67,7 +69,6 @@ pub fn get_current_shell() -> String {
     }
 
     String::from("")
-    // panic!("Could not determine the current shell path");
 }
 
 pub fn get_cwd(function_name: &str) -> LuaResult<PathBuf> {
@@ -104,6 +105,7 @@ fn env_cwd(luau: &Lua, _: LuaValue) -> LuaValueResult {
 }
 
 fn env_environment_getvar(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    deprecate("env.getvar", "env.vars.get", luau)?;
     let var_name = match value {
         LuaValue::String(var) => var.to_string_lossy(),
         other => {
@@ -122,7 +124,8 @@ fn env_environment_getvar(luau: &Lua, value: LuaValue) -> LuaValueResult {
     }
 }
 
-fn env_environment_setvar(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+fn env_environment_setvar(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    deprecate("env.setvar", "env.vars.set", luau)?;
     let key = match multivalue.pop_front() {
         Some(LuaValue::String(key)) => key.to_string_lossy(),
         Some(other) => {
@@ -153,10 +156,10 @@ fn env_environment_setvar(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValu
             wrap_err!("env.setvar: unable to set environment variable '{}': {}", key, err)
         }
     }
-
 }
 
-fn env_environment_removevar(_luau: &Lua, value: LuaValue) -> LuaValueResult {
+fn env_environment_removevar(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    deprecate("env.removevar", "env.vars.unset", luau)?;
     let key = match value {
         LuaValue::String(key) => key.to_string_lossy(),
         other => {
@@ -165,7 +168,7 @@ fn env_environment_removevar(_luau: &Lua, value: LuaValue) -> LuaValueResult {
     };
 
     // SAFETY: removing env variable unsafe in multithreaded linux
-    // this could cause ub if mixed with thread.spawns 
+    // this could cause ub if mixed with thread.spawns
     unsafe { env::remove_var(&key); }
 
     match env::var(&key) {
@@ -213,6 +216,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("getvar", env_environment_getvar)?
         .with_function("setvar", env_environment_setvar)?
         .with_function("removevar", env_environment_removevar)?
+        .with_value("vars", vars::create(luau)?)?
         .with_function("cwd", env_cwd)?
         .build_readonly()
 }

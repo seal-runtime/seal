@@ -12,7 +12,9 @@ const BUNDLER_SRC: &str = include_str!("./bundle.luau");
 pub fn bundle(project_path: &str) -> LuaResult<String> {
     let luau = Lua::new();
     globals::set_globals(&luau, "bundler")?;
-    let bundle = match luau.load(BUNDLER_SRC).set_name("bundle.luau").eval::<LuaFunction>() {
+    
+    let chunk = Chunk::Src(BUNDLER_SRC.to_owned());
+    let bundle = match luau.load(chunk).set_name("bundle.luau").eval::<LuaFunction>() {
         Ok(bundle) => bundle,
         Err(err) => {
             panic!("loading seal bundle function broke due to err: {}", err);
@@ -49,7 +51,7 @@ pub fn is_standalone(bin: Option<PathBuf>) -> bool {
     // check the back of the file (last 12 bytes) to see if we're a standalone exe
     let magic_start = file_len - MAGIC.len() - 4;
     let extracted_magic = &executable_bytes[magic_start..magic_start + MAGIC.len()];
-    
+
     extracted_magic == MAGIC
 }
 

@@ -208,7 +208,7 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
                 wrap_err!("{} expected {} to be an integer number, got floating point number", function_name_and_args, context)
             }
         };
-    
+
         let file_offset = match multivalue.pop_front() {
             Some(LuaValue::Integer(n)) => n,
             Some(LuaValue::Number(f)) => try_truncate_f64(f, "file_offset")?,
@@ -217,7 +217,7 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
                 return wrap_err!("{} expected file_offset to be a number (integer), got: {:#?}", function_name_and_args, other);
             },
         };
-    
+
         let count = match multivalue.pop_front() {
             Some(LuaValue::Integer(n)) => Some(n),
             Some(LuaValue::Number(f)) => Some(try_truncate_f64(f, "count")?),
@@ -226,7 +226,7 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
                 return wrap_err!("{} expected count to be a number (integer), got: {:#?}", function_name_and_args, other);
             },
         };
-    
+
         let target_buffer = match multivalue.pop_front() {
             Some(LuaValue::Buffer(buffy)) => Some(buffy),
             Some(LuaNil) | None => None,
@@ -234,7 +234,7 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
                 return wrap_err!("{} expected target_buffer to be a buffer, got: {:#?}", function_name_and_args, other)
             },
         };
-    
+
         let buffer_offset = match multivalue.pop_front() {
             Some(LuaValue::Integer(n)) => n,
             Some(LuaValue::Number(f)) => try_truncate_f64(f, "buffer_offset")?,
@@ -243,7 +243,7 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
                 return wrap_err!("{} expected buffer_offset to be a number (integer), got: {:#?}", function_name_and_args, other);
             },
         };
-    
+
         // sanity checks
         let assert_sign = | n: i64, context: &str | -> LuaResult<u64> {
             if n < 0 {
@@ -252,7 +252,7 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
                 Ok(n as u64)
             }
         };
-    
+
         let buffer_offset = assert_sign(buffer_offset, "buffer_offset")?;
         let file_offset = assert_sign(file_offset, "file_offset")?;
         let count = {
@@ -262,7 +262,7 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
                 file_size
             }
         };
-    
+
         let buffer_size = {
             if let Some(target_buffer) = &target_buffer {
                 target_buffer.len() as u64
@@ -270,13 +270,13 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
                 count
             }
         };
-        
+
         if (buffer_offset + count) > buffer_size {
             return wrap_err!("{}: target buffer too small! buffer_offset + count is {}, which is larger than the provided buffer ({})", function_name_and_args, buffer_offset + count, buffer_size);
         } else if (file_offset + count) > file_size {
             return wrap_err!("{}: file_offset + count ({}) is greater than the file size ({})", function_name_and_args, file_offset + count, file_size);
         }
-    
+
         #[allow(unused_mut, reason = "needs to be mut on windows")]
         let mut file = match fs::File::open(&path) {
             Ok(file) => file,
@@ -284,14 +284,14 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
                 return wrap_err!("{}: unexpected error opening file at '{}': {}", function_name_and_args, path, err);
             }
         };
-    
+
         let count = match count.try_into() {
             Ok(count) => count,
             Err(_err) => {
                 return wrap_err!("{}: can't convert u64 ({}) to usize needed to read bytes from file", function_name_and_args, count);
             }
         };
-    
+
         let mut rust_buffer = vec![0; count];
         #[cfg(unix)]
         {
@@ -299,20 +299,20 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
                 return wrap_err!("{}: error reading file: {}", function_name_and_args, err);
             }
         }
-    
+
         #[cfg(windows)]
         {
             use std::io::SeekFrom;
-    
+
             if let Err(err) = file.seek(SeekFrom::Start(file_offset)) {
                 return wrap_err!("{}: error seeking file: {}", function_name_and_args, err);
             }
-    
+
             if let Err(err) = file.read(&mut rust_buffer) {
                 return wrap_err!("{}: error reading file: {}", function_name_and_args, err);
             }
         }
-    
+
         if let Some(target_buffer) = target_buffer {
             target_buffer.write_bytes(buffer_offset as usize, &rust_buffer);
             (Some(target_buffer), "Ok")

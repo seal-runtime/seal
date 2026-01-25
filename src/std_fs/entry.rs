@@ -91,7 +91,7 @@ pub fn metadata(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let permissions = {
         let builder = TableBuilder::create(luau)?
             .with_value("readonly", metadata.permissions().readonly())?;
-        
+
         #[cfg(unix)]
         {
             let permissions_mode = metadata.permissions().mode();
@@ -99,7 +99,7 @@ pub fn metadata(luau: &Lua, value: LuaValue) -> LuaValueResult {
                 .with_value("unix_mode", permissions_mode)?
                 .build_readonly()?
         }
-        
+
         #[cfg(not(unix))]
         {
             builder.build_readonly()?
@@ -146,10 +146,14 @@ pub fn copy_to(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         match copy_dir(&entry_path, &destination_path) {
             Ok(unsuccessful) => {
                 if !unsuccessful.is_empty() {
-                    println!("DirectoryEntry:copy_to() didn't fully succeed:");
+                    let mut error_message = String::with_capacity(46 + 42 * unsuccessful.len());
+                    error_message.push_str("DirectoryEntry:copy_to() didn't fully succeed:");
                     for err in unsuccessful {
-                        println!("  {}", err);
+                        error_message.push_str("  ");
+                        error_message.push_str(&err.to_string());
+                        error_message.push('\n');
                     }
+                    puts!("{}", error_message)?;
                 }
                 Ok(())
             },

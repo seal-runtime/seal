@@ -32,7 +32,7 @@ export type err = {
     --- Prettifies an `error` from `pcall` or any of the error returning functions.
     format: (err: error) -> string,
     --- Gets and formats the stack traceback at the current location.
-    traceback: () -> string,
+    traceback: (message: string?, level: number?) -> string,
     --- Takes any error and throws it (causing an error). 
     ---
     --- If the error already has stack traceback information, throwing the error causes two stack tracebacks to appear (one from the error itself, and a new one because we're causing an error).

@@ -1,4 +1,29 @@
 #![feature(default_field_values)]
+#![feature(str_as_str)]
+
+#![deny(clippy::unwrap_used, reason = "
+    seal prefers explicit panic! or unreachable!
+    or even .expect in an expr context; all unwraps must be justified"
+)]
+// print/println! panics on io::ErrorKind::BrokenPipe
+// which can cause seal to panic in normal operation (seal ./myscript | less)
+#![warn(
+    clippy::print_stdout, 
+    reason="print!/println! can cause seal to panic in normal operation;
+    - if you're in a function that returns LuaResult/LVR, use put! or puts! instead
+    - otherwise you need to lock stdout and use writeln! and handle/ignore its Result:
+        let stdout = std::io::stdout().lock();
+        let _ = writeln!(stdout, <format string>, args);"
+)]
+#![warn(
+    clippy::print_stderr, 
+    reason="eprint!/eprintln! may cause seal to panic in normal operation;
+    - if you're in a function that returns LuaResult/LVR, use eput! or eputs! instead
+    - otherwise you need to lock stderr and use writeln! and ignore/handle its Result:
+        let stderr = std::io::stderr().lock();
+        let _ = writeln!(stderr, <format string>, args);"
+)]
+
 use crate::{prelude::*, setup::SetupOptions};
 use mluau::prelude::*;
 
@@ -21,6 +46,7 @@ mod globals;
 mod interop;
 mod require;
 mod std_crypt;
+#[macro_use]
 mod std_io;
 mod std_net;
 mod std_serde;
@@ -40,7 +66,7 @@ use globals::SEAL_VERSION;
 type LuauLoadResult = LuaResult<Option<LuauLoadInfo>>;
 struct LuauLoadInfo {
     luau: Lua,
-    src: Vec<u8>,
+    code: Chunk,
     /// chunk_name is basically the entry_path except it's always an absolute path
     chunk_name: String,
 }
@@ -56,20 +82,20 @@ enum SealCommand {
     * `seal ./hi.luau meow1 meow2`
     */
     Default { filename: String },
-    /** 
+    /**
     Evaluate some string `src` with `seal`; `fs`, `http`, and `process` libs are already loaded in for convenience.
-    
+
     ## Examples:
     * `seal eval 'print("hi")'`
-    * `seal eval 'print(process.shell({ program = "seal -h" }):unwrap())'` 
-    */ 
+    * `seal eval 'print(process.shell({ program = "seal -h" }):unwrap())'`
+    */
     Eval(Args),
-    /** 
+    /**
     Run `seal` at the project (at your cwd)'s entrypoint, usually `./src/main.luau` unless configured otherwise.
-    
+
     ## Examples:
     * `seal run arg1 arg2`
-    */ 
+    */
     Run,
     /// `seal setup` | `seal project` | `seal script` | `seal setup custom <args>`
     Setup(SetupOptions),
@@ -119,6 +145,12 @@ fn main() -> LuaResult<()> {
     err::setup_panic_hook(); // seal panic = seal bug; we shouldn't panic in normal operation
 
     let args: VecDeque<OsString> = env::args_os().collect();
+    
+    if let Err(err) = std_env::vars::initialize_dotenv() {
+        display_error_and_exit(err);
+    }
+
+    crate::std_io::input::EXPECT_OUTPUT_STREAMS.initialize_and_check();
 
     let command = match SealCommand::parse(args) {
         Ok(command) => command,
@@ -134,11 +166,11 @@ fn main() -> LuaResult<()> {
         SealCommand::Setup(options) => seal_setup(options),
         SealCommand::Test => seal_test(),
         SealCommand::Version => {
-            println!("{}", SEAL_VERSION);
+            puts!("{}", SEAL_VERSION)?;
             Ok(None)
         },
         SealCommand::CommandHelp(command) => command.help(),
-        help @ SealCommand::DefaultHelp | 
+        help @ SealCommand::DefaultHelp |
         help @ SealCommand::HelpCommandHelp |
         help @ SealCommand::SealConfigHelp => help.help(),
         SealCommand::Repl => {
@@ -148,16 +180,33 @@ fn main() -> LuaResult<()> {
         SealCommand::ExecStandalone(bytecode) => seal_standalone(bytecode),
     };
 
-    let LuauLoadInfo { luau, src, chunk_name } = match info_result {
+    let LuauLoadInfo { luau, code, chunk_name } = match info_result {
         Ok(Some(info)) => info,
         Ok(None) => return Ok(()),
         Err(err) => display_error_and_exit(err),
     };
 
-    match luau.load(src).set_name(chunk_name).exec() {
+    match luau.load(code).set_name(chunk_name).exec() {
         Ok(_) => Ok(()),
         Err(err) => display_error_and_exit(err),
     }
+}
+
+#[cfg_attr(target_os = "android", expect(unused_variables))]
+fn set_jit(luau: &Lua) -> bool {
+    let should_jit = match std::env::var("SEAL_NO_JIT") {
+        Ok(var) if var.eq_ignore_ascii_case("true") => false,
+        Ok(var) if var.eq_ignore_ascii_case("false") => true,
+        Ok(_) => true,
+        Err(_) => true,
+    };
+
+    #[cfg(not(target_os = "android"))]
+    {
+        luau.enable_jit(should_jit);
+    }
+
+    should_jit
 }
 
 fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoadResult {
@@ -167,11 +216,13 @@ fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoad
     let Some(chunk_name) = require::get_chunk_name_for_module(&requested_path, function_name)? else {
         return wrap_err!("'{}' not found; does it exist and is it either a .luau file or directory with an init.luau?", requested_path);
     };
-    
+
     let luau = Lua::default();
     if let Err(err) = luau.sandbox(true) {
         return wrap_err!("{}: unable to enable Luau safeenv (sandbox mode) on chunk '{}' due to err: {}", function_name, chunk_name, err);
     };
+
+    set_jit(&luau);
 
     globals::set_globals(&luau, chunk_name.clone())?;
 
@@ -187,7 +238,7 @@ fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoad
         src = src[first_newline_pos + 1..].to_string();
     }
 
-    Ok(Some(LuauLoadInfo { luau, src: src.as_bytes().to_owned(), chunk_name }))
+    Ok(Some(LuauLoadInfo { luau, code: Chunk::Src(src), chunk_name }))
 }
 
 fn seal_eval(mut args: Args) -> LuauLoadResult {
@@ -201,7 +252,7 @@ fn seal_eval(mut args: Args) -> LuauLoadResult {
     let luau = Lua::default();
     let globals = luau.globals();
     globals::set_globals(&luau, String::from("eval"))?;
-    
+
     // eval comes with a few libs builtin
     globals.raw_set("fs", ok_table(std_fs::create(&luau))?)?;
     globals.raw_set("process", ok_table(std_process::create(&luau))?)?;
@@ -209,7 +260,7 @@ fn seal_eval(mut args: Args) -> LuauLoadResult {
 
     Ok(Some(LuauLoadInfo {
         luau,
-        src: src.as_bytes().to_owned(),
+        code: Chunk::Src(src),
         // relative require probs wont work atm
         chunk_name: std_env::get_cwd("seal eval")?
             .to_string_lossy()
@@ -283,7 +334,7 @@ fn seal_compile(mut args: Args) -> LuauLoadResult {
                     return wrap_err!("{} - output switch (-o) provided but missing output file name/path", function_name);
                 }
             } else {
-                let entry_path = args.pop_front().unwrap(); // UNWRAP: args never empty here
+                let entry_path = args.pop_front().expect("args cannot be empty here");
                 if let Some(front) = args.front()
                     && let Some(front) = front.to_str()
                 {
@@ -312,7 +363,7 @@ fn seal_compile(mut args: Args) -> LuauLoadResult {
     if output_path.ends_with(".luau") {
         match fs::write(&output_path, bundled_src) {
             Ok(_) => {
-                println!("{} - bundled project sourcecode to '{}'", function_name, &output_path);
+                puts!("{} - bundled project sourcecode to '{}'", function_name, &output_path)?;
             },
             Err(err) => {
                 return wrap_err!("{} - unable to write to file '{}' due to err: {}", function_name, &output_path, err);
@@ -347,7 +398,7 @@ fn seal_compile(mut args: Args) -> LuauLoadResult {
         return wrap_err!("{} - error writing compiled program to file: {}", function_name, err);
     }
 
-    println!("{} - compiled to standalone program '{}'!", function_name, output_path);
+    puts!("{} - compiled to standalone program '{}'!", function_name, output_path)?;
 
     #[cfg(unix)]
     {
@@ -365,10 +416,14 @@ fn seal_standalone(bytecode: Vec<u8>) -> LuauLoadResult {
     let luau = Lua::new();
     let entry_path = std::env::current_exe().unwrap_or_default();
     let entry_path = entry_path.to_string_lossy().into_owned();
+
+    set_jit(&luau);
+
     globals::set_globals(&luau, &entry_path)?;
+
     Ok(Some(LuauLoadInfo {
         luau,
-        src: bytecode,
+        code: Chunk::Bytecode(bytecode),
         chunk_name: entry_path
     }))
 }
@@ -384,7 +439,7 @@ impl SealCommand {
 
         // show help if user runs seal w/out anything else
         let Some(first_arg) = args.pop_front() else {
-            eprintln!("seal: you didn't pass me anything :(\n  (expected file to run or command, displaying help)");
+            eputs!("seal: you didn't pass me anything :(\n  (expected file to run or command, displaying help)")?;
             return Ok(Self::DefaultHelp);
         };
 
@@ -435,7 +490,7 @@ impl SealCommand {
                 return wrap_err!("help not yet implemented for command {:#?}", other);
             },
         })?;
-        println!("{}", help_function.call::<String>(LuaNil)?);
+        puts!("{}", help_function.call::<String>(LuaNil)?)?;
         Ok(None)
     }
     fn next_is_help(&self, args: &Args) -> bool {

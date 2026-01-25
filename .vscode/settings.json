@@ -29,6 +29,10 @@
   "luau-lsp.types.documentationFiles": ["./.seal/typedefs/docs.json"],
   "luau-lsp.fflags.enableNewSolver": true,
   "luau-lsp.fflags.enableByDefault": true,
+  "luau-lsp.fflags.override": {
+    "LuauInstantiationUsesGenericPolarity": "false"
+  },
   "luau-lsp.inlayHints.variableTypes": false,
   "luau-lsp.plugin.enabled": false,
+  "stylua.disableVersionCheck": true,
 }

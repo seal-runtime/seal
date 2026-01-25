@@ -20,34 +20,35 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
     if is_reserved(&path) {
         get_standard_library(luau, path)
     } else {
-        let path = resolve_path(luau, path)?;
+        let resolved_path = resolve_path(luau, path)?;
         // must use globals.get() due to safeenv
-        let require_cache: LuaTable = luau.globals().get("_REQUIRE_CACHE").unwrap();
-        let cached_result: Option<LuaValue> = require_cache.raw_get(path.clone())?;
+        let Ok(LuaValue::Table(require_cache)) = luau.globals().get("_REQUIRE_CACHE") else {
+            return wrap_err!("require: you changed the type of or removed _REQUIRE_CACHE you goober why would you do that? do you want to seal the world burn?");
+        };
 
-        if let Some(cached_result) = cached_result {
-            Ok(cached_result)
-        } else {
-            let data = match fs::read_to_string(&path) {
-                Ok(data) => data,
-                Err(err) => {
-                    match err.kind() {
-                        io::ErrorKind::NotFound => {
-                            return wrap_err!("require: no such file or directory for resolved path {}", path);
-                        },
-                        _other => {
-                            return wrap_err!("require: error reading file: {}", err);
-                        }
-                    }
-                }
-            };
-            let result: LuaValue = luau.load(data).set_name(&path).eval()?;
-            require_cache.raw_set(path.clone(), result)?;
-            // this is pretty cursed but let's just read the data we just wrote to the cache to get a new LuaValue
-            // that can be returned without breaking the borrow checker or cloning
-            let result = require_cache.raw_get(path.to_owned())?;
-            Ok(result)
+        let cached_result: Option<LuaValue> = require_cache.raw_get(resolved_path.clone())?;
+
+        if let Some(cached) = cached_result {
+            return Ok(cached);
         }
+
+        let src = match fs::read_to_string(&resolved_path) {
+            Ok(data) => data,
+            Err(err) if matches!(err.kind(), io::ErrorKind::NotFound) => {
+                return wrap_err!("require: no such file or directory: {}", &resolved_path);
+            },
+            Err(err) => {
+                return wrap_err!("require: unable to read file at '{}' due to err: {}", &resolved_path, err);
+            }
+        };
+
+        let chunk = Chunk::Src(src);
+
+        let value = luau.load(chunk).set_name(&resolved_path).eval::<LuaValue>()?;
+        
+        require_cache.raw_set(resolved_path.clone(), &value)?;
+
+        Ok(value)
     }
 }
 
@@ -59,6 +60,7 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std/fs/dir" => ok_table(std_fs::dirlib::create(luau)),
 
         "@std/env" => ok_table(std_env::create(luau)),
+        "@std/env/vars" => ok_table(std_env::vars::create(luau)),
 
         "@std/err" => ok_table(std_err::create(luau)),
 
@@ -83,12 +85,17 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std/serde/yaml" => ok_table(std_serde::yaml::create(luau)),
         "@std/serde/json" => ok_table(std_json::create(luau)),
         "@std/serde/hex" => ok_table(std_serde::hex::create(luau)),
+        "@std/serde/lz4" => ok_table(std_serde::lz4::create(luau)),
+        "@std/serde/zstd" => ok_table(std_serde::zstd::create(luau)),
+        "@std/serde/zlib" => ok_table(std_serde::zlib::create(luau)),
+        "@std/serde/url" => ok_table(std_serde::url::create(luau)),
         "@std/json" => ok_table(std_json::create(luau)),
 
         "@std/net" => ok_table(std_net::create(luau)),
         "@std/net/http" => ok_table(std_net::http::create(luau)),
         "@std/net/http/server" => ok_table(std_net::serve::create(luau)),
         "@std/net/request" => ok_function(std_net::http::request, luau),
+        "@std/net/websocket" => ok_table(std_net::websocket::create(luau)),
 
         "@std/crypt" => ok_table(std_crypt::create(luau)),
         "@std/crypt/aes" => ok_table(std_crypt::create_aes(luau)),
@@ -144,30 +151,46 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
 
 const STD_STR_SRC: &str = include_str!("../std_str.luau");
 fn load_std_str(luau: &Lua) -> LuaResult<LuaTable> {
-    luau.load(STD_STR_SRC).eval::<LuaTable>()
+    let chunk = Chunk::Src(STD_STR_SRC.to_owned());
+    luau.load(chunk).set_name("std/str").eval::<LuaTable>()
 }
 
 const STD_SEMVER_SRC: &str = include_str!("../std_semver.luau");
 fn load_std_semver(luau: &Lua) -> LuaResult<LuaTable> {
-    luau.load(STD_SEMVER_SRC).eval::<LuaTable>()
+    let chunk = Chunk::Src(STD_SEMVER_SRC.to_owned());
+    luau.load(chunk).set_name("std/semver").eval::<LuaTable>() // <<>> HACK
 }
 
+const RESOLVER_SRC: &str = include_str!("./resolver.luau");
 pub fn get_resolver(luau: &Lua) -> LuaResult<LuaTable> {
-    let resolver_src = include_str!("./resolver.luau");
-    let LuaValue::Table(resolver) = luau.load(resolver_src).eval()? else {
+    let chunk = Chunk::Src(RESOLVER_SRC.to_owned());
+    let LuaValue::Table(resolver) = luau.load(chunk).eval()? else {
         panic!("require resolver didnt return table??");
     };
     Ok(resolver)
 }
 
+fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
+    let f = luau.named_registry_value::<Option<LuaFunction>>("require.resolver.resolve")?;
+    if let Some(resolve) = f {
+        Ok(resolve)
+    } else {
+        let chunk = Chunk::Src(RESOLVER_SRC.to_owned());
+        let LuaValue::Table(resolver) = luau.load(chunk).eval()? else {
+            panic!("require resolver didnt return table??");
+        };
+        let LuaValue::Function(resolve) = resolver.raw_get("resolve")? else {
+            panic!("require resolver.resolve not a function??");
+        };
+
+        luau.set_named_registry_value("require.resolver.resolve", &resolve)?;
+
+        Ok(resolve)
+    }
+}
+
 fn resolve_path(luau: &Lua, path: String) -> LuaResult<String> {
-    let resolver_src = include_str!("./resolver.luau");
-    let LuaValue::Table(resolver) = luau.load(resolver_src).eval()? else {
-        panic!("require resolver didnt return table??");
-    };
-    let LuaValue::Function(resolve) = resolver.raw_get("resolve")? else {
-        panic!("require resolver.resolve not a function??");
-    };
+    let resolve = cached_resolver(luau)?;
     match resolve.call::<LuaValue>(path.to_owned()) {
         Ok(LuaValue::Table(result_table)) => {
             if let LuaValue::String(path) = result_table.raw_get("path")? {
@@ -182,7 +205,7 @@ fn resolve_path(luau: &Lua, path: String) -> LuaResult<String> {
             panic!("require: resolve() returned something that isn't a string or err table; this shouldn't be possible");
         },
         Err(err) => {
-            panic!("require: resolve() broke? this shouldn't happen; err: {}", err);
+            wrap_err!("require: error requiring file '{}': {}", path, err)
         }
     }
 }

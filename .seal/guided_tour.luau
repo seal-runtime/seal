@@ -108,8 +108,8 @@ type EnvAndCliArgs = {}; local back: TableOfContents do
 	end
 
 	-- get and set environment variables
-	local PATH: string? = env.getvar("PATH")
-	env.setvar("hi", "true")
+	local PATH: string? = env.vars.get("PATH")
+	env.vars.set("hi", "true")
 end
 
 -- use @std/process to spawn child processes, shell commands, including in a nonblocking manner!
@@ -127,8 +127,7 @@ type SpawningChildProcesses = {}; local back: TableOfContents do
 		args = { "--version" }
 	}
 
-	print(if result.ok then result.stdout
-          else result.stderr)
+	print(if result.ok then result.stdout else result.stderr)
 	-- if you want to assume your process run attempt succeeded (and error otherwise), use :unwrap()
 	local stdout = result:unwrap()
 
@@ -142,7 +141,7 @@ type SpawningChildProcesses = {}; local back: TableOfContents do
 	local handle = process.spawn {
 		program = `seal eval '{waiting_src}'`,
 		shell = if env.os == "Windows" then "pwsh" else "sh"
-	}
+	} :: process.PipedChild
 
 	local text = ""
 	while handle:alive() do

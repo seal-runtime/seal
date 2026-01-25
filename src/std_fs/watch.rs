@@ -1,18 +1,23 @@
 use mluau::prelude::*;
 use crate::prelude::*;
+
 use crate::std_fs::pathlib::normalize_path;
-use std::{path::Path, time::Duration};
+
+use std::path::Path;
+use std::time::Duration;
 use std::sync::{Arc, Mutex};
+use std::io::Write;
 
 use notify::{event::{
-    AccessKind, AccessMode, 
-    CreateKind, DataChange, 
-    MetadataKind, ModifyKind, 
-    RemoveKind, RenameMode}, 
-    Event, EventKind, 
+    AccessKind, AccessMode,
+    CreateKind, DataChange,
+    MetadataKind, ModifyKind,
+    RemoveKind, RenameMode},
+    Event, EventKind,
     RecursiveMode, Watcher
 };
 use crossbeam_channel::RecvTimeoutError;
+
 
 #[derive(Clone, Copy)]
 pub struct WatchOptions {
@@ -46,8 +51,8 @@ impl WatchOptions {
                 return wrap_err!("{} expected WatchOptions.timeout_ms to be a number (in milliseconds) or nil, got: {:?}", function_name, other);
             }
         };
-        
-        Ok(Self { 
+
+        Ok(Self {
             recursive,
             timeout,
         })
@@ -157,13 +162,13 @@ fn create_event_table(event: Event, event_category: EventCategory, luau: &Lua) -
     for path in event.paths.iter() {
         let s = normalize_path(path.to_string_lossy().as_ref());
         paths_table.raw_push(luau.create_string(s)?)?;
-    }  
+    }
     TableBuilder::create(luau)?
         .with_value("paths", paths_table)?
         .with_value("kind", ok_string(event_category.stringify_kind(), luau)?)?
         .with_value("is_write", {
             matches!(
-                event_category.stringify_kind(), 
+                event_category.stringify_kind(),
                 "Create::File" | "Close::Write" | "Modify::Data" | "Modify::Data::Other" // windows sends Modify::Data::Other
             )
         })?
@@ -172,16 +177,18 @@ fn create_event_table(event: Event, event_category: EventCategory, luau: &Lua) -
 
 pub fn watch<P: AsRef<Path>>(luau: &Lua, paths: Vec<P>, options: WatchOptions, function_name: &'static str) -> LuaValueResult {
     let (tx, rx) = crossbeam_channel::unbounded::<Event>();
-    
+
     let mut watcher = match notify::recommended_watcher(move |res: Result<Event, notify::Error>| {
         match res {
-            Ok(event) =>  {
+            Ok(event) => {
                 tx.send(event).unwrap_or_else(|err| {
-                    eprintln!("Unable to send event due to {}", err);
+                    let mut stderr = std::io::stderr().lock();
+                    let _ = writeln!(stderr, "Unable to send event due to err: {}", err);
                 });
             },
             Err(err) => {
-                eprintln!("Unable to send message due to {}", err);
+                let mut stderr = std::io::stderr().lock();
+                let _ = writeln!(stderr, "Unable to send message due to err: {}", err);
             }
         };
     }) {

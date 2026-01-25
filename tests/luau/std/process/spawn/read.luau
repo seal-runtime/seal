@@ -25,7 +25,7 @@ local function spawn_longrunning(): process.ChildProcess
     return child
 end
 
-local function spawn_poem(stdout_capacity: number, stderr_capacity: number, stdout_truncate: "front" | "back"): (process.ChildProcess, string)
+local function spawn_poem(stdout_capacity: number, stderr_capacity: number, stdout_truncate: "Front" | "Back"): (process.ChildProcess, string)
     local src = [[
     local fs = require("@std/fs")
     local time = require("@std/time")
@@ -68,6 +68,7 @@ end
 
 local function makesurelinesdoesntbreak()
     local child = spawn_long_waiter()
+    assert(child.stdout ~= nil and child.stderr ~= nil, "stdio should be piped")
 
     for line in child.stdout:lines() do
         print(line)
@@ -83,6 +84,8 @@ makesurelinesdoesntbreak()
 
 local function basicread()
     local child = spawn_long_waiter()
+    assert(child.stdout ~= nil and child.stderr ~= nil and child.stdin ~= nil, "stdio should be piped")
+
     local text = child.stdout:read()
     assert(text == "hehe\n", "text not match hehe\\n")
     local content = child.stderr:read(nil, 0.5)
@@ -94,6 +97,7 @@ basicread()
 
 local function readtoofast()
     local child = spawn_long_waiter()
+    assert(child.stdout ~= nil, "stdout should be piped")
     local text = child.stdout:read(nil, 0)
     assert(text == nil, "we should've read too fast because we're nonblocking")
     child:kill()
@@ -102,7 +106,8 @@ end
 readtoofast()
 
 local function readupto()
-    local child, poem_path = spawn_poem(128, 64, "front")
+    local child, poem_path = spawn_poem(128, 64, "Front")
+    assert(child.stdout ~= nil, "stdout should be piped")
     local text = child.stdout:read(24, 0.25)
     assert(text ~= nil, "poem text shouldn't be nil in readupto")
     local len = child.stdout:len()
@@ -116,6 +121,7 @@ cheese.retry(readupto, 3)
 
 local function readloop()
     local child = spawn_longrunning()
+    assert(child.stdout ~= nil, "stdout should be piped")
     local result: { string } = {}
     while time.wait(0.025) do
         local text = child.stdout:read(nil, 0)
@@ -134,6 +140,7 @@ readloop()
 
 local function mixingreads()
     local child = spawn_long_waiter()
+    assert(child.stdout ~= nil, "stdout should be piped")
     local stdout = child.stdout
     local first = stdout:read_exact(1, 0.5)
     assert(first == "h", "first should be h")
@@ -145,7 +152,9 @@ end
 cheese.retry(mixingreads, 2)
 
 local function readexactbasic()
-    local child, poem_path = spawn_poem(222, 32, "back")
+    local child, poem_path = spawn_poem(222, 32, "Back")
+    assert(child.stdout ~= nil and child.stderr ~= nil and child.stdin ~= nil, "stdio should be piped")
+
     local t0 = os.clock()
     local first_paragraphish = child.stdout:read_exact(176, 0.9)
     local t1 = os.clock() - t0

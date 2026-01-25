@@ -1,5 +1,6 @@
 local str = require("@std/str")
 local err = require("@std/err")
+local env = require("@std/env")
 local time = require("@std/time")
 local colors = require("@std/colors")
 local format = require("@std/io/format")
@@ -58,8 +59,9 @@ function prompt.validate(message: string, v: (response: string) -> true | string
     error("unreachable")
 end
 
-function prompt.pick(message: string, options: { string }, default: number?): err.Result<number>
+function prompt.pick(message: string, options: { string }, default: number?, alt: boolean?): err.Result<number>
     local function_name = "prompt.pick(message: string, options: { string }, default: number?)"
+    alt = alt or false
 
     if typeof(message) ~= "string" then
         return err.wrap(`{function_name}{n5} expected message to be a string, got: {df(message)}`)
@@ -90,39 +92,103 @@ function prompt.pick(message: string, options: { string }, default: number?): er
     end
 
     local index: number
+
+    local ERASE_LINE_AND_RETURN = "\27[2K\27[G"
+
+    local should_be_interactive = input.tty() and not env.vars.flag("SEAL_SIMPLE_PROMPT", false)
+    local size = output.size()
+    if size.y < (#options + 1) then
+        should_be_interactive = false
+    end
     
-    if input.tty() then
-        print(message)
+    if should_be_interactive then
+        if alt then
+            output.switch("Alternate")
+            output.write("\x1b[H") -- go to top left of screen
+        end
+
+        print(`{message} {colors.style.dim("(up/down arrow keys to move, enter = select, r = redraw, numbers = jump)")}`)
 
         input.rawmode(true)
 
         output.write("\27[?25l") -- hide cursor
 
         local current = default or 1
-        for option_index, option in options do -- write all the options down
+        -- write all options down putting green > next to default
+        for option_index, option in options do
             output.write(`{if option_index == current then colors.bold.green(">") else " "}  {colors.bold.blue(tostring(option_index))} {option}\r\n`)
         end
+        -- move cursor back up to default option
         for i = #options, 1, -1 do
-            output.write("\27[A")
-            if i == current then -- go back to the default
+            output.write("\27[A") -- go up 1
+            if i == current then
                 break 
             end
         end
 
         local interrupt_message: string?
 
+        local digits_buffer: { string } = {}
+
+        local function rewrite_current_option(selected: boolean)
+            if selected then
+                output.write(ERASE_LINE_AND_RETURN)
+                output.write("\r" .. colors.bold.green(">") .. `  {colors.bold.blue(tostring(current))} {options[current]}\r`)
+            else
+                output.write(ERASE_LINE_AND_RETURN)
+                output.write(`   {colors.bold.blue(tostring(current))} {options[current]}\r`)
+            end
+        end
+
+        local function go_up(count: number, change_state: boolean)
+            for i = 1, math.abs(count) do
+                if change_state and (current - 1) == 0 then
+                    break
+                end
+                if change_state then
+                    rewrite_current_option(false)
+                end
+                output.write("\27[A") -- go up 1 visually
+                if change_state then
+                    current -= 1
+                    rewrite_current_option(true)
+                end
+            end
+        end
+
+        local function go_down(count: number, change_state: boolean)
+            for i = 1, math.abs(count) do
+                if change_state and (current + 1) > #options then
+                    break
+                end
+                if change_state then
+                    rewrite_current_option(false)
+                end
+                output.write("\27[B") -- go down 1 visually
+                if change_state then
+                    current += 1
+                    rewrite_current_option(true)
+                end
+            end
+        end
+
+        local function show()
+            go_up(current, false)
+            output.write(ERASE_LINE_AND_RETURN)
+            output.write(`{message}{options[current]} ({current})`)
+            go_down(current, false)
+        end
+
         for event in input.events(time.milliseconds(20)) do
             if event.is == "Key" then
                 if event.key == "Up" and current - 1 > 0 then
-                    current -= 1
-                    output.write("\r ") -- erase the > at the start of the current line
-                    output.write("\27[A") -- go up 1 visually
-                    output.write("\r" .. colors.bold.green(">")) -- write a new > at the current line
+                    go_up(1, true)
+                    table.clear(digits_buffer)
+                    show()
                 elseif event.key == "Down" and current < #options then
-                    current += 1
-                    output.write("\r ")
-                    output.write("\27[B") -- go down 1 visually
-                    output.write("\r" .. colors.bold.green(">"))
+                    go_down(1, true)
+                    table.clear(digits_buffer)
+                    show()
                 elseif event.key == "Enter" then
                     index = current
                     break
@@ -134,23 +200,72 @@ function prompt.pick(message: string, options: { string }, default: number?): er
                     interrupt_message = "Prompt interrupted with Ctrl+D"
                     index = current
                     break
+                elseif event.key == "r" then
+                    output.write("\r")
+                    go_up(math.abs(0 - current), false)
+                    input.rawmode(false)
+                    return prompt.pick(message, options, default, true)
+                elseif event.key == "Backspace" and #digits_buffer > 0 then
+                    table.remove(digits_buffer, #digits_buffer)
+                    show()
+                else
+                    local number_pressed = string.match(event.key, "([%d]+)")
+                    if not number_pressed then
+                        continue
+                    end
+
+                    table.insert(digits_buffer, number_pressed)
+
+                    local index_target = tonumber(table.concat(digits_buffer))
+                    assert(index_target ~= nil, "concating a bunch of %d strings should result in a valid number")
+
+                    -- if index_target > options, we assume the user meant to navigate to the number they just pressed
+                    -- instead of the combined one in the buffer
+                    if index_target == 0 or index_target > #options then
+                        table.clear(digits_buffer)
+                        table.insert(digits_buffer, number_pressed)
+
+                        local pressed_index = tonumber(number_pressed)
+                        assert(pressed_index ~= nil, "number from %d must not be nil")
+                        -- index_target = math.max(index_target, 1)
+                        index_target = math.clamp(pressed_index, 1, #options)
+                    end
+
+                    local diff = index_target - current
+                    if diff > 0 then
+                        go_down(diff, true)
+                    else
+                        go_up(diff, true)
+                    end
+
+                    show()
                 end
             end
         end
 
-        while current < #options do -- go to bottom so we can start erasing rows
-            current += 1
-            output.write("\27[B")
-        end
-        for i = 1, (#options - 1) do
+        -- output.write("\x1b[999B\x1b[G")   -- move to absolute bottom left of terminal
+        -- move down from current to bottom of options
+        go_down((#options - current) + 1, false)
+        output.write("\r") -- make sure we're on the left before starting to erase
+
+        for i = 1, (#options + 1) do
             output.write("\27[A")         -- move up one line
-            output.write("\27[2K\27[G")   -- erase line and go to start
+            output.write(ERASE_LINE_AND_RETURN)   -- erase line and go to start
         end
+
+        output.write(message .. options[index] .. "\n")
+        output.write("\r") -- return cursor to LHS
 
         output.write("\27[?25h") -- show cursor
-        
+
         input.rawmode(false)
 
+        if alt then
+            output.switch("Main")
+            output.write(ERASE_LINE_AND_RETURN)
+            output.write(message .. options[index] .. "\n")
+        end
+    
         if interrupt_message then
             return err.wrap(interrupt_message)
         end
@@ -168,7 +283,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
         while true do
             local response = str.trimback(input.rawline("Pick an index from the above: "))
             response = tonumber(response)
-            if response and response > 0 and response < #options then
+            if response and response > 0 and response <= #options then
                 index = response
                 break
             else

@@ -3,7 +3,7 @@ use mluau::prelude::*;
 
 use regex::Regex;
 
-pub fn process_debug_values(value: LuaValue, result: &mut String, depth: usize) -> LuaResult<()> {
+pub fn process_debug_values(result: &mut String, value: &LuaValue, depth: usize) -> LuaResult<()> {
     let left_padding = " ".repeat(2 * depth);
     match value {
         LuaValue::Table(t) => {
@@ -12,7 +12,7 @@ pub fn process_debug_values(value: LuaValue, result: &mut String, depth: usize) 
                 for pair in t.pairs::<LuaValue, LuaValue>() {
                     let (k, v) = pair?;
                     result.push_str(&format!("  {left_padding}{:#?} = ", k));
-                    process_debug_values(v, result, depth + 1)?;
+                    process_debug_values(result, &v, depth + 1)?;
                     result.push('\n');
                 }
                 result.push_str(&format!("{left_padding}}}"));
@@ -21,6 +21,10 @@ pub fn process_debug_values(value: LuaValue, result: &mut String, depth: usize) 
         LuaValue::String(s) => {
             let formatted_string = format!("{:?}", s);
             result.push_str(&formatted_string);
+        },
+        LuaValue::Buffer(buffy) => {
+            let hex_cfg = pretty_hex::HexConfig {title: true, width: 8, group: 0, ..pretty_hex::HexConfig::default() };
+            result.push_str(&pretty_hex::config_hex(&buffy.to_vec(), hex_cfg));
         },
         LuaValue::UserData(data) => {
             match data.call_method::<LuaString>("__dp", ()) {
@@ -48,7 +52,7 @@ fn debug(luau: &Lua, stuff: LuaMultiValue) -> LuaResult<LuaString> {
     let mut multi_values = stuff.clone();
 
     while let Some(value) = multi_values.pop_front() {
-        process_debug_values(value, &mut result, 0)?;
+        process_debug_values(&mut result, &value, 0)?;
         if !multi_values.is_empty() {
             result += ", ";
         }
@@ -58,9 +62,26 @@ fn debug(luau: &Lua, stuff: LuaMultiValue) -> LuaResult<LuaString> {
 }
 
 const OUTPUT_FORMATTER_SRC: &str = include_str!("./output_formatter.luau");
+
+pub fn cached_formatter(luau: &Lua) -> LuaResult<LuaTable> {
+    let f = luau.named_registry_value::<Option<LuaTable>>("format.formatter")?;
+    if let Some(resolve) = f {
+        Ok(resolve)
+    } else {
+        let chunk = Chunk::Src(OUTPUT_FORMATTER_SRC.to_owned());
+        let LuaValue::Table(formatter) = luau.load(chunk).eval()? else {
+            panic!("output_formatter.luau didnt return table??");
+        };
+
+        luau.set_named_registry_value("format.formatter", &formatter)?;
+
+        Ok(formatter)
+    }
+}
+
 pub fn simple(luau: &Lua, value: LuaValue) -> LuaValueResult {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
-    let format_simple: LuaFunction = r.raw_get("simple")?;
+    let formatter = cached_formatter(luau)?;
+    let format_simple: LuaFunction = formatter.raw_get("simple")?;
     let result = match format_simple.call::<LuaString>(value) {
         Ok(text) => text.to_string_lossy(),
         Err(err) => {
@@ -73,6 +94,7 @@ pub fn simple(luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 pub fn strip_colors(input: &str) -> String {
+    #[allow(clippy::unwrap_used, reason = "this is a valid regex")]
     let re_colors = Regex::new(r"\x1b\[[0-9;]*m").unwrap();
     let without_colors = re_colors.replace_all(input, "");
     without_colors.to_string()
@@ -92,8 +114,8 @@ fn uncolor(luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 pub fn pretty(luau: &Lua, value: LuaValue) -> LuaResult<String> {
-    let r: LuaTable = luau.load(OUTPUT_FORMATTER_SRC).eval()?;
-    let format_pretty: LuaFunction = r.raw_get("pretty")?;
+    let formatter = cached_formatter(luau)?;
+    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
     let result = match format_pretty.call::<LuaString>(value) {
         Ok(text) => text.to_string_lossy(),
         Err(err) => {
@@ -101,6 +123,18 @@ pub fn pretty(luau: &Lua, value: LuaValue) -> LuaResult<String> {
         }
     };
     Ok(result)
+}
+
+pub fn hexdump(_luau: &Lua, value: LuaValue) -> LuaResult<String> {
+    let hex_cfg = pretty_hex::HexConfig {title: true, width: 8, group: 0, ..pretty_hex::HexConfig::default() };
+    let bytes = match value {
+        LuaValue::String(s) => s.as_bytes().to_owned(),
+        LuaValue::Buffer(buffy) => buffy.to_vec(),
+        other => {
+            return wrap_err!("format.hexdump(data: string | buffer) expected data to be a string or buffer, got: {:?}", other);
+        }
+    };
+    Ok(pretty_hex::config_hex(&bytes, hex_cfg))
 }
 
 pub fn __call_format(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
@@ -121,6 +155,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("simple", simple)?
         .with_function("debug", debug)?
         .with_function("uncolor", uncolor)?
+        .with_function("hexdump", hexdump)?
         .with_metatable(TableBuilder::create(luau)?
             .with_function("__call", __call_format)?
             .build_readonly()?
