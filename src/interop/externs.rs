@@ -9,46 +9,46 @@ use std::mem::ManuallyDrop;
 
 type SealOpenExtern = unsafe extern "C-unwind" fn(*mut lua_State) -> i32;
 
-/// Opens a dynamic library,
-/// 
-/// ### Arguments (on the Luau stack) 
-/// - An absolute path to the Rust/C library (on the Luau stack)
-/// 
-/// ### Returns (on the Luau stack)
-/// - (true, LuaValue) if loading the library worked
-/// - (false, string) if loading the library didn't work
-///   the string should be the error message
-/// 
-/// ### Returns 
-/// - an i32 that should always be 2 (number of returns on the Luau stack).
+/// Calls the symbol `seal_open_extern` in the dynamic library provided by the caller
+/// with a mutable pointer to the Luau state.
 /// 
 /// # Safety
-/// Passed Luau state must be valid and alive and outlive this call.
-/// Returns the LuaValue returned by the external library
+/// The caller in Luau is responsible for upholding that the loaded library
+/// - is valid for the caller's platform
+/// - uses the Luau stack correctly
+/// - does NOT deallocate any memory owned by Luau
+/// - upholds memory safety requirements
 pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
+    let function_name = "<unsafe> extern.load(path: string)";
+
     let library_path = Path::new(&path);
 
+    // SAFETY: ensure we do NOT drop the loaded library, otherwise calling functions
+    // returned by the library WILL segfault/ub
     let library = unsafe { 
-        match Library::new(library_path) {
+        let library = match Library::new(library_path) {
             Ok(lib) => lib,
             Err(err) => {
-                return wrap_err!("_LOAD_EXTERN: unable to open library at '{}' due to err {}", &path, err);
+                return wrap_err!("{}: unable to open library at '{}' due to err {}", function_name, &path, err);
             }
-        }
+        };
+        ManuallyDrop::new(library)
     };
-    let library = ManuallyDrop::new(library);
 
     // resolve symbol to seal_open_extern in dynamic library
     let seal_open_extern: libloading::Symbol<SealOpenExtern> = unsafe {
         match library.get(b"seal_open_extern") {
             Ok(symbol) => symbol,
             Err(err) => {
-                return wrap_err!("can't find symbol 'seal_open_extern' in library at '{}' due to reason {}", &path, err);
+                return wrap_err!("{}: can't find symbol 'seal_open_extern' in library at '{}' due to reason {}", function_name, &path, err);
             }
         }
     };
 
     let mut error_message: Option<String> = None;
+    // SAFETY:
+    // should always push 1 value to Luau stack
+    // Caller in Luau is responsible for safety of loaded external library/plugin.
     let v: LuaValue = unsafe {
         luau.exec_raw::<LuaValue>((), |state| {
             // number elements on the luau stack before calling seal_open_extern
@@ -74,7 +74,7 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
     };
 
     if let Some(error_message) = error_message {
-        return wrap_err!("_LOAD_EXTERN: unable to load library at '{}' due to err: {}", &path, error_message);
+        return wrap_err!("{}: unable to load library at '{}' due to err: {}", function_name, &path, error_message);
     }
 
     Ok(v)
