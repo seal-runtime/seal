@@ -86,5 +86,5 @@ uninlined_format_args = "allow"
 
 [workspace]
 members = [
-    "tests/rust/crates/simple",
+    "tests/rust/crates/example",
 ]

@@ -601,6 +601,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dea2df4cf52843e0452895c455a1a2cfbb842a1e7329671acf418fdc53ed4c59"
 
 [[package]]
+name = "extern-example"
+version = "0.1.0"
+dependencies = [
+ "bstr",
+ "libc",
+ "mluau",
+ "uuid",
+]
+
+[[package]]
 name = "fastrand"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2059,16 +2069,6 @@ name = "simd-adler32"
 version = "0.3.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e320a6c5ad31d271ad523dcf3ad13e2767ad8b1cb8f047f75a8aeaf8da139da2"
-
-[[package]]
-name = "simple"
-version = "0.1.0"
-dependencies = [
- "bstr",
- "libc",
- "mluau",
- "uuid",
-]
 
 [[package]]
 name = "simple_crypt"
