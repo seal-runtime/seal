@@ -15,6 +15,8 @@ Keep in mind that if you want your library to support multiple platforms,
 you need to ship binaries for each platform and use conditional checks to ensure you
 `extern.load` the correct shared library for that platform.
 
+The binary should be compiled as a `cdylib` (`.so`, `.dll`, etc.).
+
 ## The symbol `seal_open_extern`
 
 Your plugin should have a single point of entry, an exported function named `seal_open_extern` that's visible
@@ -69,7 +71,7 @@ All C functions should take in a `*mut lua_State` as an argument and return a `c
 number of values the function returns on the Luau stack. You should ensure that C functions are
 exported/public, but their names don't need to be no-mangled if you're passing them via pointer.
 
-## Error messages and *seal* userdata (extern types)
+## Error messages and handling *seal* userdata (extern types)
 
 If you want to be consistent with *seal*, you want to return or throw nominally-typed `error` userdatas (extern types)
 instead of `luaL_error` (runtime errors). You can retrieve `@std/err`'s `err.wrap` and `ecall` from the C Stack API.
