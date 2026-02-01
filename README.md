@@ -33,7 +33,9 @@ See the [standard library reference](/docs/reference/) for all current features 
 ## Roadmap
 
 - Integrated webview for cross-platform GUI applications.
-- Plug-and-play FFI 'crates' system that allows loading Rust dependencies at runtime.
+- More featureful `@extra` library.
+- Custom project templates and improved `seal setup` workflow.
+- Ecosystem of [external libraries](/docs/external_libraries.md) to expand *seal*'s functionality with native bindings.
 
 ## Community
 
