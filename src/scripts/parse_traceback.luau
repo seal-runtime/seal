@@ -247,7 +247,6 @@ local function parse_traceback(traceback: string): string
         if succ then
             new_traceback = table.concat(lines, "\n")
         end
-
     end
 
     return new_traceback

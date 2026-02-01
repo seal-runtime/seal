@@ -67,6 +67,7 @@ atty = "0.2.14"
 rustyline = "17.0.2"
 # hidden password handling so i dont have to implement it myself with crossterm
 rpassword = "7.4.0"
+libloading = "0.9.0"
 # format.hexdump and dp
 pretty-hex = "0.4.1"
 # websockets
@@ -82,3 +83,8 @@ opt-level = 3 # otherwise rsa keygen takes forever
 # reason: no autocomplete on inlined args + inconsistent syntax in macro (exprs not permitted); 
 # better to be consistent in not using inlined format args, and if it's ridiculous, split it up or just write it in luau
 uninlined_format_args = "allow"
+
+[workspace]
+members = [
+    "tests/rust/crates/example",
+]

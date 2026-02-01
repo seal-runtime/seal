@@ -955,6 +955,7 @@ function args.parse(program: string, tagline: string, info: ProgramInfo?)
             end
 
             assert(parsed ~= nil, "parsed should not be nil here")
+            assert(typeof(parsed) ~= "error", "parsed should not be a seal error here")
 
             parsed = Parsed.from({
                 program = program,

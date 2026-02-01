@@ -1,0 +1,14 @@
+[package]
+name = "extern-example"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+# cdylib tells Cargo to produce a C‑compatible dynamic library
+crate-type = ["cdylib"]
+
+[dependencies]
+mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send" ]}
+libc = "0.2"
+bstr = "1.12.1"
+uuid = { version = "1.19.0", features = ["v4"] }
