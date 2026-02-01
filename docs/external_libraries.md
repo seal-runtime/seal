@@ -54,13 +54,6 @@ the old Lua C Stack API documentation or Luau source code.
 For example, `luaL_typename` is a Luau-only API that returns the `__type` field of a userdata,
 or `"no value"` if `__type` is unset, and differs from `lua_typename` which is more like `type`.
 
-## Safety
-
-Please keep in mind you're responsible for maintaining memory and thread safety in your external libraries.
-This includes, but is not limited to using the Luau stack correctly, not freeing memory owned by Luau, etc.
-
-The Luau VM is not thread safe so you should not attempt to use the VM in multiple OS threads.
-
 ## Making a library
 
 You most likely want to create a table, put a few functions inside it, and return it as the library.
@@ -77,3 +70,40 @@ If you want to be consistent with *seal*, you want to return or throw nominally-
 instead of `luaL_error` (runtime errors). You can retrieve `@std/err`'s `err.wrap` and `ecall` from the C Stack API.
 I wrote Rust examples of doing so in the extern-example library I linked above. This is also probably the best
 way to create extern types like `Duration` defined in *seal*.
+
+## Safety
+
+Please keep in mind you're responsible for maintaining memory and thread safety in your external libraries.
+This includes, but is not limited to using the Luau stack correctly, not freeing memory owned by Luau, etc.
+
+The Luau VM is not thread safe so you should not attempt to use the VM in multiple OS threads.
+
+To copy and paste the Safety docs from `extern.load`:
+
+⚠️ Safety
+
+This function (`extern.load`) is extremely unsafe.
+
+External libraries can easily bypass Rust's and mluau's safety guarantees, including but not limited to:
+
+- causing memory safety vulnerabilities,
+- incorrectly using the Luau stack (causing hard crashes or UB),
+- modifying the Luau state in cursed ways,
+- execute arbitrary code.
+
+The caller is responsible for ensuring the library:
+
+- is compatible with the caller's operating system, platform, and architecture,
+- is a *seal* extern library, not any other shared/dynamic library,
+- contains a *not mangled* function symbol `seal_open_extern` that:
+  - is in the C ABI (use `"C-unwind"` in Rust),
+  - takes in a Luau `lua_State` pointer as its first argument,
+  - returns `1` as an `i32 (c_int)`.
+
+Library/plugin maintainers are responsible for ensuring the library:
+
+- uses the Luau stack correctly,
+- does NOT share the passed `lua_State` between multiple OS threads,
+- does NOT free memory owned by Luau,
+- correctly links to Luau (not Lua) for using the Luau stack,
+- should not throw an uncaught foreign exception or Rust panic.

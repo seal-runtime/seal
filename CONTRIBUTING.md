@@ -42,11 +42,12 @@ A library is a good candidate for `@std` if:
 5. please don't run a formatter over the whole codebase.
    1. I don't mind if `wrap_err!`s go off the RHS of the page if that means vertical space is better used for code.
    2. On the other hand, let's try to keep non-wrap_err! code and comments to 85-110 colwidth?
-6. Documentation goes in `./.seal/typedefs/std/*`.
+6. Inline documentation goes in `./.seal/typedefs/std/*`.
    1. For documentation, try to stick with the newer docs headers like seen in the `@std/process` API docs.
    2. No Moonwave `@attributes`, they make code less readable and we don't use Moonwave.
-7. Register the library in `./src/require/mod.rs` and `./.seal/typedefs/init.luau` in 3 places:
+7. After you finish writing inline documentation, regenerate markdown documentation by running `seal ./docs/docscripts/reference.luau`. Generated docs aren't going to be perfect, we'll fix them later.
+8. Register the library in `./src/require/mod.rs` and `./.seal/typedefs/init.luau` in 3 places:
    1. The Big Beautiful Table (BBT) in `./src/require/mod.rs`, which handles when the library is required directly (`@std/mylib`)
    2. the Small Beautiful Table in `./src/require/mod.rs`, which handles when the entire `@std` is required at once.
    3. in `./.seal/typedefs/init.luau` to provide `require` support when the entire `@std` is required at once.
-8. Add tests in `./tests/luau/std/libname/*` or `./tests/luau/std/libname.luau`.
+9. Add tests in `./tests/luau/std/libname/*` or `./tests/luau/std/libname.luau`.
