@@ -2,6 +2,8 @@
 local thread = require("@std/thread")
 local time = require("@std/time")
 
+assert(thread.parallelism() > 0, "where is thread.parallelism?")
+
 local handle = thread.spawn({
 	path = "./conc_1.luau"
 })
