@@ -210,6 +210,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
 
     TableBuilder::create(luau)?
         .with_value("os", formatted_os)?
+        .with_value("arch", env::consts::ARCH)?
         .with_value("args", luau_args)?
         .with_value("executable_path", executable_path)?
         .with_value("shell_path", get_current_shell())?

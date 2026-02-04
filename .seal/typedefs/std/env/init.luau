@@ -5,8 +5,10 @@ export type env = {
     --- a list of arguments passed to the program
     args: { string },
     --- your operating system
-    os: "Windows" | "Linux" | "Android" | "MacOS" | "Other",
-    --- the path of the executable
+    os: "Windows" | "Linux" | "Android" | "MacOS" | string,
+    --- your system architecture, most likely `"x86_64"`
+    arch: ARCH,
+    --- path to the executable running your code; either *seal* itself or a compiled standalone version of *seal*.
     executable_path: string,
     --[=[ 
         Get the current working directory of the running process.
@@ -33,5 +35,28 @@ export type env = {
     -- removevar: (key: string) -> nil,
     vars: typeof(require("@self/vars"))
 }
+
+--- Your CPU processors' architecture; probably `"x86_64"`.
+export type ARCH = 
+    | "x86"
+    | "x86_64"
+    | "arm"
+    | "aarch64"
+    | "m68k"
+    | "mips"
+    | "mips32r6"
+    | "mips64"
+    | "mips64r6"
+    | "csky"
+    | "powerpc"
+    | "powerpc64"
+    | "riscv32"
+    | "riscv64"
+    | "s390x"
+    | "sparc"
+    | "sparc64"
+    | "hexagon"
+    | "loongarch32"
+    | "loongarch64"
 
 return {} :: env
