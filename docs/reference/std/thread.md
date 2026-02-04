@@ -128,6 +128,44 @@ end
 
 ---
 
+### thread.parallelism
+
+<h4>
+
+```luau
+function thread.parallelism() -> number,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Returns an estimate of the optimal number of threads you should use in your program to facilitate nonblocking programming.
+
+This usually corresponds to your machine's CPU count, but can vary depending on your
+environment (if you're running in a VM, etc.). Please see Rust's docs on [`thread::available_parallelism`](https://doc.rust-lang.org/stable/std/thread/fn.available_parallelism.html)
+for their full explanation on the behavior of this function.
+
+This estimate can can change dynamically during your program's execution depending on utilization of system resources, but
+because it's a relatively expensive function, we recommend not calling it in hot paths.
+
+If you spawn less than or equal to `thread.parallelism()` threads, all threads *should* execute at the exact same
+time in parallel. If you spawn more threads, they appear to be put in a queue by the operating system
+and will execute when able.
+
+## Errors
+
+Throws an error if Rust's `thread::available_parallelism` errors, including but not limited to:
+
+- if the amount of parallelism is not known for the target platform,
+- if you don't have permission to query the amount of parallelism available for your platform.
+
+</details>
+
+---
+
 ### thread.sleep
 
 <h4>

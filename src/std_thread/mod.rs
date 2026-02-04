@@ -19,6 +19,19 @@ fn thread_sleep(_luau: &Lua, duration: LuaNumber) -> LuaValueResult {
     Ok(LuaValue::Boolean(true)) // ensure while thread.sleep(n) do end works
 }
 
+fn thread_parallelism(luau: &Lua, _value: LuaValue) -> LuaValueResult {
+    let function_name = "thread.parallelism()";
+    let recommendation = match thread::available_parallelism() {
+        Ok(rec) => rec,
+        Err(err) => {
+            return wrap_err!("{}: unable to estimate available parallelism due to err: {}", function_name, err);
+        }
+    };
+
+    let count = recommendation.get();
+    count.into_lua(luau)
+}
+
 struct Channels {
     parent_to_child: Channel<String>,
     parent_to_child_bytes: Channel<Vec<u8>>,
@@ -447,5 +460,6 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function("spawn", thread_spawn)?
         .with_function("sleep", thread_sleep)?
+        .with_function("parallelism", thread_parallelism)?
         .build_readonly()
 }
