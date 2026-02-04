@@ -28,12 +28,26 @@ args: { string },
 <h4>
 
 ```luau
-os: "Windows" | "Linux" | "Android" | "MacOS" | "Other",
+os: "Windows" | "Linux" | "Android" | "MacOS" | string,
 ```
 
 </h4>
 
  your operating system
+
+---
+
+### env.arch
+
+<h4>
+
+```luau
+arch: ARCH,
+```
+
+</h4>
+
+ your system architecture, most likely `"x86_64"`
 
 ---
 
@@ -47,7 +61,7 @@ executable_path: string,
 
 </h4>
 
- the path of the executable
+ path to the executable running your code; either *seal* itself or a compiled standalone version of *seal*.
 
 ---
 
@@ -76,6 +90,140 @@ vars: typeof(require("@self/vars"))
 ```
 
 </h4>
+
+---
+
+## `export type` ARCH
+
+<h4>
+
+```luau
+export type ARCH =
+```
+
+</h4>
+
+ Your CPU processors' architecture; probably `"x86_64"`.
+
+---
+
+```luau
+| "x86"
+```
+
+---
+
+```luau
+| "x86_64"
+```
+
+---
+
+```luau
+| "arm"
+```
+
+---
+
+```luau
+| "aarch64"
+```
+
+---
+
+```luau
+| "m68k"
+```
+
+---
+
+```luau
+| "mips"
+```
+
+---
+
+```luau
+| "mips32r6"
+```
+
+---
+
+```luau
+| "mips64"
+```
+
+---
+
+```luau
+| "mips64r6"
+```
+
+---
+
+```luau
+| "csky"
+```
+
+---
+
+```luau
+| "powerpc"
+```
+
+---
+
+```luau
+| "powerpc64"
+```
+
+---
+
+```luau
+| "riscv32"
+```
+
+---
+
+```luau
+| "riscv64"
+```
+
+---
+
+```luau
+| "s390x"
+```
+
+---
+
+```luau
+| "sparc"
+```
+
+---
+
+```luau
+| "sparc64"
+```
+
+---
+
+```luau
+| "hexagon"
+```
+
+---
+
+```luau
+| "loongarch32"
+```
+
+---
+
+```luau
+| "loongarch64"
+```
 
 ---
 

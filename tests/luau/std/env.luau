@@ -1,6 +1,13 @@
 local env = require("@std/env")
 local _vars = require("@std/env/vars")
 
+local function consts()
+    assert(env.os ~= nil, "we should have an env.os")
+    assert(env.arch ~= nil, "we should have an env.arch")
+end
+
+consts()
+
 local function iterate_args()
     for _, arg in env.args do
         print(arg)
