@@ -1,7 +1,7 @@
 [package]
 name = "seal"
 authors = ["Dev Chrysalis Dalal <dev@deviaze.com>"]
-version = "0.0.7-rc.1"
+version = "0.0.7-rc.2"
 edition = "2024"
 
 # mluau is our custom mlua fork with a greater focus on luau and luau ecosystem
@@ -12,13 +12,6 @@ mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-
 [target.'cfg(target_os = "android")'.dependencies]
 # luau jit (ncg) compilation is not available on android
 mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send"] }
-
-# we need to export seal's ffi api so we need real symbols even as a bin
-# [profile.dev]
-# rustflags = ["-C", "link-args=-Wl,--exclude-libs,ALL,--export-dynamic"]
-
-# [profile.release]
-# rustflags = ["-C", "link-args=-Wl,--exclude-libs,ALL,--export-dynamic"]
 
 [dependencies]
 regex = "1.11.1"
