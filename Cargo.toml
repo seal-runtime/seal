@@ -13,6 +13,13 @@ mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-
 # luau jit (ncg) compilation is not available on android
 mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send"] }
 
+# we need to export seal's ffi api so we need real symbols even as a bin
+# [profile.dev]
+# rustflags = ["-C", "link-args=-Wl,--exclude-libs,ALL,--export-dynamic"]
+
+# [profile.release]
+# rustflags = ["-C", "link-args=-Wl,--exclude-libs,ALL,--export-dynamic"]
+
 [dependencies]
 regex = "1.11.1"
 # needed for seal setup (really useful!)

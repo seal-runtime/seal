@@ -10,9 +10,8 @@ if env.os == "Linux" then
         program = "cargo",
         args = { "b", "-p", "extern-example" },
         stdio = "Inherit",
-    }
+    }:unwrap()
 
-    print(fs.listdir("./target/debug"))
     local debugdir = fs.dir("./target/debug")
     assert(debugdir ~= nil, "where ./target/debug??")
 

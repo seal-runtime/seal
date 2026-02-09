@@ -38,7 +38,7 @@ export type extern = {
         - uses the Luau stack correctly,
         - does NOT share the passed `lua_State` between multiple OS threads,
         - does NOT free memory owned by Luau,
-        - correctly links to Luau (not Lua) for using the Luau stack,
+        - correctly links to *seal* via sealbindings or similar, and does not directly bind to Luau or mluau.
         - should not throw an uncaught foreign exception or Rust panic.
 
         # Errors

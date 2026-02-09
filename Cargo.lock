@@ -606,7 +606,8 @@ version = "0.1.0"
 dependencies = [
  "bstr",
  "libc",
- "mluau",
+ "libloading",
+ "sealbindings",
  "uuid",
 ]
 
@@ -1886,6 +1887,14 @@ dependencies = [
  "url",
  "urlencoding",
  "zstd",
+]
+
+[[package]]
+name = "sealbindings"
+version = "0.1.0"
+source = "git+https://github.com/seal-runtime/sealbindings#380e4487aaa34f6d148124118bc306015aba8187"
+dependencies = [
+ "libloading",
 ]
 
 [[package]]

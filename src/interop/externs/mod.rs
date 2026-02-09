@@ -1,11 +1,13 @@
 use std::path::Path;
 
-use mluau::prelude::{*};
+use mluau::prelude::*;
 use mluau::ffi::{self, lua_State};
-use crate::prelude::{*};
+use crate::prelude::*;
 
 use libloading::Library;
 use std::mem::ManuallyDrop;
+
+pub mod ffi_api;
 
 type SealOpenExtern = unsafe extern "C-unwind" fn(*mut lua_State) -> i32;
 
@@ -18,6 +20,7 @@ type SealOpenExtern = unsafe extern "C-unwind" fn(*mut lua_State) -> i32;
 /// - uses the Luau stack correctly
 /// - does NOT deallocate any memory owned by Luau
 /// - upholds memory safety requirements
+/// - uses sealbindings to interact with the lua_State, and does not separately bind to Luau
 pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
     let function_name = "<unsafe> extern.load(path: string)";
 
