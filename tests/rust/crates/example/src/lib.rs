@@ -150,9 +150,9 @@ pub unsafe extern "C-unwind" fn say_hi(state: *mut ffi::lua_State) -> c_int {
 ///   In Rust, use `std::mem::ManuallyDrop` to keep a libloading Library alive for longer than the function call.
 /// - This function must call `sealbindings::initialize()` immediately.
 #[unsafe(no_mangle)]
-pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut ffi::lua_State) -> c_int {
+pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut ffi::lua_State, ptr: *const seal::ffi::api::LuauApi) -> c_int {
     unsafe {
-        seal::initialize();
+        seal::initialize(ptr);
 
         // libary return table
         ffi::lua_createtable(state, 0, 1);

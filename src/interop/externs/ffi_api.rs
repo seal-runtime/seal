@@ -664,9 +664,8 @@ pub struct LuauApi {
 
 }
 
-
-#[unsafe(no_mangle)]
-pub unsafe extern "C-unwind" fn seal_get_ffi_api() -> *const LuauApi {
+/// get seal's ffi api to pass to plugin cdylib
+pub unsafe extern "C-unwind" fn get() -> *const LuauApi {
     static API: LuauApi = LuauApi {
         // State manipulation
         lua_newstate,

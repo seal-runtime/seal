@@ -26,20 +26,21 @@ or an equivalent in your preferred language that binds directly to the symbols e
 Your plugin should have a single point of entry, an exported function named `seal_open_extern` that's visible
 and not mangled.
 
-It should have the signature `fn seal_open_extern(state: *mut Luau::lua_State) -> i32`:
+It should have the signature `fn seal_open_extern(state: *mut Luau::lua_State, ptr: *const LuauApi) -> i32`:
 
-- The first (and currently, only) argument is a mutable pointer to a Luau `lua_State`.
+- The first argument is a mutable pointer to a Luau `lua_State`.
+- The second argument is a const pointer to seal's C-Stack Luau API, which you use to initialize `sealbindings::initialize`.
 
 - It should return an integer `c_int` representing the number of returns (on the Luau stack)
 the function should return. In our case, we always return 1 value, so it should always be 1.
 
-- You should call `sealbindings::initialize()` before using any functions in `sealbindings::ffi::*`.
+- You should call `sealbindings::initialize()` with the provided `ptr` before using any functions in `sealbindings::ffi::*`.
 
 In Rust:
 
 ```rs
 #[unsafe(no_mangle)]
-pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut sealbindings::ffi::lua_State) -> c_int
+pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut sealbindings::ffi::lua_State, ptr: *const sealbindings::ffi::api::LuauApi) -> c_int
 ```
 
 ## Stack usage
@@ -56,7 +57,7 @@ You most likely want to create a table, put a few functions inside it, and retur
 
 To do this, you need to call
 
-- `sealbindings::initialize()`
+- `sealbindings::initialize(ptr)`
 - `ffi::lua_createtable(state, 0, 1)`
 - `ffi::lua_pushcfunction(state, yourfunction)`
 - `ffi::lua_setfield(state, -2, c"your function's name".as_ptr())`

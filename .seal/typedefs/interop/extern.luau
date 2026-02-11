@@ -31,6 +31,7 @@ export type extern = {
         - contains a *not mangled* function symbol `seal_open_extern` that:
             - is in the C ABI (use `"C-unwind"` in Rust),
             - takes in a Luau `lua_State` pointer as its first argument,
+            - takes in a pointer to seal's LuauAPi as its second argument,
             - returns `1` as an `i32 (c_int)`.
 
         Library/plugin maintainers are responsible for ensuring the library:
@@ -38,7 +39,7 @@ export type extern = {
         - uses the Luau stack correctly,
         - does NOT share the passed `lua_State` between multiple OS threads,
         - does NOT free memory owned by Luau,
-        - correctly links to *seal* via sealbindings or similar, and does not directly bind to Luau or mluau.
+        - correctly exposes seal's C-Stack API via sealbindings or similar, and does not directly bind to Luau or mluau.
         - should not throw an uncaught foreign exception or Rust panic.
 
         # Errors
