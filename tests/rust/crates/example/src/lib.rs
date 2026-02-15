@@ -1,7 +1,8 @@
 use std::ffi::{CStr, CString, c_int};
-use mluau::ffi;
 use bstr::{BStr, BString};
 use uuid::Uuid;
+
+use seal::{ffi, push_wrapped_error, push_wrapped_c_function};
 
 /// Checks if the function argument `arg` (by argument index) is a Luau string.
 /// If it is, returns it as a BString (cloning the passed data), otherwise throws a runtime error.
@@ -29,78 +30,6 @@ impl BStringFromPtr for BString {
         let cstr = unsafe { CStr::from_ptr(ptr) };
         // ensure we clone and not borrow; we do NOT want to free bytes owned by Luau
         BString::from(cstr.to_bytes().to_owned())
-    }
-}
-
-/// Pushes a wrapped error object from @std/err onto the Luau stack.
-/// After this returns, the stack top is the wrapped error.
-///
-/// # Panics
-/// Panics if `msg` contains interior NUL bytes
-/// Throws a runtime error if the Luau stack cannot grow.
-fn push_wrapped_error(state: *mut ffi::lua_State, msg: &str) {
-    assert!(!state.is_null(), "Luau state is null, this shouldn't be possible");
-    // just use seal's @std/err library to construct the error
-    unsafe {
-        ffi::luaL_checkstack(state, 4, c"need 4 or more slots on luau stack".as_ptr());
-
-        // - push require to stack
-        ffi::lua_getglobal(state, c"require".as_ptr());
-        // stack: [ require ]
-    
-        // push "@std/err"
-        ffi::lua_pushstring(state, c"@std/err".as_ptr());
-        // stack: [ require, "@std/err" ]
-    
-        // Step 3: call require("@std/err")
-        ffi::lua_call(state, 1, 1);
-        // stack: [ err_table ]
-    
-        // Step 4: get err.wrap
-        ffi::lua_getfield(state, -1, c"wrap".as_ptr());
-        // stack: [ err_table, err.wrap ]
-    
-        let error_message = CString::new(msg).expect("error message contains internal NUL bytes");
-        ffi::lua_pushstring(state, error_message.as_ptr());
-        // stack: [ err_table, err.wrap, msg ]
-    
-        // Step 6: call wrap(msg)
-        ffi::lua_call(state, 1, 1);
-        // stack: [ err_table, wrapped_error ]
-    
-        // Step 7: remove err_table, leave wrapped_error
-        ffi::lua_remove(state, -2);
-        // stack: [ wrapped_error ]
-    }
-}
-
-/// Pushes a C function wrapped by the seal global `ecall` to the Luau stack.
-/// This allows wrapped errors returned by the C function to be thrown nominally like seal errors.
-/// 
-/// After this returns, the stack top is the wrapped function returned by ecall.
-/// Caller should `return 1` or continue stack manipulation.
-///
-/// # Safety
-/// - state must be a non-null pointer to a lua_State
-/// - passed func should be a valid Luau CFunction
-/// - Luau stack should have at least 3 empty slots
-pub unsafe fn push_wrapped_c_function(
-    state: *mut ffi::lua_State,
-    func: ffi::lua_CFunction,
-) {
-    unsafe {
-        // Step 1: push global ecall
-        ffi::lua_getglobal(state, c"ecall".as_ptr());
-        // stack: [ ecall ]
-    
-        // Step 2: push the C function to wrap
-        ffi::lua_pushcfunction(state, func);
-        // stack: [ ecall, func ]
-    
-        // Step 3: call ecall(func)
-        // Pops ecall + func, pushes return value
-        ffi::lua_call(state, 1, 1);
-        // stack: [ wrapped_function ]
     }
 }
 
@@ -213,18 +142,18 @@ pub unsafe extern "C-unwind" fn say_hi(state: *mut ffi::lua_State) -> c_int {
 /// 
 /// # Safety
 /// - Caller must pass a valid, non-null pointer to a lua_State.
-/// - This library should NOT use `mluau::Lua::get_or_init_from_ptr`.
-///   Reconstructing the `mluau::Lua` state *may* appear to work if *seal* and this library
-///   were compiled at the same time by the exact same version of the Rust compiler.
-///   Since Rust does NOT have a stable ABI, you cannot rely on this for actual libraries.
-/// 
+/// - This library must use sealbindings or equivalent to access *seal*'s exposed
+///   C-stack API, and should not bind to Luau separately.
 /// - This library *must* be kept alive by *seal* (or the caller) for 'static (forever).
 ///   If the library is prematurely closed, or functions from this library
 ///   are dropped, subsequent calls to those functions from Luau WILL cause segfaults and/or UB.
 ///   In Rust, use `std::mem::ManuallyDrop` to keep a libloading Library alive for longer than the function call.
+/// - This function must call `sealbindings::initialize()` immediately.
 #[unsafe(no_mangle)]
-pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut mluau::ffi::lua_State) -> c_int {
+pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut ffi::lua_State, ptr: *const seal::ffi::api::LuauApi) -> c_int {
     unsafe {
+        seal::initialize(ptr);
+
         // libary return table
         ffi::lua_createtable(state, 0, 1);
 

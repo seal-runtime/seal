@@ -17,48 +17,51 @@ you need to ship binaries for each platform and use conditional checks to ensure
 
 The binary should be compiled as a `cdylib` (`.so`, `.dll`, etc.).
 
+To facilitate linking to the *correct* version of `mluau::ffi`, *seal* exports the entire
+Luau C-stack API. Ensure you use [sealbindings](https://github.com/seal-runtime/sealbindings)
+or an equivalent in your preferred language that binds directly to the symbols exported in *seal* and not mluau or Luau.
+
 ## The symbol `seal_open_extern`
 
 Your plugin should have a single point of entry, an exported function named `seal_open_extern` that's visible
 and not mangled.
 
-It should have the signature `fn seal_open_extern(state: *mut Luau::lua_State) -> i32`:
+It should have the signature `fn seal_open_extern(state: *mut Luau::lua_State, ptr: *const LuauApi) -> i32`:
 
-- The first (and currently, only) argument is a mutable pointer to a Luau `lua_State`.
+- The first argument is a mutable pointer to a Luau `lua_State`.
+- The second argument is a const pointer to seal's C-Stack Luau API, which you use to initialize `sealbindings::initialize`.
 
 - It should return an integer `c_int` representing the number of returns (on the Luau stack)
 the function should return. In our case, we always return 1 value, so it should always be 1.
+
+- You should call `sealbindings::initialize()` with the provided `ptr` before using any functions in `sealbindings::ffi::*`.
 
 In Rust:
 
 ```rs
 #[unsafe(no_mangle)]
-pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut mluau::ffi::lua_State) -> c_int
+pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut sealbindings::ffi::lua_State, ptr: *const sealbindings::ffi::api::LuauApi) -> c_int
 ```
-
-You don't have to use `mluau` if you don't want to, anything that binds to Luau and exposes the
-Luau C Stack API should be fine.
 
 ## Stack usage
 
 Unlike with *seal* itself, you need to use the Luau C Stack API directly (or abstractions around the Luau C Stack)
 when writing a *seal* plugin, even if you're writing it in Rust.
 
-This is due to the fact that Rust's ABI is not stable: the mluau compiled within *seal*
-may not have the same memory layout as the mluau compiled within your plugin. So we can't rely
-on that if we want other people to be able to use your plugin without segfaulting or causing UB.
-
 Unfortunately, the C Stack API is not well documented, so you might have to look at
-the old Lua C Stack API documentation or Luau source code.
-
-For example, `luaL_typename` is a Luau-only API that returns the `__type` field of a userdata,
-or `"no value"` if `__type` is unset, and differs from `lua_typename` which is more like `type`.
+the old Lua C Stack API documentation or Luau source code. Be careful, because the C-stack APIs can be confusingly-named. For example, `luaL_typename` is a Luau-only API that returns the `__type` field of userdata's metatable (or `"no value"` if `__type` is unset), behaving more like `typeof` in Luau, and differs from `lua_typename` which is more like `type()` in Luau.
 
 ## Making a library
 
 You most likely want to create a table, put a few functions inside it, and return it as the library.
 
-To do this, you need to call `lua_createtable`, `lua_pushcfunction/closure`, `lua_setfield`, etc.
+To do this, you need to call
+
+- `sealbindings::initialize(ptr)`
+- `ffi::lua_createtable(state, 0, 1)`
+- `ffi::lua_pushcfunction(state, yourfunction)`
+- `ffi::lua_setfield(state, -2, c"your function's name".as_ptr())`
+, etc., and leave one value on the stack.
 
 All C functions should take in a `*mut lua_State` as an argument and return a `c_int` representing the
 number of values the function returns on the Luau stack. You should ensure that C functions are
@@ -67,14 +70,17 @@ exported/public, but their names don't need to be no-mangled if you're passing t
 ## Error messages and handling *seal* userdata (extern types)
 
 If you want to be consistent with *seal*, you want to return or throw nominally-typed `error` userdatas (extern types)
-instead of `luaL_error` (runtime errors). You can retrieve `@std/err`'s `err.wrap` and `ecall` from the C Stack API.
-I wrote Rust examples of doing so in the extern-example library I linked above. This is also probably the best
-way to create extern types like `Duration` defined in *seal*.
+instead of `luaL_error` (runtime errors). These come from *seal*'s `@std/err` library, which can be accessed from plugins. To facilitate this, I've added helper functions in `sealbindings` to wrap *seal*'s errors, including `sealbindings::wrap_c_function` and `sealbindings::push_wrapped_error`.
+
+If you want to deal with userdatas defined *in* *seal*, you'll probably have to do something similar to what I do
+in `extern-example` for accessing and calling methods on `Duration`.
 
 ## Safety
 
 Please keep in mind you're responsible for maintaining memory and thread safety in your external libraries.
 This includes, but is not limited to using the Luau stack correctly, not freeing memory owned by Luau, etc.
+
+Keep in mind if you run into `illegal hardware instruction` crashes, you're probably just using the Luau stack incorrectly! Don't forget to `checkstack` and `gettop`.
 
 The Luau VM is not thread safe so you should not attempt to use the VM in multiple OS threads.
 
@@ -105,5 +111,5 @@ Library/plugin maintainers are responsible for ensuring the library:
 - uses the Luau stack correctly,
 - does NOT share the passed `lua_State` between multiple OS threads,
 - does NOT free memory owned by Luau,
-- correctly links to Luau (not Lua) for using the Luau stack,
+- correctly links to *seal* via sealbindings or similar, and does not directly bind to Luau or mluau.
 - should not throw an uncaught foreign exception or Rust panic.

@@ -1,13 +1,15 @@
 use std::path::Path;
 
-use mluau::prelude::{*};
+use mluau::prelude::*;
 use mluau::ffi::{self, lua_State};
-use crate::prelude::{*};
+use crate::prelude::*;
 
 use libloading::Library;
 use std::mem::ManuallyDrop;
 
-type SealOpenExtern = unsafe extern "C-unwind" fn(*mut lua_State) -> i32;
+pub mod ffi_api;
+
+type SealOpenExtern = unsafe extern "C-unwind" fn(*mut lua_State, *const ffi_api::LuauApi) -> i32;
 
 /// Calls the symbol `seal_open_extern` in the dynamic library provided by the caller
 /// with a mutable pointer to the Luau state.
@@ -18,6 +20,7 @@ type SealOpenExtern = unsafe extern "C-unwind" fn(*mut lua_State) -> i32;
 /// - uses the Luau stack correctly
 /// - does NOT deallocate any memory owned by Luau
 /// - upholds memory safety requirements
+/// - uses sealbindings to interact with the lua_State, and does not separately bind to Luau
 pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
     let function_name = "<unsafe> extern.load(path: string)";
 
@@ -53,8 +56,9 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
         luau.exec_raw::<LuaValue>((), |state| {
             // number elements on the luau stack before calling seal_open_extern
             let before = ffi::lua_gettop(state);
-            // call seal_open_extern with raw luau state
-            let number_of_returns = seal_open_extern(state);
+            // call seal_open_extern with raw luau state and ffi api
+            let api = ffi_api::get();
+            let number_of_returns = seal_open_extern(state, api);
 
             // ensure seal_open_extern says it returned 1 value on the stack
             if number_of_returns != 1 {
