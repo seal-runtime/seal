@@ -48,10 +48,7 @@ pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut sealbindings::ffi::
 Unlike with *seal* itself, you need to use the Luau C Stack API directly (or abstractions around the Luau C Stack)
 when writing a *seal* plugin, even if you're writing it in Rust.
 
-Unfortunately, the C Stack API is not well documented, so you might have to look at the old Lua C Stack API documentation or Luau source code.
-
-For example, `luaL_typename` is a Luau-only API that is the backend for the `typeof` function, and returns the `__type` field of a host-defined userdata if it is set,
-or `"no value"` if the stack index is out-of-bounds, and differs from `lua_typename` which is the backend for `type`.
+Unfortunately, the C Stack API is not well documented, so you might have to look at the old Lua C Stack API documentation or Luau source code. For example, `luaL_typename` is a Luau-only API that is the backend for the `typeof` function, and returns the `__type` field of a host-defined userdata if it is set, or `"no value"` if the stack index is out-of-bounds, and differs from `lua_typename` which is the backend for `type`.
 
 ## Making a library
 
