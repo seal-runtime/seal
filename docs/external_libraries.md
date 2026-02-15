@@ -51,8 +51,8 @@ on that if we want other people to be able to use your plugin without segfaultin
 Unfortunately, the C Stack API is not well documented, so you might have to look at
 the old Lua C Stack API documentation or Luau source code.
 
-For example, `luaL_typename` is a Luau-only API that returns the `__type` field of a userdata,
-or `"no value"` if `__type` is unset, and differs from `lua_typename` which is more like `type`.
+For example, `luaL_typename` is a Luau-only API that is the backend for the `typeof` function, and returns the `__type` field of a host-defined userdata if it is set,
+or `"no value"` if the stack index is out-of-bounds, and differs from `lua_typename` which is the backend for `type`.
 
 ## Making a library
 
