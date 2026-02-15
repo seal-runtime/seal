@@ -8,7 +8,9 @@ edition = "2024"
 crate-type = ["cdylib"]
 
 [dependencies]
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send" ]}
+# we need to bind to seal's specific version of the C stack API
+seal = { git = "https://github.com/seal-runtime/sealbindings", package = "sealbindings" }
+libloading = "0.9.0"
 libc = "0.2"
 bstr = "1.12.1"
 uuid = { version = "1.19.0", features = ["v4"] }
