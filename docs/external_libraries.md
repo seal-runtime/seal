@@ -49,7 +49,7 @@ Unlike with *seal* itself, you need to use the Luau C Stack API directly (or abs
 when writing a *seal* plugin, even if you're writing it in Rust.
 
 Unfortunately, the C Stack API is not well documented, so you might have to look at
-the old Lua C Stack API documentation or Luau source code. For example, `luaL_typename` is a Luau-only API that is the backend for the `typeof` function, and returns the `__type` field of a host-defined userdata if it is set, or `"no value"` if the stack index is out-of-bounds, and differs from `lua_typename` which is the backend for `type`.
+the old Lua C Stack API documentation or Luau source code. The C-Stack APIs can be confusingly named; for example, `luaL_typename` is a Luau-only API that backs the Luau global function `typeof`, and returns the `__type` field of a host-defined userdata if it is set, or `"no value"` if the stack index is out-of-bounds, and differs from the similarly-named `lua_typename` which backs the Luau global function `type`.
 
 ## Making a library
 
