@@ -112,9 +112,6 @@ local function setup(config: SetupConfig?)
                 ["**/init.client.luau"] = "${dirname}",
                 ["**/init.server.luau"] = "${dirname}"
             },
-            -- ["luau-lsp.fflags.override"] = {
-            --     ["LuauInstantiationUsesGenericPolarity"] = "false",
-            -- },
         }
 
         local settings_path = cwd:join(".vscode", "settings.json")
@@ -142,9 +139,6 @@ local function setup(config: SetupConfig?)
                         ["fflags"] = {
                             ["enable_by_default"] = true,
                             ["enable_new_solver"] = true,
-                            -- ["override"] = {
-                            --     ["LuauInstantiationUsesGenericPolarity"] = "false",
-                            -- }
                         },
                         ["definitions"] = { 
                             ["@seal"] = globals_path,
@@ -402,7 +396,7 @@ function should_replace_typedefs(config_luau: fs.FileEntry)
             end
         else
             should_replace = prompt.confirm(
-                `Update ~/.seal/typdidn'tedefs from {existing_semver} -> {seal_semver}?\n\z
+                `Update ~/.seal/typedefs from {existing_semver} -> {seal_semver}?\n\z
                 This might break your existing linked typedefs if seal made breaking changes. (y/N)`
             )
         end
