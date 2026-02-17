@@ -99,6 +99,7 @@ enum SealCommand {
     Run,
     /// `seal setup` | `seal project` | `seal script` | `seal setup custom <args>`
     Setup(SetupOptions),
+    Regen,
     /// Display `seal` help.
     DefaultHelp,
     CommandHelp(Box<SealCommand>),
@@ -121,6 +122,7 @@ impl SealCommand {
     fn from(s: &str, args: Args) -> LuaResult<Self> {
         Ok(match s {
             "version" | "--version" | "-V" => Self::Version,
+            "regen" => Self::Regen,
             "setup" | "s" => Self::Setup(SetupOptions::from_args(&args)?),
             "project" | "sp" => Self::Setup(SetupOptions::Project),
             "script" | "ss" => Self::Setup(SetupOptions::Script),
@@ -164,6 +166,7 @@ fn main() -> LuaResult<()> {
         SealCommand::Eval(args) => seal_eval(args),
         SealCommand::Run => seal_run(),
         SealCommand::Setup(options) => seal_setup(options),
+        SealCommand::Regen => seal_regen(),
         SealCommand::Test => seal_test(),
         SealCommand::Version => {
             puts!("{}", SEAL_VERSION)?;
@@ -304,6 +307,11 @@ fn seal_test() -> LuauLoadResult {
 
 fn seal_setup(options: SetupOptions) -> LuauLoadResult {
     setup::run(options)?;
+    Ok(None)
+}
+
+fn seal_regen() -> LuauLoadResult {
+    setup::regen()?;
     Ok(None)
 }
 
@@ -482,6 +490,7 @@ impl SealCommand {
             Self::Eval(_) => "eval",
             Self::Run => "run",
             Self::Setup(_) => "setup",
+            Self::Regen => "regen",
             Self::Test => "test",
             Self::HelpCommandHelp => "help",
             Self::SealConfigHelp => "config",

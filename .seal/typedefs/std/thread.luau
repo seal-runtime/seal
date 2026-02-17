@@ -58,7 +58,7 @@
 
     ```
 ]=]
-export type thread = {
+export type threadlib = {
     --[=[
         Spawns a new Rust Thread running Luau code in a new Luau VM.
     
@@ -232,4 +232,4 @@ export type ThreadSpawnOptions = {
     }?
 }
 
-return {} :: thread
+return {} :: threadlib

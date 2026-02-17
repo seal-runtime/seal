@@ -4,7 +4,7 @@ local str = require("@std/str")
 local time = require("@std/time")
 local process = require("@std/process")
 
-local fix_semver = require("./fix_semver")
+local fix = require("./fix_stragglers")
 
 local defs_path = fs.dir.project():join(".seal", "typedefs", "std")
 local refs_path = fs.dir.project():join("docs", "reference")
@@ -329,5 +329,8 @@ while time.wait(0.05) do
     end
 end
 
-fix_semver()
+fix.semver()
 print("semver.md fixed")
+
+fix.thread()
+print("thread.md fixed")

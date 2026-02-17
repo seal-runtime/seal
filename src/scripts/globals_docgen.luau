@@ -366,7 +366,7 @@ type TransformedDocs = {
 }
 
 local transformed: TransformedDocs = {}
-local function transform(ext: ExternTypeDoc, name: string, globalwhat: "globaltype" | "global", prefix: "roblox" | "luau")
+local function transform(ext: ExternTypeDoc, name: string, globalwhat: "globaltype" | "global", prefix: "seal" | "luau")
     local base = `@{prefix}/{globalwhat}/` .. name
     local key_names_paths: { [string]: string } = {}
     if ext.keys then
@@ -386,10 +386,10 @@ local function transform(ext: ExternTypeDoc, name: string, globalwhat: "globalty
     }
 end
 for key, doc in extern_types do
-    transform(doc, key, "globaltype", "roblox")
+    transform(doc, key, "globaltype", "seal")
 end
 for key, doc in globals do
-    transform(doc, key, "global", "roblox")
+    transform(doc, key, "global", "seal")
 end
 for key, doc in luau_doc_overrides do
     transform(doc, key, "global", "luau")

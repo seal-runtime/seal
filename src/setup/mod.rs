@@ -9,6 +9,7 @@ use crate::std_fs::validate_path;
 use include_dir::{Dir, include_dir};
 
 const SETUP_SRC: &str = include_str!("./setup.luau");
+const REGEN_SRC: &str = include_str!("./regen.luau");
 
 const TYPEDEFS_DIR: Dir = include_dir!("./.seal/typedefs");
 const EXTRA_DIR: Dir = include_dir!("./.seal/extra");
@@ -112,4 +113,15 @@ pub fn run(options: SetupOptions) -> LuaEmptyResult {
         SetupOptions::Script => defaults_table.raw_get("script")?,
         SetupOptions::Custom => LuaNil,
     })
+}
+
+pub fn regen() -> LuaEmptyResult {
+    let cwd = std_env::get_cwd("seal regen")?;
+    let temp_luau = Lua::default();
+    globals::set_globals(&temp_luau, cwd.to_string_lossy())?;
+    let chunk = Chunk::Src(REGEN_SRC.to_owned());
+    if let Err(err) = temp_luau.load(chunk).set_name("seal regen").exec() {
+        return wrap_err!("seal regen: {}", err);
+    }
+    Ok(())
 }

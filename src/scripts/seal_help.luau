@@ -170,6 +170,16 @@ function help.setup()
     )
 end
 
+function help.regen()
+    return format_lines(
+        TAGLINE,
+        colors.bold.white("Usage:") .. dim(" <angled> = required, [square] = optional"),
+        `  {colors.bold.blue("seal")} {colors.bold.magenta("regen")} {opt("project_path")}`,
+        colors.bold.white("Info:"),
+        `  Regenerate and update seal typedefs for a project, updating its .seal/config.luau if necessary.`
+    )
+end
+
 function help.config()
     return format_lines(
         TAGLINE,

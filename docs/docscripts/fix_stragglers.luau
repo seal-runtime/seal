@@ -1,7 +1,7 @@
 local fs = require("@std/fs")
--- semver is very cursed so we reparse the outputted md 
 
-local function fix()
+--- semver is very cursed so we reparse the outputted md 
+local function fix_semver()
     local path = "./docs/reference/std/semver.md"
     
     local lines: { string } = {}
@@ -31,4 +31,15 @@ local function fix()
     fs.writefile(path, table.concat(lines, "\n"))
 end
 
-return fix
+--- std/thread lib's export type has to be 'threadlib' now to avoid redefinition of primitive type typeerror
+local function fix_thread()
+    local path = "./docs/reference/std/thread.md"
+    local contents = fs.readfile(path)
+    contents = string.gsub(contents, "threadlib", "thread")
+    fs.writefile(path, contents)
+end
+
+return {
+    semver = fix_semver,
+    thread = fix_thread,
+}

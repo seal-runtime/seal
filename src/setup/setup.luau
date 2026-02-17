@@ -102,16 +102,15 @@ local function setup(config: SetupConfig?)
             ["luau-lsp.fflags.enableNewSolver"] = true,
             ["luau-lsp.fflags.enableByDefault"] = true,
             ["luau-lsp.platform.type"] = "standard",
-            ["luau-lsp.types.definitionFiles"] = { globals_path },
+            ["luau-lsp.types.definitionFiles"] = { 
+                ["@seal"] = globals_path 
+            },
             ["luau-lsp.types.documentationFiles"] = { global_docs_path },
             ["luau-lsp.inlayHints.parameterNames"] = "literals",
             ["workbench.editor.customLabels.patterns"] = {
                 ["**/init.luau"] = "${dirname}",
                 ["**/init.client.luau"] = "${dirname}",
                 ["**/init.server.luau"] = "${dirname}"
-            },
-            ["luau-lsp.fflags.override"] = {
-                ["LuauInstantiationUsesGenericPolarity"] = "false",
             },
         }
 
@@ -140,11 +139,10 @@ local function setup(config: SetupConfig?)
                         ["fflags"] = {
                             ["enable_by_default"] = true,
                             ["enable_new_solver"] = true,
-                            ["override"] = {
-                                ["LuauInstantiationUsesGenericPolarity"] = "false",
-                            }
                         },
-                        ["definitions"] = { globals_path },
+                        ["definitions"] = { 
+                            ["@seal"] = globals_path,
+                        },
                         ["documentation"] = { global_docs_path },
                     }
                 }
@@ -267,9 +265,9 @@ function get_updated_vscode_settings(existing: json.JsonData, default: json.Json
     update("luau-lsp.inlayHints.parameterNames")
     update("workbench.editor.customLabels.patterns")
     if not update("luau-lsp.types.definitionFiles") then
-        for _, definition_file in default["luau-lsp.types.definitionFiles"] do
-            if not table.find(existing["luau-lsp.types.definitionFiles"], definition_file) then
-                table.insert(existing["luau-lsp.types.definitionFiles"], definition_file)
+        for key, definition_file in default["luau-lsp.types.definitionFiles"] do
+            if not existing["luau-lsp.types.definitionFiles"][key] then
+                existing["luau-lsp.types.definitionFiles"][key] = definition_file
             end
         end
     end
@@ -295,7 +293,7 @@ function get_updated_zed_settings(existing: json.JsonData, default: json.JsonDat
             if existing_value == nil or force[default_key] then
                 existing[default_key] = default_value
             elseif typeof(existing_value) == "table" then
-                if default_key == "definitions" or default_key == "documentation" then
+                if default_key == "documentation" then
                     existing_value = existing_value :: { string }
                     for _, element in default_value :: { string } do
                         if not table.find(existing_value, element) then
@@ -398,7 +396,7 @@ function should_replace_typedefs(config_luau: fs.FileEntry)
             end
         else
             should_replace = prompt.confirm(
-                `Update ~/.seal/typdidn'tedefs from {existing_semver} -> {seal_semver}?\n\z
+                `Update ~/.seal/typedefs from {existing_semver} -> {seal_semver}?\n\z
                 This might break your existing linked typedefs if seal made breaking changes. (y/N)`
             )
         end
