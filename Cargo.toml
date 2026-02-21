@@ -51,7 +51,7 @@ aho-corasick = "1.1.3"
 unicode_reader = "1.0.2"
 # needed for "cutest luau runtime" claim in README.md
 # very good for providing random-ish human readable/rememberable names
-petname = { version = "2.0.2", features = ["default-rng", "default-words"] }
+petname = { version = "2.0.2", features = ["default-rng", "default-words"], default-features = false }
 # needed to handle sigabrts on *nix (see main.rs and err.rs)
 libc = "0.2.174"
 # fs.watch
