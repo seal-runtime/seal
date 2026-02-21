@@ -69,6 +69,83 @@ pub fn prompt_text(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<Strin
     prompt_line(luau, &message, function_name)
 }
 
+pub fn prompt_edit(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    let function_name = "prompt.edit(prompt: string, left: string, right: string?)";
+
+    let mut prompt = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s.to_string_lossy(),
+        Some(LuaNil) | None => {
+            return wrap_err!("{} expected prompt to be a string, got nothing or nil", function_name);
+        },
+        Some(other) => {
+            return wrap_err!("{} expected prompt to be a string, got: {:?}", function_name, other);
+        }
+    };
+
+    if !prompt.is_empty() && !prompt.contains(": ") {
+        prompt.push_str(": ");
+    }
+
+    let left = match multivalue.pop_front() {
+        Some(LuaValue::String(left)) => left.to_string_lossy(),
+        Some(LuaNil) | None => {
+            return wrap_err!("{} expected string to the left of cursor to be a string, got nothing or nil", function_name);
+        },
+        Some(other) => {
+            return wrap_err!("{} expected string to the left of cursor to be a string, got: {:?}", function_name, other);
+        }
+    };
+
+    let right = match multivalue.pop_front() {
+        Some(LuaValue::String(right)) => Some(right.to_string_lossy()),
+        Some(LuaNil) | None => None,
+        Some(other) => {
+            return wrap_err!("{} expected string to the right of cursor to be a string or nil/unspecified, got: {:?}", function_name, other);
+        }
+    };
+
+    if atty::isnt(atty::Stream::Stdin) || atty::isnt(atty::Stream::Stdout) {
+        // not an amazing solution because program will have to copy/read from stdout, gsub, and send left + response + right back
+        let combined = left.clone() + "<CURSOR>" + &right.unwrap_or_default();
+        puts!("{}", &combined)?;
+        match std_io::input::input_rawline(luau, Some(combined)) {
+            Ok(s) => {
+                return ok_string(s, luau);
+            },
+            Err(err) => {
+                return wrap_err!("{}: unable to fallback to non-tty due to err: {}", function_name, err);
+            }
+        }
+    }
+
+    let mut rl = match rustyline::DefaultEditor::new() {
+        Ok(editor) => editor,
+        Err(err) => {
+            return wrap_err!("{}: unable to make rustyline DefaultEditor due to ReadlineError: {}", function_name, err);
+        }
+    };
+
+    let line = match rl.readline_with_initial(&prompt, (&left, &right.unwrap_or_default())) {
+        Ok(line) => {
+            if let Err(err) = rl.add_history_entry(line.as_str()) {
+                warn(luau, ok_string(format!("error adding prompt history: {}", err), luau)?)?;
+            }
+            line
+        },
+        Err(ReadlineError::Interrupted) => {
+            return wrap_err!("Prompt interrupted with Ctrl-C; use io.input.editline to intercept without erroring");
+        },
+        Err(ReadlineError::Eof) => {
+            return wrap_err!("Prompt interrupted with Ctrl-D; use io.input.editline to intercept without erroring");
+        },
+        Err(err) => {
+            return wrap_err!("{}: encountered unexpected ReadlineError: {}", function_name, err);
+        }
+    };
+
+    ok_string(line, luau)
+}
+
 fn prompt_confirm(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> {
     let function_name = "prompt.confirm(message: string, default: boolean?)";
 
@@ -242,15 +319,16 @@ const PROMPT_DOT_LUAU_SRC: &str = include_str!("./prompt.luau");
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     let t = TableBuilder::create(luau)?
         .with_function("text", prompt_text)?
+        .with_function("edit", prompt_edit)?
         .with_function("password", prompt_password)?
         .with_function("confirm", prompt_confirm)?
         .build()?;
 
     let chunk = Chunk::Src(PROMPT_DOT_LUAU_SRC.to_owned());
-    let prompt_table = match luau.load(chunk).eval::<LuaTable>() { // <<>> HACK
+    let prompt_table = match luau.load(chunk).eval::<LuaTable>() {
         Ok(t) => t,
         Err(err) => {
-            panic!("std/cli/prompt's prompt.luau did a bad: {}", err);
+            panic!("std/io/prompt's prompt.luau did a bad: {}", err);
         }
     };
 

@@ -134,7 +134,7 @@ impl WhichTty {
 }
 
 fn is_tty(_luau: &Lua, value: LuaValue) -> LuaResult<bool> {
-    let function_name = "io.tty(stream: (\"Stdout\" | \"Stderr\" | \"Stdin\")?)";
+    let function_name = "input.tty(stream: (\"Stdout\" | \"Stderr\" | \"Stdin\")?)";
     match WhichTty::pick(value, function_name)? {
         WhichTty::All => {
             Ok(atty::is(Stdout) && atty::is(Stderr) && atty::is(Stdin))
@@ -159,7 +159,7 @@ pub fn input_rawline(_: &Lua, raw_prompt: Option<String>) -> LuaResult<String> {
 }
 
 pub fn input_readline(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
-    let function_name = "io.input.readline(prompt: string)";
+    let function_name = "input.readline(prompt: string)";
     let prompt = match multivalue.pop_front() {
         Some(LuaValue::String(s)) => s.to_string_lossy(),
         Some(LuaNil) | None => {
@@ -189,6 +189,82 @@ pub fn input_readline(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResu
     };
 
     let line = match rl.readline(&prompt) {
+        Ok(line) => {
+            if let Err(err) = rl.add_history_entry(line.as_str()) {
+                warn(luau, ok_string(format!("error adding prompt history: {}", err), luau)?)?;
+            }
+            line
+        },
+        Err(ReadlineError::Interrupted) => {
+            return Interrupt::ctrlc().get_userdata(luau);
+        },
+        Err(ReadlineError::Eof) => {
+            return Interrupt::ctrld().get_userdata(luau);
+        },
+        Err(ReadlineError::Io(err)) => {
+            return WrappedError::from_message(format!("terminal io error: {}", err)).get_userdata(luau);
+        }
+        Err(err) => {
+            return wrap_err!("{}: encountered unexpected ReadlineError: {}", function_name, err);
+        }
+    };
+
+    ok_string(line, luau)
+}
+
+pub fn input_editline(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    let function_name = "input.editline(prompt: string, left: string, right: string?)";
+
+    let prompt = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s.to_string_lossy(),
+        Some(LuaNil) | None => {
+            return wrap_err!("{} expected message to be a string, got nothing or nil", function_name);
+        },
+        Some(other) => {
+            return wrap_err!("{} expected message to be a string, got: {:?}", function_name, other);
+        }
+    };
+
+    let left = match multivalue.pop_front() {
+        Some(LuaValue::String(left)) => left.to_string_lossy(),
+        Some(LuaNil) | None => {
+            return wrap_err!("{} expected string to the left of cursor to be a string, got nothing or nil", function_name);
+        },
+        Some(other) => {
+            return wrap_err!("{} expected string to the left of cursor to be a string, got: {:?}", function_name, other);
+        }
+    };
+
+    let right = match multivalue.pop_front() {
+        Some(LuaValue::String(right)) => Some(right.to_string_lossy()),
+        Some(LuaNil) | None => None,
+        Some(other) => {
+            return wrap_err!("{} expected string to the right of cursor to be a string or nil/unspecified, got: {:?}", function_name, other);
+        }
+    };
+
+    if atty::isnt(atty::Stream::Stdin) || atty::isnt(atty::Stream::Stdout) {
+        // not an amazing solution because program will have to copy/read from stdout, gsub, and send left + response + right back
+        let combined = left.clone() + "<CURSOR>" + &right.unwrap_or_default();
+        puts!("{}", &combined)?;
+        match input_rawline(luau, Some(combined)) {
+            Ok(s) => {
+                return ok_string(s, luau);
+            },
+            Err(err) => {
+                return wrap_err!("{}: unable to fallback to non-tty due to err: {}", function_name, err);
+            }
+        }
+    }
+
+    let mut rl = match rustyline::DefaultEditor::new() {
+        Ok(editor) => editor,
+        Err(err) => {
+            return wrap_err!("{}: unable to make rustyline DefaultEditor due to ReadlineError: {}", function_name, err);
+        }
+    };
+
+    let line = match rl.readline_with_initial(&prompt, (&left, &right.unwrap_or_default())) {
         Ok(line) => {
             if let Err(err) = rl.add_history_entry(line.as_str()) {
                 warn(luau, ok_string(format!("error adding prompt history: {}", err), luau)?)?;
@@ -431,6 +507,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("tty", is_tty)?
         .with_function("rawmode", input_rawmode)?
         .with_function("readline", input_readline)?
+        .with_function("editline", input_editline)?
         .with_function("rawline", input_rawline)?
         .with_function("interrupt", input_interrupt)?
         .with_function("events", input_events)?

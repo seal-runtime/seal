@@ -66,6 +66,39 @@ local ssn = prompt.text(colors.bold.white("whats your ssn???: "))
 
 ---
 
+### prompt.edit
+
+<h4>
+
+```luau
+function prompt.edit(prompt: string, left: string, right: string?) -> string,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Prompts the user to edit a prefilled line of text, with `left` being the string to the left
+of the cursor, and `right` being the string to the right of the cursor if present.
+
+This function semantics of `input.editline`, except in that it throws an error if it encounters CtrlC, CtrlD,
+or some other kind of IO issue.
+
+- Like `prompt.text`, ": " will be added to the prompt if the prompt doesn't contain it already.
+
+## Usage
+
+```luau
+local iso8601 = prompt.edit("end date", "2025-", "-12")
+-- Displays "end date: 2025-<|>-12" where <|> is the text cursor
+```
+
+</details>
+
+---
+
 ### prompt.confirm
 
 <h4>

@@ -45,6 +45,24 @@ export type prompt = {
     ]=]
     text: (message: string) -> string,
 
+    --[=[
+        Prompts the user to edit a prefilled line of text, with `left` being the string to the left
+        of the cursor, and `right` being the string to the right of the cursor if present.
+        
+        This function semantics of `input.editline`, except in that it throws an error if it encounters CtrlC, CtrlD,
+        or some other kind of IO issue.
+
+        - Like `prompt.text`, ": " will be added to the prompt if the prompt doesn't contain it already.
+
+        ## Usage
+
+        ```luau
+        local iso8601 = prompt.edit("end date", "2025-", "-12")
+        -- Displays "end date: 2025-<|>-12" where <|> is the text cursor
+        ```
+    ]=]
+    edit: (prompt: string, left: string, right: string?) -> string,
+
     --> prompt.confirm(message: string, default: boolean? (default true)): boolean
     --[=[
         Ask the user to confirm an action, defaulting to `true`, and displaying a y/n after the `message` prompt according to the usual CLI application conventions.
