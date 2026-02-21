@@ -77,35 +77,75 @@ To evaluate code with seal, use `seal eval '<string src>'`. `seal eval` comes wi
 
 ## Compiling to a standalone application
 
-*seal* supports limited project compilation.
+*seal* supports limited project compilation. For the vast majority of well-formatted projects, standalone compiliation should work just fine.
 
 Run `seal compile` to compile the seal project at your cwd, `seal compile -o binname` to compile it to a binary called `binname`, or `seal compile -o filename.luau` to bundle the entire codebase into a single Luau file.
 
-To ensure bundling succeeds, make sure your every required file in your project returns a single identifier or table.
+Keep in mind that the behavior of `script:path()` *will change* in the bundled application! For example, if you check that `script:path() == script.entry_path` in a file called `setup.luau`, required by `main.luau` in your codebase, it will not trigger when you run `seal run` or `seal ./src/main.luau`, but it will *always* trigger when you run the project once bundled/compiled. Additionally, be careful to package all necessary files non-Luau files alongside your standalone application because calls to `fs.readfile` and similar will not be inlined in the compilation process.
 
-For example:
+To check if the currently running program is a standalone application or not, use the `@interop/standalone` library.
+
+To ensure your project compiles successfully, make sure each module returns a single value, and that the module's top-level require is completely unindented--fully aligned to the left. After everything's transformed in a module, *seal* goes bottom-to-top, looking for the first `return` that's fully unindented to treat as the module return, replacing it with a `local` variable in the final bundled src.
+
+Dynamic requires nor circular requires are not allowed in bundled or standalone programs.
+
+These should compile correctly:
+
+### mod1.luau
 
 ```luau
-
-local library = {}
-
--- bunch of code
-
-return library
+local mod = {}
+-- do things
+return mod
 ```
 
-works fine!
-
-But
+### mod2.luau
 
 ```luau
+local function api1()
+end
+local function api2()
+end
+
+return {
+    api1 = api1,
+    api2 = api2,
+}
+```
+
+### @somewhere/mod3.luau
+
+```luau
+local mod3 = {}
+local mod2 = require("./mod2")
+
+local thread = require("@std/thread")
+
+local function createLib()
+    -- seal compile inlines thread.spawn path into thread.spawn src
+    -- this only works when `path = ` is one line below the call to thread.spawn
+    local handle = thread.spawn({
+        path = "./somewhere.luau", 
+        data = { idk = true },
+    })
+end
+
+function mod3.api1()
+end
 
 return function()
-    -- bunch of code
-    return thing
+    -- this compiles correctly, because we ignore the return that isn't
+    -- fully unindented to the left
+    return createLib()
 end
 ```
 
-will probably not work.
+### main.luau
 
-Additionally, keep in mind that behavior like `script:path()` *will change* in the bundled application! For example, if you check that `script:path() == script.entry_path` in a file called `setup.luau`, required by `main.luau` in your codebase, it will not trigger when you run `seal run` or `seal ./src/main.luau`, but it will *always* trigger when you run the project once bundled/compiled.
+```luau
+local fs = require("@std/fs") -- @std is an internal seal alias
+local mod3 = require("@somewhere/mod3")
+local mod1 = require("./mod1")
+```
+
+If you encounter a syntax error running `seal compile -o binname`, you might have to manually fix the Luau output. To do this, bundle the codebase into a Luau file first with `seal compile -o filename.luau`, fix the errors, then compile the fixed bundled file to a binary.

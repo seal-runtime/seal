@@ -204,7 +204,7 @@ local function transform_thread_spawn_path(
         table.insert(result, l)
     end
 
-    table.insert(result, "]" .. string.rep("=", n_equal_signs) .. "===]")
+    table.insert(result, "]" .. string.rep("=", n_equal_signs) .. "===],")
 
     return result
 end
@@ -335,7 +335,7 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
         seen[resolved.path] = identifier
 
         -- now we need to recurse to get the lines of the required file,
-        -- replace the `return` closest to the end of the required file w/ a local binding
+        -- replace the most suitable `return` closest to the end of the required file w/ a local binding
         -- and then put those lines from the dependency in front of this line of code (and transform this loc)
 
         local dependency_lines = traverse(resolved.path, depth + 1)
@@ -345,13 +345,21 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
             dependency_lines = (dependency_lines :: any) :: { string } -- LUAU FIXME: wtf is going on with dependency_lines typestate?
         end
 
+        local return_replaced = false
         for i = #dependency_lines, 1, -1 do -- go backwards
             local maybe_return_line = dependency_lines[i]
-            if string.match(maybe_return_line, "^%s*return%s+") then
+            -- we want to pick the return with NO whitespace to the left, otherwise we may grab the wrong return
+            if string.match(maybe_return_line, "^return%s+") then
                 -- modify dependency_lines in place to fix last return
-                dependency_lines[i] = string.gsub(maybe_return_line, "^%s*return%s+", `local {identifier} = `)
+                dependency_lines[i] = string.gsub(maybe_return_line, "^return%s+", `local {identifier} = `)
+                return_replaced = true
                 break
             end
+        end
+
+        if not return_replaced then
+            return err.message(`Can't find a top-level return statement in {path}, \z
+            please make sure the module returns something and the top-level return statement is completely unindented; aligned all the way to the left`)
         end
 
         -- and simply add all dependency lines to transformed
@@ -365,6 +373,8 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
         local replace_string_call_pattern = 'require%s*["\']' .. requested_require .. '["\']'
         line = string.gsub(line, replace_parens_pattern, identifier)
         line = string.gsub(line, replace_string_call_pattern, identifier)
+
+        table.insert(transformed, `-- END {resolved.path}`)
 
         -- add finally, put the original (transformed) line behind its dependency lines!
         append(line)
