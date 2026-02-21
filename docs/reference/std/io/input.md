@@ -118,6 +118,43 @@ end
 
 ---
 
+### input.editline
+
+<h4>
+
+```luau
+function input.editline(prompt: string, left: string, right: string?): string | interrupt | error
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Prompts the user to edit one line of text, where the cursor is between the `left` and `right` strings.
+
+If `right` is not provided, the user will start editing from the back of the message.
+
+If a TTY is not detected, outputs `left .. "<CURSOR>" .. right`; the user/program will have
+to respond with the full, edited message, not just the text to insert.
+
+This function shares most semantics with `input.readline`, including the following:
+
+## Returns
+
+- A `string` once the user types something in and presses <kbd>Enter</kbd>.
+- An `interrupt` userdata, which contains a `code` (`"CtrlC"` or `"CtrlD"`) if the user presses either.
+- An `error` userdata, if some other IO error occurs (like a broken pipe)
+
+## Errors
+
+- *Throws* an error if some weird low level Errno code occurs or writing output to stdout fails.
+
+</details>
+
+---
+
 ### input.interrupt
 
 <h4>
