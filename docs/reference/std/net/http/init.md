@@ -200,6 +200,30 @@ ok: false,
 
 ---
 
+### HttpResponse.status_code
+
+<h4>
+
+```luau
+status_code: StatusCode,
+```
+
+</h4>
+
+---
+
+### HttpResponse.body
+
+<h4>
+
+```luau
+body: string,
+```
+
+</h4>
+
+---
+
 ### HttpResponse.err
 
 <h4>

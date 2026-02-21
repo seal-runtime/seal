@@ -80,6 +80,8 @@ export type HttpResponse = ({
     decode: (self: HttpResponse) -> { [any]: any }
 } | {
     ok: false,
+    status_code: StatusCode,
+    body: string,
     err: string,
 }) & {
     --- decodes body as json or returns default value; errors if ok = false and default value not provided
