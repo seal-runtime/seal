@@ -152,6 +152,11 @@ fn main() -> LuaResult<()> {
         display_error_and_exit(err);
     }
 
+    // TODO: remove this when we don't need the flag anymore
+    if mluau::Lua::set_fflag("LuauExplicitTypeInstantiationSyntax", true).is_err() {
+        eputs!("[WARN] Cannot enable Luau FFlag LuauExplicitTypeInstantiationSyntax")?;
+    }
+
     crate::std_io::input::EXPECT_OUTPUT_STREAMS.initialize_and_check();
 
     let command = match SealCommand::parse(args) {
