@@ -77,35 +77,14 @@ To evaluate code with seal, use `seal eval '<string src>'`. `seal eval` comes wi
 
 ## Compiling to a standalone application
 
-*seal* supports limited project compilation.
+*seal* supports limited project compilation. For the vast majority of well-formatted projects, standalone compiliation should work just fine.
 
 Run `seal compile` to compile the seal project at your cwd, `seal compile -o binname` to compile it to a binary called `binname`, or `seal compile -o filename.luau` to bundle the entire codebase into a single Luau file.
 
-To ensure bundling succeeds, make sure your every required file in your project returns a single identifier or table.
+Keep in mind that the behavior of `script:path()` *will change* in the bundled application! For example, if you check that `script:path() == script.entry_path` in a file called `setup.luau`, required by `main.luau` in your codebase, it will not trigger when you run `seal run` or `seal ./src/main.luau`, but it will *always* trigger when you run the project once bundled/compiled. Additionally, be careful to package all necessary files non-Luau files alongside your standalone application because calls to `fs.readfile` and similar will not be inlined in the compilation process.
 
-For example:
+To check if the currently running program is a standalone application or not, use the `@interop/standalone` library.
 
-```luau
+To ensure your project compiles successfully, make sure each module returns a single value, and that the top-level require of each module is completely unindented--fully aligned to the left.
 
-local library = {}
-
--- bunch of code
-
-return library
-```
-
-works fine!
-
-But
-
-```luau
-
-return function()
-    -- bunch of code
-    return thing
-end
-```
-
-will probably not work.
-
-Additionally, keep in mind that behavior like `script:path()` *will change* in the bundled application! For example, if you check that `script:path() == script.entry_path` in a file called `setup.luau`, required by `main.luau` in your codebase, it will not trigger when you run `seal run` or `seal ./src/main.luau`, but it will *always* trigger when you run the project once bundled/compiled.
+If you encounter a syntax error running `seal compile -o binname`, you might have to manually fix the Luau output. To do this, bundle the codebase into a Luau file first with `seal compile -o filename.luau`, fix the errors, then compile the fixed bundled file to a binary.
