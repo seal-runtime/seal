@@ -1,4 +1,4 @@
-use std::ffi::{CStr, CString, c_int};
+use std::ffi::{CStr, CString, c_int, c_char};
 use bstr::{BStr, BString};
 use uuid::Uuid;
 
@@ -22,10 +22,10 @@ pub trait BStringFromPtr {
     /// This avoids us from freeing bytes owned by Luau.
     /// # Safety
     /// - ptr must be interpretable as CStr
-    unsafe fn clone_from_ptr(ptr: *const i8) -> BString;
+    unsafe fn clone_from_ptr(ptr: *const c_char) -> BString;
 }
 impl BStringFromPtr for BString {
-    unsafe fn clone_from_ptr(ptr: *const i8) -> BString {
+    unsafe fn clone_from_ptr(ptr: *const c_char) -> BString {
         // need to cstr it first cus NUL
         let cstr = unsafe { CStr::from_ptr(ptr) };
         // ensure we clone and not borrow; we do NOT want to free bytes owned by Luau
