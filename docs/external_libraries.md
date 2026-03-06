@@ -49,7 +49,7 @@ In Rust:
 
 ```rs
 #[unsafe(no_mangle)]
-pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut sealbindings::ffi::lua_State, ptr: *const sealbindings::ffi::api::LuauApi) -> c_int
+pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut sealbindings::ffi::lua_State, ptr: *const sealbindings::LuauApi) -> c_int
 ```
 
 ## Stack usage
