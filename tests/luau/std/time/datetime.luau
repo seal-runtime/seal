@@ -117,7 +117,10 @@ local function addingyearsneedsrelativeto()
 
     local now = datetime.now()
     local two_years = datetime.years(1, now) + datetime.years(1)
-    assert(two_years:duration().years == 2, "2 years should be 2 years fr")
+    
+    local got = two_years:duration().years // 1 -- gotta round to nearest :sob:
+
+    assert(got == 2, `2 years should be 2 years fr, got {got}`)
 end
 
 addingyearsneedsrelativeto()
