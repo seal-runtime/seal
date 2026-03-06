@@ -17,9 +17,18 @@ you need to ship binaries for each platform and use conditional checks to ensure
 
 The binary should be compiled as a `cdylib` (`.so`, `.dll`, etc.).
 
-To facilitate linking to the *correct* version of `mluau::ffi`, *seal* exports the entire
-Luau C-stack API. Ensure you use [sealbindings](https://github.com/seal-runtime/sealbindings)
-or an equivalent in your preferred language that binds directly to the symbols exported in *seal* and not mluau or Luau.
+## Linking
+
+To facilitate linking to the *exact* same Luau within *seal*, *seal* passes
+its entire Luau C-Stack API to your external library as the second argument to `seal_open_extern`.
+
+Ensure you use [sealbindings](https://github.com/seal-runtime/sealbindings) or
+write an equivalent in your preferred language that understands the exact structure
+and function ordering of the struct passed as `*const LuauApi`.
+
+Keep in mind that the Luau C-Stack API will change in later versions as more APIs are added.
+I will try to keep sealbindings backwards-compatible, but it's not a guarantee
+that any version of *seal* will work with any build of *sealbindings* or vice versa.
 
 ## The symbol `seal_open_extern`
 
@@ -40,16 +49,23 @@ In Rust:
 
 ```rs
 #[unsafe(no_mangle)]
-pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut sealbindings::ffi::lua_State, ptr: *const sealbindings::ffi::api::LuauApi) -> c_int
+pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut sealbindings::ffi::lua_State, ptr: *const sealbindings::LuauApi) -> c_int
 ```
 
 ## Stack usage
 
-Unlike with *seal* itself, you need to use the Luau C Stack API directly (or abstractions around the Luau C Stack)
+Unlike with *seal* itself, you need to use the Luau C-Stack API directly (or abstractions around the Luau C-Stack)
 when writing a *seal* plugin, even if you're writing it in Rust.
 
-Unfortunately, the C Stack API is not well documented, so you might have to look at
-the old Lua C Stack API documentation or Luau source code. The C-Stack APIs can be confusingly named; for example, `luaL_typename` is a Luau-only API that backs the Luau global function `typeof`, and returns the `__type` field of a host-defined userdata if it is set, or `"no value"` if the stack index is out-of-bounds, and differs from the similarly-named `lua_typename` which backs the Luau global function `type`.
+Unfortunately, the C-Stack API is not well documented, so you might have to look at
+the old Lua C-Stack API documentation or Luau source code. The C-Stack APIs can be confusingly named; for example, `luaL_typename` is a Luau-only API that backs the Luau global function `typeof`, and returns the `__type` field of a host-defined userdata if it is set, or `"no value"` if the stack index is out-of-bounds, and differs from the similarly-named `lua_typename` which backs the Luau global function `type`.
+
+Since the C-Stack API doesn't directly protect you like mluau does, you'll likely
+run into hard crashes causing coredumps while you develop and test your plugins.
+If you're on Linux, I recommend (at least) using `gdb` backtrace with `bt` on the resulting coredumps.
+
+Keep in mind if you run into `illegal hardware instruction` crashes, you're probably just using the Luau stack incorrectly!
+Check your stack indices, and don't forget to `checkstack` and `gettop`.
 
 ## Making a library
 
@@ -59,7 +75,7 @@ To do this, you need to call
 
 - `sealbindings::initialize(ptr)`
 - `ffi::lua_createtable(state, 0, 1)`
-- `ffi::lua_pushcfunction(state, yourfunction)`
+- `sealbindings::push_wrapped_c_function(state, yourfunction)` or `ffi::lua_pushcfunction(state, yourfunction)`
 - `ffi::lua_setfield(state, -2, c"your function's name".as_ptr())`
 , etc., and leave one value on the stack.
 
@@ -70,7 +86,8 @@ exported/public, but their names don't need to be no-mangled if you're passing t
 ## Error messages and handling *seal* userdata (extern types)
 
 If you want to be consistent with *seal*, you want to return or throw nominally-typed `error` userdatas (extern types)
-instead of `luaL_error` (runtime errors). These come from *seal*'s `@std/err` library, which can be accessed from plugins. To facilitate this, I've added helper functions in `sealbindings` to wrap *seal*'s errors, including `sealbindings::wrap_c_function` and `sealbindings::push_wrapped_error`.
+instead of `luaL_error` (runtime errors). These come from *seal*'s `@std/err` library, which can be accessed from plugins. To facilitate this, I've added helper functions in `sealbindings` to wrap *seal*'s errors, including
+`sealbindings::push_wrapped_error` and `sealbindings::push_wrapped_c_function`.
 
 If you want to deal with userdatas defined *in* *seal*, you'll probably have to do something similar to what I do
 in `extern-example` for accessing and calling methods on `Duration`.
@@ -78,11 +95,16 @@ in `extern-example` for accessing and calling methods on `Duration`.
 ## Safety
 
 Please keep in mind you're responsible for maintaining memory and thread safety in your external libraries.
-This includes, but is not limited to using the Luau stack correctly, not freeing memory owned by Luau, etc.
 
-Keep in mind if you run into `illegal hardware instruction` crashes, you're probably just using the Luau stack incorrectly! Don't forget to `checkstack` and `gettop`.
+These requirements include but are not limited to:
 
-The Luau VM is not thread safe so you should not attempt to use the VM in multiple OS threads.
+- Using the Luau stack correctly, passing the correct stack indices to Luau C-Stack APIs, etc.
+- Never freeing memory owned by Luau, including strings and buffers.
+  - In Rust, this includes accidentally dropping memory owned by Luau. To avoid this, ensure you copy data owned by Luau into data structures owned by Rust.
+- Ensuring memory passed into Luau C-Stack APIs lives long enough to be read/copied by Luau. Be careful where
+  your `CString`s get dropped.
+- Not accessing the Luau VM in multiple OS threads at once; Luau is not thread-safe.
+- Ensure pointers from the embedder stored in Luau (userdata) are not cleaned-up before being used.
 
 To copy and paste the Safety docs from `extern.load`:
 

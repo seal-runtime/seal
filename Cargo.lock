@@ -1792,7 +1792,7 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "seal"
-version = "0.0.7-rc.2"
+version = "0.0.7"
 dependencies = [
  "aho-corasick",
  "atty",
@@ -1835,7 +1835,7 @@ dependencies = [
 [[package]]
 name = "sealbindings"
 version = "0.1.0"
-source = "git+https://github.com/seal-runtime/sealbindings#737a83ef8a2fcf47847921e9ec79676235b34e8a"
+source = "git+https://github.com/seal-runtime/sealbindings#7554dfb72a6b3b92d8a47ca40083d7235900560d"
 
 [[package]]
 name = "security-framework"
