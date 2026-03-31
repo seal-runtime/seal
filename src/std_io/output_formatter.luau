@@ -357,7 +357,21 @@ local function process_pretty_values(
     local current_indent = string.rep("    ", depth)
     if type(value) == "table" then
         local value = value :: { [any]: any }
-        -- local result = "{\n"
+        local value_meta = getmetatable(value :: any) :: { [any]: any }?
+
+        -- if we have a metatable and the metatable has custom working __display implementation
+        -- we want to call it and return whatever string it returns.
+        -- we don't use __tostring for this because a __tostring implementation is not necessarily for displaying
+        -- a user can call tostring(value) explicitly if they want that.
+        if value_meta and value_meta.__display and typeof(value_meta.__display) == "function" then
+            value_meta = value_meta :: { __display: (self: any) -> unknown }
+            local success, custom_display = pcall(value_meta.__display, value)
+            if success and typeof(custom_display) == "string" then
+                return custom_display
+            end
+            -- this fallthrough is intentional if meta.__display() doesn't work or returns an incorrect result
+        end
+
         local result: { string } = {}
 
         local function push(s: string)
@@ -372,7 +386,6 @@ local function process_pretty_values(
 
         -- pretty printed tables should be printed in numerical, then alphabetical order (if possible)
         local unsorted_pairs: { TablePair } = {}
-        local value_meta = getmetatable(value :: any) :: { [any]: any }?
         if value_meta then
             for k, v in pairs(value) do -- use pairs to avoid unexpectedly calling __call on tables w/ metatable
                 -- LUAU FIXME: table.insert horribly broken
