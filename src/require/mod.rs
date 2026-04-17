@@ -132,6 +132,7 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
                 .with_value("crypt", std_crypt::create(luau)?)?
                 .with_value("thread", std_thread::create(luau)?)?
                 .with_value("luau", std_luau::create(luau)?)?
+                .with_value("args", std_args::create(luau)?)?
                 .build_readonly()
             )
         },
