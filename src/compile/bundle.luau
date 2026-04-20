@@ -170,7 +170,7 @@ local function transform_thread_spawn_path(
     line_number: number,
     path: string,
     --- recursive handle to function calling this function cause uh yeah
-    traverse: (path: string, depth: number?, seen_stdlibs: { [string]: boolean? }?) -> err.Result<{string}>,
+    traverse: (path: string, depth: number?, seen_stdlibs: { [string]: string? }?) -> err.Result<{string}>,
     depth: number
 ): err.Result<{string}>
     local relative_path = string.match(line, [=[path%s*=%s*["']([^"']+)["']]=])
@@ -212,9 +212,9 @@ end
 local anon_identifier = 0
 
 local seen: { [string]: string? } = {}
-local default_seen_stdlibs: { [string]: boolean? } = {}
+local default_seen_stdlibs: { [string]: string? } = {}
 
-local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: boolean? }?): err.Result<{string}>
+local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: string? }?): err.Result<{string}>
     seen_stdlibs = seen_stdlibs or default_seen_stdlibs
     depth = depth or 0
 
@@ -245,7 +245,6 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
         )
     end
 
-    -- this shouldn't error as path is checked by get_entry_path or require resolver
     local file = fs.file.from(path) 
     if not file:is_valid_utf8() then
         return err.message(`file at '{path}' is not valid utf-8 ☠️`)
@@ -290,9 +289,14 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
         end
 
         -- if it's requiring a seal stdlib, check if we've already required it, and only add the line if we haven't yet
+        -- FIXME: this will absolutely break when the first identifier for the stdlib isn't defined in top scope
         if str.starts(requested_require, table.unpack(reserved_aliases)) then
             if not seen_stdlibs[requested_require] then
-                seen_stdlibs[requested_require] = true
+                seen_stdlibs[requested_require] = identifier
+                append(line)
+            elseif seen_stdlibs[requested_require] ~= identifier then
+                -- the standard library was bound to a different identifier this time, 
+                -- just add it anyway to stop bugs
                 append(line)
             end
             continue
