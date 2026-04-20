@@ -244,8 +244,14 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
             find_plain(line, first) and find_plain(line, second)
         )
     end
+
+    -- this shouldn't error as path is checked by get_entry_path or require resolver
+    local file = fs.file.from(path) 
+    if not file:is_valid_utf8() then
+        return err.message(`file at '{path}' is not valid utf-8 ☠️`)
+    end
     
-    for line_number, line in fs.readlines(path) do
+    for line_number, line in file:readlines() do
         is_comment, comment_prefix = comment(line, comment_prefix)
         if is_comment then
             continue
