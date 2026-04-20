@@ -272,8 +272,11 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
 
         -- it's a bash shebang used for running luau scripts as executables directly,
         -- hoist and move it to the top but don't include it here (or it syntax errors)
+        -- if a non-main file contains a bash shebang we also strip it to prevent syntax errors
         if line_number == 1 and str.startswith(line, "#!") then
-            bash_shebang = line
+            if depth == 0 then
+                bash_shebang = line
+            end 
             continue
         end
 
@@ -393,7 +396,9 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
             -- we want to pick the return with NO whitespace to the left, otherwise we may grab the wrong return
             if string.match(maybe_return_line, "^return%s+") then
                 -- modify dependency_lines in place to fix last return
-                dependency_lines[i] = string.gsub(maybe_return_line, "^return%s+", `local {identifier} = `)
+                -- this identifier should already be initialized from outside the do/end block,
+                -- so this is just assigning to an existing identifier
+                dependency_lines[i] = string.gsub(maybe_return_line, "^return%s+", `{identifier} = `)
                 return_replaced = true
                 break
             end
@@ -407,6 +412,8 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
         -- and simply add all dependency lines to transformed
         table.insert(transformed, `-- START {resolved.path}`)
         
+        -- add identifier for return to be transformed into an assignment to
+        table.insert(transformed, `local {identifier}`)
         -- wrap entire thing in a do/end block so we don't hit the 200 locals limit
         table.insert(transformed, "do")
         for _, dependency_line in dependency_lines do
