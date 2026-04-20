@@ -7,7 +7,7 @@ local response = http.post {
 	body = {
 		hello = true,
 	}
-}:unwrap_json()
+}:expect_json<<any>>()
 
 assert(response.recvbody == [[{"hello":true}]], "response.recvbody doesn't match")
 

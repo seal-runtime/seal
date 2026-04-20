@@ -36,8 +36,14 @@ declare class error end
 --- Represents the JSON `null`, which can be stored in tables.
 declare extern type null with end
 
-declare class interrupt
+declare extern type interrupt with
     code: "CtrlC" | "CtrlD"
+end
+
+declare extern type HttpError with
+    kind: "Timeout" | "BodyExceedsLimit" | "NetworkError" | "ConnectionFailed" | "TooManyRedirects" | "Other"
+    message: string
+    timeout_phase: ("Global" | "SendRequest" | "ReceiveResponse" | "SendBody" | "ReceiveBody" | "Connect" | "Resolve" | "Other")?
 end
 
 declare extern type WebsocketMessage with
@@ -134,7 +140,7 @@ type COMMON_FORMATS =
     | "HH:MM (AM/PM)"
     | "AMERICAN_FULL_DATE_TIME"
 
-declare class DateTime
+declare extern type DateTime with
     year: number
     month: number
     day: number
@@ -167,7 +173,7 @@ declare class DateTime
     function __le(self, other: DateTime): boolean
 end
 
-declare class TimeSpan
+declare extern type TimeSpan with
     relative_to: DateTime?
 
     function duration(self): Duration
@@ -185,7 +191,7 @@ declare class TimeSpan
     function __sub(self, other: TimeSpan): TimeSpan
 end
 
-declare class Duration
+declare extern type Duration with
     years: number
     months: number
     days: number

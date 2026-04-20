@@ -1,67 +1,36 @@
 --!strict
 --!nolint LocalShadow
 local http = require("@std/net/http")
+local time = require("@std/time")
 
-print(
-	http.get {
-		url = "https://jsonplaceholder.typicode.com/todos/1"
-	}:unwrap_json()
-)
-
-print(
-	http.get {
-		url = "https://jsonplaceholder.typicode.com/posts",
-		params = {
-			userId = "1",
-		}
-	}:unwrap_json()
-)
-
-local response_with_status_code = http.get {
-	url = "https://jsonplaceholder.typicode.com/posts/200"
+local todo1 = http.get {
+    url = "https://jsonplaceholder.typicode.com/todos/1",
+    timeout = {
+        send_request = time.seconds(2),
+    }
 }
 
-if response_with_status_code.ok then
-	assert(response_with_status_code.status_code == "404 Not Found")
-end
+local postsuserid1 = http.get({
+    url = "https://jsonplaceholder.typicode.com/posts",
+    params = {
+        userId = "1",
+    },
+})
 
--- attempt to call :unwrap() with missing arg
-local success, result = pcall(function()
-	local should_actually_error = http.get {
-		url = "",
-		params = {
-			catname = "Taz",
-		}
-	}:unwrap_json()
-	return should_actually_error
+-- bad uri
+local s, err = pcall(function()
+    return http.get {
+        url = "meow is cool",
+    }
 end)
-local result = tostring(result)
 
-assert(
-	success == false
-	and result:match("without default argument")
-	,
-	"expected to match unwrap without default arg, didnt match"
-)
+assert(s == false, "should be not successful with spaces in url")
+assert(typeof(err) == "error" and tostring(err):match("invalid uri character"), "we shouldn't be able to send a request with bad uri character")
 
--- attempt to call unwrap(nil)
-local x = nil
-local computed = x or nil
+local notfound = http.get {
+    url = "https://jsonplaceholder.typicode.com/posts/200",
+}
 
-local success, result = pcall(function()
-	return http.get({
-		url = "memes.com",
-		body = {
-			x = 2,
-			y = 3,
-		}
-	}):unwrap_json(nil)
-end)
-local result = tostring(result)
-
-assert(
-	success == false
-	and result:match("note: default argument provided but was nil")
-	, 
-	"that was supposed to break"
-)
+assert(notfound.ok == false, "404 should be not ok")
+assert(notfound.status.code == 404, "status code should be 404")
+assert(notfound.status.reason == "Not Found", "notfound status reason should be 'Not Found'")

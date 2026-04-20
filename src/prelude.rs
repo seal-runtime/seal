@@ -46,7 +46,12 @@ pub fn ok_function(f: fn(&Lua, LuaValue) -> LuaValueResult, luau: &Lua) -> LuaVa
     Ok(LuaValue::Function(luau.create_function(f)?))
 }
 
-pub fn ok_function_multi(f: fn(&Lua, LuaMultiValue) -> LuaMultiResult, luau: &Lua) -> LuaValueResult {
+// the generics weren't working
+pub fn ok_function_multi_returns_value(f: fn(&Lua, LuaMultiValue) -> LuaValueResult, luau: &Lua) -> LuaValueResult {
+    Ok(LuaValue::Function(luau.create_function(f)?))
+}
+
+pub fn ok_function_multi_returns_multi(f: fn(&Lua, LuaMultiValue) -> LuaMultiResult, luau: &Lua) -> LuaValueResult {
     Ok(LuaValue::Function(luau.create_function(f)?))
 }
 
