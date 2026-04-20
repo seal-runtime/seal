@@ -6,7 +6,7 @@ local time = require("@std/time")
 local todo1 = http.get {
     url = "https://jsonplaceholder.typicode.com/todos/1",
     timeout = {
-        request = time.seconds(2),
+        send_request = time.seconds(2),
     }
 }
 
@@ -17,8 +17,6 @@ local postsuserid1 = http.get({
     },
 })
 
-print(postsuserid1:expect_json())
-
 -- bad uri
 local s, err = pcall(function()
     return http.get {
@@ -27,7 +25,7 @@ local s, err = pcall(function()
 end)
 
 assert(s == false, "should be not successful with spaces in url")
-assert(typeof(err) == "error" and tostring(err):match("unable to send request"), "we shouldn't be able to send a request with bad uri character")
+assert(typeof(err) == "error" and tostring(err):match("invalid uri character"), "we shouldn't be able to send a request with bad uri character")
 
 local notfound = http.get {
     url = "https://jsonplaceholder.typicode.com/posts/200",

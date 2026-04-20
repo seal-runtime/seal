@@ -1,12 +1,16 @@
 use crate::prelude::*;
 use mluau::prelude::*;
+
 use ureq::http::{HeaderValue, Method};
 use ureq::http::header::CONTENT_TYPE;
 
-use super::UreqResponseResult;
 use super::timeout_info::TimeoutInfo;
-use super::RequestBuilderWithBody;
-use super::RequestBody;
+use super::http_request::RequestBody;
+use super::ResponseWithBody;
+use super::UreqError;
+
+type UreqResponseResult = Result<ResponseWithBody, UreqError>;
+type RequestBuilderWithBody = ureq::RequestBuilder<ureq::typestate::WithBody>;
 
 trait SendWithContext {
     fn send_with_body_context(self, body: RequestBody) -> UreqResponseResult;
@@ -36,6 +40,61 @@ impl SendWithContext for RequestBuilderWithBody {
     }
 }
 
+/// Configuring the config builder applies to both WithBody and WithoutBody;
+/// and there's no syntactical difference between the branches
+/// so I replaced the duplicate logic with this macro.
+macro_rules! configure_config_builder {
+    ($builder:expr, $timeout:expr) => {
+        {
+            let mut configuring = $builder
+                .config()
+                .http_status_as_error(false);
+    
+            if let Some(timeout) = $timeout {
+                match timeout {
+                    TimeoutInfo::Global(duration) => {
+                        configuring = configuring.timeout_global(Some(duration));
+                    },
+                    TimeoutInfo::Custom { 
+                        send_request, 
+                        send_response,
+                        send_body,
+                        receive_body,
+                    } => {
+                        configuring = configuring
+                            .timeout_send_request(send_request)
+                            .timeout_send_body(send_body)
+                            .timeout_recv_response(send_response)
+                            // send_response is supposed to apply to both headers and body, so this is intentional
+                            .timeout_recv_body(send_response)
+                            .timeout_recv_body(receive_body);
+                    }
+                }
+            }
+    
+            configuring.build()
+        }
+    }
+}
+
+/// Applying headers/params has the exact same logic in both WithBody and WithoutBody
+/// branches, made it a macro to reduce duplication here as well.
+/// 
+/// Note that this macro mutates `builder`.
+macro_rules! apply_headers_and_params {
+    ($headers:expr, $params:expr, $builder:expr) => {
+        if let Some(headers) = $headers {
+            for (key, value) in headers {
+                $builder = $builder.header(key, value);
+            }
+        }
+
+        if let Some(params) = $params {
+            $builder = $builder.query_pairs(params);
+        }
+    }
+}
+
 pub enum Sender {
     WithoutBody(ureq::RequestBuilder<ureq::typestate::WithoutBody>),
     WithBody(ureq::RequestBuilder<ureq::typestate::WithBody>),
@@ -54,7 +113,7 @@ impl Sender {
             // should have body
             Method::POST => Self::WithBody(ureq::post(uri)),
             Method::PATCH => Self::WithBody(ureq::patch(uri)),
-            Method::PUT => Self::WithBody(ureq::post(uri)),
+            Method::PUT => Self::WithBody(ureq::put(uri)),
 
             // idk what to do with these
             other => {
@@ -67,64 +126,12 @@ impl Sender {
 
     pub(super) fn configure(self, timeout: Option<TimeoutInfo>) -> Self {
         match self {
-            Self::WithBody(mut builder) => {
-                let mut configuring = builder
-                    .config()
-                    .http_status_as_error(false);
-
-                if let Some(timeout) = timeout {
-                    match timeout {
-                        TimeoutInfo::Global(duration) => {
-                            configuring = configuring.timeout_global(Some(duration));
-                        },
-                        TimeoutInfo::Custom { 
-                            request_timeout, 
-                            response_timeout,
-                            send_body,
-                            receive_body,
-                        } => {
-                            configuring = configuring
-                                .timeout_send_request(request_timeout)
-                                .timeout_send_body(send_body)
-                                .timeout_recv_response(response_timeout)
-                                .timeout_recv_body(response_timeout)
-                                .timeout_recv_body(receive_body);
-                        }
-                    }
-                }
-
-                builder = configuring.build();
-
+            Self::WithBody(builder) => {
+                let builder = configure_config_builder!(builder, timeout);
                 Self::WithBody(builder)
             },
-            Self::WithoutBody(mut builder) => {
-                let mut configuring = builder
-                    .config()
-                    .http_status_as_error(false);
-
-                if let Some(timeout) = timeout {
-                    match timeout {
-                        TimeoutInfo::Global(duration) => {
-                            configuring = configuring.timeout_global(Some(duration));
-                        },
-                        TimeoutInfo::Custom { 
-                            request_timeout, 
-                            response_timeout,
-                            send_body,
-                            receive_body,
-                        } => {
-                            configuring = configuring
-                                .timeout_send_request(request_timeout)
-                                .timeout_send_body(send_body)
-                                .timeout_recv_response(response_timeout)
-                                .timeout_recv_body(response_timeout)
-                                .timeout_recv_body(receive_body);
-                        }
-                    }
-                }
-                
-                builder = configuring.build();
-
+            Self::WithoutBody(builder) => {
+                let builder = configure_config_builder!(builder, timeout);
                 Self::WithoutBody(builder)
             }
         }
@@ -138,15 +145,7 @@ impl Sender {
     ) -> UreqResponseResult {
         match self {
             Sender::WithoutBody(mut builder) => {
-                if let Some(headers) = headers {
-                    for (key, value) in headers {
-                        builder = builder.header(key, value);
-                    }
-                }
-
-                if let Some(params) = params {
-                    builder = builder.query_pairs(params);
-                }
+                apply_headers_and_params!(headers, params, builder);
 
                 if let Some(body) = body {
                     let builder = builder.force_send_body();
@@ -156,15 +155,7 @@ impl Sender {
                 }
             },
             Sender::WithBody(mut builder) => {
-                if let Some(headers) = headers {
-                    for (key, value) in headers {
-                        builder = builder.header(key, value);
-                    }
-                }
-
-                if let Some(params) = params {
-                    builder = builder.query_pairs(params);
-                }
+                apply_headers_and_params!(headers, params, builder);
 
                 if let Some(body) = body {
                     builder.send_with_body_context(body)

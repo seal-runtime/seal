@@ -91,7 +91,7 @@ type HttpRequests = {}; local back: TableOfContents do
 	}
 	local dog_result: RandomDog = http.get({ 
 		url = "https://dog.ceo/api/breeds/image/random"
-	}):expect_json()
+	}):expect_json<<RandomDog>>()
 	
 	local format = require("@std/io/format")
 	print(`Your dog of the day is: {format(dog_result)}`)

@@ -1,10 +1,11 @@
 -- every time the user adds a file to the folder, we upload it to an endpoint
 local fs = require("@std/fs")
+local env = require("@std/env")
 local str = require("@std/str")
 local time = require("@std/time")
 local http = require("@std/net/http")
 
-local API_KEY = str.trim(str.splitafter(fs.readfile("./.env"), "API_KEY=")[2])
+local API_KEY = env.vars.get("API_KEY") or error("no .env file?")
 
 --- a map of paths to times they were last seen (to prevent repeated uploads)
 local debounce: { [string]: number? } = {}
@@ -63,7 +64,7 @@ for category, event in fs.watch(fs.path.join(".", "data", "input")) do
                 }
             }
             if not response.ok then
-                warn(`Couldn't upload '{path}' due to reason: {response.err}`)
+                warn(`Couldn't upload '{path}' due to reason: {response.status.code}: {response.status.reason}: {response.body}`)
             end
         end
     end

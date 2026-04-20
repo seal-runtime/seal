@@ -142,23 +142,122 @@
 
 -- return {} :: http
 
+--[=[
+    Send HTTP Requests.
+]=]
 export type http = {
-    get: (options: RequestWithoutBody) -> Response,
-    post: (options: RequestWithBody) -> Response,
+    --[=[
+        Send a `GET` request to `options.url`.
+
+        Set `options.timeout` to prevent this function from blocking indefinitely
+        when the internet is disconnected or the destination doesn't respond.
+        
+        Required fields:
+
+        - `url`: A URL or URI string; for localhost use `"127.0.0.1:<PORT>"`.
+
+        Optional fields:
+
+        - `params`: query parameters map that gets serialized and appended to `url`.
+        - `headers`: headers map, which can include API keys or similar.
+        - `timeout`: `Duration` or `RequestTimeout` table containing `Durations`.
+        - `limit`: the max number of bytes to receive in the response payload.
+        - `body`: `GET` requests are not *supposed* to have a body but some APIs require it. 
+            See `http.post` for `body` options.
+
+        This function blocks the Luau VM - if you want to send multiple HTTP requests at the same time,
+        wrap it with `@std/thread`.
+
+        ## Usage
+
+        ```luau
+        local response = http.get({
+            url = "https://mysecretapi.com/api/cats",
+            params = {
+                page = 2,
+            },
+            headers = {
+                Authorization = `Bearer {API_KEY}`,
+            },
+            timeout = time.seconds(4), -- roundtrip (global) timeout
+        })
+
+        if response.ok then -- successful status code
+            local data = response:expect_json<<CatResponse>>()
+        else
+            print(
+                "Calling the API failed due to reason " ..
+                ` ({response.status.code}) {response.status.reason}`
+            )
+        end
+        ```
+
+        ## Errors
+
+        This function **does not** throw an error on 400/500/etc. HTTP error status codes.
+
+        Throws an error when:
+
+        - A timeout was explicitly set and elapsed,
+        - An invalid URL or URI was passed to `options.url`,
+        - A network error occurs.
+    ]=]
+    get: (options: HttpRequestWithoutBody) -> HttpResponse,
+    --[=[
+        Send a `POST` request to `options.url`.
+
+        Set `options.timeout` to prevent this function from blocking indefinitely 
+        when the internet is disconnected or the destination doesn't respond.
+
+        Required fields:
+
+        - `url`: A URL or URI string; for localhost use `"127.0.0.1:<PORT>"`.
+
+        Optional fields:
+
+        - `params`: query parameters map that gets serialized and appended to `url`.
+        - `headers`: headers map, which can include API keys or similar.
+        - `timeout`: `Duration` or `RequestTimeout` table containing `Durations`.
+        - `limit`: the max number of bytes to receive in the response payload.
+        - `body`: the content to send with the request, can be a table, string, or buffer.
+        
+            Depending on the type sent, *seal* performs additional serialization and applies the relevant headers.
+            - tables are serialized to JSON and sent with header `content-type: application/json`.
+            - buffers may contain invalid UTF-8; sent with header `content-type: application/octet-stream`.
+            - strings may not contain invalid UTF-8; sent with header `content-type: text/plain`.
+            
+            Explicitly set `headers["content-type"]` to override these default `content-type` headers.
+        
+        This function blocks the Luau VM - if you want to send multiple HTTP requests at the same time,
+        wrap it with `@std/thread`.
+
+    ]=]
+    post: (options: HttpRequestWithBody) -> HttpResponse,
+    request: (method: HttpMethod, options: HttpRequestWithoutBody | HttpRequestWithBody) -> HttpResponse | HttpError
 }
 
+export type HttpMethod =
+    | "GET"
+    | "TRACE"
+    | "DELETE"
+    | "CONNECT"
+    | "HEAD"
+    | "OPTIONS"
+    | "POST"
+    | "PATCH"
+    | "PUT"
+
 export type RequestTimeout = {
-    request: Duration?,
-    response: Duration?,
+    send_request: Duration?,
+    send_response: Duration?,
     send_body: Duration?,
     receive_body: Duration?,
 }
 
 type JsonSerializable = { [string]: any } | { any }
 
-export type RequestWithoutBody = {
+export type HttpRequestWithoutBody = {
     url: string,
-    body: string | JsonSerializable | buffer | nil,
     params: {
         [string]: string,
     }?,
@@ -166,10 +265,10 @@ export type RequestWithoutBody = {
         [string]: string,
     }?,
     timeout: Duration | RequestTimeout | nil,
-    limit: number?,
+    max_body_size: number?,
 }
 
-export type RequestWithBody = {
+export type HttpRequestWithBody = {
     url: string,
     body: string | JsonSerializable | buffer,
     params: {
@@ -179,10 +278,39 @@ export type RequestWithBody = {
         [string]: string,
     }?,
     timeout: Duration | RequestTimeout | nil,
-    limit: number?,
+    max_body_size: number?,
 }
 
-export type Response = {
+export type MimeType =
+    | "text/plain"
+    | "text/html"
+    | "text/css"
+    | "text/csv"
+    | "text/xml"
+    | "application/json"
+    | "application/xml"
+    | "application/octet-stream"
+    | "application/pdf"
+    | "application/zip"
+    | "application/gzip"
+    | "application/x-www-form-urlencoded"
+    | "application/x-ndjson"
+    | "multipart/form-data"
+    | "text/javascript"
+    | "application/javascript"
+    | "text/event-stream"
+    | "image/png"
+    | "image/jpeg"
+    | "image/gif"
+    | "image/svg+xml"
+    | "image/webp"
+    | "audio/mpeg"
+    | "audio/ogg"
+    | "video/mp4"
+    | "video/webm"
+    | string
+
+export type HttpResponse = {
     ok: boolean,
     headers: {
         [string]: string,
@@ -192,9 +320,12 @@ export type Response = {
         reason: string,
     },
     body: string,
-    mime_type: string?,
-    charset: string?,
-    expect_json: <T>(self: Response) -> T,
+    content_type: {
+        mime_type: MimeType?,
+        charset: string?,
+    }?,
+    try_json: <T>(self: HttpResponse) -> T?,
+    expect_json: <T>(self: HttpResponse) -> T,
 }
 
 return {} :: http
