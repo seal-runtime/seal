@@ -406,7 +406,7 @@ fn seal_compile(args: Args) -> LuauLoadResult {
     #[allow(unused_mut, reason = "needs to be mut on windows")]
     let CompileOptions { entry_path, mut output_path } = CompileOptions::from_args(args)?;
 
-    let bundled_src = compile::bundle(&entry_path)?;
+    let mut bundled_src = compile::bundle(&entry_path)?;
 
     if output_path.ends_with(".luau") {
         match fs::write(&output_path, bundled_src) {
@@ -419,6 +419,11 @@ fn seal_compile(args: Args) -> LuauLoadResult {
         }
         return Ok(None);
     };
+
+    // handle shebangs by stripping first line from \n
+    if bundled_src.starts_with("#!") && let Some(first_newline_pos) = bundled_src.find('\n') {
+        bundled_src = bundled_src[first_newline_pos + 1..].to_string();
+    }
 
     let compiled_standalone_bytes = compile::standalone(&bundled_src)?;
 
