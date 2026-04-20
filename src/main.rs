@@ -321,58 +321,93 @@ fn seal_regen() -> LuauLoadResult {
     Ok(None)
 }
 
-fn seal_compile(mut args: Args) -> LuauLoadResult {
+struct CompileOptions {
+    entry_path: String,
+    output_path: String,
+}
+impl CompileOptions {
+    /// valid inputs:
+    /// `seal compile` - no args, compiles to binary executable named after parent directory
+    /// `seal compile filename.luau` - entry path is filename.luau, compiles to binary executable named after parent directory
+    /// `seal compile -o bin(.luau)` - input file is default, output file is bin(.luau)
+    /// `seal compile filename.luau -o bin(.luau)` - input file is filename.luau, output file is bin(.luau)  
+    fn from_args(mut args: Args) -> LuaResult<Self> {
+        let function_name = "seal compile";
+
+        let default_entry_path = std_env::get_cwd(function_name)?;
+        let default_output_path = match default_entry_path.file_name() {
+            Some(basename) => basename.to_string_lossy(),
+            None => {
+                return wrap_err!("{} - why can't we figure out the basename of your cwd???", function_name);
+            }
+        };
+        
+        // seal compile (no args)
+        if args.is_empty() {
+            return Ok(Self {
+                entry_path: default_entry_path.to_string_lossy().into_owned(),
+                output_path: default_output_path.to_string()
+            });
+        }
+
+        fn get(args: &mut Args, count: i32) -> LuaResult<Option<String>> {
+            match args.pop_front() {
+                None => Ok(None),
+                Some(arg) => match arg.into_string() {
+                    Ok(s) => Ok(Some(s)),
+                    Err(_) => {
+                        wrap_err!("seal compile - argument number {} contains invalid utf-8 ☠️", count)
+                    }
+                }
+            }
+        }
+
+        // we can have up to 3 strings we need to pop
+        let first = get(&mut args, 1)?;
+        let second = get(&mut args, 2)?;
+        let third = get(&mut args, 3)?;
+
+        let options = match (first.as_deref(), second.as_deref(), third.as_deref()) {
+            (Some("-o"), Some(output_path), None) => {
+                Self {
+                    entry_path: default_entry_path.to_string_lossy().into_owned(),
+                    output_path: output_path.to_owned()
+                }
+            },
+            (Some("-o"), None, None) => {
+                return wrap_err!("{} - output switch (-o) provided but missing output file name/path", function_name);
+            },
+            (Some(entry_path), None, None) => {
+                Self {
+                    entry_path: entry_path.to_string(),
+                    output_path: default_output_path.to_string()
+                }
+            },
+            (Some(entry_path), Some("-o"), Some(output_path)) => {
+                Self {
+                    entry_path: entry_path.to_string(),
+                    output_path: output_path.to_string()
+                }
+            },
+            (Some(_entry_path), Some("-o"), None) => {
+                return wrap_err!("{} - entry path and output switch (-o) provided but missing output file name/path", function_name);
+            },
+            (first, second, third) => {
+                return wrap_err!("{} - invalid combination of options detected, expected <no options> or <entry path> or <entry path> -o <output path>, got: {:?} {:?} {:?}", function_name, first, second, third);
+            }
+        };
+
+        Ok(options)
+    }
+}
+
+fn seal_compile(args: Args) -> LuauLoadResult {
     let function_name = "seal compile";
 
-    let default_entry_path = std_env::get_cwd(function_name)?;
-    let default_output_path = match default_entry_path.file_name() {
-        Some(basename) => basename.to_string_lossy(),
-        None => {
-            return wrap_err!("{} - why can't we figure out the basename of your cwd???", function_name);
-        }
-    };
-
-    // ugly asf we should probably be parsing these in SealCommand
     #[allow(unused_mut, reason = "needs to be mut on windows")]
-    let (entry_path, mut output_path): (String, String) = {
-        if args.is_empty() {
-            (default_entry_path.to_string_lossy().to_string(), default_output_path.to_string())
-        } else if let Some(front) = args.front()
-            && let Some(front) = front.to_str()
-        {
-            if front == "-o" {
-                let _ = args.pop_front();
-                if let Some(exec_name) = args.front() {
-                    (default_entry_path.to_string_lossy().to_string(), exec_name.to_string_lossy().to_string())
-                } else {
-                    return wrap_err!("{} - output switch (-o) provided but missing output file name/path", function_name);
-                }
-            } else {
-                let entry_path = args.pop_front().expect("args cannot be empty here");
-                if let Some(front) = args.front()
-                    && let Some(front) = front.to_str()
-                {
-                    if front == "-o" {
-                        let _ = args.pop_front();
-                        if let Some(exec_name) = args.front() {
-                            (entry_path.to_string_lossy().to_string(), exec_name.to_string_lossy().to_string())
-                        } else {
-                            return wrap_err!("{} - output switch (-o) provided but missing output file name/path", function_name);
-                        }
-                    } else {
-                        (entry_path.to_string_lossy().to_string(), default_output_path.to_string())
-                    }
-                } else {
-                    return wrap_err!("{} - bad utf8 :skull:", function_name);
-                }
+    let CompileOptions { entry_path, mut output_path } = CompileOptions::from_args(args)?;
 
-            }
-        } else {
-            return wrap_err!("{} - bad utf8 :skull:", function_name);
-        }
-    };
-
-    let bundled_src = compile::bundle(&entry_path)?;
+    let mut bundled_src = compile::bundle(&entry_path)?;
 
     if output_path.ends_with(".luau") {
         match fs::write(&output_path, bundled_src) {
@@ -385,6 +420,11 @@ fn seal_compile(mut args: Args) -> LuauLoadResult {
         }
         return Ok(None);
     };
+
+    // handle shebangs by stripping first line from \n
+    if bundled_src.starts_with("#!") && let Some(first_newline_pos) = bundled_src.find('\n') {
+        bundled_src = bundled_src[first_newline_pos + 1..].to_string();
+    }
 
     let compiled_standalone_bytes = compile::standalone(&bundled_src)?;
 

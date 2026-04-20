@@ -170,7 +170,7 @@ local function transform_thread_spawn_path(
     line_number: number,
     path: string,
     --- recursive handle to function calling this function cause uh yeah
-    traverse: (path: string, depth: number?, seen_stdlibs: { [string]: boolean? }?) -> err.Result<{string}>,
+    traverse: (path: string, depth: number?, seen_stdlibs: { [string]: string? }?) -> err.Result<{string}>,
     depth: number
 ): err.Result<{string}>
     local relative_path = string.match(line, [=[path%s*=%s*["']([^"']+)["']]=])
@@ -209,13 +209,27 @@ local function transform_thread_spawn_path(
     return result
 end
 
+local function get_reserved_identifier(path: string): string
+    -- @std/fs -> standard_library_std_fs
+    -- @std/io/input -> standard_library_std_io_input
+    -- @interop/mlua -> standard_library_interop_mlua
+    local stripped = string.sub(path, 2) -- strip leading "@"
+    return "standard_library_" .. string.gsub(stripped, "/", "_")
+end
+
 local anon_identifier = 0
 
 local seen: { [string]: string? } = {}
-local default_seen_stdlibs: { [string]: boolean? } = {}
+local bash_shebang: string? = nil
+--- maps reserved-alias identifier -> original require path, accumulated across all traversals
+local hoisted_stdlib_requires: { [string]: string } = {}
 
-local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: boolean? }?): err.Result<{string}>
-    seen_stdlibs = seen_stdlibs or default_seen_stdlibs
+local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: string? }?): err.Result<{string}>
+    -- when seen_stdlibs is nil we're in a top-level traversal and hoist stdlib requires to bundle top;
+    -- when it's explicitly provided (e.g. {} for thread.spawn inlining) stdlib requires stay inline
+    local should_hoist_stdlibs = seen_stdlibs == nil
+
+    seen_stdlibs = seen_stdlibs or {}
     depth = depth or 0
 
     if depth > 333 then
@@ -244,10 +258,25 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
             find_plain(line, first) and find_plain(line, second)
         )
     end
+
+    local file = fs.file.from(path) 
+    if not file:is_valid_utf8() then
+        return err.message(`file at '{path}' is not valid utf-8 ☠️`)
+    end
     
-    for line_number, line in fs.readlines(path) do
+    for line_number, line in file:readlines() do
         is_comment, comment_prefix = comment(line, comment_prefix)
         if is_comment then
+            continue
+        end
+
+        -- it's a bash shebang used for running luau scripts as executables directly,
+        -- hoist and move it to the top but don't include it here (or it syntax errors)
+        -- if a non-main file contains a bash shebang we also strip it to prevent syntax errors
+        if line_number == 1 and str.startswith(line, "#!") then
+            if depth == 0 then
+                bash_shebang = line
+            end 
             continue
         end
 
@@ -283,11 +312,27 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
             continue
         end
 
-        -- if it's requiring a seal stdlib, check if we've already required it, and only add the line if we haven't yet
         if str.starts(requested_require, table.unpack(reserved_aliases)) then
-            if not seen_stdlibs[requested_require] then
-                seen_stdlibs[requested_require] = true
+            if should_hoist_stdlibs then
+                -- replace the require call with the deterministic stdlib identifier and hoist the actual require to the top
+                local library_identifier = get_reserved_identifier(requested_require)
+                hoisted_stdlib_requires[library_identifier] = requested_require
+
+                local replace_parens_pattern = 'require%s*%(%s*["\']' .. requested_require .. '["\']%s*%)'
+                line = string.gsub(line, replace_parens_pattern, library_identifier)
+
+                local replace_string_call_pattern = 'require%s*["\']' .. requested_require .. '["\']'
+                line = string.gsub(line, replace_string_call_pattern, library_identifier)
                 append(line)
+            else
+                -- thread.spawn inlining: stdlib requires stay inline so the spawned code is self-contained
+                if not seen_stdlibs[requested_require] then
+                    seen_stdlibs[requested_require] = identifier
+                    append(line)
+                elseif seen_stdlibs[requested_require] ~= identifier then
+                    -- identifier was renamed, inline the require anyway to prevent bugs
+                    append(line)
+                end
             end
             continue
         end
@@ -351,7 +396,9 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
             -- we want to pick the return with NO whitespace to the left, otherwise we may grab the wrong return
             if string.match(maybe_return_line, "^return%s+") then
                 -- modify dependency_lines in place to fix last return
-                dependency_lines[i] = string.gsub(maybe_return_line, "^return%s+", `local {identifier} = `)
+                -- this identifier should already be initialized from outside the do/end block,
+                -- so this is just assigning to an existing identifier
+                dependency_lines[i] = string.gsub(maybe_return_line, "^return%s+", `{identifier} = `)
                 return_replaced = true
                 break
             end
@@ -364,9 +411,15 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
 
         -- and simply add all dependency lines to transformed
         table.insert(transformed, `-- START {resolved.path}`)
+        
+        -- add identifier for return to be transformed into an assignment to
+        table.insert(transformed, `local {identifier}`)
+        -- wrap entire thing in a do/end block so we don't hit the 200 locals limit
+        table.insert(transformed, "do")
         for _, dependency_line in dependency_lines do
-            append(dependency_line)
+            append("    " .. dependency_line)
         end
+        table.insert(transformed, "end")
 
         -- replace the require call with the identifier name
         local replace_parens_pattern = 'require%s*%(%s*["\']' .. requested_require .. '["\']%s*%)'
@@ -394,8 +447,23 @@ local function bundle(project_path: string): err.Result<string>
         return bundled_lines
     end
 
+    local stdlib_lines: { string } = {}
+    for library_identifier, library_require_path in hoisted_stdlib_requires do
+        table.insert(stdlib_lines, `local {library_identifier} = require("{library_require_path}")`)
+    end
+    -- sort stdlibs for deterministic output order
+    table.sort(stdlib_lines)
+
+    for i = #stdlib_lines, 1, -1 do
+        table.insert(bundled_lines, 1, stdlib_lines[i])
+    end
+
     for hot_comment, _ in hot_comments do
         table.insert(bundled_lines, 1, hot_comment)
+    end
+
+    if bash_shebang then
+        table.insert(bundled_lines, 1, bash_shebang)
     end
 
     local bundled = table.concat(bundled_lines, "\n")
