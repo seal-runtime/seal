@@ -1,6 +1,5 @@
 #![feature(default_field_values)]
 #![feature(str_as_str)]
-#![feature(if_let_guard)]
 
 #![deny(clippy::unwrap_used, reason = "
     seal prefers explicit panic! or unreachable!

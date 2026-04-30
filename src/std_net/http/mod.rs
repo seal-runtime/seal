@@ -44,10 +44,8 @@ pub fn http_get(luau: &Lua, value: LuaValue) -> LuaValueResult {
     };
 
     let request = HttpRequest::from_config(Method::GET, config, luau, function_name)?;
-    let mut response = request.send(function_name)?;
-    if let Err(err) = response.read_body_into_self() {
-        return wrap_err!("{}: cannot create response due to error reading response body: {}", function_name, err);
-    }
+    let response = request.send(function_name)?;
+
     ok_table(response.into_table(luau, function_name))
 }
 
@@ -62,10 +60,8 @@ fn http_post(luau: &Lua, value: LuaValue) -> LuaValueResult {
     };
 
     let request = HttpRequest::from_config(Method::POST, config, luau, function_name)?;
-    let mut response = request.send(function_name)?;
-    if let Err(err) = response.read_body_into_self() {
-        return wrap_err!("{}: cannot create response due to error reading response body: {}", function_name, err);
-    }
+    let response = request.send(function_name)?;
+    
     ok_table(response.into_table(luau, function_name))
 }
 

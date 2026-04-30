@@ -119,7 +119,15 @@ impl HttpRequest {
 
     /// Send the request without throwing errors in the common expected cases of io/network errors.
     pub fn try_send(self, function_name: &'static str) -> LuaResult<HttpResponseResult>{
-        let Self { method, url, headers, params, body, timeout, max_body_size } = self;
+        let Self { 
+            method,
+            url,
+            headers,
+            params,
+            body,
+            timeout,
+            max_body_size
+        } = self;
 
         let result = Sender::from_http_method(method, url, function_name)?
             .configure(timeout.clone())
@@ -138,12 +146,20 @@ impl HttpRequest {
         }
     }
 
+    /// Send the request, throwing a Luau error if the request was unsuccessful. This is a convenience
+    /// function for try_send that handles most of the cases; if you want to match against the actual 
+    /// ureq errors directly, use try_send
     pub fn send(self, function_name: &'static str) -> LuaResult<HttpResponse> {
         // all the luau errors (api usage errors) should be propagated upwards
         // whereas all the ureq errors we can now match against
 
         match self.try_send(function_name)? {
-            HttpResponseResult::Ok(response) => Ok(response),
+            HttpResponseResult::Ok(mut response) => {
+                if let Err(err) = response.read_body_into_self() {
+                    return wrap_err!("{}: cannot create response due to error reading response body: {}", function_name, err);
+                }
+                Ok(response)
+            },
             HttpResponseResult::Timeout(which, info) => {
                 let error_message = info
                     .map(|t| t.describe_elapsed(which))
