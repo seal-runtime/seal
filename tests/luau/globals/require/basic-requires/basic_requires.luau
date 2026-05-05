@@ -132,34 +132,4 @@ end
 
 filethaterrors()
 
-local function aliaswithdash()
-	local std = require("@seal-std")
-	assert(std, "require alias not working with dash (-)")
-	
-	local io = require("@seal-std/io")
-	assert(io, "require alias not working with dash (-) to a submodule")
-end
-
-aliaswithdash()
-
-local function aliaswithperiod()
-	local std = require("@seal.std")
-	assert(std, "require alias not working with period (.)")
-	
-	local io = require("@seal.std/io")
-	assert(io, "require alias not working with period (.) to a submodule")
-end
-
-aliaswithperiod()
-
-local function aliaswithdashandperiod()
-	local std = require("@seal-std.seal.gamertag-epic-swag.fun")
-	assert(std, "require alias not working with dash (-) and period (-)")
-	
-	local io = require("@seal-std.seal.gamertag-epic-swag.fun/io")
-	assert(io, "require alias not working with dash (-) and period (.) to a submodule")
-end
-
-aliaswithdashandperiod()
-
 return {}

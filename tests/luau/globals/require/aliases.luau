@@ -49,3 +49,15 @@ local function aliaswithoutslashdir()
 end
 
 aliaswithoutslashdir()
+
+local function aliaswithfullnamespecs()
+	local data_path = fs.path.join(".", "tests", "data")
+	local data_dir = fs.dir.from(data_path)
+		:add_file("init.luau", "return 'successful'")
+	
+	local res = (require)("@seal.gamertag-epic_swag-hina-_seal.level-69420_1337.requires-tests.data_directory")
+	assert(res == "successful", "requiring with full alias name specs failed. please double-check impl or alias")
+	fs.removefile(data_dir:join("init.luau"))
+end
+
+aliaswithfullnamespecs()

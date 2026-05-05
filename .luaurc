@@ -11,8 +11,6 @@
     "tests": "./tests/",
     "data": "./tests/data/",
     
-    "seal-std": "./.seal/typedefs/std/", // this is for testing in `basic_requires.luau`
-    "seal.std": "./.seal/typedefs/std/", // this is for testing in `basic_requires.luau`
-    "seal-std.seal.gamertag-epic-swag.fun": "./.seal/typedefs/std/" // this is for testing in `basic_requires.luau`
+    "seal.gamertag-epic_swag-hina-_seal.level-69420_1337.requires-tests.data_directory": "./tests/data/" // this is for testing in `aliases.luau`
   }
 }
