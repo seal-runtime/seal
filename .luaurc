@@ -9,6 +9,10 @@
     "output_formatter": "./src/std_io/output_formatter.luau",
     "extra": "./.seal/extra/",
     "tests": "./tests/",
-    "data": "./tests/data/"
+    "data": "./tests/data/",
+    
+    "seal-std": "./.seal/typedefs/std/", // this is for testing in `basic_requires.luau`
+    "seal.std": "./.seal/typedefs/std/", // this is for testing in `basic_requires.luau`
+    "seal-std.seal.gamertag-epic-swag.fun": "./.seal/typedefs/std/" // this is for testing in `basic_requires.luau`
   }
 }
