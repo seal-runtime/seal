@@ -40,12 +40,6 @@ declare extern type interrupt with
     code: "CtrlC" | "CtrlD"
 end
 
-declare extern type HttpError with
-    kind: "Timeout" | "BodyExceedsLimit" | "NetworkError" | "ConnectionFailed" | "TooManyRedirects" | "Other"
-    message: string
-    timeout_phase: ("Global" | "SendRequest" | "ReceiveResponse" | "SendBody" | "ReceiveBody" | "Connect" | "Resolve" | "Other")?
-end
-
 declare extern type WebsocketMessage with
     --- Returns `true` if `message:type() == "Binary"`
     function is_binary(self): boolean

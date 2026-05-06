@@ -58,6 +58,11 @@ impl HttpResponse {
         let response = self.inner;
 
         let is_ok = response.status().is_success();
+        let kind = if is_ok {
+            "Ok"
+        } else {
+            "Error"
+        };
         
         let headers = luau.create_table_from(response.headers().iter().map(|(name, val)| {
             (name.to_string(), LuaValue::String(luau.create_string(val.as_bytes()).expect("can't make string?")))
@@ -87,6 +92,7 @@ impl HttpResponse {
             .build_readonly()?;
 
         TableBuilder::create(luau)?
+            .with_value("kind", kind)?
             .with_value("ok", is_ok)?
             .with_value("headers", headers)?
             .with_value("status", status)?

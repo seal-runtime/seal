@@ -188,6 +188,36 @@ pub fn float_to_usize(f: f64, function_name: &'static str, parameter_name: &'sta
     }
 }
 
+pub fn int_to_u32(i: i64, function_name: &'static str, parameter_name: &'static str) -> LuaResult<u32> {
+    if i.is_negative() {
+        return wrap_err!("{}: {} must be positive (got: {})", function_name, parameter_name, i);
+    }
+    match u32::try_from(i) {
+        Ok(u) => Ok(u),
+        Err(err) => {
+            wrap_err!("{}: {} can't safely be converted from i64 to u32 because {}", function_name, parameter_name, err)
+        }
+    }
+}
+
+/// safely convert float param to u32, giving a good error reason if conversion wasn't successful
+pub fn float_to_u32(f: f64, function_name: &'static str, parameter_name: &'static str) -> LuaResult<u32> {
+    let truncated = f.trunc();
+    if truncated.is_nan() || truncated.is_infinite() {
+        wrap_err!("{}: {} cannot be NaN nor infinite", function_name, parameter_name)
+    } else if truncated.is_sign_negative() {
+        wrap_err!("{}: {} cannot be negative (got: {})", function_name, parameter_name, f)
+    } else if truncated > u32::MAX as f64 {
+        wrap_err!("{} expected {} to be convertible to u32, but provided float is too big to fit (got: {})", function_name, parameter_name, f)
+    } else if truncated == f {
+        // SAFETY: just checked nan/infinite/size/negative right above
+        let u: u32 = unsafe { truncated.to_int_unchecked() };
+        Ok(u)
+    } else {
+        wrap_err!("{} expected {} to be an integer, unexpectedly got a float: {}", function_name, parameter_name, f)
+    }
+}
+
 /// safely convert float param to u64, giving a good error reason if conversion wasn't successful
 pub fn float_to_u64(f: f64, function_name: &'static str, parameter_name: &'static str) -> LuaResult<u64> {
     let truncated = f.trunc();

@@ -6,16 +6,23 @@ local format = require("@std/io/format")
 local http = require("@std/net/http")
 local process = require("@std/process")
 
+if env.os ~= "Linux" then
+    print("You can run this test manually if you have uv (python) installed; \z
+    i couldn't figure out a good way to bootstrap uv on platforms outside Linux")
+    process.exit()
+end
+
 --[[
     For now, this test uses python and the uv package manager for python
     because it's a good way to test binary response w/ rfc compliant multipart file upload
 ]]
 
 local function install_uv()
-    if process.run {
+    local probe_ok, probe_result = pcall(process.run, {
         program = "uv",
         args = { "--help" }
-    }.ok then
+    })
+    if probe_ok and typeof(probe_result) ~= "error" and probe_result.ok then
         print("uv already installed")
         return -- don't install uv if already installed
     end
@@ -173,6 +180,26 @@ end) -- end pcall
 
 -- Always clean up, even if the test failed
 server:kill()
+
+-- Flask's debug mode spawns a child reloader process that outlives the parent;
+-- kill any leftover process still bound to port 5150
+local lsof = process.run {
+    program = "lsof",
+    args = { "-ti:5150" },
+}
+if lsof.ok then
+    local pid = lsof.stdout:match("(%d+)")
+    if pid then
+        local killed = process.run {
+            program = "kill",
+            args = { pid },
+        }
+        if killed.ok then
+            print(`killed process with pid {pid} hogging port 5150`)
+        end
+    end
+end
+
 fs.dir.try_remove(python_project_dir)
 
 if not ok then

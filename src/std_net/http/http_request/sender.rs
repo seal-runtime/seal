@@ -4,51 +4,26 @@ use mluau::prelude::*;
 use ureq::http::{HeaderValue, Method};
 use ureq::http::header::CONTENT_TYPE;
 
-use super::timeout_info::TimeoutInfo;
-use super::http_request::RequestBody;
-use super::ResponseWithBody;
+use super::super::{
+    TimeoutInfo,
+    ResponseWithBody
+};
+use super::RequestBody;
 use super::UreqError;
-
-type UreqResponseResult = Result<ResponseWithBody, UreqError>;
-type RequestBuilderWithBody = ureq::RequestBuilder<ureq::typestate::WithBody>;
-
-trait SendWithContext {
-    fn send_with_body_context(self, body: RequestBody) -> UreqResponseResult;
-}
-impl SendWithContext for RequestBuilderWithBody {
-    fn send_with_body_context(mut self, body: RequestBody) -> UreqResponseResult {
-        match body {
-            RequestBody::Text(body) => {
-                self.send(body)
-            },
-            RequestBody::Json(body) => {
-                if let Some(heads) = self.headers_mut() 
-                    && !heads.contains_key(CONTENT_TYPE) 
-                {
-                    heads.append(
-                        CONTENT_TYPE, 
-                        HeaderValue::from_static("application/json; charset=utf-8")
-                    );
-                }
-
-                self.send(body)
-            },
-            RequestBody::Bytes(bytes) => {
-                self.send(bytes)
-            }
-        }
-    }
-}
 
 /// Configuring the config builder applies to both WithBody and WithoutBody;
 /// and there's no syntactical difference between the branches
 /// so I replaced the duplicate logic with this macro.
 macro_rules! configure_config_builder {
-    ($builder:expr, $timeout:expr) => {
+    ($builder:expr, $timeout:expr, $max_redirects:expr) => {
         {
             let mut configuring = $builder
                 .config()
                 .http_status_as_error(false);
+
+            if let Some(max_redirects) = $max_redirects {
+                configuring = configuring.max_redirects(max_redirects);
+            }
     
             if let Some(timeout) = $timeout {
                 match timeout {
@@ -57,16 +32,14 @@ macro_rules! configure_config_builder {
                     },
                     TimeoutInfo::Custom { 
                         send_request, 
-                        send_response,
+                        receive_response,
                         send_body,
                         receive_body,
                     } => {
                         configuring = configuring
                             .timeout_send_request(send_request)
                             .timeout_send_body(send_body)
-                            .timeout_recv_response(send_response)
-                            // send_response is supposed to apply to both headers and body, so this is intentional
-                            .timeout_recv_body(send_response)
+                            .timeout_recv_response(receive_response)
                             .timeout_recv_body(receive_body);
                     }
                 }
@@ -100,7 +73,11 @@ pub enum Sender {
     WithBody(ureq::RequestBuilder<ureq::typestate::WithBody>),
 }
 impl Sender {
-    pub(super) fn from_http_method(m: Method, uri: String, function_name: &'static str) -> LuaResult<Self> {
+    pub(super) fn from_http_method(
+        m: Method, 
+        uri: String, 
+        function_name: &'static str
+    ) -> LuaResult<Self> {
         let builder = match m {
             // should be without body
             Method::GET => Self::WithoutBody(ureq::get(uri)),
@@ -124,14 +101,18 @@ impl Sender {
         Ok(builder)
     }
 
-    pub(super) fn configure(self, timeout: Option<TimeoutInfo>) -> Self {
+    pub(super) fn configure(
+        self, 
+        timeout: Option<TimeoutInfo>,
+        max_redirects: Option<u32>
+    ) -> Self {
         match self {
             Self::WithBody(builder) => {
-                let builder = configure_config_builder!(builder, timeout);
+                let builder = configure_config_builder!(builder, timeout, max_redirects);
                 Self::WithBody(builder)
             },
             Self::WithoutBody(builder) => {
-                let builder = configure_config_builder!(builder, timeout);
+                let builder = configure_config_builder!(builder, timeout, max_redirects);
                 Self::WithoutBody(builder)
             }
         }
@@ -162,6 +143,37 @@ impl Sender {
                 } else {
                     builder.send_empty()
                 }
+            }
+        }
+    }
+}
+
+type UreqResponseResult = Result<ResponseWithBody, UreqError>;
+type RequestBuilderWithBody = ureq::RequestBuilder<ureq::typestate::WithBody>;
+
+trait SendWithContext {
+    fn send_with_body_context(self, body: RequestBody) -> UreqResponseResult;
+}
+impl SendWithContext for RequestBuilderWithBody {
+    fn send_with_body_context(mut self, body: RequestBody) -> UreqResponseResult {
+        match body {
+            RequestBody::Text(body) => {
+                self.send(body)
+            },
+            RequestBody::Json(body) => {
+                if let Some(heads) = self.headers_mut() 
+                    && !heads.contains_key(CONTENT_TYPE) 
+                {
+                    heads.append(
+                        CONTENT_TYPE, 
+                        HeaderValue::from_static("application/json; charset=utf-8")
+                    );
+                }
+
+                self.send(body)
+            },
+            RequestBody::Bytes(bytes) => {
+                self.send(bytes)
             }
         }
     }

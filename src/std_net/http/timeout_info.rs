@@ -22,13 +22,28 @@ enum MaybeDuration {
     KeepGoing(LuaTable),
 }
 
+/// Handles HttpRequestWithBody/HttpRequestWithoutBody's .timeout field
+/// which can be either timeout: TimeDuration (seal userdata)
+/// or a table which contains seal durations:
+/// ```luau
+/// export type RequestTimeout = {
+///    --- Max duration to send the request but not the request body.
+///    send_request: Duration?,
+///    --- Max duration to send the request body.
+///    send_body: Duration?,
+///    --- Max duration to receive the response headers but not the response body.
+///    receive_response: Duration?,
+///    --- Max duration to receive the response body
+///    receive_body: Duration?,
+/// }
+/// ```
 #[derive(Clone)]
 pub enum TimeoutInfo {
     Global(Duration),
     Custom {
         send_request: Option<Duration>,
-        send_response: Option<Duration>,
         send_body: Option<Duration>,
+        receive_response: Option<Duration>,
         receive_body: Option<Duration>,
     }
 }
@@ -58,17 +73,17 @@ impl TimeoutInfo {
             function_name
         )?;
 
-        let send_response = Self::get_field(
-            &timeout_options, 
-            "send_response",
-            "RequestOptions.timeout.send_response",
-            function_name,
-        )?;
-
         let send_body = Self::get_field(
             &timeout_options,
             "send_body",
             "RequestOptions.timeout.send_body",
+            function_name,
+        )?;
+
+        let receive_response = Self::get_field(
+            &timeout_options, 
+            "receive_response",
+            "RequestOptions.timeout.receive_response",
             function_name,
         )?;
 
@@ -80,8 +95,8 @@ impl TimeoutInfo {
         )?;
 
         if send_request.is_none() 
-            && send_response.is_none() 
             && send_body.is_none() 
+            && receive_response.is_none() 
             && receive_body.is_none()
         {
             return wrap_err!("{}: RequestOptions.timeout is a table but all the fields we expected are nil\nExpected fields: \n  {}\nGot: \n  {:#?}", function_name, TIMEOUT_TYPE, timeout_options);
@@ -89,7 +104,7 @@ impl TimeoutInfo {
 
         Ok(Some(TimeoutInfo::Custom {
             send_request,
-            send_response,
+            receive_response,
             send_body,
             receive_body,
         }))
@@ -100,11 +115,11 @@ impl TimeoutInfo {
             TimeoutInfo::Global(dur) => {
                 format!("global timeout of {} elapsed; consider increasing options.timeout", format_duration(*dur))
             },
-            TimeoutInfo::Custom { send_request, send_response, send_body, receive_body } => {
+            TimeoutInfo::Custom { send_request, receive_response, send_body, receive_body } => {
                 let (field, dur): (&str, Option<Duration>) = match which {
                     UreqTimeout::SendRequest => ("options.timeout.send_request", *send_request),
-                    UreqTimeout::RecvResponse => ("options.timeout.send_response", *send_response),
                     UreqTimeout::SendBody => ("options.timeout.send_body", *send_body),
+                    UreqTimeout::RecvResponse => ("options.timeout.receive_response", *receive_response),
                     UreqTimeout::RecvBody => ("options.timeout.receive_body", *receive_body),
                     other => return format!("{:?} timeout elapsed", other),
                 };

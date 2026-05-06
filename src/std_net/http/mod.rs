@@ -4,9 +4,6 @@ use mluau::prelude::*;
 mod timeout_info;
 use timeout_info::TimeoutInfo;
 
-mod sender;
-use sender::Sender;
-
 mod http_request;
 use http_request::HttpRequest;
 
@@ -20,12 +17,6 @@ use ureq::Error as UreqError;
 use ureq::http::Method;
 
 type ResponseWithBody = ureq::http::Response<ureq::Body>;
-
-pub enum HttpResponseResult {
-    Ok(HttpResponse),
-    Timeout(ureq::Timeout, Option<TimeoutInfo>),
-    Err(UreqError),
-}
 
 pub fn http_get(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "http.get(options: HttpRequestWithoutBody | string)";
@@ -61,8 +52,14 @@ fn http_post(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
     let request = HttpRequest::from_config(Method::POST, config, luau, function_name)?;
     let response = request.send(function_name)?;
-    
+
     ok_table(response.into_table(luau, function_name))
+}
+
+pub enum HttpResponseResult {
+    Ok(HttpResponse),
+    Timeout(ureq::Timeout, Option<TimeoutInfo>),
+    Err(UreqError),
 }
 
 pub fn http_request(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
@@ -102,16 +99,16 @@ pub fn http_request(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult
     match result {
         HttpResponseResult::Ok(mut response) => {
             if let Err(err) = response.read_body_into_self() {
-                return ok_userdata(HttpError::from_error(err, None), luau);
+                return ok_table(HttpError::from_error(err, None).into_table(luau))
             }
 
             ok_table(response.into_table(luau, function_name))
         },
         HttpResponseResult::Timeout(which, info) => {
-            ok_userdata(HttpError::from_timeout(which, info), luau)
+            ok_table(HttpError::from_timeout(which, info).into_table(luau))
         },
         HttpResponseResult::Err(err) => {
-            ok_userdata(HttpError::from_error(err, None), luau)
+            ok_table(HttpError::from_error(err, None).into_table(luau))
         }
     }
 }

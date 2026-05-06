@@ -5,8 +5,10 @@ use crate::std_json;
 
 use ureq::http::Method;
 
+mod sender;
+use sender::Sender;
+
 use super::TimeoutInfo;
-use super::Sender;
 use super::HttpResponse;
 use super::HttpResponseResult;
 
@@ -32,7 +34,8 @@ pub struct HttpRequest {
     params: Option<Vec<(String, String)>>,
     body: Option<RequestBody>,
     timeout: Option<TimeoutInfo>,
-    max_body_size: Option<u64>
+    max_body_size: Option<u64>,
+    max_redirects: Option<u32>,
 }
 
 impl HttpRequest {
@@ -104,6 +107,15 @@ impl HttpRequest {
             }
         };
 
+        let max_redirects = match config.raw_get("max_redirects")? {
+            LuaValue::Number(f) => Some(float_to_u32(f, function_name, "max_redirects")?),
+            LuaValue::Integer(i) => Some(int_to_u32(i, function_name, "max_redirects")?),
+            LuaNil => None,
+            other => {
+                return wrap_err!("{}: expected config.max_redirects to be a number or nil, got: {:?}", function_name, other);
+            }
+        };
+
         let timeout = TimeoutInfo::from_config(config, function_name)?;
 
         Ok(Self {
@@ -113,7 +125,8 @@ impl HttpRequest {
             params,
             body,
             timeout,
-            max_body_size
+            max_body_size,
+            max_redirects
         })
     }
 
@@ -126,11 +139,12 @@ impl HttpRequest {
             params,
             body,
             timeout,
-            max_body_size
+            max_body_size,
+            max_redirects
         } = self;
 
         let result = Sender::from_http_method(method, url, function_name)?
-            .configure(timeout.clone())
+            .configure(timeout.clone(), max_redirects)
             .send(headers, params, body);
 
         match result {
