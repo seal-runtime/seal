@@ -152,27 +152,30 @@ type UreqResponseResult = Result<ResponseWithBody, UreqError>;
 type RequestBuilderWithBody = ureq::RequestBuilder<ureq::typestate::WithBody>;
 
 trait SendWithContext {
+    fn set_content_type_if_unset(&mut self, value: HeaderValue);
     fn send_with_body_context(self, body: RequestBody) -> UreqResponseResult;
 }
 impl SendWithContext for RequestBuilderWithBody {
+    fn set_content_type_if_unset(&mut self, value: HeaderValue) {
+        if let Some(heads) = self.headers_mut()
+            && !heads.contains_key(CONTENT_TYPE)
+        {
+            heads.append(CONTENT_TYPE, value);
+        }
+    }
+
     fn send_with_body_context(mut self, body: RequestBody) -> UreqResponseResult {
         match body {
             RequestBody::Text(body) => {
+                self.set_content_type_if_unset(HeaderValue::from_static("text/plain; charset=utf-8"));
                 self.send(body)
             },
             RequestBody::Json(body) => {
-                if let Some(heads) = self.headers_mut() 
-                    && !heads.contains_key(CONTENT_TYPE) 
-                {
-                    heads.append(
-                        CONTENT_TYPE, 
-                        HeaderValue::from_static("application/json; charset=utf-8")
-                    );
-                }
-
+                self.set_content_type_if_unset(HeaderValue::from_static("application/json; charset=utf-8"));
                 self.send(body)
             },
             RequestBody::Bytes(bytes) => {
+                self.set_content_type_if_unset(HeaderValue::from_static("application/octet-stream"));
                 self.send(bytes)
             }
         }

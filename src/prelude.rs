@@ -46,7 +46,7 @@ pub fn ok_function(f: fn(&Lua, LuaValue) -> LuaValueResult, luau: &Lua) -> LuaVa
     Ok(LuaValue::Function(luau.create_function(f)?))
 }
 
-// the generics weren't working
+// TODO: figure out how to get generics working for ok_function so we don't need multiple functions to do this
 pub fn ok_function_multi_returns_value(f: fn(&Lua, LuaMultiValue) -> LuaValueResult, luau: &Lua) -> LuaValueResult {
     Ok(LuaValue::Function(luau.create_function(f)?))
 }

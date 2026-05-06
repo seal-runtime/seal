@@ -296,7 +296,8 @@ export type HttpRequestWithBody = {
 
         Header keys are case-insensitive as per the HTTP spec; values must be valid ASCII.        
 
-        *seal* automatically sets `Content-Type` for you when you send a table (application/json) or buffer (application/octet-stream) as body.
+        By default, *seal* automatically sets `Content-Type` for you when you send a string (text/plain), table (application/json), or buffer (application/octet-stream) as body.
+        To override this behavior, set a `content-type` header explicitly.
     ]=]
     headers: {
         [string]: string,
