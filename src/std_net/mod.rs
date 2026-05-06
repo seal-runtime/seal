@@ -9,6 +9,6 @@ use crate::prelude::*;
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_value("http", self::http::create(luau)?)?
-        .with_value("socket", websocket::create(luau)?)?
+        .with_value("websocket", websocket::create(luau)?)?
         .build_readonly()
 }
