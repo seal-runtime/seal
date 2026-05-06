@@ -55,6 +55,7 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
 fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
     match path.as_str() {
         "@std/fs" => ok_table(std_fs::create(luau)),
+        "@std/fs/filesize" => ok_table(std_fs::file_size::create(luau)),
         "@std/fs/path" => ok_table(std_fs::pathlib::create(luau)),
         "@std/fs/file" => ok_table(std_fs::filelib::create(luau)),
         "@std/fs/dir" => ok_table(std_fs::dirlib::create(luau)),
