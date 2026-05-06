@@ -11,11 +11,12 @@ local response = http.post {
 
 assert(response.recvbody == [[{"hello":true}]], "response.recvbody doesn't match")
 
-local invalid_request = http.post {
+local invalid_request = http.request("POST", {
 	url = "https://localhost:4242/some-post",
 	body = {
 		hello = true
 	},
-}
+} :: http.HttpRequestWithBody)
 
+assert(invalid_request.ok == false, "https request to plain http server should fail")
 print(invalid_request)
