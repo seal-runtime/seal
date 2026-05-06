@@ -12,6 +12,8 @@ use super::TimeoutInfo;
 use super::HttpResponse;
 use super::HttpResponseResult;
 
+use crate::std_fs::file_size::FileSize;
+
 use ureq::Error as UreqError;
 
 /// A request's body *could* be a valid string (either json or regular text) 
@@ -99,11 +101,18 @@ impl HttpRequest {
         };
 
         let max_body_size = match config.raw_get("max_body_size")? {
-            LuaValue::Number(f) => Some(float_to_u64(f, function_name, "max_body_size")?),
-            LuaValue::Integer(i) => Some(int_to_u64(i, function_name, "max_body_size")?),
+            LuaValue::UserData(ud) if let Ok(file_size) = ud.borrow::<FileSize>() => {
+                Some(file_size.as_bytes())
+            },
+            LuaValue::UserData(other) => {
+                return wrap_err!("{}: expected config.max_body_size to be a FileSize userdata from std/fs/filesize, got an unexpected userdata instance: {:?}", function_name, other);
+            },
+            LuaValue::Number(_) | LuaValue::Integer(_) => {
+                return wrap_err!("{}: expected config.max_body_size to be a FileSize (userdata) from std/fs/filesize, not a number of bytes");
+            },
             LuaNil => None,
             other => {
-                return wrap_err!("{}: expected config.max_body_size to be a number or nil, got: {:?}", function_name, other);
+                return wrap_err!("{}: expected config.max_body_size to be a FileSize from std/fs/filesize or nil, got: {:?}", function_name, other);
             }
         };
 

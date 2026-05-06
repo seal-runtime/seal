@@ -13,6 +13,9 @@ impl FileSize {
     pub fn from_bytes(count: u64) -> Self {
         Self { inner_bytes: count }
     }
+    pub fn as_bytes(&self) -> u64 {
+        self.inner_bytes
+    }
     pub fn display(&self) -> String {
         let b = self.inner_bytes;
         if b < KILOBYTE {

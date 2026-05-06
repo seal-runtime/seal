@@ -8,7 +8,7 @@ export type http = {
         Set `options.timeout` to prevent this function from blocking indefinitely
         when the internet is disconnected or the destination doesn't respond.
 
-        Set `options.max_body_size` to get responses of over 10MB.
+        Set `options.max_body_size` to receive responses larger than the default 10MB limit.
         
         Required fields:
 
@@ -19,7 +19,7 @@ export type http = {
         - `params`: query parameters map that gets serialized and appended to `url`.
         - `headers`: headers map, which can include API keys or similar.
         - `timeout`: `Duration` or `RequestTimeout` table containing `Durations`.
-        - `max_body_size`: the max number of bytes to receive in the response body; defaults to 10MB.
+        - `max_body_size`: a `FileSize` limiting how much of the response body to receive; defaults to 10MB.
         - `max_redirects`: if 0, no redirects will be followed and response will be returned as-is; defaults to 10.
         - `body`: `GET` requests are not *supposed* to have a body but some APIs require it. 
             See `http.post` for `body` options.
@@ -78,7 +78,7 @@ export type http = {
         - `params`: query parameters map that gets serialized and appended to `url`.
         - `headers`: headers map, which can include API keys or similar.
         - `timeout`: `Duration` or `RequestTimeout` table containing `Durations`.
-        - `max_body_size`: the max number of bytes to receive in the response body; defaults to 10MB.
+        - `max_body_size`: a `FileSize` limiting how much of the response body to receive; defaults to 10MB.
         - `max_redirects`: if 0, no redirects will be followed and response will be returned as-is; defaults to 10.
         - `body`: the content to send with the request, can be a table, string, or buffer.
         
@@ -119,7 +119,7 @@ export type http = {
         - `params`: query parameters map that gets serialized and appended to `url`.
         - `headers`: headers map, which can include API keys or similar.
         - `timeout`: `Duration` or `RequestTimeout` table containing `Durations`.
-        - `max_body_size`: the max number of bytes to receive in the response body; defaults to 10MB.
+        - `max_body_size`: a `FileSize` limiting how much of the response body to receive; defaults to 10MB.
         - `max_redirects`: if 0, no redirects will be followed and response will be returned as-is; defaults to 10.
         - `body`: the content to send with the request, can be a table, string, or buffer.
         
@@ -265,7 +265,8 @@ export type HttpRequestWithoutBody = {
     }?,
     --- Prevent your request from taking forever. Pass a `Duration` from `@std/time` to set a global timeout or a `RequestTimeout` for more granular control.
     timeout: Duration | RequestTimeout | nil,
-    max_body_size: number?,
+    --- Limits the size of the response body; defaults to 10MB. Use `@std/fs/filesize` to construct (`filesize.megabytes(50)`).
+    max_body_size: FileSize?,
     --- Max number of redirects to redirect through before erroring out; defaults to 10. Pass 0 to not redirect anywhere and return the original response.
     max_redirects: number?,
 }
@@ -302,7 +303,8 @@ export type HttpRequestWithBody = {
     }?,
     --- Prevent your request from taking forever. Pass a `Duration` from `@std/time` to set a global timeout or a `RequestTimeout` for more granular control.
     timeout: Duration | RequestTimeout | nil,
-    max_body_size: number?,
+    --- Limits the size of the response body; defaults to 10MB. Use `@std/fs/filesize` to construct (`filesize.megabytes(50)`).
+    max_body_size: FileSize?,
     --- Max number of redirects to redirect through before erroring out; defaults to 10. Pass 0 to not redirect anywhere and return the original response.
     max_redirects: number?,
 }

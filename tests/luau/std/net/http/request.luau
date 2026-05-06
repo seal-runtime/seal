@@ -1,6 +1,7 @@
 --!strict
 --!nolint LocalShadow
 
+local filesize = require("@std/fs/filesize")
 local http = require("@std/net/http")
 local time = require("@std/time")
 
@@ -86,7 +87,7 @@ assert(typeof(timeout_response.reason) == "string" and #timeout_response.reason 
 -- BodyExceedsLimit: small max_body_size on a large response returns HttpError
 local limit_response = http.request("GET", {
     url = "https://jsonplaceholder.typicode.com/posts",
-    max_body_size = 100,
+    max_body_size = filesize.bytes(100),
 } :: http.HttpRequestWithoutBody)
 assert(limit_response.kind == "BodyExceedsLimit", "exceeding max_body_size should result in BodyExceedsLimit")
 assert(limit_response.ok == false, "BodyExceedsLimit is not OK")
