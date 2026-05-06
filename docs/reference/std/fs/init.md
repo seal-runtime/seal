@@ -807,6 +807,20 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ---
 
+### fs.filesize
+
+<h4>
+
+```luau
+filesize: filesize.FileSizeLib
+```
+
+</h4>
+
+ Library for constructing `FileSize` instances.
+
+---
+
 ## `export type` PathIs
 
 <h4>
