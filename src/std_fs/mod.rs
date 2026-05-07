@@ -893,7 +893,9 @@ pub fn fs_symlink(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> 
 pub fn fs_unsymlink(_luau: &Lua, link: String) -> LuaResult<bool> {
     let function_name = "fs.unsymlink(link: string)";
 
-    match fs::symlink_metadata(&link) {
+    let metadata = fs::symlink_metadata(&link);
+
+    match &metadata {
         Ok(metadata) if metadata.is_symlink() => (),
         Ok(metadata) if metadata.is_dir() => {
             return wrap_err!("{}: path '{}' leads to a real directory, not a symlink", function_name, &link);
@@ -919,6 +921,7 @@ pub fn fs_unsymlink(_luau: &Lua, link: String) -> LuaResult<bool> {
 
     #[cfg(unix)]
     {
+        // on linux/unix, fs::remove_file is used to remove symlinks
         match fs::remove_file(&link) {
             Ok(_) => Ok(true),
             Err(err) => {
@@ -929,27 +932,31 @@ pub fn fs_unsymlink(_luau: &Lua, link: String) -> LuaResult<bool> {
 
     #[cfg(windows)]
     {
-        let readed = match fs::read_link(&link) {
-            Ok(path) => path,
-            Err(err) => {
-                return wrap_err!("{}: unable to read link at '{}' due to err: {}", function_name, &link, err);
-            }
+        // on windows, regular symlinks (soft links) need to be removed by their respective file/directory removing functions
+
+        use std::os::windows::fs::FileTypeExt;
+        let Ok(ref metadata) = metadata else {
+            unreachable!("error cases already handled here");
         };
 
-        if readed.is_file() {
+        let file_type = metadata.file_type();
+
+        if file_type.is_symlink_file() {
             match fs::remove_file(&link) {
                 Ok(_) => Ok(true),
                 Err(err) => {
                     wrap_err!("{}: unable to remove file symlink at '{}' due to err: {}", function_name, &link, err)
                 }
             }
-        } else {
-            match fs::remove_dir(&link) {
+        } else if file_type.is_symlink_dir() {
+            match fs::remove_dir(&link) { // fs::remove_dir is what the symlink crate uses for removing Windows symlinks so we'll use it here
                 Ok(_) => Ok(true),
                 Err(err) => {
                     wrap_err!("{}: unable to remove directory symlink at '{}' due to err: {}", function_name, &link, err)
                 }
             }
+        } else {
+            wrap_err!("{}: this Windows symlink at '{}' is not a file symlink nor a directory symlink, we don't know how to remove it", function_name, &link)
         }
     }
 }
