@@ -139,6 +139,10 @@ local function expand_aliases(requested_path: string, aliases_by_luaurc: { Luaur
 			rest_of_path = string.sub(rest_of_path, 2, #rest_of_path)
 		end
 		
+		if alias_replacement:sub(-5, -1) == ".luau" and fs.is(alias_replacement) == "File" then
+			return nil, `alias replacement {alias_replacement} is a file and has redundant \`.luau\` file extension. please remove it :3`
+		end
+		
 		local alias_with_luau = alias_replacement .. ".luau"
 		if fs.is(alias_with_luau) == "File" then
 			return alias_with_luau, nil

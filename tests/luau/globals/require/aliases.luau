@@ -68,6 +68,7 @@ local function aliaswithredundantfileextension()
 		return nil
 	end)
 	assert(s == false, "this should not work - alias path to file cannot have redundant `.luau`. should only work when it is a directory")
+	assert(format.uncolor(tostring(f)):match("redundant `.luau` file extension. please remove it :3"), "inconsistent error message")
 	-- FIXME: missing assertion for expected error message (not impl yet)
 	
 	local path = fs.path.join(".", ".seal", "extra")
