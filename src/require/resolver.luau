@@ -139,8 +139,9 @@ local function expand_aliases(requested_path: string, aliases_by_luaurc: { Luaur
 			rest_of_path = string.sub(rest_of_path, 2, #rest_of_path)
 		end
 		
-		if alias_replacement:sub(-5, -1) == ".luau" and fs.is(alias_replacement) == "File" then
-			return nil, `alias replacement {alias_replacement} is a file and has redundant \`.luau\` file extension. please remove it :3`
+		-- check for file because specs allow directory to have the extension
+		if string.sub(alias_replacement, -5, -1) == ".luau" and fs.is(alias_replacement) == "File" then
+			return nil, `seal no longer allows require alias replacements to contain \`.luau\` file extensions (got {alias_replacement}); please remove the file extension to stay in spec :3`
 		end
 		
 		local alias_with_luau = alias_replacement .. ".luau"
