@@ -55,23 +55,22 @@ local function aliaswithfullnamespecs()
 	local data_dir = fs.dir.from(data_path)
 		:add_file("init.luau", "return 'successful'")
 	
-	local res = (require)("@seal.gamertag-epic_swag-hina-_seal.level-69420_1337.requires-tests.data_directory")
-	assert(res == "successful", "requiring with full alias name specs failed. please double-check impl or alias")
+	local res = (require)("@seal.gamertag-epic_swag-hina-_seal.LEVEL-69420_1337.requires-tests.data_directory")
 	fs.removefile(data_dir:join("init.luau"))
+	assert(res == "successful", "requiring with full alias name specs failed. please double-check impl or alias")
 end
 
 aliaswithfullnamespecs()
 
-local function aliaswithredundantfileextension()
+local function aliaswithredundantext()
 	local s, f = pcall(function()
 		require("@redundant")
 		return nil
 	end)
 	assert(s == false, "this should not work - alias path to file cannot have redundant `.luau`. should only work when it is a directory")
 	assert(format.uncolor(tostring(f)):match("`.luau` file extensions %(got [%w_%-%./]+%); please remove the file extension to stay in spec"), "inconsistent error message")
-	-- FIXME: missing assertion for expected error message (not impl yet)
 	
-	local path = fs.path.join(".", ".seal", "extra")
+	local path = fs.path.join(".", "tests", "data")
 	local newdir_path = fs.path.join(path, "newdir.luau")
 	local newdir = fs.tree()
 			:with_file("init.luau", "return \"successful\"")
@@ -87,4 +86,4 @@ local function aliaswithredundantfileextension()
 	assert(rawequal(f2, "successful"), "incorrectly required directory")
 end
 
-aliaswithredundantfileextension()
+aliaswithredundantext()

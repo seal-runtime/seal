@@ -13,7 +13,7 @@
     
     // these are for testing in `aliases.luau`
     "redundant": "./.seal/extra/tt.luau",
-    "redundant-but-dir": "./.seal/extra/newdir.luau", // this will be generated
-    "seal.gamertag-epic_swag-hina-_seal.level-69420_1337.requires-tests.data_directory": "./tests/data/"
+    "redundant-but-dir": "./tests/data/newdir.luau", // this will be generated
+    "seal.gamertag-epic_swag-hina-_seal.LEVEL-69420_1337.requires-tests.data_directory": "./tests/data/"
   }
 }
