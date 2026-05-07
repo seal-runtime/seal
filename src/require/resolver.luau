@@ -132,17 +132,18 @@ local function expand_aliases(requested_path: string, aliases_by_luaurc: { Luaur
 	end
 	
 	if alias_replacement then
-		-- special case @file aliases
-		if str.endswith(alias_replacement, ".luau") then
-			return alias_replacement, nil
-		end
-
 		local rest_of_path = requested_path
 		-- strip @alias prefix
 		rest_of_path = string.sub(rest_of_path, #extracted_alias + 2, #rest_of_path)
 		if str.startswith(rest_of_path, "/") then
 			rest_of_path = string.sub(rest_of_path, 2, #rest_of_path)
 		end
+		
+		local alias_with_luau = alias_replacement .. ".luau"
+		if fs.is(alias_with_luau) == "File" then
+			return alias_with_luau, nil
+		end
+		
 		if not str.endswith(alias_replacement, "/") then
 			alias_replacement ..= "/"
 		end

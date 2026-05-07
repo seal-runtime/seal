@@ -61,3 +61,29 @@ local function aliaswithfullnamespecs()
 end
 
 aliaswithfullnamespecs()
+
+local function aliaswithredundantfileextension()
+	local s, f = pcall(function()
+		require("@redundant")
+		return nil
+	end)
+	assert(s == false, "this should not work - alias path to file cannot have redundant `.luau`. should only work when it is a directory")
+	-- FIXME: missing assertion for expected error message (not impl yet)
+	
+	local path = fs.path.join(".", ".seal", "extra")
+	local newdir_path = fs.path.join(path, "newdir.luau")
+	local newdir = fs.tree()
+			:with_file("init.luau", "return \"successful\"")
+			:with_file("main.luau", "return \"failure\"")
+	fs.writetree(newdir_path, newdir)
+	
+	local s2, f2 = pcall(function()
+		return (require)("@redundant-but-dir")
+	end)
+	fs.removetree(newdir_path)
+	
+	assert(s2 == true, "this should work - alias path to directory can have redundant `.luau`")
+	assert(rawequal(f2, "successful"), "incorrectly required directory")
+end
+
+aliaswithredundantfileextension()
