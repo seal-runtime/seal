@@ -559,7 +559,7 @@ local function help_for_command(command: Command, choose: "simple" | "all" | str
 
     local function push(t: HelpAssoc, arg: Arg)
         if arg.is == "Flag" or arg.is == "Named" then
-            local parsed_name = {}
+            local parsed_name: { string } = {}
             table.insert(parsed_name, arg.name)
             for alias, _ in arg._aliases do
                 table.insert(parsed_name, alias)
@@ -606,7 +606,7 @@ local function help_for_command(command: Command, choose: "simple" | "all" | str
 
     local result = {}
     if command.name ~= "default" then
-        local command_name = {} do
+        local command_name: { string } = {} do
             table.insert(command_name, command.name)
             for alias, _ in command._aliases do
                 table.insert(command_name, alias)
@@ -870,7 +870,7 @@ function args.parse(program: string, tagline: string, info: ProgramInfo?)
                 }
                 local assocs: Assocs = { names = {}, helps = {} }
                 for _, command in {...} do
-                    local parsed_command_name = {}
+                    local parsed_command_name: { string } = {}
                     table.insert(parsed_command_name, command.name)
                     for alias, _ in command._aliases do
                         table.insert(parsed_command_name, alias)

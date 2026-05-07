@@ -7,7 +7,7 @@ if channel and channel.data then
 	}
 	if result.ok then
 		if result.body:match("^{") then
-			channel:send(result:decode())
+			channel:send(result:expect_json())
 		else
 			channel:send(result.body)
 		end

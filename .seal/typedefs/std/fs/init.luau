@@ -1,6 +1,7 @@
 local dirlib = require("@self/dir")
 local pathlib = require("@self/path")
 local filelib = require("@self/file")
+local filesize = require("@self/filesize")
 local common_types = require("@self/_types")
 
 export type fs = {
@@ -512,6 +513,9 @@ export type fs = {
         Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
     ]=]
     tree: () -> TreeBuilder,
+
+    --- Library for constructing `FileSize` instances.
+    filesize: filesize.FileSizeLib
 }
 
 export type PathIs =

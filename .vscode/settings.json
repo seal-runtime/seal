@@ -3,7 +3,6 @@
     "luau": "cargo build && ./target/debug/seal $fullFileName"
   },
   "rust-analyzer.check.command": "clippy",
-  "workbench.layoutControl.enabled": false,
   "files.eol": "\n",
   "luau-lsp.completion.imports.suggestRequires": true,
   "[rust]": {
@@ -29,10 +28,6 @@
   "luau-lsp.types.documentationFiles": ["./.seal/typedefs/docs.json"],
   "luau-lsp.fflags.enableNewSolver": true,
   "luau-lsp.fflags.enableByDefault": true,
-  "luau-lsp.fflags.override": {
-    "LuauInstantiationUsesGenericPolarity": "false"
-  },
   "luau-lsp.inlayHints.variableTypes": false,
-  "luau-lsp.plugin.enabled": false,
-  "stylua.disableVersionCheck": true,
+  "luau-lsp.studioPlugin.enabled": false,
 }

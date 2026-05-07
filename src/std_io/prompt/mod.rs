@@ -255,7 +255,7 @@ pub fn prompt_password_masked(message: &str, function_name: &str) -> LuaResult<S
                         let _ = terminal::disable_raw_mode();
                         return wrap_err!("{}: failed to flush stdout: {}", function_name, err);
                     }
-                }
+                },
                 _ => {} // ignore other keys like arrows, tab, etc
             }
         }
