@@ -23,18 +23,21 @@ function luau.eval(src: string, options: EvalOptions?) -> unknown | error,
 
 Evaluate Luau source code from a string in the current Luau VM.
 
-By default, this function evaluates in `"safe"` mode with only Luau's standard library (minus some deprecated environment breaking functions).
+By default, this function evaluates in `"Safe"` mode with only Luau's standard library (minus some deprecated environment breaking functions).
 
 ### `EvalOptions` options
 
 `name` represents the `chunk_name` of the evaluated src.
 
-`stdlib` can be one of the following (or left unspecified, in which it defaults to `"safe"`):
+`stdlib` can be one of the following (or left unspecified, in which it defaults to `"Safe"`):
 
-- `"safe"` - The evaled code will have access to most libraries/functions that come with Luau,
+- `"Safe"` - The evaled code will have access to most libraries/functions that come with Luau,
 but nothing that can access your file system or the internet.
-- `"seal"` - The evaled code will have access to anything seal can do, from accessing environment variables to creating an infinite number of empty files in your home directory.
-- `"none"` - Disable every single global Luau comes with, including `tostring` and `print`.
+- `"Seal"` - The evaled code will have access to anything seal can do, from accessing environment variables to creating an infinite number of empty files in your home directory.
+- `"None"` - Disable every single global Luau comes with, including `tostring` and `print`.
+
+`globals` adds adds additional functions/variables to the environment; all globals are added to the standard set
+of Luau and seal globals provided by your choice of `stdlib`.
 
 ## Returns
 
@@ -44,6 +47,7 @@ an error that occurred when evaluating the code, such as a syntax error or runti
 ## Errors
 
 - if the code cannot be evaluated, but not if it contains a syntax error or errors at runtime.
+- if any key in the table passed to `options.globals` is not a string
 
 ## Usage
 
@@ -179,6 +183,8 @@ name: string?,
 
 </h4>
 
+ the chunk_name of the code to be evaluated
+
 ---
 
 ### EvalOptions.stdlib
@@ -186,10 +192,26 @@ name: string?,
 <h4>
 
 ```luau
-function EvalOptions.stdlib("seal" | "safe" | "none")?,
+function EvalOptions.stdlib("Seal" | "Safe" | "None")?,
 ```
 
 </h4>
+
+ the base set of globals to include; case-insensitive for backwards compatibility.
+
+---
+
+### EvalOptions.globals
+
+<h4>
+
+```luau
+globals: { [string]: any }?,
+```
+
+</h4>
+
+ add additional globals to the environment, including functions and variables.
 
 ---
 

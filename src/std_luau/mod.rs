@@ -3,8 +3,6 @@ use crate::{Chunk, prelude::*};
 
 use mluau::Compiler;
 
-// TODO: lute support
-
 struct EvalError {
     message: String,
 }
@@ -35,16 +33,18 @@ enum EvalStdlib {
 struct EvalOptions {
     name: Option<String>,
     stdlib: EvalStdlib,
+    globals: Option<LuaTable>,
 }
 impl EvalOptions {
     fn default() -> Self {
         EvalOptions {
             name: None,
             stdlib: EvalStdlib::Safe,
+            globals: None,
         }
     }
 
-    fn from_value(value: LuaValue, function_name: &'static str) -> LuaResult<Self> {
+    fn from_table(value: LuaValue, function_name: &'static str) -> LuaResult<Self> {
         let t = match value {
             LuaValue::Table(t) => Some(t),
             LuaNil => None,
@@ -62,19 +62,19 @@ impl EvalOptions {
         let stdlib = match t.raw_get("stdlib")? {
             LuaValue::String(s) => {
                 let s_bytes = s.as_bytes();
-                if s_bytes == &b"seal"[..] {
+                if s_bytes.eq_ignore_ascii_case(b"Seal") {
                     EvalStdlib::Seal
-                } else if s_bytes == &b"safe"[..] {
+                } else if s_bytes.eq_ignore_ascii_case(b"Safe") {
                     EvalStdlib::Safe
-                } else if s_bytes == &b"none"[..] {
+                } else if s_bytes.eq_ignore_ascii_case(b"None") {
                     EvalStdlib::None
                 } else {
-                    return wrap_err!("{} expected EvalOptions.stdlib to be \"seal\" or \"safe\" or \"none\" or nil, got an invalid string: {}", function_name, s.display())
+                    return wrap_err!("{} expected EvalOptions.stdlib to be \"Seal\" or \"Safe\" or \"None\" or nil, got an invalid string: {}", function_name, s.display())
                 }
             },
             LuaNil => EvalStdlib::Safe,
             other => {
-                return wrap_err!("{} expected EvalOptions.stdlib to be \"seal\" or \"safe\" or \"none\" or nil, got: {:?}", function_name, other);
+                return wrap_err!("{} expected EvalOptions.stdlib to be \"Seal\" or \"Safe\" or \"None\" or nil, got: {:?}", function_name, other);
             }
         };
 
@@ -90,9 +90,27 @@ impl EvalOptions {
             }
         };
 
+        let globals = match t.raw_get("globals")? {
+            Some(LuaValue::Table(t)) => {
+                // sanity check to ensure all k,v pairs have string keys
+                for pair in t.pairs::<LuaValue, LuaValue>() {
+                    let (key, _) = pair?;
+                    if !matches!(key, LuaValue::String(_)) {
+                        return wrap_err!("{}: globals environment table should only have string keys, got an {:#?} as a key", function_name, key);
+                    }
+                }
+                Some(t)
+            },
+            Some(LuaNil) | None => None,
+            Some(other) => {
+                return wrap_err!("{} expected globals to be a table with string keys or nil, got: {:?}", function_name, other);
+            }
+        };
+
         Ok(EvalOptions {
             name,
             stdlib,
+            globals
         })
     }
 }
@@ -113,7 +131,7 @@ fn get_safe_globals(luau: &Lua) -> LuaResult<LuaTable> {
     };
     t.raw_set("_VERSION", "Luau")?;
     let dummy_require_fn = luau.create_function(|_l: &Lua, _v: LuaValue| -> LuaValueResult {
-        wrap_err!("require is not allowed in \"safe\" mode! use \"seal\" stdlib to allow requires.")
+        wrap_err!("require is not allowed in \"Safe\" mode! use \"Seal\" stdlib to allow requires.")
     })?;
     t.raw_set("require", dummy_require_fn)?;
     Ok(t)
@@ -128,17 +146,32 @@ unsafe fn eval(luau: &Lua, src: Vec<u8>, eval_options: EvalOptions) -> LuaValueR
         Err(err) => Chunk::Bytecode(err.into_bytes()),
     };
 
-    let chunk = match eval_options.stdlib {
+    fn merge_globals(standard_globals: LuaTable, extra_globals: Option<LuaTable>) -> LuaResult<LuaTable> {
+        if let Some(globals) = extra_globals {
+            for pair in globals.pairs::<LuaValue, LuaValue>() {
+                let (key, value) = pair?;
+                standard_globals.set(key, value)?;
+            }
+        }
+        Ok(standard_globals)
+    }
+
+    let globals = match eval_options.stdlib {
         EvalStdlib::Safe => {
-            luau.load(code).set_name(name).set_environment(get_safe_globals(luau)?)
+            merge_globals(get_safe_globals(luau)?, eval_options.globals)?
         },
         EvalStdlib::None => {
-            luau.load(code).set_name(name).set_environment(luau.create_table()?)
+            merge_globals(luau.create_table()?, eval_options.globals)?
         },
         EvalStdlib::Seal => {
-            luau.load(code).set_name(name)
+            merge_globals(luau.globals(), eval_options.globals)?
         }
     };
+
+    let chunk = luau.load(code)
+        .set_name(name)
+        .set_environment(globals);
+
     let res = match chunk.eval::<LuaValue>() {
         Ok(value) => value,
         Err(err) => {
@@ -170,7 +203,7 @@ fn luau_eval(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
         }
     };
     let eval_options = match multivalue.pop_front() {
-        Some(v) => EvalOptions::from_value(v, function_name)?,
+        Some(v) => EvalOptions::from_table(v, function_name)?,
         None => EvalOptions::default(),
     };
 
@@ -193,7 +226,7 @@ fn luau_eval_unsafe(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult
         }
     };
     let eval_options = match multivalue.pop_front() {
-        Some(v) => EvalOptions::from_value(v, function_name)?,
+        Some(v) => EvalOptions::from_table(v, function_name)?,
         None => EvalOptions::default(),
     };
 

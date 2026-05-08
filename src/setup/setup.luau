@@ -356,7 +356,7 @@ end
 function should_replace_typedefs(config_luau: fs.FileEntry)
     local function slightly_safe_eval(path: string): { seal_version: string? }
         local src = fs.readfile(path)
-        local res = luau.eval(src, { stdlib = "seal" }) -- allow seal stdlib in case test functions or smth need it
+        local res = luau.eval(src, { stdlib = "Seal" }) -- allow seal stdlib in case test functions or smth need it
         if typeof(res) == "error" then
             err(`Error reading your config.luau file at {path}: {res}`)
             error("unreachable")
