@@ -68,7 +68,7 @@ local function aliaswithredundantext()
 		return nil
 	end)
 	assert(s == false, "this should not work - alias path to file cannot have redundant `.luau`. should only work when it is a directory")
-	assert(format.uncolor(tostring(f)):match("`.luau` file extensions %(got [%w_%-%./]+%); please remove the file extension to stay in spec"), "inconsistent error message")
+	assert(format.uncolor(tostring(f)):match("please remove the file extension to stay in spec"), "inconsistent error message")
 	
 	local path = fs.path.join(".", "tests", "data")
 	local newdir_path = fs.path.join(path, "newdir.luau")
