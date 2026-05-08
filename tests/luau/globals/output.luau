@@ -143,3 +143,21 @@ print("below this is dp output")
 dp(badstr)
 
 -- dp(format.pretty({ cats = badstr }))
+
+local customprint = setmetatable({
+    name = "Hi",
+    age = 12,
+    content_type = {
+        mime_type = "application/json",
+        charset = "UTF-8"
+    }
+}, {
+    __call = function(self)
+        print(self)
+    end,
+    __display = function(self)
+        return "I am a cat"
+    end
+})
+
+print(customprint)

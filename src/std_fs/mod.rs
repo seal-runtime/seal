@@ -13,6 +13,7 @@ pub mod file_entry;
 pub mod directory_entry;
 pub mod find;
 pub mod watch;
+pub mod file_size;
 
 /// helper and converter function to turn LuaStrings into Rust Strings
 /// use this one if we're okay with checking the filesystem for common issues for better user experience,
@@ -1060,6 +1061,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_value("path", pathlib::create(luau)?)?
         .with_value("file", filelib::create(luau)?)?
         .with_value("dir", dirlib::create(luau)?)?
+        .with_value("filesize", file_size::create(luau)?)?
         .build_readonly()?;
 
     Ok(std_fs)

@@ -31,13 +31,45 @@ declare channel: {
 }?
 
 --- an error returned from mluau, can be tostringed
-declare class error end
+declare extern type error with end
 
 --- Represents the JSON `null`, which can be stored in tables.
 declare extern type null with end
 
-declare class interrupt
+declare extern type interrupt with
     code: "CtrlC" | "CtrlD"
+end
+
+--[=[
+    Represents the size of data in bytes, but in a more human-readable way with convenient constructors.
+
+    Use the `@std/fs/filesize` library to construct `FileSize`s. This type may be added, subtracted, and compared
+    using all standard comparison operators.
+
+    This type internally stores bytes as `u64`, therefore the largest size this type
+    can represent is `u64::MAX` (~16 exabytes)
+]=]
+declare extern type FileSize with
+    function __add(self, other: FileSize): FileSize
+    function __sub(self, other: FileSize): FileSize
+    function __eq(self, other: FileSize): boolean
+    function __lt(self, other: FileSize): boolean
+    function __le(self, other: FileSize): boolean
+    function __tostring(self): string
+    --- Returns a human-readable string using the most appropriate unit representation.
+    function display(self): string
+    --- Format the `FileSize` as a human-readable string in the given unit ("1.20 GB"`, `"1234 bytes"`, etc.).
+    function format(self, unit: "Bytes" | "KB" | "MB" | "GB" | "TB"): string
+    --- Returns the size as a raw byte count.
+    function as_bytes(self): number
+    --- Returns the size expressed in kilobytes.
+    function as_kilobytes(self): number
+    --- Returns the size expressed in megabytes.
+    function as_megabytes(self): number
+    --- Returns the size expressed in gigabytes.
+    function as_gigabytes(self): number
+    --- Returns the size expressed in terabytes.
+    function as_terabytes(self): number
 end
 
 declare extern type WebsocketMessage with
@@ -134,7 +166,7 @@ type COMMON_FORMATS =
     | "HH:MM (AM/PM)"
     | "AMERICAN_FULL_DATE_TIME"
 
-declare class DateTime
+declare extern type DateTime with
     year: number
     month: number
     day: number
@@ -167,7 +199,7 @@ declare class DateTime
     function __le(self, other: DateTime): boolean
 end
 
-declare class TimeSpan
+declare extern type TimeSpan with
     relative_to: DateTime?
 
     function duration(self): Duration
@@ -185,7 +217,7 @@ declare class TimeSpan
     function __sub(self, other: TimeSpan): TimeSpan
 end
 
-declare class Duration
+declare extern type Duration with
     years: number
     months: number
     days: number
