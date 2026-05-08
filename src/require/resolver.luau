@@ -112,7 +112,7 @@ end
 -- returns the expanded current_path with a replacement found from a .luaurc if one exists
 -- if there's an error, the second return will be an error message
 local function expand_aliases(requested_path: string, aliases_by_luaurc: { LuaurcAliases }): (string?, string?)
-	local extracted_alias = string.match(requested_path, "^@([%w_]+)/?")
+	local extracted_alias = string.match(requested_path, "^@([%w_%-%.]+)/?")
 	if not extracted_alias then
 		return nil, `couldn't extract require alias from requested path '{requested_path}'; is it a valid alias (like "@alias/path" or "@alias")?`
 	end
@@ -132,17 +132,23 @@ local function expand_aliases(requested_path: string, aliases_by_luaurc: { Luaur
 	end
 	
 	if alias_replacement then
-		-- special case @file aliases
-		if str.endswith(alias_replacement, ".luau") then
-			return alias_replacement, nil
-		end
-
 		local rest_of_path = requested_path
 		-- strip @alias prefix
 		rest_of_path = string.sub(rest_of_path, #extracted_alias + 2, #rest_of_path)
 		if str.startswith(rest_of_path, "/") then
 			rest_of_path = string.sub(rest_of_path, 2, #rest_of_path)
 		end
+		
+		-- check for file because specs allow directory to have the extension
+		if string.sub(alias_replacement, -5, -1) == ".luau" and fs.is(alias_replacement) == "File" then
+			return nil, `seal no longer allows require alias replacements to contain \`.luau\` file extensions (got {alias_replacement}); please remove the file extension to stay in spec :3`
+		end
+		
+		local alias_with_luau = alias_replacement .. ".luau"
+		if fs.is(alias_with_luau) == "File" then
+			return alias_with_luau, nil
+		end
+		
 		if not str.endswith(alias_replacement, "/") then
 			alias_replacement ..= "/"
 		end
@@ -196,7 +202,7 @@ local function resolve(
 		note that seal supports @self in either case
 	]]
 ): RequireResolveResult
-local debug_name: string = override_debug_name or debug.info(3, "s") --[[ 
+	local debug_name: string = override_debug_name or debug.info(3, "s") --[[ 
 	this should give us the 
 	debug name (set by luau.load().set_name) for the chunk that called require(),
 	in the format `[string "./src/somewhere.luau"]`
