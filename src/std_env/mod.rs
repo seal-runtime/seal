@@ -44,7 +44,9 @@ pub fn get_current_shell() -> String {
             }
         // fallback to cmd
         if let Ok(shell_path) = env::var("ComSpec") {
-            eprintln!("get_current_shell falling to back to cmd.exe; please set $SHELL");
+            use std::io::Write;
+            let mut stderr = std::io::stderr().lock();
+            let _ = writeln!(stderr, "get_current_shell falling back to cmd.exe; please set $SHELL");
             return shell_path;
         }
     }
