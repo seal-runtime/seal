@@ -63,21 +63,34 @@ end
 
 local resolver = luau.require_resolver()
 
+-- Strip single/double quoted string literals that contain a require() call so that
+-- extract_identifier_and_path doesn't match require() inside string values.
+-- Uses require%s*%( (requires an opening paren) to avoid stripping paths that merely
+-- contain the word "require" (e.g. "./require-helper.luau" paths stay intact).
+local function strip_strings_containing_require(line: string): string
+    line = string.gsub(line, '"[^"]*require%s*%([^"]*"', '""')
+    line = string.gsub(line, "'[^']*require%s*%([^']*'", "''")
+    return line
+end
+
 local function extract_identifier_and_path(line: string, debug_path: string): (err.Result<string?>, string?)
+    -- strip quoted string literals containing require() so we don't match require() inside string values
+    local stripped = strip_strings_containing_require(line)
+
     -- identifier = require("...") or require '...' or require "..."
-    local identifier, requested_path = string.match(line, '([%w%.]+)%s*=%s*require%s*[%(%s]*["\'](.-)["\'][%)]?')
+    local identifier, requested_path = string.match(stripped, '([%w%.]+)%s*=%s*require%s*[%(%s]*["\'](.-)["\'][%)]?')
     if identifier and requested_path then
         return identifier, requested_path
     end
 
     -- require("...") or require '...' or require "@alias/path"
-    requested_path = string.match(line, 'require%s*[%(%s]*["\'](.-)["\'][%)]?')
+    requested_path = string.match(stripped, 'require%s*[%(%s]*["\'](.-)["\'][%)]?')
     if requested_path then
         return nil, requested_path
     end
 
     -- bad dynamic require: require(var)
-    local dynamic_arg = string.match(line, 'require%s*%(%s*([%w_%.]+)%s*%)')
+    local dynamic_arg = string.match(stripped, 'require%s*%(%s*([%w_%.]+)%s*%)')
     if dynamic_arg then
         return err.message(`detected dynamic require at {debug_path}; only static requires may be bundled. offending line: {line}`), nil
     end
