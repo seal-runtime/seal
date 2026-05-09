@@ -164,6 +164,70 @@ local function find_plain(s: string, n: string): boolean
     return if string.find(s, n, 1, true) then true else false
 end
 
+--[=[
+    Check if the line is inside or opens a multi-line long string ([[ or [=[ syntax).
+
+    - If the line is within a long string, returns `(true, current_level)`.
+    - If the line closes a long string, returns `(true, nil)`.
+    - If the line opens a new long string that doesn't close on the same line, returns `(false, new_level)`.
+    - Otherwise returns `(false, nil)`.
+
+    Usage
+
+    ```luau
+    local long_string_level: string? = nil
+    for l, line in readlines(f) do
+        local is_long_string, level = long_string(line, long_string_level)
+        long_string_level = level
+        if is_long_string then
+            append(line)
+            continue
+        end
+    end
+    ```
+]=]
+local function long_string(line: string, current_level: string?): (
+    --- whether this line's content belongs to a long string (and should not be processed)
+    boolean,
+    --- the active level after processing this line; nil if no long string is open
+    string?
+)
+    if current_level ~= nil then
+        -- we're inside a long string: check if it closes on this line
+        local closing = "]" .. current_level .. "]"
+        if find_plain(line, closing) then
+            -- ends long string
+            return true, nil
+        else
+            -- line within long string
+            return true, current_level
+        end
+    end
+
+    -- check if this line opens a new long string ([[ or [=[ or [===[ etc.)
+    local open_start, _, open_eqs = string.find(line, "%[(=*)%[")
+    if not open_start or open_eqs == nil then
+        return false, nil
+    end
+
+    -- ignore [=*[ that appears after -- on the same line (trailing comment, not a string)
+    local before_open = string.sub(line, 1, open_start - 1)
+    if find_plain(before_open, "--") then
+        return false, nil
+    end
+
+    -- check whether the matching closing bracket also appears on this line
+    local closing = "]" .. open_eqs .. "]"
+    local after_open = open_start + #open_eqs + 2 -- skip past the opening [=*[ delimiter
+    if find_plain(string.sub(line, after_open), closing) then
+        -- starts and ends on the same line
+        return false, nil
+    else
+        -- starts a long string that continues past this line
+        return false, open_eqs
+    end
+end
+
 --- We transform every usage of thread.spawn with a path into inlining the path's src
 local function transform_thread_spawn_path(
     line: string,
@@ -244,6 +308,10 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
 
     local is_comment = false
     local comment_prefix: string? = nil
+
+    local is_long_string = false
+    local long_string_level: string? = nil
+    
     local previous_line = ""
 
     local function append(line: string)
@@ -267,6 +335,15 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
     for line_number, line in file:readlines() do
         is_comment, comment_prefix = comment(line, comment_prefix)
         if is_comment then
+            continue
+        end
+
+        -- If we're inside a multi-line long string ([[ or [=[ syntax), we may be in a string
+        -- that represents Luau source code; we shouldn't process require() calls
+        -- on these lines — they belong to the string content, not the surrounding scope.
+        is_long_string, long_string_level = long_string(line, long_string_level)
+        if is_long_string then
+            append(line)
             continue
         end
 
