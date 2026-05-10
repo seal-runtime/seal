@@ -20,7 +20,7 @@ local function get_entry_path(path: string): err.Result<string>
 
     local seal_dir = project_dir:find(".seal"):try_dir()
     if not seal_dir then
-        return err.message(`directory at '{path}' isn't a seal project (it doesn't contain a .seal dir), so it cannot be bundled`)
+        return err.message(`directory at '{path}' isn't a seal project (it doesn't contain a .seal dir), so it cannot be automatically bundled; consider specifying an entry path (seal compile ./path -o exe)`)
     end
 
     local config_luau = seal_dir:find("config.luau"):try_file()
@@ -63,21 +63,34 @@ end
 
 local resolver = luau.require_resolver()
 
+-- Strip single/double quoted string literals that contain a require() call so that
+-- extract_identifier_and_path doesn't match require() inside string values.
+-- Uses require%s*%( (requires an opening paren) to avoid stripping paths that merely
+-- contain the word "require" (e.g. "./require-helper.luau" paths stay intact).
+local function strip_strings_containing_require(line: string): string
+    line = string.gsub(line, '"[^"]*require%s*%([^"]*"', '""')
+    line = string.gsub(line, "'[^']*require%s*%([^']*'", "''")
+    return line
+end
+
 local function extract_identifier_and_path(line: string, debug_path: string): (err.Result<string?>, string?)
+    -- strip quoted string literals containing require() so we don't match require() inside string values
+    local stripped = strip_strings_containing_require(line)
+
     -- identifier = require("...") or require '...' or require "..."
-    local identifier, requested_path = string.match(line, '([%w%.]+)%s*=%s*require%s*[%(%s]*["\'](.-)["\'][%)]?')
+    local identifier, requested_path = string.match(stripped, '([%w%.]+)%s*=%s*require%s*[%(%s]*["\'](.-)["\'][%)]?')
     if identifier and requested_path then
         return identifier, requested_path
     end
 
     -- require("...") or require '...' or require "@alias/path"
-    requested_path = string.match(line, 'require%s*[%(%s]*["\'](.-)["\'][%)]?')
+    requested_path = string.match(stripped, 'require%s*[%(%s]*["\'](.-)["\'][%)]?')
     if requested_path then
         return nil, requested_path
     end
 
     -- bad dynamic require: require(var)
-    local dynamic_arg = string.match(line, 'require%s*%(%s*([%w_%.]+)%s*%)')
+    local dynamic_arg = string.match(stripped, 'require%s*%(%s*([%w_%.]+)%s*%)')
     if dynamic_arg then
         return err.message(`detected dynamic require at {debug_path}; only static requires may be bundled. offending line: {line}`), nil
     end
@@ -91,6 +104,11 @@ local hot_comments: { [string]: true } = {
     ["--!optimize 2"] = true,
     ["--!nolint LocalShadow"] = true,
 }
+
+--- this gets inlined by the luau compiler
+local function find_plain(s: string, n: string): boolean
+    return if string.find(s, n, 1, true) then true else false
+end
 
 --[=[
     Check if the line is a comment.
@@ -122,7 +140,7 @@ local function comment(line: string, current_comment_prefix: string?): (
     if current_comment_prefix then
         local equal_signs = string.match(current_comment_prefix, "%-%-%[(=*)%[") :: string
         local closing = "]" .. equal_signs .. "]"
-        if string.find(line, closing, 1, true) then
+        if find_plain(line, closing) then
             -- ends long comment
             return true, nil
         else
@@ -137,7 +155,7 @@ local function comment(line: string, current_comment_prefix: string?): (
         local equal_signs = string.match(new_comment_prefix, "%-%-%[(=*)%[") :: string
         local closing = "]" .. equal_signs .. "]"
 
-        if string.find(line, closing, 1, true) then
+        if find_plain(line, closing) then
             -- starts and ends on the same line
             return true, nil
         else
@@ -160,8 +178,69 @@ local function comment(line: string, current_comment_prefix: string?): (
     return false, nil
 end
 
-local function find_plain(s: string, n: string): boolean
-    return if string.find(s, n, 1, true) then true else false
+--[=[
+    Check if the line is inside or opens a multi-line long string ([[ or [=[ syntax).
+
+    - If the line is within a long string, returns `(true, current_level)`.
+    - If the line closes a long string, returns `(true, nil)`.
+    - If the line opens a new long string that doesn't close on the same line, returns `(true, new_level)`.
+    - Otherwise returns `(false, nil)`.
+
+    Usage
+
+    ```luau
+    local long_string_level: string? = nil
+    for l, line in readlines(f) do
+        local is_long_string, level = long_string(line, long_string_level)
+        long_string_level = level
+        if is_long_string then
+            append(line)
+            continue
+        end
+    end
+    ```
+]=]
+local function long_string(line: string, current_level: string?): (
+    --- whether this line should be appended as-is without processing (inside or opening a long string)
+    boolean,
+    --- the active level after processing this line; nil if no long string is open
+    string?
+)
+    if current_level ~= nil then
+        -- we're inside a long string: check if it closes on this line
+        local closing = "]" .. current_level .. "]"
+        if find_plain(line, closing) then
+            -- ends long string
+            return true, nil
+        else
+            -- line within long string
+            return true, current_level
+        end
+    end
+
+    -- check if this line opens a new long string ([[ or [=[ or [===[ etc.)
+    local open_start, _, open_eqs = string.find(line, "%[(=*)%[")
+    if not open_start or open_eqs == nil then
+        return false, nil
+    end
+
+    -- ignore [=*[ that appears after -- on the same line (trailing comment, not a string)
+    local before_open = string.sub(line, 1, open_start - 1)
+    if find_plain(before_open, "--") then
+        return false, nil
+    end
+
+    -- check whether the matching closing bracket also appears on this line
+    local closing = "]" .. open_eqs .. "]"
+    local after_open = open_start + #open_eqs + 2 -- skip past the opening [=*[ delimiter
+    if find_plain(string.sub(line, after_open), closing) then
+        -- starts and ends on the same line
+        return false, nil
+    else
+        -- opens a long string that continues past this line; return true so the opener
+        -- is appended without processing (same as lines inside the string)
+        return true, open_eqs
+    end
 end
 
 --- We transform every usage of thread.spawn with a path into inlining the path's src
@@ -217,12 +296,26 @@ local function get_reserved_identifier(path: string): string
     return "standard_library_" .. string.gsub(stripped, "/", "_")
 end
 
-local anon_identifier = 0
+local function identifier_from_path(resolved_path: string): string
+    -- derive a unique identifier from the resolved absolute path rather than the captured
+    -- variable name; variable names aren't unique across files but resolved paths are,
+    -- so this prevents two files that both do `local utils = require(...)` to different
+    -- targets from producing the same resolved_require_utils and clobbering each other
+    local without_ext = string.match(resolved_path, "(.-)%.[^%.]+$") or resolved_path
+    local normalized = string.gsub(without_ext, "[^%w]", "_")
+    -- strip leading underscores left over from the leading / on absolute paths
+    normalized = string.match(normalized, "^_*(.+)") or normalized
+    return "resolved_require_" .. normalized
+end
 
 local seen: { [string]: string? } = {}
 local bash_shebang: string? = nil
+
 --- maps reserved-alias identifier -> original require path, accumulated across all traversals
 local hoisted_stdlib_requires: { [string]: string } = {}
+
+--- tracks all resolved_require_X identifiers so their declarations can be hoisted to the bundle top.
+local hoisted_dependency_declarations: { [string]: true } = {}
 
 local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: string? }?): err.Result<{string}>
     -- when seen_stdlibs is nil we're in a top-level traversal and hoist stdlib requires to bundle top;
@@ -244,6 +337,10 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
 
     local is_comment = false
     local comment_prefix: string? = nil
+
+    local is_long_string = false
+    local long_string_level: string? = nil
+    
     local previous_line = ""
 
     local function append(line: string)
@@ -267,6 +364,15 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
     for line_number, line in file:readlines() do
         is_comment, comment_prefix = comment(line, comment_prefix)
         if is_comment then
+            continue
+        end
+
+        -- If we're inside a multi-line long string ([[ or [=[ syntax), we may be in a string
+        -- that represents Luau source code; we shouldn't process require() calls
+        -- on these lines — they belong to the string content, not the surrounding scope.
+        is_long_string, long_string_level = long_string(line, long_string_level)
+        if is_long_string then
+            append(line)
             continue
         end
 
@@ -296,7 +402,9 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
                 for _, l in inlined_src_lines do
                     append(l)
                 end
-                continue
+            elseif on_line_or_previous(line, "thread.spawn", "data =") then
+                warn(`{path}:{line_number}: thread.spawn will not be inlined here; put path field above data field to inline.`)
+                append(line)
             elseif
                 (
                     find_plain(line, "script:parent") or 
@@ -364,17 +472,8 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
         -- if we get here, we haven't seen this require path yet
         -- we need to inline the require in front of this line and transform it
 
-        -- but first we need to know what the module's called; 
-        -- usually identifiers are captured in local identifier = require("./some/path") form,
-        -- but not all requires are local bindings.
-        if identifier == nil then
-            identifier = "resolved_require_" .. anon_identifier
-            anon_identifier += 1         
-        else
-            -- captured identifiers could have dots (csv.select = require("@self/csv")) so we need to normalize
-            identifier = string.gsub(identifier, "%.", "_")
-            identifier = "resolved_require_" .. identifier
-        end
+        -- always derive the identifier from the resolved path, not the captured variable name
+        identifier = identifier_from_path(resolved.path)
 
         -- mark this dependency as seen and give it an identifier
         seen[resolved.path] = identifier
@@ -411,9 +510,13 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
 
         -- and simply add all dependency lines to transformed
         table.insert(transformed, `-- START {resolved.path}`)
-        
-        -- add identifier for return to be transformed into an assignment to
-        table.insert(transformed, `local {identifier}`)
+
+        -- hoist the identifier declaration to the bundle top rather than emitting it here.
+        -- if declared inline, a nested dependency (e.g. C required by B which is required by main)
+        -- gets its `local identifier` scoped inside B's do/end block, making it unreachable when
+        -- main later references the same already-seen identifier at the top level.
+        hoisted_dependency_declarations[identifier] = true
+
         -- wrap entire thing in a do/end block so we don't hit the 200 locals limit
         table.insert(transformed, "do")
         for _, dependency_line in dependency_lines do
@@ -447,6 +550,18 @@ local function bundle(project_path: string): err.Result<string>
         return bundled_lines
     end
 
+    -- hoist dependency identifier declarations above all do/end blocks so that identifiers
+    -- assigned inside nested blocks are still reachable at the top level
+    local hoisted_dependency_declarations: { string } = {}
+    for identifier in hoisted_dependency_declarations do
+        table.insert(hoisted_dependency_declarations, `local {identifier}`)
+    end
+    table.sort(hoisted_dependency_declarations)
+
+    for i = #hoisted_dependency_declarations, 1, -1 do
+        table.insert(bundled_lines, 1, hoisted_dependency_declarations[i])
+    end
+
     local stdlib_lines: { string } = {}
     for library_identifier, library_require_path in hoisted_stdlib_requires do
         table.insert(stdlib_lines, `local {library_identifier} = require("{library_require_path}")`)
@@ -457,6 +572,9 @@ local function bundle(project_path: string): err.Result<string>
     for i = #stdlib_lines, 1, -1 do
         table.insert(bundled_lines, 1, stdlib_lines[i])
     end
+
+    -- we should be able to identify seal-bundled applications
+    table.insert(bundled_lines, 1, `-- bundled by seal {_SEAL_VERSION}; the bundler isn't perfect, report bundling issues to at https://github.com/seal-runtime/seal/issues`)
 
     for hot_comment, _ in hot_comments do
         table.insert(bundled_lines, 1, hot_comment)

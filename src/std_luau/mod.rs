@@ -260,11 +260,26 @@ fn luau_require_resolver(luau: &Lua, _: LuaValue) -> LuaValueResult {
     ok_table(crate::require::get_resolver(luau))
 }
 
+fn luau_bundle(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    let function_name = "luau.bundle(path: string)";
+    let path = match value {
+        LuaValue::String(s) => s.to_string_lossy(),
+        other => {
+            return wrap_err!("{} expected path to be a string, got: {:?}", function_name, other);
+        }
+    };
+    match crate::compile::bundle(&path) {
+        Ok(bundled) => bundled.into_lua(luau),
+        Err(err) => Ok(LuaValue::UserData(luau.create_userdata(EvalError::new(err))?)),
+    }
+}
+
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function("eval", luau_eval)?
         .with_function("eval_unsafe", luau_eval_unsafe)?
         .with_function("bytecode", luau_bytecode)?
         .with_function("require_resolver", luau_require_resolver)?
+        .with_function("bundle", luau_bundle)?
         .build_readonly()
 }
