@@ -14,7 +14,7 @@ local function count_occurrences(haystack: string, needle: string): number
 end
 
 local function basic_bundling()
-    local bundled = luau.bundle("./tests/data/bundle_examples/basic/main.luau")
+    local bundled = luau.bundle("./tests/data/bundle_projects/basic/main.luau")
     assert(typeof(bundled) == "string", `bundle should return a string, got: {typeof(bundled)}`)
     local result = luau.eval(bundled)
     assert(result == "hello from dep", `bundled code should return 'hello from dep', got: {tostring(result)}`)
@@ -23,7 +23,7 @@ basic_bundling()
 
 local function require_inside_long_string_is_not_replaced()
     -- if the fix is broken, bundle errors trying to resolve ./some_module from inside the string
-    local bundled = luau.bundle("./tests/data/bundle_examples/long_string/main.luau")
+    local bundled = luau.bundle("./tests/data/bundle_projects/long_string/main.luau")
     assert(typeof(bundled) == "string", `bundle should succeed, got error: {tostring(bundled)}`)
     -- the require inside the long string should be preserved literally in the bundled output
     assert(
@@ -36,7 +36,7 @@ require_inside_long_string_is_not_replaced()
 local function require_inside_quoted_string_is_not_resolved()
     -- if the fix is broken, the bundler tries to resolve './database' and '@std/fs'
     -- as real requires from inside the string values, which errors or incorrectly inlines them
-    local bundled = luau.bundle("./tests/data/bundle_examples/quoted_string/main.luau")
+    local bundled = luau.bundle("./tests/data/bundle_projects/quoted_string/main.luau")
     assert(typeof(bundled) == "string", `bundle should succeed, got error: {tostring(bundled)}`)
     -- the require calls should be preserved literally as string content
     assert(
@@ -59,7 +59,7 @@ bundling_nonexistent_path_returns_error()
 -- lsl (https://github.com/deviaze/lsl) is a real-world seal project that uses thread.spawn
 -- with path= to spin up worker threads. the bundler inlines those workers as long strings,
 -- so it's a good end-to-end test for both correct bundling and the long-string require fix.
-local LSL_ENTRY = "./tests/data/bundle_examples/lsl/src/main.luau"
+local LSL_ENTRY = "./tests/data/bundle_projects/lsl/src/main.luau"
 
 local function lsl_bundles_successfully()
     local bundled = luau.bundle(LSL_ENTRY)
@@ -86,13 +86,14 @@ local function lsl_double_bundle_preserves_inlined_requires()
     assert(typeof(first_bundle) == "string", `first bundle should succeed, got: {tostring(first_bundle)}`)
 
     -- write the first bundle to disk so we can bundle it again
-    local tmp_path = "/tmp/seal_test_lsl_bundled.luau"
-    fs.writefile(tmp_path, first_bundle :: string)
+    local intermediate_path = "./tests/data/bundle_projects/lsl/_bundled_intermediate.luau"
+    fs.writefile(intermediate_path, first_bundle :: string)
 
     -- bundle the already-bundled output: this is where the long-string require bug would trigger.
     -- without the fix, the bundler would incorrectly replace require("@std/fs") inside the
     -- [=====[...]=====] long string with the outer-scope identifier, which doesn't exist there.
-    local second_bundle = luau.bundle(tmp_path)
+    local second_bundle = luau.bundle(intermediate_path)
+    fs.removefile(intermediate_path)
     assert(
         typeof(second_bundle) == "string",
         `second bundle should succeed (long-string require fix), got error: {tostring(second_bundle)}`
@@ -110,3 +111,19 @@ local function lsl_double_bundle_preserves_inlined_requires()
     assert(typeof(bytecode) == "buffer", `double-bundled lsl should be syntactically valid, got: {tostring(bytecode)}`)
 end
 lsl_double_bundle_preserves_inlined_requires()
+
+local function repeated_dependencies_are_in_scope()
+    -- main requires both helper and core; helper also requires core.
+    -- without the scoping fix, resolved_require_core ends up declared inside helper's do/end
+    -- block and is out of scope when main tries to reference it directly.
+    local bundled = luau.bundle("./tests/data/bundle_projects/repeated_dependencies/main.luau")
+    assert(typeof(bundled) == "string", `repeated_dependencies bundle should succeed, got: {tostring(bundled)}`)
+
+    -- eval the bundle: if resolved_require_core is out of scope this errors at runtime
+    local result = luau.eval(bundled :: string, { stdlib = "Seal" })
+    assert(
+        typeof(result) ~= "error",
+        `repeated dependency (core) should be in scope at the top level after bundling, got error: {tostring(result)}`
+    )
+end
+repeated_dependencies_are_in_scope()

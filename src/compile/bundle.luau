@@ -182,7 +182,7 @@ end
 
     - If the line is within a long string, returns `(true, current_level)`.
     - If the line closes a long string, returns `(true, nil)`.
-    - If the line opens a new long string that doesn't close on the same line, returns `(false, new_level)`.
+    - If the line opens a new long string that doesn't close on the same line, returns `(true, new_level)`.
     - Otherwise returns `(false, nil)`.
 
     Usage
@@ -200,7 +200,7 @@ end
     ```
 ]=]
 local function long_string(line: string, current_level: string?): (
-    --- whether this line's content belongs to a long string (and should not be processed)
+    --- whether this line should be appended as-is without processing (inside or opening a long string)
     boolean,
     --- the active level after processing this line; nil if no long string is open
     string?
@@ -236,8 +236,9 @@ local function long_string(line: string, current_level: string?): (
         -- starts and ends on the same line
         return false, nil
     else
-        -- starts a long string that continues past this line
-        return false, open_eqs
+        -- opens a long string that continues past this line; return true so the opener
+        -- is appended without processing (same as lines inside the string)
+        return true, open_eqs
     end
 end
 
@@ -294,12 +295,27 @@ local function get_reserved_identifier(path: string): string
     return "standard_library_" .. string.gsub(stripped, "/", "_")
 end
 
-local anon_identifier = 0
+local function identifier_from_path(resolved_path: string): string
+    -- derive a unique identifier from the resolved absolute path rather than the captured
+    -- variable name; variable names aren't unique across files but resolved paths are,
+    -- so this prevents two files that both do `local utils = require(...)` to different
+    -- targets from producing the same resolved_require_utils and clobbering each other
+    local without_ext = string.match(resolved_path, "(.-)%.[^%.]+$") or resolved_path
+    local normalized = string.gsub(without_ext, "[^%w]", "_")
+    -- strip leading underscores left over from the leading / on absolute paths
+    normalized = string.match(normalized, "^_*(.+)") or normalized
+    return "resolved_require_" .. normalized
+end
 
 local seen: { [string]: string? } = {}
 local bash_shebang: string? = nil
 --- maps reserved-alias identifier -> original require path, accumulated across all traversals
 local hoisted_stdlib_requires: { [string]: string } = {}
+--- tracks all resolved_require_X identifiers so their declarations can be hoisted to the bundle top.
+--- without hoisting, a dependency inlined inside a do/end block (e.g. because it was first required
+--- by another dependency) has its `local identifier` scoped to that block, making it unreachable
+--- when a later top-level require tries to reference the same already-seen identifier.
+local hoisted_dependency_declarations: { [string]: true } = {}
 
 local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: string? }?): err.Result<{string}>
     -- when seen_stdlibs is nil we're in a top-level traversal and hoist stdlib requires to bundle top;
@@ -386,7 +402,9 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
                 for _, l in inlined_src_lines do
                     append(l)
                 end
-                continue
+            elseif on_line_or_previous(line, "thread.spawn", "data =") then
+                warn(`{path}:{line_number}: thread.spawn will not be inlined here; put path field above data field to inline.`)
+                append(line)
             elseif
                 (
                     find_plain(line, "script:parent") or 
@@ -454,17 +472,8 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
         -- if we get here, we haven't seen this require path yet
         -- we need to inline the require in front of this line and transform it
 
-        -- but first we need to know what the module's called; 
-        -- usually identifiers are captured in local identifier = require("./some/path") form,
-        -- but not all requires are local bindings.
-        if identifier == nil then
-            identifier = "resolved_require_" .. anon_identifier
-            anon_identifier += 1         
-        else
-            -- captured identifiers could have dots (csv.select = require("@self/csv")) so we need to normalize
-            identifier = string.gsub(identifier, "%.", "_")
-            identifier = "resolved_require_" .. identifier
-        end
+        -- always derive the identifier from the resolved path, not the captured variable name
+        identifier = identifier_from_path(resolved.path)
 
         -- mark this dependency as seen and give it an identifier
         seen[resolved.path] = identifier
@@ -501,9 +510,13 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
 
         -- and simply add all dependency lines to transformed
         table.insert(transformed, `-- START {resolved.path}`)
-        
-        -- add identifier for return to be transformed into an assignment to
-        table.insert(transformed, `local {identifier}`)
+
+        -- hoist the identifier declaration to the bundle top rather than emitting it here.
+        -- if declared inline, a nested dependency (e.g. C required by B which is required by main)
+        -- gets its `local identifier` scoped inside B's do/end block, making it unreachable when
+        -- main later references the same already-seen identifier at the top level.
+        hoisted_dependency_declarations[identifier] = true
+
         -- wrap entire thing in a do/end block so we don't hit the 200 locals limit
         table.insert(transformed, "do")
         for _, dependency_line in dependency_lines do
@@ -537,6 +550,18 @@ local function bundle(project_path: string): err.Result<string>
         return bundled_lines
     end
 
+    -- hoist dependency identifier declarations above all do/end blocks so that identifiers
+    -- assigned inside nested blocks are still reachable at the top level
+    local dep_decl_lines: { string } = {}
+    for identifier in hoisted_dependency_declarations do
+        table.insert(dep_decl_lines, `local {identifier}`)
+    end
+    table.sort(dep_decl_lines)
+
+    for i = #dep_decl_lines, 1, -1 do
+        table.insert(bundled_lines, 1, dep_decl_lines[i])
+    end
+
     local stdlib_lines: { string } = {}
     for library_identifier, library_require_path in hoisted_stdlib_requires do
         table.insert(stdlib_lines, `local {library_identifier} = require("{library_require_path}")`)
@@ -547,6 +572,9 @@ local function bundle(project_path: string): err.Result<string>
     for i = #stdlib_lines, 1, -1 do
         table.insert(bundled_lines, 1, stdlib_lines[i])
     end
+
+    -- we should be able to identify seal-bundled applications
+    table.insert(bundled_lines, 1, `-- bundled by seal {_SEAL_VERSION}; the bundler isn't perfect, report bundling issues to at https://github.com/seal-runtime/seal/issues`)
 
     for hot_comment, _ in hot_comments do
         table.insert(bundled_lines, 1, hot_comment)
