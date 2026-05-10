@@ -20,7 +20,7 @@ local function get_entry_path(path: string): err.Result<string>
 
     local seal_dir = project_dir:find(".seal"):try_dir()
     if not seal_dir then
-        return err.message(`directory at '{path}' isn't a seal project (it doesn't contain a .seal dir), so it cannot be bundled`)
+        return err.message(`directory at '{path}' isn't a seal project (it doesn't contain a .seal dir), so it cannot be automatically bundled; consider specifying an entry path (seal compile ./path -o exe)`)
     end
 
     local config_luau = seal_dir:find("config.luau"):try_file()
@@ -105,6 +105,11 @@ local hot_comments: { [string]: true } = {
     ["--!nolint LocalShadow"] = true,
 }
 
+--- this gets inlined by the luau compiler
+local function find_plain(s: string, n: string): boolean
+    return if string.find(s, n, 1, true) then true else false
+end
+
 --[=[
     Check if the line is a comment.
 
@@ -135,7 +140,7 @@ local function comment(line: string, current_comment_prefix: string?): (
     if current_comment_prefix then
         local equal_signs = string.match(current_comment_prefix, "%-%-%[(=*)%[") :: string
         local closing = "]" .. equal_signs .. "]"
-        if string.find(line, closing, 1, true) then
+        if find_plain(line, closing) then
             -- ends long comment
             return true, nil
         else
@@ -150,7 +155,7 @@ local function comment(line: string, current_comment_prefix: string?): (
         local equal_signs = string.match(new_comment_prefix, "%-%-%[(=*)%[") :: string
         local closing = "]" .. equal_signs .. "]"
 
-        if string.find(line, closing, 1, true) then
+        if find_plain(line, closing) then
             -- starts and ends on the same line
             return true, nil
         else
@@ -171,10 +176,6 @@ local function comment(line: string, current_comment_prefix: string?): (
     end
 
     return false, nil
-end
-
-local function find_plain(s: string, n: string): boolean
-    return if string.find(s, n, 1, true) then true else false
 end
 
 --[=[
@@ -309,12 +310,11 @@ end
 
 local seen: { [string]: string? } = {}
 local bash_shebang: string? = nil
+
 --- maps reserved-alias identifier -> original require path, accumulated across all traversals
 local hoisted_stdlib_requires: { [string]: string } = {}
+
 --- tracks all resolved_require_X identifiers so their declarations can be hoisted to the bundle top.
---- without hoisting, a dependency inlined inside a do/end block (e.g. because it was first required
---- by another dependency) has its `local identifier` scoped to that block, making it unreachable
---- when a later top-level require tries to reference the same already-seen identifier.
 local hoisted_dependency_declarations: { [string]: true } = {}
 
 local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: string? }?): err.Result<{string}>
@@ -552,14 +552,14 @@ local function bundle(project_path: string): err.Result<string>
 
     -- hoist dependency identifier declarations above all do/end blocks so that identifiers
     -- assigned inside nested blocks are still reachable at the top level
-    local dep_decl_lines: { string } = {}
+    local hoisted_dependency_declarations: { string } = {}
     for identifier in hoisted_dependency_declarations do
-        table.insert(dep_decl_lines, `local {identifier}`)
+        table.insert(hoisted_dependency_declarations, `local {identifier}`)
     end
-    table.sort(dep_decl_lines)
+    table.sort(hoisted_dependency_declarations)
 
-    for i = #dep_decl_lines, 1, -1 do
-        table.insert(bundled_lines, 1, dep_decl_lines[i])
+    for i = #hoisted_dependency_declarations, 1, -1 do
+        table.insert(bundled_lines, 1, hoisted_dependency_declarations[i])
     end
 
     local stdlib_lines: { string } = {}
