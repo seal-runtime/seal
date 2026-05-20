@@ -552,14 +552,14 @@ local function bundle(project_path: string): err.Result<string>
 
     -- hoist dependency identifier declarations above all do/end blocks so that identifiers
     -- assigned inside nested blocks are still reachable at the top level
-    local hoisted_dependency_declarations: { string } = {}
+    local sorted_hoisted_dependency_declarations: { string } = {}
     for identifier in hoisted_dependency_declarations do
-        table.insert(hoisted_dependency_declarations, `local {identifier}`)
+        table.insert(sorted_hoisted_dependency_declarations, `local {identifier}`)
     end
-    table.sort(hoisted_dependency_declarations)
+    table.sort(sorted_hoisted_dependency_declarations)
 
-    for i = #hoisted_dependency_declarations, 1, -1 do
-        table.insert(bundled_lines, 1, hoisted_dependency_declarations[i])
+    for i = #sorted_hoisted_dependency_declarations, 1, -1 do
+        table.insert(bundled_lines, 1, sorted_hoisted_dependency_declarations[i])
     end
 
     local stdlib_lines: { string } = {}
