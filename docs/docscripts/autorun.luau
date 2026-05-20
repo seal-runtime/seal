@@ -49,7 +49,7 @@ for category, event in fs.watch(defs_path, {
         if running then continue end
         time.wait(0.1) -- wait for files to be closed to prevent race condition
         running = true
-        local result = process.run {
+        process.run {
             program = seal_path,
             args = { fs.path.join(script:parent(), "reference.luau") }
         }

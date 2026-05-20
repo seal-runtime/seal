@@ -11,7 +11,7 @@ local colors = require("@std/colors")
 local format = require("@std/io/format")
 
 local VECTOR_FOUR_WIDE_MODE = (function()
-    local s, f = pcall(function()
+    local s, _ = pcall(function()
         local testvec = (vector.create :: any)(1, 2, 3, 4)
         return testvec.w
     end)
@@ -181,7 +181,6 @@ local BOLD_BLUE = colors.codes.BOLD_BLUE
 local GREEN = colors.codes.GREEN
 local YELLOW = colors.codes.YELLOW
 local BOLD_YELLOW = colors.codes.BOLD_YELLOW
-local BLACK = colors.codes.BLACK
 local BOLD = colors.codes.BOLD
 local DIM = colors.codes.DIM
 

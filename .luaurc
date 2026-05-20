@@ -1,8 +1,5 @@
 {
   "languageMode": "strict",
-  "lint": {
-    "LocalUnused": false
-  },
   "aliases": {
     "std": "./.seal/typedefs/std/",
     "interop": "./.seal/typedefs/interop/",

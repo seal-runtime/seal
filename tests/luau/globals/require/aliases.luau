@@ -26,7 +26,7 @@ local function nonexistentalias()
 		return nil
 	end)
 	assert(s == false, "requiring nonexisting alias was not supposed to succeed")
-	assert(format.uncolor(tostring(f)):match("alias 'hi' not found in the %.luaurc"), "unexpected alias not found message")
+	assert(format.uncolor(tostring(f)):match("alias 'hi' not found in the following %.luaurcs"), `unexpected alias not found message, got {tostring(f)}`)
 end
 
 nonexistentalias()

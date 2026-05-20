@@ -55,8 +55,6 @@ end
 
 sealsetup()
 
-local srcs = {}
-
 local function sealsetuprequires()
 	local srcs = {
 		relative = [[

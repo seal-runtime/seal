@@ -118,14 +118,12 @@ local function expand_aliases(requested_path: string, aliases_by_luaurc: { Luaur
 	end
 
 	local aliases_found, luaurcs_found = 0, 0
-	local luaurc_path: string? = nil
 	local alias_replacement: string? = nil
 	for priority, luaurc in aliases_by_luaurc do
 		luaurcs_found += 1
 		for key, replacement in luaurc.aliases do
 			aliases_found += 1
 			if key == extracted_alias then
-				luaurc_path = luaurc.path
 				alias_replacement = replacement
 			end
 		end

@@ -179,7 +179,7 @@ while (os.clock() - start_time) < 25 do
             for _, p in tests_with_stdin do
                 if test_path:match(p) then
                     -- pcall to avoid throwing ci/cd on write to closed stdin
-                    local success, result = pcall(function()
+                    pcall(function()
                         if str.endswith(test_path, "simple_prompts.luau") then
                             child.stdin:write("y\n")
                         else
