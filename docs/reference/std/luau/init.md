@@ -109,6 +109,51 @@ Compiles `src` to Luau bytecode.
 
 ---
 
+### luau.bundle
+
+<h4>
+
+```luau
+function luau.bundle(path: string) -> string | error,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Bundles a Luau file or seal project at `path` using seal's bundler, inlining all
+`require()` calls recursively and hoisting `@std/*` library requires to the top.
+
+`path` can be either:
+
+- A direct path to a `.luau` file (e.g. `"./src/main.luau"`)
+- A path to a seal project directory containing a `.seal/config.luau` with an `entry_path`
+
+## Returns
+
+The bundled source code as a `string` on success, or a tostringable `error` userdata
+if bundling fails (e.g. the path doesn't exist, a require can't be resolved, or a
+circular require is detected).
+
+## Usage
+
+```luau
+local luau = require("@std/luau")
+local bundled = luau.bundle("./my_project")
+if typeof(bundled) == "error" then
+    print(`bundle failed: {bundled}`)
+else
+    -- write to file, eval, compile to bytecode, etc.
+    local result = luau.eval(bundled, { stdlib = "Seal" })
+end
+```
+
+</details>
+
+---
+
 ### luau.require_resolver
 
 <h4>

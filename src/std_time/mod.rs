@@ -9,18 +9,37 @@ pub mod timespan;
 use timespan::TimeSpan;
 use duration::TimeDuration;
 
-/// Sleeps for the given number of seconds using thread::sleep.
+/// Sleeps for the given amount of time using thread::sleep.
 ///
 /// Precision is limited to the system's sleep granularity—typically around 1ms.
-/// Values smaller than ~0.001 seconds may round down to zero and result in no actual delay.
-/// For high-precision timing, consider alternatives such as spinning or avoid using very small floats.
 ///
 /// This function is intended for simple time-based control in Luau.
-/// Avoid using for profiling or real-time control.
-fn time_wait(_luau: &Lua, seconds: LuaNumber) -> LuaValueResult {
-    let millis = (seconds * 1000.0) as u64;
-    let dur = Duration::from_millis(millis);
-    std::thread::sleep(dur);
+fn time_wait(_luau: &Lua, value: LuaValue) -> LuaValueResult {
+    let function_name = "time.wait(duration: Duration | number)";
+    let duration = match value {
+        LuaValue::Number(f) => {
+            if f.is_sign_negative() {
+                return wrap_err!("{}: cannot reverse time (got negative duration: {})", function_name, f);
+            }
+            // convert to millis so partial/decimal values get included
+            let millis = (f * 1000.0) as u64;
+            Duration::from_millis(millis)
+        },
+        LuaValue::Integer(i) => {
+            Duration::from_secs(int_to_u64(i, function_name, "duration")?)
+        },
+        LuaValue::UserData(ud) if let Ok(ud) = ud.borrow::<TimeDuration>() => {
+            let signed = (*ud).inner;
+            if signed.is_negative() {
+                return wrap_err!("{}: cannot reverse time (got negative duration: {})", function_name, signed);
+            }
+            signed.unsigned_abs()
+        },
+        other => {
+            return wrap_err!("{}: expected duration to be a seal Duration or a number of seconds, got: {:?}", function_name, other);
+        }
+    };
+    std::thread::sleep(duration);
     Ok(LuaValue::Boolean(true)) // return true so while time.wait(1) loops still work
 }
 
