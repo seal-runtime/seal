@@ -127,3 +127,38 @@ local function repeated_dependencies_are_in_scope()
     )
 end
 repeated_dependencies_are_in_scope()
+
+local function inlined_src_dependencies_get_inlined()
+    local bundled = luau.bundle("./tests/data/bundle_projects/inlineable/main.luau")
+    assert(typeof(bundled) == "string", `bundling inlineable should succeed, got {tostring(bundled)}`)
+
+    local identifier = "resolved_require_tests_data_bundle_projects_inlineable_check"
+    local in_src_string = false
+    local src_close_marker: string? = nil
+    local saw_definition = false
+
+    for line in string.gmatch(bundled :: string, "[^\n]+") do
+        if in_src_string then
+            if string.find(line, src_close_marker :: string, 1, true) then
+                in_src_string = false
+                src_close_marker = nil
+                saw_definition = false
+            elseif string.find(line, "local " .. identifier, 1, true) then
+                saw_definition = true
+            elseif string.find(line, identifier, 1, true) then
+                assert(
+                    saw_definition,
+                    `thread.spawn src string references '{identifier}' without inlining its definition — dependency must be inlined within the src string`
+                )
+            end
+        else
+            local eq_signs = string.match(line, "src%s*=%s*%[(=*)%[")
+            if eq_signs ~= nil then
+                in_src_string = true
+                src_close_marker = "]" .. eq_signs .. "]"
+                saw_definition = false
+            end
+        end
+    end
+end
+inlined_src_dependencies_get_inlined()

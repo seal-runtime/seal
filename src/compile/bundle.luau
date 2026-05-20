@@ -4,6 +4,7 @@
 local fs = require("@std/fs")
 local str = require("@std/str")
 local err = require("@std/err")
+local env = require("@std/env")
 local luau = require("@std/luau")
 
 local reserved_aliases = (require :: any)("@internal/reserved_aliases") :: { string }
@@ -63,16 +64,19 @@ end
 
 local resolver = luau.require_resolver()
 
--- Strip single/double quoted string literals that contain a require() call so that
--- extract_identifier_and_path doesn't match require() inside string values.
+-- Strip single/double quoted and interpolated string literals that contain a require() call
+-- so that extract_identifier_and_path doesn't match require() inside string values.
 -- Uses require%s*%( (requires an opening paren) to avoid stripping paths that merely
 -- contain the word "require" (e.g. "./require-helper.luau" paths stay intact).
 local function strip_strings_containing_require(line: string): string
     line = string.gsub(line, '"[^"]*require%s*%([^"]*"', '""')
     line = string.gsub(line, "'[^']*require%s*%([^']*'", "''")
+    line = string.gsub(line, "`[^`]*require%s*%([^`]*`", "``")
     return line
 end
 
+--- Extract a call to `require` from the line, returning the identifier bound to and the requested path,
+--- correctly ensuring that it doesn't catch a require call within a single line string
 local function extract_identifier_and_path(line: string, debug_path: string): (err.Result<string?>, string?)
     -- strip quoted string literals containing require() so we don't match require() inside string values
     local stripped = strip_strings_containing_require(line)
@@ -97,13 +101,6 @@ local function extract_identifier_and_path(line: string, debug_path: string): (e
 
     return nil, nil
 end
-
--- we keep track of all hot comments
--- and put them at the top of the bundled file after bundling
-local hot_comments: { [string]: true } = {
-    ["--!optimize 2"] = true,
-    ["--!nolint LocalShadow"] = true,
-}
 
 --- this gets inlined by the luau compiler
 local function find_plain(s: string, n: string): boolean
@@ -130,7 +127,7 @@ end
     end
     ```
 ]=]
-local function comment(line: string, current_comment_prefix: string?): (
+local function comment(line: string, current_comment_prefix: string?, context: TraverseContext): (
     --- whether or not the current line is a comment
     boolean,
     --- the new or existing prefix if this line starts or is within a long comment; 
@@ -166,8 +163,8 @@ local function comment(line: string, current_comment_prefix: string?): (
 
     local trimmed_line = str.trimfront(line)
 
-    if str.startswith(trimmed_line, "--!") and not hot_comments[trimmed_line] then
-        hot_comments[trimmed_line] = true
+    if str.startswith(trimmed_line, "--!") and not context.hot_comments[trimmed_line] then
+        context.hot_comments[trimmed_line] = true
     end
 
     if str.startswith(trimmed_line, "--") then
@@ -243,14 +240,17 @@ local function long_string(line: string, current_level: string?): (
     end
 end
 
+--- Handle to the traverse function for recursion
+type TraverseFn = (path: string, depth: number?, context: TraverseContext?) -> err.Result<{string}>
+
 --- We transform every usage of thread.spawn with a path into inlining the path's src
 local function transform_thread_spawn_path(
     line: string,
     line_number: number,
     path: string,
+    depth: number,
     --- recursive handle to function calling this function cause uh yeah
-    traverse: (path: string, depth: number?, seen_stdlibs: { [string]: string? }?) -> err.Result<{string}>,
-    depth: number
+    traverse: TraverseFn
 ): err.Result<{string}>
     local relative_path = string.match(line, [=[path%s*=%s*["']([^"']+)["']]=])
     if not relative_path then
@@ -262,7 +262,9 @@ local function transform_thread_spawn_path(
         return err.message(`{path}:{line_number}: unable to resolve relative path in thread.spawn to transform from path to src...`)
     end
 
-    local resolved_lines = traverse(resolved.path, depth + 1, {}) -- pass an empty seen stdlibs otherwise we lose needed requires
+    -- depth is intentionally 0 so that traverse inlines and hoists dependencies in the inlined src
+    -- we do not pass in context to traverse here so that traverse creates a new context for the inlined src
+    local resolved_lines = traverse(resolved.path, 0)
     if typeof(resolved_lines) == "error" then
         return resolved_lines
     end
@@ -288,12 +290,59 @@ local function transform_thread_spawn_path(
     return result
 end
 
+--- Traverse into the dependency at `path` to convert it into a list of dependency lines.
+--- Goes through the lines in the dependency's src, finds the closest one to the back to transform
+--- from a `return` statement into a binding to the local `identifier` for that dependency
+--- The `identifier` should be hoisted by the caller.
+local function traverse_into_dependency(
+    path: string,
+    depth: number,
+    context: TraverseContext,
+    --- Recursive handle to `traverse` function
+    traverse: TraverseFn
+): err.Result<{string}>
+    -- we want to preserve context when transforming dependency lines;
+    local result = traverse(path, depth + 1, context)
+
+    local lines: { string }
+    if typeof(result) == "error" then
+        return result
+    else
+        lines = result
+    end
+
+    local identifier = context.seen[path]
+
+    -- replace the most suitable `return` closest to the end of the required file w/ a local binding
+    -- and then put those lines from the dependency in front of this line of code (and transform this loc)
+    local return_replaced = false
+    for i = #lines, 1, -1 do -- go backwards
+        local maybe_return_line = lines[i]
+        -- we want to pick the return with NO whitespace to the left, otherwise we may grab the wrong return
+        if string.match(maybe_return_line, "^return%s+") then
+            -- modify dependency_lines in place to fix last return
+            -- this identifier should already be initialized from outside the do/end block,
+            -- so this is just assigning to an existing identifier
+            lines[i] = string.gsub(maybe_return_line, "^return%s+", `{identifier} = `)
+            return_replaced = true
+            break
+        end
+    end
+
+    if not return_replaced then
+        return err.message(`Can't find a top-level return statement in {path}, \z
+        please make sure the module returns something and the top-level return statement is completely unindented; aligned all the way to the left`)
+    end
+
+    return lines
+end
+
 local function get_reserved_identifier(path: string): string
-    -- @std/fs -> standard_library_std_fs
-    -- @std/io/input -> standard_library_std_io_input
-    -- @interop/mlua -> standard_library_interop_mlua
+    -- @std/fs -> seal_reserved_library_std_fs
+    -- @std/io/input -> seal_reserved_library_std_io_input
+    -- @interop/mlua -> seal_reserved_libary_interop_mlua
     local stripped = string.sub(path, 2) -- strip leading "@"
-    return "standard_library_" .. string.gsub(stripped, "/", "_")
+    return "seal_reserved_library_" .. string.gsub(stripped, "/", "_")
 end
 
 local function identifier_from_path(resolved_path: string): string
@@ -308,21 +357,105 @@ local function identifier_from_path(resolved_path: string): string
     return "resolved_require_" .. normalized
 end
 
-local seen: { [string]: string? } = {}
+--- Replace a require call in a `line` containing a require to `requested_path` with `identifier`,
+--- returning the line with the require call replaced.
+--- Handles both `require "some/path"` and `require("some/path")` syntax with ' and " style quotes
+local function replace_identifier(line: string, requested_path: string, identifier: string)
+    local replace_parens_pattern = 'require%s*%(%s*["\']' .. requested_path .. '["\']%s*%)'
+    local replace_string_call_pattern = 'require%s*["\']' .. requested_path .. '["\']'
+    line = string.gsub(line, replace_parens_pattern, identifier)
+    line = string.gsub(line, replace_string_call_pattern, identifier)
+    return line
+end
+
+--- Creates a list of lines to `hoist` to the top of a context's bundled lines.
+--- Should be called at the end of `traverse` only when depth == 0
+local function hoist(context: TraverseContext): { string }
+    local top: { string } = {}
+
+    local function push(s: string | { string })
+        if typeof(s) == "string" then
+            table.insert(top, s)
+        else
+            for _, line in s do
+                table.insert(top, line)
+            end
+        end
+    end
+
+    -- hot comments need to be on top of the output file so we handle them first
+    for hot_comment, _ in context.hot_comments do
+        push(hot_comment)
+    end
+
+    push("")
+
+    -- we should be able to identify seal-bundled applications
+    push(`-- bundled by seal {_SEAL_VERSION}; the bundler isn't perfect, report bundling issues to at https://github.com/seal-runtime/seal/issues`)
+
+    push("")
+
+    -- we sort all reserved/seen identifiers in alphabetical order so their order
+    -- remains deterministic
+
+    -- sort and hoist all reserved libraries
+    local reserved_library_requires: { string } = {}
+    for library_identifier, library_path in context.reserved do
+        table.insert(reserved_library_requires, `local {library_identifier} = require("{library_path}")`)
+    end
+    table.sort(reserved_library_requires)
+    push(reserved_library_requires)
+
+    push("")
+
+    -- now, sort and hoist all seen dependencies; we only hoist the bindings themselves
+    -- not their values, because their values are assigned inside the do/end blocks already handled in traverse
+    -- before this function gets called
+    local seen_dependency_identifiers: { string } = {}
+    for _, dependency_identifier in context.seen do
+        table.insert(seen_dependency_identifiers, `local {dependency_identifier}`)
+    end
+    table.sort(seen_dependency_identifiers)
+    push(seen_dependency_identifiers)
+
+    push("")
+
+    return top
+end
+
 local bash_shebang: string? = nil
 
---- maps reserved-alias identifier -> original require path, accumulated across all traversals
-local hoisted_stdlib_requires: { [string]: string } = {}
+type TraverseContext = {
+    hot_comments: {
+        [string]: boolean?
+    },
+    --- Map of canonical paths on the filesystem to canonical identifiers
+    --- for that dependency in this context
+    seen: {
+        [string]: string?,
+    },
+    --- Map of reserved seal identifiers to require paths
+    reserved: {
+        [string]: string?,
+    }
+}
+local function new_context(): TraverseContext
+    return {
+        hot_comments = {
+            ["--!optimize 2"] = true,
+            ["--!nolint LocalShadow"] = true,
+        },
+        seen = {},
+        reserved = {},
+    }
+end
 
---- tracks all resolved_require_X identifiers so their declarations can be hoisted to the bundle top.
-local hoisted_dependency_declarations: { [string]: true } = {}
-
-local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: string? }?): err.Result<{string}>
-    -- when seen_stdlibs is nil we're in a top-level traversal and hoist stdlib requires to bundle top;
-    -- when it's explicitly provided (e.g. {} for thread.spawn inlining) stdlib requires stay inline
-    local should_hoist_stdlibs = seen_stdlibs == nil
-
-    seen_stdlibs = seen_stdlibs or {}
+local function traverse(
+    path: string,
+    depth: number?,
+    context: TraverseContext?
+): err.Result<{string}>
+    context = context or new_context()
     depth = depth or 0
 
     if depth > 333 then
@@ -362,7 +495,7 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
     end
     
     for line_number, line in file:readlines() do
-        is_comment, comment_prefix = comment(line, comment_prefix)
+        is_comment, comment_prefix = comment(line, comment_prefix, context)
         if is_comment then
             continue
         end
@@ -386,16 +519,20 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
             continue
         end
 
+        -- note that extract_identifier_and_path correctly handles possible requires within
+        -- single line strings (ignoring them)
         local identifier, requested_require = extract_identifier_and_path(line, `{path}:{line_number}`)
         if typeof(identifier) == "error" then
             return identifier
         end
 
-        -- if it's a normal line of code w/out any imports, add it and keep going
+        -- line doesn't contain any imports, so we don't need to handle requires
+        -- but we need to check for cases we need to transform 
+        -- and cases where we should spit a warning
         if requested_require == nil then
             if on_line_or_previous(line, "thread.spawn", "path =") then
                 -- we need to transform the path = into src = ... and transform the file
-                local inlined_src_lines = transform_thread_spawn_path(line, line_number, path, traverse, depth)
+                local inlined_src_lines = transform_thread_spawn_path(line, line_number, path, depth, traverse)
                 if typeof(inlined_src_lines) == "error" then
                     return inlined_src_lines
                 end
@@ -417,31 +554,19 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
             else
                 append(line)
             end
+            -- it's a normal line of code w/out any imports, add it and keep going
             continue
         end
 
         if str.starts(requested_require, table.unpack(reserved_aliases)) then
-            if should_hoist_stdlibs then
-                -- replace the require call with the deterministic stdlib identifier and hoist the actual require to the top
-                local library_identifier = get_reserved_identifier(requested_require)
-                hoisted_stdlib_requires[library_identifier] = requested_require
-
-                local replace_parens_pattern = 'require%s*%(%s*["\']' .. requested_require .. '["\']%s*%)'
-                line = string.gsub(line, replace_parens_pattern, library_identifier)
-
-                local replace_string_call_pattern = 'require%s*["\']' .. requested_require .. '["\']'
-                line = string.gsub(line, replace_string_call_pattern, library_identifier)
-                append(line)
-            else
-                -- thread.spawn inlining: stdlib requires stay inline so the spawned code is self-contained
-                if not seen_stdlibs[requested_require] then
-                    seen_stdlibs[requested_require] = identifier
-                    append(line)
-                elseif seen_stdlibs[requested_require] ~= identifier then
-                    -- identifier was renamed, inline the require anyway to prevent bugs
-                    append(line)
-                end
-            end
+            -- replace the require call with the deterministic stdlib identifier
+            local library_identifier = get_reserved_identifier(requested_require)
+            -- note that we've seen this reserved library for later hoisting
+            context.reserved[library_identifier] = requested_require
+            -- replace the require call with the library identifier
+            line = replace_identifier(line, requested_require, library_identifier)
+            append(line)
+            
             continue
         end
 
@@ -455,67 +580,32 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
         -- then just replace the require with the identifier name, add it to transformed,
         -- and continue to the next line
 
-        local seen_identifier = seen[resolved.path]
+        local seen_identifier = context.seen[resolved.path]
         if seen_identifier then
             -- replace the require call with the identifier name
-            local replace_parens_pattern = 'require%s*%(%s*["\']' .. requested_require .. '["\']%s*%)'
-            line = string.gsub(line, replace_parens_pattern, seen_identifier)
-    
-            -- in case mfs use require "@myalias/idk" without parens
-            local replace_string_call_pattern = 'require%s*["\']' .. requested_require .. '["\']'
-            line = string.gsub(line, replace_string_call_pattern, seen_identifier)
-
+            line = replace_identifier(line, requested_require, seen_identifier)
             append(line)
+
             continue
         end
 
         -- if we get here, we haven't seen this require path yet
         -- we need to inline the require in front of this line and transform it
 
-        -- always derive the identifier from the resolved path, not the captured variable name
+        -- mark this dependency as seen and give it an identifier so we can later hoist it
         identifier = identifier_from_path(resolved.path)
-
-        -- mark this dependency as seen and give it an identifier
-        seen[resolved.path] = identifier
+        context.seen[resolved.path] = identifier
 
         -- now we need to recurse to get the lines of the required file,
         -- replace the most suitable `return` closest to the end of the required file w/ a local binding
         -- and then put those lines from the dependency in front of this line of code (and transform this loc)
-
-        local dependency_lines = traverse(resolved.path, depth + 1)
+        local dependency_lines = traverse_into_dependency(resolved.path, depth + 1, context, traverse) -- context should be preserved when inlining a dependency
         if typeof(dependency_lines) == "error" then
             return dependency_lines
-        else
-            dependency_lines = (dependency_lines :: any) :: { string } -- LUAU FIXME: wtf is going on with dependency_lines typestate?
-        end
-
-        local return_replaced = false
-        for i = #dependency_lines, 1, -1 do -- go backwards
-            local maybe_return_line = dependency_lines[i]
-            -- we want to pick the return with NO whitespace to the left, otherwise we may grab the wrong return
-            if string.match(maybe_return_line, "^return%s+") then
-                -- modify dependency_lines in place to fix last return
-                -- this identifier should already be initialized from outside the do/end block,
-                -- so this is just assigning to an existing identifier
-                dependency_lines[i] = string.gsub(maybe_return_line, "^return%s+", `{identifier} = `)
-                return_replaced = true
-                break
-            end
-        end
-
-        if not return_replaced then
-            return err.message(`Can't find a top-level return statement in {path}, \z
-            please make sure the module returns something and the top-level return statement is completely unindented; aligned all the way to the left`)
         end
 
         -- and simply add all dependency lines to transformed
         table.insert(transformed, `-- START {resolved.path}`)
-
-        -- hoist the identifier declaration to the bundle top rather than emitting it here.
-        -- if declared inline, a nested dependency (e.g. C required by B which is required by main)
-        -- gets its `local identifier` scoped inside B's do/end block, making it unreachable when
-        -- main later references the same already-seen identifier at the top level.
-        hoisted_dependency_declarations[identifier] = true
 
         -- wrap entire thing in a do/end block so we don't hit the 200 locals limit
         table.insert(transformed, "do")
@@ -524,16 +614,23 @@ local function traverse(path: string, depth: number?, seen_stdlibs: { [string]: 
         end
         table.insert(transformed, "end")
 
-        -- replace the require call with the identifier name
-        local replace_parens_pattern = 'require%s*%(%s*["\']' .. requested_require .. '["\']%s*%)'
-        local replace_string_call_pattern = 'require%s*["\']' .. requested_require .. '["\']'
-        line = string.gsub(line, replace_parens_pattern, identifier)
-        line = string.gsub(line, replace_string_call_pattern, identifier)
-
         table.insert(transformed, `-- END {resolved.path}`)
 
+        -- replace the require call with the identifier name
+        line = replace_identifier(line, requested_require, identifier)
         -- add finally, put the original (transformed) line behind its dependency lines!
         append(line)
+    end
+
+    -- if depth == 0, we are in the top-level of a context; if so, we need to hoist
+    -- all the standard libraries and seen requires in this context to the top
+
+    if depth == 0 then
+        local top = hoist(context)
+        for i = #top, 1, -1 do
+            local line = top[i]
+            table.insert(transformed, 1, line)
+        end
     end
 
     return transformed
@@ -550,41 +647,11 @@ local function bundle(project_path: string): err.Result<string>
         return bundled_lines
     end
 
-    -- hoist dependency identifier declarations above all do/end blocks so that identifiers
-    -- assigned inside nested blocks are still reachable at the top level
-    local sorted_hoisted_dependency_declarations: { string } = {}
-    for identifier in hoisted_dependency_declarations do
-        table.insert(sorted_hoisted_dependency_declarations, `local {identifier}`)
-    end
-    table.sort(sorted_hoisted_dependency_declarations)
-
-    for i = #sorted_hoisted_dependency_declarations, 1, -1 do
-        table.insert(bundled_lines, 1, sorted_hoisted_dependency_declarations[i])
-    end
-
-    local stdlib_lines: { string } = {}
-    for library_identifier, library_require_path in hoisted_stdlib_requires do
-        table.insert(stdlib_lines, `local {library_identifier} = require("{library_require_path}")`)
-    end
-    -- sort stdlibs for deterministic output order
-    table.sort(stdlib_lines)
-
-    for i = #stdlib_lines, 1, -1 do
-        table.insert(bundled_lines, 1, stdlib_lines[i])
-    end
-
-    -- we should be able to identify seal-bundled applications
-    table.insert(bundled_lines, 1, `-- bundled by seal {_SEAL_VERSION}; the bundler isn't perfect, report bundling issues to at https://github.com/seal-runtime/seal/issues`)
-
-    for hot_comment, _ in hot_comments do
-        table.insert(bundled_lines, 1, hot_comment)
-    end
-
     if bash_shebang then
         table.insert(bundled_lines, 1, bash_shebang)
     end
 
-    local bundled = table.concat(bundled_lines, "\n")
+    local bundled = table.concat(bundled_lines, if env.os == "Windows" then "\r\n" else "\n")
 
     return bundled
 end
