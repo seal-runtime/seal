@@ -118,7 +118,6 @@ local function parse_traceback(traceback: string): string
             local string_delim: string? = nil
 
             local in_comment = false
-            local just_set_indent_next_line = false
 
             for _, token in splits do
                 local colorizer = tokenmap[token]
@@ -217,7 +216,7 @@ local function parse_traceback(traceback: string): string
             end
         end
 
-        local succ, err = pcall(function()
+        local succ, _ = pcall(function()
             if is_runtime_error and first_path and first_line_number and tonumber(first_line_number) then
                 local line_number = tonumber(first_line_number) :: number
                 local context = get_line_context(first_path, line_number)

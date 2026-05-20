@@ -365,7 +365,7 @@ function should_replace_typedefs(config_luau: fs.FileEntry)
         end
     end
     local function parse_semver(ver: string): semver.Semver
-        local s, sem = pcall(function(): semver.Semver
+        local _, sem = pcall(function(): semver.Semver
             return semver.from(ver)
         end)
         if typeof(sem) == "error" then
