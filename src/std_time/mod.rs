@@ -22,7 +22,7 @@ fn time_wait(_luau: &Lua, value: LuaValue) -> LuaValueResult {
                 return wrap_err!("{}: cannot reverse time (got negative duration: {})", function_name, f);
             }
             // convert to millis so partial/decimal values get included
-            let millis = (f * 1.000) as u64;
+            let millis = (f * 1000.0) as u64;
             Duration::from_millis(millis)
         },
         LuaValue::Integer(i) => {
