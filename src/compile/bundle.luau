@@ -635,10 +635,9 @@ local function traverse(
             local line = top[i]
             table.insert(transformed, 1, line)
         end
-    end
-
-    if context.top and context.shebang then
-        table.insert(transformed, 1, context.shebang)
+        if context.top and context.shebang then
+            table.insert(transformed, 1, context.shebang)
+        end
     end
 
     return transformed
