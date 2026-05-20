@@ -302,7 +302,7 @@ local function traverse_into_dependency(
     traverse: TraverseFn
 ): err.Result<{string}>
     -- we want to preserve context when transforming dependency lines;
-    local result = traverse(path, depth + 1, context)
+    local result = traverse(path, depth, context)
 
     local lines: { string }
     if typeof(result) == "error" then
@@ -340,7 +340,7 @@ end
 local function get_reserved_identifier(path: string): string
     -- @std/fs -> seal_reserved_library_std_fs
     -- @std/io/input -> seal_reserved_library_std_io_input
-    -- @interop/mlua -> seal_reserved_libary_interop_mlua
+    -- @interop/mlua -> seal_reserved_library_interop_mlua
     local stripped = string.sub(path, 2) -- strip leading "@"
     return "seal_reserved_library_" .. string.gsub(stripped, "/", "_")
 end
@@ -423,9 +423,8 @@ local function hoist(context: TraverseContext): { string }
     return top
 end
 
-local bash_shebang: string? = nil
-
 type TraverseContext = {
+    --- Luau comment directives that must appear at the top of the output file
     hot_comments: {
         [string]: boolean?
     },
@@ -437,9 +436,13 @@ type TraverseContext = {
     --- Map of reserved seal identifiers to require paths
     reserved: {
         [string]: string?,
-    }
+    },
+    --- Is this the top level context (not thread.spawn inlined src)?
+    top: boolean,
+    --- On Unixlike: a #! directive that tells the shell how to execute the script
+    shebang: string?,
 }
-local function new_context(): TraverseContext
+local function new_context(top: boolean?): TraverseContext
     return {
         hot_comments = {
             ["--!optimize 2"] = true,
@@ -447,6 +450,7 @@ local function new_context(): TraverseContext
         },
         seen = {},
         reserved = {},
+        top = top == true
     }
 end
 
@@ -513,8 +517,8 @@ local function traverse(
         -- hoist and move it to the top but don't include it here (or it syntax errors)
         -- if a non-main file contains a bash shebang we also strip it to prevent syntax errors
         if line_number == 1 and str.startswith(line, "#!") then
-            if depth == 0 then
-                bash_shebang = line
+            if depth == 0 and context.top then
+                context.shebang = line
             end 
             continue
         end
@@ -633,6 +637,10 @@ local function traverse(
         end
     end
 
+    if context.top and context.shebang then
+        table.insert(transformed, 1, context.shebang)
+    end
+
     return transformed
 end
 
@@ -642,13 +650,9 @@ local function bundle(project_path: string): err.Result<string>
         return entry_path
     end
 
-    local bundled_lines = traverse(entry_path)
+    local bundled_lines = traverse(entry_path, 0, new_context(true))
     if typeof(bundled_lines) == "error" then
         return bundled_lines
-    end
-
-    if bash_shebang then
-        table.insert(bundled_lines, 1, bash_shebang)
     end
 
     local bundled = table.concat(bundled_lines, if env.os == "Windows" then "\r\n" else "\n")

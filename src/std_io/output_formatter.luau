@@ -181,7 +181,6 @@ local BOLD_BLUE = colors.codes.BOLD_BLUE
 local GREEN = colors.codes.GREEN
 local YELLOW = colors.codes.YELLOW
 local BOLD_YELLOW = colors.codes.BOLD_YELLOW
-local _BLACK = colors.codes.BLACK
 local BOLD = colors.codes.BOLD
 local DIM = colors.codes.DIM
 
