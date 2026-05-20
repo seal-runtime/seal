@@ -79,11 +79,6 @@ dotenvy = "0.15.7"
 [profile.dev.package.num-bigint-dig]
 opt-level = 3 # otherwise rsa keygen takes forever
 
-[lints.clippy]
-# reason: no autocomplete on inlined args + inconsistent syntax in macro (exprs not permitted); 
-# better to be consistent in not using inlined format args, and if it's ridiculous, split it up or just write it in luau
-uninlined_format_args = "allow"
-
 [workspace]
 members = [
     "tests/rust/crates/example",
