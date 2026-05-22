@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use mluau::prelude::*;
 use crate::{Chunk, prelude::*};
 
@@ -268,7 +270,7 @@ fn luau_bundle(luau: &Lua, value: LuaValue) -> LuaValueResult {
             return wrap_err!("{} expected path to be a string, got: {:?}", function_name, other);
         }
     };
-    match crate::compile::bundle(&path) {
+    match crate::compile::bundle(&PathBuf::from(path)) {
         Ok(bundled) => bundled.into_lua(luau),
         Err(err) => Ok(LuaValue::UserData(luau.create_userdata(EvalError::new(err))?)),
     }
