@@ -1,15 +1,113 @@
-use std::fs;
-use std::io::Read;
-use std::path::PathBuf;
-
 use crate::prelude::*;
 use mluau::prelude::*;
-use mluau::Compiler;
+
 use crate::globals;
+use crate::{Args, LuauLoadResult};
+
+use std::fs::{self, OpenOptions};
+use std::io::{Read, Write};
+use std::path::{Path, PathBuf};
+
+use mluau::Compiler;
+
+pub mod options;
+use options::CompileOptions;
+
+/// handles bundling and compiling depending on `args` and `only_luau_please`
+pub fn run(args: Args, only_luau_please: bool) -> LuauLoadResult {
+    let function_name = if only_luau_please {
+        "seal bundle"
+    } else {
+        "seal compile"
+    };
+
+    let CompileOptions { 
+        input_path, 
+        mut output_path, 
+        should_transform 
+    } = CompileOptions::from_args(args, function_name)?;
+
+    let mut src = if should_transform { 
+        bundle(&input_path)? 
+    } else {
+        match fs::read_to_string(&input_path) {
+            Ok(contents) => contents,
+            Err(err) => {
+                return wrap_err!("{}: unable to read input file at '{}' due to err: {}", function_name, input_path.display(), err);
+            }
+        }
+    };
+
+    if only_luau_please && output_path.extension().is_none() {
+        output_path.set_extension("luau");
+    } else if only_luau_please 
+        && let Some(extension) = output_path.extension()
+        && extension != "luau"
+    {
+        return wrap_err!("{} should only be used to bundle to Luau; use `seal compile` for standalone executables", function_name);
+    }
+
+    if let Some(extension) = output_path.extension() 
+        && extension == "luau" 
+    {
+        match fs::write(&output_path, src) {
+            Ok(_) => {
+                puts!("{} - bundled project sourcecode to '{}'", function_name, &output_path.display())?;
+            },
+            Err(err) => {
+                return wrap_err!("{} - unable to write to file '{}' due to err: {}", function_name, &output_path.display(), err);
+            }
+        }
+        return Ok(None);
+    }
+
+    // handle shebangs by stripping first line from \n
+    if src.starts_with("#!") && let Some(first_newline_pos) = src.find('\n') {
+        src = src[first_newline_pos + 1..].to_string();
+    }
+
+    let compiled_standalone_bytes = standalone(&src)?;
+
+    #[cfg(windows)]
+    {
+        if output_path.extension().is_none() {
+            output_path.set_extension("exe");
+        }
+    }
+    
+    let mut file = match OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(&*output_path)
+    {
+        Ok(f) => f,
+        Err(err) => {
+            return wrap_err!("{} - error creating output file: {}", function_name, err);
+        }
+    };
+
+    if let Err(err) = file.write_all(&compiled_standalone_bytes) {
+        return wrap_err!("{} - error writing compiled program to file: {}", function_name, err);
+    }
+
+    puts!("{} - compiled to standalone program '{}'!", function_name, output_path.display())?;
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        // give it executable permissions on unix (chmod +x file) rwxr-xr-x (0o755)
+        if let Err(err) = file.set_permissions(PermissionsExt::from_mode(0o755)) {
+            return wrap_err!("{} - error setting executable permissions: {}", function_name, err);
+        }
+    }
+
+    Ok(None)
+}
 
 const BUNDLER_SRC: &str = include_str!("./bundle.luau");
 
-pub fn bundle(project_path: &str) -> LuaResult<String> {
+pub fn bundle(project_path: &Path) -> LuaResult<String> {
     let luau = Lua::new();
     globals::set_globals(&luau, "bundler")?;
     

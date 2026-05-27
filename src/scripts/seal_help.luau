@@ -77,7 +77,8 @@ function help.default()
         `  { command("setup  ", "s", "BOLD_CYAN")} {DIM_DASH} a new project in your current directory; sets up all you need to get started with seal.`,
         `  { command("eval   ", "e", "BOLD_RED")}  '{req "src"}'    {DIM_DASH} evaluate luau code from a string, right in your terminal.`,
         `  { command("run    ", "r", "BOLD_GREEN")}  {opt "...args"}  {DIM_DASH} run the {colors.bold.white("current project")} at its entrypoint; similar to { code "cargo run"} in Rust.`,
-        `  { command("compile", " ", "BOLD_YELLOW")}  {opt "...args"}  {DIM_DASH} compile/bundle a project into a standalone executable/single Luau file.`,
+        `  { command("bundle ", " ", "BOLD_YELLOW")}  {opt "...args"}  {DIM_DASH} bundle a codebase into a single Luau file.`,
+        `  { command("compile", " ", "BOLD_YELLOW")}  {opt "...args"}  {DIM_DASH} bundle and compile a project into a standalone executable (or Luau file).`,
         `  { command("test   ", "t", "BRIGHT_GREEN")}  {opt "...args"}  {DIM_DASH} runs 'test_path' from your { code ".seal/config.luau"}.`,
         `  { command("help   ", "h", "BOLD_WHITE")}  {opt "command"}  {DIM_DASH} display help, of a specific command if specified.`,
         "",
@@ -206,13 +207,21 @@ function help.compile()
     return format_lines(
         TAGLINE,
         colors.bold.white("Usage:") .. dim(" <angled> = required, [square] = optional"),
-        `  {colors.bold.blue("seal")} {colors.bold.red("compile")} {DIM_DASH} compile project at cwd into a binary named after the project folder's name`,
-        `  {colors.bold.blue("seal")} {colors.bold.red("compile")} {req "path/to/entry.luau"} {DIM_DASH} specify an entry path (defaults to project's entry_path)`,
-        `  {colors.bold.blue("seal")} {colors.bold.red("compile")} {opt "path/to/entry.luau"} -o {req "bin"} {DIM_DASH} compile the project into an executable named 'bin' (or 'bin.exe' on windows)`,
-        `  {colors.bold.blue("seal")} {colors.bold.red("compile")} {opt "path/to/entry.luau"} -o {req "output.luau"} {DIM_DASH} bundle the project into output.luau without creating a standalone executable`,
+        `  {colors.bold.blue("seal")} {colors.bold.red("compile")}`,
+        `    {DIM_DASH} compile project at cwd into a binary named after the project folder's name.`,
+        `  {colors.bold.blue("seal")} {colors.bold.red("compile")} {opt("--input", "-i")} path/to/entry.luau`,
+        `    {DIM_DASH} specify an input/entry path (defaults to project's entry_path).`,
+        `  {colors.bold.blue("seal")} {colors.bold.red("compile")} {opt("--input", "-i")} path/to/entry.luau {req("--output", "-o")} bin`,
+        `    {DIM_DASH} compile the project into an executable named 'bin' (or 'bin.exe' on windows).`,
+        `  {colors.bold.blue("seal")} {colors.bold.red("compile")} {opt("--input", "-i")} path/to/entry.luau" {req("--output", "-o")} output.luau`,
+        `    {DIM_DASH} bundle the project into output.luau without creating a standalone executable.`,
+        `  {colors.bold.blue("seal")} {colors.bold.red("compile")} {opt("--input", "-i")} path/to/entry.luau {req "--output | -o"} bin {opt "-n | no-transform"}`,
+        `    {DIM_DASH} compile the project into a standalone executable bin (or bin.exe on Windows)`,
+        `      without bundling/transforming sourcecode; this is useful if the code has already been bundled.`,
         colors.bold.white("Docs:"),
         "  Create a standalone executable (for your platform) from a seal project codebase.",
-        "  Files are bundled relative to the project's entry path (located in .seal/config.luau) unless otherwise specified.",
+        "  Files are bundled relative to the project's entry path (located in .seal/config.luau)",
+        "  unless otherwise specified.",
         "  Bundling isn't perfect, is syntax dependent, and doesn't handle edge cases",
         "      ...but it should work for simple project structures.",
         "  Notes on bundling:",
@@ -222,12 +231,28 @@ function help.compile()
         `  {DIM_DASH} hot comments (--!) are collected and placed on top of the bundled file`,
         `  {DIM_DASH} --!optimize 2 is added automatically`,
         `  {DIM_DASH} thread.spawns with paths ({code "path = "} must be on same or next line) have their srcs inlined`,
-        `  {DIM_DASH} for more control over bundling (optimizations, transformations, etc.), use an external tool like darklua or warmluau`,
-        "    (you can pass the bundled file to seal compile)",
+        `  {DIM_DASH} for more control over bundling (optimizations, transformations, etc.),`,
+        `    use an external tool like darklua or warmluau`,
+        "    (you can pass the bundled file to seal compile with option -no-transform (-n))",
         "",
         "  Example required file structure: ",
         example_module,
         END_LINE
+    )
+end
+
+function help.bundle()
+    return format_lines(
+        TAGLINE,
+        colors.bold.white("Usage:") .. dim(" <angled> = required, [square] = optional"),
+        `  {colors.bold.blue("seal")} {colors.bold.red("bundle")}`,
+        `    {DIM_DASH} bundle project at cwd into a luau file named after the project folder's name.`,
+        `  {colors.bold.blue("seal")} {colors.bold.red("bundle")} {opt("--input", "-i")} path/to/entry.luau`,
+        `    {DIM_DASH} specify an input/entry path (defaults to project's entry_path).`,
+        `  {colors.bold.blue("seal")} {colors.bold.red("bundle")} {opt("--input", "-i")} path/to/entry.luau {req("--output", "-o")} out`,
+        `    {DIM_DASH} bundle the project into an luau file named out.luau.`,
+        colors.bold.white("Docs:"),
+        "  This command is almost identical to seal compile; see its documentation for more info."
     )
 end
 

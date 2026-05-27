@@ -81,6 +81,10 @@ To evaluate code with seal, use `seal eval '<string src>'`. `seal eval` comes wi
 
 Run `seal compile` to compile the seal project at your cwd, `seal compile -o binname` to compile it to a binary called `binname`, or `seal compile -o filename.luau` to bundle the entire codebase into a single Luau file.
 
+Options for `seal compile` include `--input` (`-i`) to set the input/entry path, `--output` (`-o`) to specify
+the output path, and `--no-transform` (`-n`) to prevent code transformations such as bundling when compiling an
+already bundled codebase to a standalone executable.
+
 Keep in mind that the behavior of `script:path()` *will change* in the bundled application! For example, if you check that `script:path() == script.entry_path` in a file called `setup.luau`, required by `main.luau` in your codebase, it will not trigger when you run `seal run` or `seal ./src/main.luau`, but it will *always* trigger when you run the project once bundled/compiled. Additionally, be careful to package all necessary files non-Luau files alongside your standalone application because calls to `fs.readfile` and similar will not be inlined in the compilation process.
 
 To check if the currently running program is a standalone application or not, use the `@interop/standalone` library.
