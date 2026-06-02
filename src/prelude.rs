@@ -218,6 +218,34 @@ pub fn float_to_u32(f: f64, function_name: &'static str, parameter_name: &'stati
     }
 }
 
+pub fn float_to_u16(f: f64, function_name: &'static str, parameter_name: &'static str) -> LuaResult<u16> {
+    if f.trunc() != f {
+        return wrap_err!("{}: {} should be a positive whole number, got a number with a decimal point/fractional point component: {}", function_name, parameter_name, f);
+    } else if f.is_nan() || f.is_infinite() {
+        return wrap_err!("{}: {} cannot be NaN nor infinite", function_name, parameter_name);
+    } else if f.is_sign_negative() {
+        return wrap_err!("{}: {} should be a positive whole number, but its sign is not positive (got: {})", function_name, parameter_name, f);
+    } else if f > u16::MAX as f64 {
+        return wrap_err!("{}: {} value {} is too large to fit in a u16", function_name, parameter_name, f);
+    }
+
+    // SAFETY: we just checked nan/infinite/bounds/negative right above.
+    let u: u16 = unsafe { f.to_int_unchecked() };
+    Ok(u)
+}
+
+pub fn int_to_u16(i: i64, function_name: &'static str, parameter_name: &'static str) -> LuaResult<u16> {
+    if i.is_negative() {
+        return wrap_err!("{}: {} must be positive (got: {})", function_name, parameter_name, i);
+    }
+    match u16::try_from(i) {
+        Ok(u) => Ok(u),
+        Err(err) => {
+            wrap_err!("{}: {} can't safely be converted from i64 to u16 because {}", function_name, parameter_name, err)
+        }
+    }
+}
+
 /// safely convert float param to u64, giving a good error reason if conversion wasn't successful
 pub fn float_to_u64(f: f64, function_name: &'static str, parameter_name: &'static str) -> LuaResult<u64> {
     let truncated = f.trunc();

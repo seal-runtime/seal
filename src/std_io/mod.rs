@@ -9,12 +9,16 @@ pub mod format;
 pub mod prompt;
 #[macro_use]
 pub mod macros;
+pub mod terminal;
+pub mod cursor;
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_value("input", self::input::create(luau)?)?
-        .with_value("colors", self::colors::create(luau)?)?
-        .with_value("output", self::output::create(luau)?)?
-        .with_value("prompt", self::prompt::create(luau)?)?
+        .with_value("input", input::create(luau)?)?
+        .with_value("colors", colors::create(luau)?)?
+        .with_value("output", output::create(luau)?)?
+        .with_value("prompt", prompt::create(luau)?)?
+        .with_value("terminal", terminal::create(luau)?)?
+        .with_value("cursor", cursor::create(luau)?)?
         .build_readonly()
 }

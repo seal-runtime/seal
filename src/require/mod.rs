@@ -69,9 +69,11 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std/io/input" => ok_table(std_io::input::create(luau)),
         "@std/io/output" => ok_table(std_io::output::create(luau)),
         "@std/io/colors" => ok_table(colors::create(luau)),
-        "@std/io/clear" => ok_function(std_io::output::clear, luau),
+        "@std/io/clear" => ok_function(std_io::output::output_clear, luau),
         "@std/io/format" => ok_table(std_io::format::create(luau)),
         "@std/io/prompt" => ok_table(std_io::prompt::create(luau)),
+        "@std/io/terminal" => ok_table(std_io::terminal::create(luau)),
+        "@std/io/cursor" => ok_table(std_io::cursor::create(luau)),
         "@std/colors" => ok_table(colors::create(luau)),
 
         "@std/time" => ok_table(std_time::create(luau)),

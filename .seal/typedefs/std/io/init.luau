@@ -12,6 +12,8 @@
 export type io = {
     input: typeof(require("@self/input")),
     output: typeof(require("@self/output")),
+    terminal: typeof(require("@self/terminal")),
+    cursor: typeof(require("@self/cursor")),
     colors: typeof(require("@self/colors")),
     format: typeof(require("@self/format")),
     prompt: typeof(require("@self/prompt")),
