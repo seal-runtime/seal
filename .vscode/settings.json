@@ -30,4 +30,5 @@
   "luau-lsp.fflags.enableByDefault": true,
   "luau-lsp.inlayHints.variableTypes": false,
   "luau-lsp.studioPlugin.enabled": false,
+  "FSharp.suggestGitignore": false,
 }

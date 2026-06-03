@@ -1,5 +1,6 @@
 use mluau::prelude::*;
 use crate::prelude::*;
+use crate::std_err::WrappedError;
 
 use crossterm::event::{Event, KeyEvent, KeyModifiers, MouseEvent};
 use crossterm::execute;
@@ -15,7 +16,6 @@ fn create_event_table(luau: &Lua, event: Event) -> LuaResult<LuaTable> {
         t.raw_set("shift", modifiers.contains(KeyModifiers::SHIFT))?;
         t.raw_set("ctrl", modifiers.contains(KeyModifiers::CONTROL))?;
         t.raw_set("alt", modifiers.contains(KeyModifiers::ALT))?;
-        // t.raw_set("meta", modifiers.contains(KeyModifiers::META))?;
         Ok(t)
     }
 
@@ -26,7 +26,6 @@ fn create_event_table(luau: &Lua, event: Event) -> LuaResult<LuaTable> {
             t.raw_set("modifiers", table_from_modifiers(luau, modifiers)?)?;
         },
         Event::Mouse(MouseEvent { kind, column, row, modifiers }) => {
-            // return ok_string(format!("Mouse: {:?}", kind), luau);
             t.raw_set("type", "Mouse")?;
             t.raw_set("kind", format!("{:?}", kind))?;
             t.raw_set("column", column)?;
@@ -178,6 +177,98 @@ pub(super) fn events(luau: &Lua, value: LuaValue) -> LuaResult<LuaFunction> {
     })?;
 
     Ok(f)
+}
+
+enum InterruptCode {
+    CtrlC,
+    CtrlD,
+}
+pub struct Interrupt {
+    code: InterruptCode
+}
+
+impl Interrupt {
+    pub fn ctrlc() -> Self {
+        Self {
+            code: InterruptCode::CtrlC
+        }
+    }
+    pub fn ctrld() -> Self {
+        Self {
+            code: InterruptCode::CtrlD
+        }
+    }
+    pub fn get_userdata(self, luau: &Lua) -> LuaValueResult {
+        ok_userdata(self, luau)
+    }
+}
+
+impl LuaUserData for Interrupt {
+    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
+        fields.add_meta_field("__type", "interrupt"); // allow users to typeof check
+        fields.add_field_method_get("code", |luau: &Lua, this: &Interrupt| {
+            match this.code {
+                InterruptCode::CtrlC => "CtrlC".into_lua(luau),
+                InterruptCode::CtrlD => "CtrlD".into_lua(luau),
+            }
+        });
+    }
+    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+        methods.add_meta_method(LuaMetaMethod::ToString, | luau: &Lua, this: &Interrupt, _: LuaValue| -> LuaValueResult {
+            match this.code {
+                InterruptCode::CtrlC => "CtrlC (SIGINT)".into_lua(luau),
+                InterruptCode::CtrlD => "CtrlD (EOF)".into_lua(luau),
+            }
+        });
+    }
+}
+
+fn interrupt_sigint(luau: &Lua, _: LuaValue) -> LuaValueResult {
+    Interrupt::ctrlc().get_userdata(luau)
+}
+
+fn interrupt_eof(luau: &Lua, _: LuaValue) -> LuaValueResult {
+    Interrupt::ctrld().get_userdata(luau)
+}
+
+const INTERRUPT_CHECK_SRC: &str = include_str!("interrupt_check.luau");
+
+fn interrupt_check(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    let function_name = "interrupt.check(event: TerminalEvent)";
+    
+    let function = if let Some(function) = luau.named_registry_value::<Option<LuaFunction>>("terminal/interrupt_check")? {
+        function
+    } else {
+        let function = luau.load(INTERRUPT_CHECK_SRC).eval::<LuaFunction>()?;
+        luau.set_named_registry_value("terminal/interrupt_check", &function)?;
+        function
+    };
+
+    let interrupt = match function.call::<LuaValue>(value) {
+        Ok(LuaValue::Boolean(b)) if b => Interrupt::ctrlc(),
+        Ok(LuaValue::Boolean(b)) if !b => Interrupt::ctrld(),
+        Ok(LuaNil) => {
+            return Ok(LuaNil);
+        },
+        Ok(LuaValue::UserData(ud)) if let Ok(err) = ud.borrow::<WrappedError>() => {
+            return wrap_err!("{}: {}", function_name, err.format());
+        },
+        Ok(other) => {
+            panic!("{} returned an unexpected type of value: {:?}", function_name, other);
+        },
+        Err(err) => {
+            panic!("{} errored at runtime: {}", function_name, err);
+        }
+    };
+    interrupt.get_userdata(luau)
+}
+
+pub(super) fn create_interrupt_table(luau: &Lua) -> LuaResult<LuaTable> {
+    TableBuilder::create(luau)?
+        .with_function("sigint", interrupt_sigint)?
+        .with_function("eof", interrupt_eof)?
+        .with_function("check", interrupt_check)?
+        .build_readonly()
 }
 
 pub(super) fn create_capture_table(luau: &Lua) -> LuaResult<LuaTable> {
