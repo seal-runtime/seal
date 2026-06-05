@@ -1,10 +1,10 @@
-use crossterm::QueueableCommand;
 use mluau::prelude::*;
 use crate::prelude::*;
 
 pub(super) mod cursor_style;
 pub use cursor_style::CursorStyle;
 
+use crossterm::QueueableCommand;
 use super::TerminalAction;
 use std::io::Stdout;
 

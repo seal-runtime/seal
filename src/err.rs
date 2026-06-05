@@ -121,11 +121,15 @@ pub fn display_error_and_exit(err: LuaError) -> ! {
         let _ = crossterm::terminal::disable_raw_mode();
         let _  = crossterm::execute!(
             std::io::stdout(),
+            crossterm::event::DisableMouseCapture,
+            crossterm::event::DisableFocusChange,
+            crossterm::event::DisableBracketedPaste,
             crossterm::terminal::LeaveAlternateScreen,
             crossterm::terminal::EnableLineWrap,
             crossterm::cursor::SetCursorStyle::DefaultUserShape,
             crossterm::cursor::MoveToColumn(0),
             crossterm::cursor::Show,
+            crossterm::terminal::Clear(crossterm::terminal::ClearType::FromCursorDown),
         );
         let warning_message = format!("{}[WARN]{} the program errored in terminal raw mode; switching back to cooked mode and returning control to the user.", colors::BOLD_YELLOW, colors::RESET);
         let _ = writeln!(stderr, "{}", warning_message);

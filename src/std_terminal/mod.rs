@@ -5,8 +5,7 @@ use crossterm::terminal::ClearType;
 
 pub mod actions;
 pub mod cursor;
-
-mod events;
+pub mod events;
 
 pub use actions::TerminalAction;
 
@@ -237,6 +236,9 @@ fn terminal_reset(_luau: &Lua, _value: LuaValue) -> LuaEmptyResult {
 
     let result = crossterm::execute!(
         std::io::stdout(),
+        crossterm::event::DisableBracketedPaste,
+        crossterm::event::DisableFocusChange,
+        crossterm::event::DisableMouseCapture,
         crossterm::terminal::LeaveAlternateScreen,
         crossterm::terminal::EnableLineWrap,
         crossterm::cursor::SetCursorStyle::DefaultUserShape,

@@ -1,5 +1,5 @@
 local colors = require("@std/io/colors")
-local output = require("@std/io/output")
+local terminal = require("@std/terminal")
 local str = require("@std/str")
 
 type HttpResponse = {
@@ -32,7 +32,7 @@ end
 
 return function(self: HttpResponse): string
     local header_count = 0
-    local output_horizontal_width = output.size().x
+    local output_horizontal_width = terminal.size().x
     local header_names: { string } = {}
     for name, _ in self.headers do
         header_count += 1

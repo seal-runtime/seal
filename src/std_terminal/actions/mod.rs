@@ -7,11 +7,13 @@ use std::fmt::Display;
 use super::cursor::{CursorStyle, MoveDirection};
 use super::{ScrollDirection, WhichScreen};
 use crossterm::execute;
+use crossterm::QueueableCommand;
 
 pub(super) fn queue_and_execute(actions: Vec<TerminalAction>, function_name: &'static str) -> LuaResult<()> {
     let mut stdout = std::io::stdout();
     for command in actions {
         command.queue(&mut stdout, function_name)?;
+        // let _ = stdout.flush();
     }
 
     if let Err(err) = stdout.flush() {
@@ -95,8 +97,6 @@ impl TerminalAction {
         }
     }
     pub fn queue(self, stdout: &mut std::io::Stdout, function_name: &'static str) -> LuaResult<()> {
-        use crossterm::QueueableCommand;
-
         let result = match self {
             Self::Write(content) => stdout.queue(crossterm::style::Print(content)),
             Self::Clear(clear_type) => stdout.queue(crossterm::terminal::Clear(clear_type)),

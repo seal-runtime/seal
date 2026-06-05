@@ -195,8 +195,8 @@ export type terminal = {
         7. In each iteration (or as necessary), update your visual state by passing `TerminalActions`
         to `terminal.execute`. Try to execute as many actions as you can in the same `terminal.execute`
         call to reduce syscalls for better performance.
-        8. When you're done, call `terminal.reset()` or otherwise ensure all actions you've taken
-        have been cleaned up.
+        8. When you're done, call `terminal.reset()` or a custom cleanup function to ensure all actions 
+        you've taken have been cleaned up.
 
         ## ⚠️ Caution
 
@@ -204,8 +204,9 @@ export type terminal = {
         - Rawmode **should** be enabled before calling this function; set it with `terminal.rawmode.enable()`.
         - Check for/intercept Ctrl-C and Ctrl-D events, otherwise users might not be able to cancel your program.
         - If you forget to clean up actions you've taken before exiting, you can break the user's terminal.
-        Always call `terminal.reset()` when exiting, which handles disabling raw mode, switching
-        back to Main screen, and restoring cursor state for you.
+        When exiting, call`terminal.reset()`, which handles disabling raw mode, switching
+        back to Main screen, and restoring cursor state for you, or call a custom cleanup function that
+        reverts the changes you've made to terminal state.
 
         ## Usage
 
@@ -293,8 +294,9 @@ export type terminal = {
 
         Disables raw mode (if enabled), switches back to the Main screen,
         enables line wrap, resets the cursor to column 0, sets the cursor
-        to the default style, and makes the cursor visible. This is useful
-        for cleanup when exiting a TUI.
+        to the default style, makes the cursor visible, and disables mouse,
+        paste, and focus-changed event capturing.
+        This is useful for cleanup when exiting a TUI.
 
         This function is idempotent and safe to call multiple times.
     ]=]
