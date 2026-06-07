@@ -3,7 +3,7 @@ local str = require("@std/str")
 local err = require("@std/err")
 local env = require("@std/env")
 local time = require("@std/time")
-local colors = require("@std/colors")
+local colors = require("@std/io/colors")
 local format = require("@std/io/format")
 local terminal = require("@std/terminal")
 local cursor = require("@std/terminal/cursor")
@@ -124,17 +124,11 @@ function prompt.pick(message: string, options: { string }, default: number?): er
 
     local selected: number = default or 1
 
-    -- we can display 2 different ways, interactive or noninteractive
-    -- if we can't fit all options onto the terminal screen we go for noninteractive
-    
     local screen_size = terminal.size()
     local should_be_interactive = 
         terminal.tty()
         and not env.vars.flag("SEAL_SIMPLE_PROMPT", false)
-        -- and screen_size.y > #options
 
-    -- we need to truncate any long options to the maximum terminal width
-    -- and get rid of any newlines because we want each option = 1 line for simplicity.
     local max_option_width = (screen_size.x - 6) -- (3 trailing ... and 3 preceding chars)
     for index, option in options do
         if string.find(option, "\n") then
@@ -143,9 +137,6 @@ function prompt.pick(message: string, options: { string }, default: number?): er
         if string.find(option, "\r") then
             option = string.gsub(option, "\r", "")
         end
-        -- if str.width(option) >= max_option_width then
-        --     options[index] = string.sub(option, 1, max_option_width) .. "..."
-        -- end
     end
 
     if not should_be_interactive then
@@ -239,23 +230,29 @@ function prompt.pick(message: string, options: { string }, default: number?): er
                 table.insert(actions, action)
             end
         end
-        local current_size = terminal.size()
 
-        local message_line_horizontal_width = str.width(message) + str.width(options[selected]) + 3
-        local space_available_for_message = current_size.x - str.width(options[selected])
+        local current_size = terminal.size()
+        local current_option = options[selected]
+        local uncolored_current_option = format.uncolor(current_option)
+        local uncolored_message = format.uncolor(message)
+
+        local space_available_for_message = current_size.x - str.width(uncolored_current_option) - 1
+        local message_line_horizontal_width = str.width(uncolored_message) + str.width(uncolored_current_option) + 1
+
         local message_truncated_if_needed = 
             if message_line_horizontal_width > current_size.x then
                 truncate_string_middling_to_size(message, space_available_for_message)
             else 
                 message
         
-        top_update_position = vector.create(str.width(message_truncated_if_needed) + 1, top_update_position.y)
+        -- adjust the place where the current option is visible dynamically based upon the size of the message
+        top_update_position = vector.create(str.width(format.uncolor(message_truncated_if_needed)) + 1, top_update_position.y)
         local help_message =
             if current_size.x > 99 then
                 "Scroll, use arrow keys, or type a number to pick an option; double-click or press enter to select."
-            elseif current_size.x > 56 then
+            elseif current_size.x > 58 then
                 "Scroll/Arrow Keys/Number = Move; 2xClick/Enter = Select"
-            elseif current_size.x > 19 then
+            elseif current_size.x > 24 then
                 "pls widen terminal"
             else
                 "WIDEN ME"
@@ -281,7 +278,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
                 else
                     ""
             -- make sure whole option text stays on same line
-            local option_line_width = #tostring(option_index) + 4 + str.width(option)
+            local option_line_width = #tostring(option_index) + 4 + str.width(format.uncolor(option))
             if option_line_width > current_size.x then
                 option = truncate_string_middling_to_size(option, current_size.x - 6)
             end
@@ -319,9 +316,8 @@ function prompt.pick(message: string, options: { string }, default: number?): er
             )
         end
         -- now jump to top right to update the currently selected option
-        local current_option = options[selected]
-        local space_for_current_option = current_size.x - (str.width(message_truncated_if_needed) + 4)
-        if str.width(format.uncolor(current_option)) > space_for_current_option then
+        local space_for_current_option = current_size.x - (str.width(format.uncolor(message_truncated_if_needed)) + 4)
+        if str.width(uncolored_current_option) > space_for_current_option then
             current_option = truncate_string_middling_to_size(current_option, space_for_current_option)
         end
         push(
@@ -365,7 +361,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
         )
     end
 
-    for event in terminal.events(time.milliseconds(20)) do
+    for event in terminal.events(time.milliseconds(10)) do
         if event.type == "Key" then
             interrupt = terminal.interrupt.check(event)
             if interrupt then
@@ -384,7 +380,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
             elseif event.key == "Down" then
                 if selected < #options then
                     if selected == options_window.y then
-                        options_window += scroll_delta                        
+                        options_window += scroll_delta
                     end
                     selected += 1
                     submit_on_click = false
@@ -421,7 +417,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
             end
         elseif event.type == "Resize" then
             -- screen size changed, we need to adjust options_window size according to new space
-            local options_rows = math.min(event.rows - options_window_top.y, #options)
+            local options_rows = math.min(event.size.y - options_window_top.y, #options)
             local bottom_row = if options_rows <#options then 1 else 0
             options_window = vector.create(1, options_rows - bottom_row)
             options_window_bottom = options_window_top + vector.create(0, options_window.y - options_window.x)

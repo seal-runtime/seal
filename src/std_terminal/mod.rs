@@ -82,6 +82,23 @@ fn terminal_write(luau: &Lua, value: LuaValue) -> LuaValueResult {
     TerminalAction::Write(content).get_userdata(luau)
 }
 
+fn terminal_title(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    let function_name = "terminal.title(title: string)";
+    let title = match value {
+        LuaValue::String(ref s) if let Ok(title) = s.to_str() => {
+            title.to_string()
+        },
+        LuaValue::String(_) => {
+            return wrap_err!("{}: title must be valid utf-8", function_name);
+        },
+        other => {
+            return wrap_err!("{}: expected title to be a string, got: {:?}", function_name, other);
+        }
+    };
+
+    TerminalAction::Title(title).get_userdata(luau)
+}
+
 fn terminal_clear(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "terminal.clear(mode: ClearMode)";
     let clear_type = match value {
@@ -259,6 +276,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("size", terminal_size)?
         .with_value("interrupt", events::create_interrupt_table(luau)?)?
         .with_function("write", terminal_write)?
+        .with_function("title", terminal_title)?
         .with_function("clear", terminal_clear)?
         .with_function("linewrap", terminal_linewrap)?
         .with_function("scroll", terminal_scroll)?

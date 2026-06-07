@@ -11,11 +11,15 @@ use crossterm::QueueableCommand;
 
 pub(super) fn queue_and_execute(actions: Vec<TerminalAction>, function_name: &'static str) -> LuaResult<()> {
     let mut stdout = std::io::stdout();
+    if let Err(err) = stdout.queue(crossterm::terminal::BeginSynchronizedUpdate) {
+        return wrap_err!("{}: failed to queue BeginSynchronizedUpdate: {}", function_name, err);
+    }
     for command in actions {
         command.queue(&mut stdout, function_name)?;
-        // let _ = stdout.flush();
     }
-
+    if let Err(err) = stdout.queue(crossterm::terminal::EndSynchronizedUpdate) {
+        return wrap_err!("{}: failed to queue EndSynchronizedUpdate: {}", function_name, err);
+    }
     if let Err(err) = stdout.flush() {
         return wrap_err!("{}: unable to flush stdout due to err: {}", function_name, err);
     }
@@ -26,11 +30,12 @@ pub(super) fn queue_and_execute(actions: Vec<TerminalAction>, function_name: &'s
 #[derive(Clone)]
 pub enum TerminalAction {
     Write(String),
+    Title(String),
     Scroll(ScrollDirection),
     Clear(crossterm::terminal::ClearType),
     Switch(WhichScreen),
     Linewrap(bool),
-    
+
     // cursor actions
     Save,
     Restore,
@@ -50,6 +55,7 @@ impl LuaUserData for TerminalAction {
 
             let result = match this {
                 TerminalAction::Write(content) => execute!(stdout, crossterm::style::Print(content)),
+                TerminalAction::Title(title) => execute!(stdout, crossterm::terminal::SetTitle(title)),
                 TerminalAction::Clear(clear_type) => execute!(stdout, crossterm::terminal::Clear(*clear_type)),
                 TerminalAction::Scroll(direction) => match direction {
                     ScrollDirection::Up(lines) => execute!(stdout, crossterm::terminal::ScrollUp(*lines)),
@@ -99,6 +105,7 @@ impl TerminalAction {
     pub fn queue(self, stdout: &mut std::io::Stdout, function_name: &'static str) -> LuaResult<()> {
         let result = match self {
             Self::Write(content) => stdout.queue(crossterm::style::Print(content)),
+            Self::Title(title) => stdout.queue(crossterm::terminal::SetTitle(title)),
             Self::Clear(clear_type) => stdout.queue(crossterm::terminal::Clear(clear_type)),
             Self::Scroll(direction) => match direction {
                 ScrollDirection::Up(lines) => stdout.queue(crossterm::terminal::ScrollUp(lines)),

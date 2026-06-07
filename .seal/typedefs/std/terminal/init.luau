@@ -30,6 +30,13 @@ export type terminal = {
     ]=]
     write: (content: string) -> TerminalAction,
     --[=[
+        Creates a <kbd>SetTitle</kbd> `TerminalAction` that sets the terminal window title.
+
+        `TerminalActions` do nothing until invoked; pass the action to `terminal.execute`
+        to queue and execute multiple commands, or call its `:execute()` method to directly invoke.
+    ]=]
+    title: (title: string) -> TerminalAction,
+    --[=[
         Creates a <kbd>Clear</kbd> `TerminalAction`.
 
         Once invoked, visually clears the terminal by writing escape codes
@@ -69,7 +76,6 @@ export type terminal = {
             terminal.switch("Alternate"),
             cursor.right(2),
             terminal.write("Options:"),
-
         )
         ```
     ]=]
@@ -306,6 +312,7 @@ export type terminal = {
 
         Uses crossterm's queue API to schedule all `TerminalActions` and invoke them
         with a single flush operation, thereby reducing syscalls and IO overhead.
+        Wraps all actions in a synchronized output block to eliminate flicker on supporting terminals.
         
         ## Usage
 
@@ -329,7 +336,7 @@ export type terminal = {
                 frame = (frame % #keyframes) + 1
                 -- Move back to start position and redraw frame
                 terminal.execute(
-                    cursor.to(pos.x, pos.y),
+                    cursor.to(pos),
                     terminal.write(keyframes[frame] .. " " .. message)
                 )
                 time.wait(0.08)
@@ -337,7 +344,7 @@ export type terminal = {
 
             -- Clear the spinner and restore cursor
             terminal.execute(
-                cursor.to(pos.x, pos.y),
+                cursor.to(pos),
                 terminal.write(string.rep(" ", #message + 2)),
                 cursor.show(),
                 cursor.column(0)
@@ -360,6 +367,15 @@ type ClearMode =
     | "CurrentLine"
     | "UntilNewLine"
 
+export type TerminalEvent = 
+    | KeyEvent 
+    | MouseEvent
+    | ResizeEvent
+    | PasteEvent
+    | FocusGained 
+    | FocusLost 
+    | Empty
+
 --- Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
 export type KeyModifiers = {
     ctrl: boolean,
@@ -367,22 +383,10 @@ export type KeyModifiers = {
     alt: boolean,
 }
 
-export type KeyEvent = {
-    type: "Key",
-    key: string,
-    modifiers: KeyModifiers,
-}
-export type MouseEvent = {
-    type: "Mouse",
-    kind: string,
-    column: number,
-    row: number,
-    modifiers: KeyModifiers,
-}
 export type ResizeEvent = {
     type: "Resize",
-    columns: number,
-    rows: number,
+    --- The new terminal size; a vector of `<columns, rows, 0>`; access via `size.x` (columns) and `size.y` (rows)
+    size: vector,
 }
 export type FocusGained = {
     type: "FocusGained",
@@ -394,17 +398,201 @@ export type PasteEvent = {
     type: "Paste",
     contents: string,
 }
+--- Sent if `poll` duration elapses and no new events have been recorded. Use this to guarantee your event loop updates
+--- at least once per `poll` duration.
 export type Empty = {
     type: "Empty",
 }
 
-export type TerminalEvent = 
-    | KeyEvent 
-    | MouseEvent
-    | ResizeEvent
-    | PasteEvent
-    | FocusGained 
-    | FocusLost 
-    | Empty
+export type KeyEvent = {
+    type: "Key",
+    --[=[
+        *seal* normalizes all keys to a single canonical name for cross-platform compatibility:
+
+        ## Navigation & Control Keys
+        - `"Backspace"`: <kbd>Backspace</kbd> (Linux/Windows), <kbd>Delete</kbd> (macOS)
+        - `"Enter"`: <kbd>Enter</kbd> (Linux/Windows), <kbd>Return</kbd> (macOS)
+        - `"Delete"`: <kbd>Del</kbd> (Linux/Windows), <kbd>Fwd Del</kbd> (macOS)
+
+        ## Modifier Keys
+        - `"Left Ctrl"`: <kbd>Left Ctrl</kbd> (Linux/Windows), <kbd>Left Control</kbd> (macOS)
+        - `"Right Ctrl"`: <kbd>Right Ctrl</kbd> (Linux/Windows), <kbd>Right Control</kbd> (macOS)
+        - `"Left Alt"`: <kbd>Left Alt</kbd> (Linux/Windows), <kbd>Left Option</kbd> (macOS)
+        - `"Right Alt"`: <kbd>Right Alt</kbd> (Linux/Windows), <kbd>Right Option</kbd> (macOS)
+        - `"Left Super"`: <kbd>Left Super</kbd> (Linux/other), <kbd>Left Windows</kbd> (Windows), <kbd>Left Command</kbd> (macOS)
+        - `"Right Super"`: <kbd>Right Super</kbd> (Linux/other), <kbd>Right Windows</kbd> (Windows), <kbd>Right Command</kbd> (macOS)
+
+        All other keys (arrows, function keys, characters, media keys, etc.) are reported consistently
+        across all platforms.
+
+        The spacebar key is `"Space"`.
+    ]=]
+    key: KeyCode,
+    kind: KeyEventKind,
+    modifiers: KeyModifiers,
+}
+
+export type KeyCode =
+    --- Navigation and control keys
+    | "Backspace"
+    | "Enter"
+    | "Left"
+    | "Right"
+    | "Up"
+    | "Down"
+    | "Home"
+    | "End"
+    | "Page Up"
+    | "Page Down"
+    | "Tab"
+    | "Back Tab"
+    | "Delete"
+    | "Insert"
+    --- Function keys F1 through F24
+    | "F1"
+    | "F2"
+    | "F3"
+    | "F4"
+    | "F5"
+    | "F6"
+    | "F7"
+    | "F8"
+    | "F9"
+    | "F10"
+    | "F11"
+    | "F12"
+    | "F13"
+    | "F14"
+    | "F15"
+    | "F16"
+    | "F17"
+    | "F18"
+    | "F19"
+    | "F20"
+    | "F21"
+    | "F22"
+    | "F23"
+    | "F24"
+    --- Character keys: lowercase letters (all printable characters normalized to lowercase)
+    | "a"
+    | "b"
+    | "c"
+    | "d"
+    | "e"
+    | "f"
+    | "g"
+    | "h"
+    | "i"
+    | "j"
+    | "k"
+    | "l"
+    | "m"
+    | "n"
+    | "o"
+    | "p"
+    | "q"
+    | "r"
+    | "s"
+    | "t"
+    | "u"
+    | "v"
+    | "w"
+    | "x"
+    | "y"
+    | "z"
+    --- Character keys: digits
+    | "0"
+    | "1"
+    | "2"
+    | "3"
+    | "4"
+    | "5"
+    | "6"
+    | "7"
+    | "8"
+    | "9"
+    --- Special character keys
+    | "Space"
+    | "Null"
+    | "Esc"
+    | "Caps Lock"
+    | "Scroll Lock"
+    | "Num Lock"
+    | "Print Screen"
+    | "Pause"
+    | "Menu"
+    | "Begin"
+    --- Media keys (cross-platform normalized)
+    | "Play"
+    | "Pause"
+    | "Play/Pause"
+    | "Reverse"
+    | "Stop"
+    | "Fast Forward"
+    | "Rewind"
+    | "Next Track"
+    | "Previous Track"
+    | "Record"
+    | "Lower Volume"
+    | "Raise Volume"
+    | "Mute Volume"
+    --- Modifier keys (cross-platform normalized)
+    | "Left Shift"
+    | "Right Shift"
+    | "Left Ctrl"
+    | "Right Ctrl"
+    | "Left Alt"
+    | "Right Alt"
+    | "Left Super"
+    | "Right Super"
+    | "Left Hyper"
+    | "Right Hyper"
+    | "Left Meta"
+    | "Right Meta"
+    | "Iso Level 3 Shift"
+    | "Iso Level 5 Shift"
+
+export type KeyEventKind =
+    | "Press"
+    | "Release"
+    | "Repeat"
+
+export type MouseEvent = {
+    type: "Mouse",
+    kind: MouseEventKind,
+    --- The mouse position where the event occurred as vector of `<column, row, 0>`; access via `position.x` (column) and `position.y` (row)
+    position: vector,
+    modifiers: KeyModifiers,
+}
+export type MouseEventKind =
+    --- User started left clicking
+    | "Down(Left)"
+    --- User started right clicking
+    | "Down(Right)"
+    --- User started middle clicking
+    | "Down(Middle)"
+    --- User released a left click
+    | "Up(Left)"
+    --- User released a right click
+    | "Up(Right)"
+    --- User released a middle click
+    | "Up(Middle)"
+    --- User moved the mouse while left click is down
+    | "Drag(Left)"
+    --- User moved the mouse while right click is down
+    | "Drag(Right)"
+    --- User moved the mouse while middle click is down
+    | "Drag(Middle)"
+    --- User moved the mouse without a mouse button being down
+    | "Moved"
+    --- User scrolled the mouse wheel/touchpad downwards (towards the user's lap)
+    | "ScrollDown"
+    --- User scrolled the mouse wheel/touchpad upwards (away from the user's lap)
+    | "ScrollUp"
+    --- User scrolled to the left (usually reported moreso on laptop touchpads)
+    | "ScrollLeft"
+    --- User scrolled to the right (usually reported on laptop touchpads)
+    | "ScrollRight"
+
 
 return {} :: terminal

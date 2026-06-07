@@ -1,7 +1,6 @@
 local fs = require("@std/fs")
 local input = require("@std/io/input")
 local prompt = require("@std/io/prompt")
-local str = require("@std/str")
 
 local function pickanimals()
     local animals: { string } = {}
@@ -24,7 +23,7 @@ local function pickanimals()
     print(`you picked {animals[result]}`)
 end
 
--- pickanimals()
+pickanimals()
 
 -- checks if we fixed the issue where running prompt.confirm after prompt.pick
 -- causes prompt.pick not to remove all its previous output
@@ -43,8 +42,8 @@ confirmshadowspick()
 
 local function manyoptions()
     -- local c = fs.listdir(fs.path.join(fs.path.canonicalize("./")))
-    local c = str.splitlines(fs.readfile("./tests/data/funny_story.txt"))
-    -- local files = fs.listdir("./")
+    -- local c = str.splitlines(fs.readfile("./tests/data/funny_story.txt"))
+    local c = fs.listdir("./")
     print(`we have {#c}`)
     local file = prompt.pick("Would you like to pick a line?", c, 1)
 end
