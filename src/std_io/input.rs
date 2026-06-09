@@ -55,18 +55,28 @@ fn input_get(luau: &Lua, raw_prompt: Option<String>) -> LuaValueResult {
     Ok(LuaValue::String(luau.create_string(&input)?))
 }
 
-
-pub fn input_rawline(_: &Lua, raw_prompt: Option<String>) -> LuaResult<String> {
-    if let Some(prompt) = raw_prompt {
+pub(super) fn get_line_bytes_from_stdin(prompt: Option<String>) -> LuaResult<Vec<u8>> {
+    if let Some(prompt) = prompt {
         put!("{}", prompt)?;
         io::stdout().flush()?;
     }
 
-    let mut input= String::new();
-    io::stdin().read_line(&mut input)?;
-    let input = input.trim_end().to_string();
+    let mut buf = Vec::new();
+    io::stdin().lock().read_until(b'\n', &mut buf)?;
 
-    Ok(input)
+    if buf.last() == Some(&b'\n') {
+        buf.pop();
+        if buf.last() == Some(&b'\r') {
+            buf.pop();
+        }
+    }
+
+    Ok(buf)
+}
+
+pub fn input_rawline(luau: &Lua, raw_prompt: Option<String>) -> LuaValueResult {
+    let bytes = get_line_bytes_from_stdin(raw_prompt)?;
+    ok_string(bytes, luau)
 }
 
 pub fn input_readline(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
