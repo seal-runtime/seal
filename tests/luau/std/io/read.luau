@@ -14,7 +14,8 @@ else
 end
 ]]
 
-local CHILD_SCRIPT_PATH = fs.path.join(fs.path.home(), ".cache", "seal_test_input.read_child.luau")
+fs.dir.ensure(fs.path.join(fs.path.home(), ".cache"))
+local CHILD_SCRIPT_PATH = fs.path.join(fs.path.home(), ".cache", "seal_test_input_read_child.luau")
 fs.writefile(CHILD_SCRIPT_PATH, READTOEND_SRC)
 
 local function spawn_child(): process.PipedChild
