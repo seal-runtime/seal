@@ -124,18 +124,16 @@ function prompt.pick(message: string, options: { string }, default: number?): er
 
     local selected: number = default or 1
 
-    local screen_size = terminal.size()
-    local should_be_interactive = 
+    local should_be_interactive =
         terminal.tty()
         and not env.vars.flag("SEAL_SIMPLE_PROMPT", false)
 
-    local max_option_width = (screen_size.x - 6) -- (3 trailing ... and 3 preceding chars)
     for index, option in options do
         if string.find(option, "\n") then
-            option = string.gsub(option, "\n", " ")
+            options[index] = string.gsub(option, "\n", " ")
         end
         if string.find(option, "\r") then
-            option = string.gsub(option, "\r", "")
+            options[index] = string.gsub(options[index], "\r", "")
         end
     end
 
@@ -159,6 +157,8 @@ function prompt.pick(message: string, options: { string }, default: number?): er
     end
 
     -- interactive portion time
+
+    local screen_size = terminal.size()
 
     --- accounts for message and help rows above options window and scroll indicator under options window
     local extra_rows = 3
@@ -323,7 +323,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
         push(
             cursor.to(top_update_position),
             terminal.clear("UntilNewLine"),
-            terminal.write(`{current_option}`)
+            terminal.write(current_option)
         )
         terminal.execute(table.unpack(actions))
     end
@@ -335,15 +335,14 @@ function prompt.pick(message: string, options: { string }, default: number?): er
     local scroll_delta = vector.create(1, 1)
 
     local function get_window_range_where_visible(current: number, window: vector): vector
-        local new_window: vector
-        if selected < window.x then
-            local diff = window.x - selected
-            new_window = window - diff * scroll_delta
-        elseif selected > window.y then
-            local diff = selected - window.y
-            new_window = window + diff * scroll_delta
+        if current < window.x then
+            local diff = window.x - current
+            return window - diff * scroll_delta
+        elseif current > window.y then
+            local diff = current - window.y
+            return window + diff * scroll_delta
         end
-        return new_window
+        return window
     end
 
     local function update_text_entry_pos()
@@ -417,7 +416,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
             end
         elseif event.type == "Resize" then
             -- screen size changed, we need to adjust options_window size according to new space
-            local options_rows = math.min(event.size.y - options_window_top.y, #options)
+            local options_rows = math.max(1, math.min(event.size.y - options_window_top.y, #options))
             local bottom_row = if options_rows <#options then 1 else 0
             options_window = vector.create(1, options_rows - bottom_row)
             options_window_bottom = options_window_top + vector.create(0, options_window.y - options_window.x)

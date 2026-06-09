@@ -291,5 +291,6 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
             .with_function("disable", terminal_rawmode_disable)?
             .build_readonly()?
         )?
+        .with_value("cursor", cursor::create(luau)?)?
         .build_readonly()
 }

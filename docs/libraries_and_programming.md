@@ -277,7 +277,7 @@ Higher-level terminal prompt and validation functions.
 
 [@std/io/input](/docs/reference/std/io/input.md)
 
-Lower-level access to the terminal, including setting rawmode and listening for terminal events.
+Lower-level text input functions: `input.readline`, `input.editline`, `input.rawline`, and `input.get`.
 
 ```luau
 local prompt = require("@std/io/prompt")
@@ -304,6 +304,114 @@ local prompt = require("@std/io/prompt")
 
 local response = prompt.text("What's your name?")
 print(`Hello {response}!`)
+```
+
+</details>
+
+## Write a TUI
+
+[@std/terminal](/docs/reference/std/terminal/init.md) and [@std/terminal/cursor](/docs/reference/std/terminal/cursor.md)
+
+For writing interactive terminal UIs: raw mode, terminal event polling, cursor control, screen switching, and batched rendering via `TerminalAction`.
+
+```luau
+local terminal = require("@std/terminal")
+local cursor = require("@std/terminal/cursor")
+```
+
+<details>
+<summary>Examples</summary>
+
+### Check if the terminal supports rich input
+
+```luau
+local terminal = require("@std/terminal")
+
+if not terminal.tty() then
+    error("this program requires an interactive terminal")
+end
+```
+
+### Spinner animation
+
+```luau
+local terminal = require("@std/terminal")
+local cursor = require("@std/terminal/cursor")
+local time = require("@std/time")
+
+local keyframes = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+
+if terminal.tty() then
+    local pos = cursor.position()
+    cursor.hide():execute()
+    local start = os.clock()
+    local frame = 0
+    while (os.clock() - start) < 3 do
+        frame = (frame % #keyframes) + 1
+        terminal.execute(
+            cursor.to(pos),
+            terminal.write(keyframes[frame] .. " Processing...")
+        )
+        time.wait(0.08)
+    end
+    terminal.execute(cursor.show(), cursor.column(0))
+end
+```
+
+### Interactive arrow-key picker
+
+```luau
+local process = require("@std/process")
+local terminal = require("@std/terminal")
+local cursor = require("@std/terminal/cursor")
+local time = require("@std/time")
+
+local options = { "seal", "monkey", "dolphin", "crab" }
+local selected = 1
+
+if terminal.tty() then
+    terminal.rawmode.enable()
+    terminal.execute(terminal.switch("Alternate"), cursor.hide(), cursor.to(0, 0))
+
+    local function draw()
+        local actions = { cursor.to(0, 0) }
+        for i, opt in options do
+            table.insert(actions, terminal.write(if i == selected then "> " .. opt else "  " .. opt))
+            if i < #options then
+                table.insert(actions, cursor.down(1))
+                table.insert(actions, cursor.column(0))
+            end
+        end
+        terminal.execute(table.unpack(actions))
+    end
+
+    draw()
+
+    local choice: (string | interrupt)?
+    while choice == nil do
+        for event in terminal.events(time.milliseconds(50)) do
+            if terminal.interrupt.check(event) then
+                terminal.reset()
+                process.exit(1)
+            end
+            if event.type == "Key" and event.kind == "Press" then
+                if event.key == "Up" then
+                    selected = if selected > 1 then selected - 1 else #options
+                    draw()
+                elseif event.key == "Down" then
+                    selected = if selected < #options then selected + 1 else 1
+                    draw()
+                elseif event.key == "Enter" then
+                    choice = options[selected]
+                    break
+                end
+            end
+        end
+    end
+
+    terminal.reset()
+    print(`You picked: {choice}`)
+end
 ```
 
 </details>

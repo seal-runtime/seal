@@ -155,7 +155,7 @@ export type prompt = {
 
         ## ⚠️ Safety
 
-        - Do not use when rawmode (`input.rawmode`) is already enabled.
+        - Do not use when rawmode is already enabled; check with `terminal.rawmode.enabled()` from `@std/terminal`.
         - Do not use in multithreaded programs while another thread may be reading from stdin.
         - Using the default `"Hidden"` mode might be slightly more secure; 
         seal makes a best-effort attempt to clean up/erase passwords in astrick mode 

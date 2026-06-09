@@ -8,19 +8,18 @@ export type KeyModifiers = {
 export type KeyEvent = {
     type: "Key",
     key: string,
+    kind: string,
     modifiers: KeyModifiers,
 }
 export type MouseEvent = {
     type: "Mouse",
     kind: string,
-    column: number,
-    row: number,
+    position: vector,
     modifiers: KeyModifiers,
 }
 export type ResizeEvent = {
     type: "Resize",
-    columns: number,
-    rows: number,
+    size: vector,
 }
 export type FocusGained = {
     type: "FocusGained",

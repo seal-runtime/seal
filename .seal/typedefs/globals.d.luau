@@ -217,22 +217,6 @@ declare extern type TimeSpan with
     function __sub(self, other: TimeSpan): TimeSpan
 end
 
--- declare extern type CursorCommand with
---     which:
---         | "Up"
---         | "Down"
---         | "Left"
---         | "Right"
---         | "ToRow"
---         | "ToColumn"
---         | "PreviousLine"
---         | "NextLine"
---         | "ToPosition"
---         | "SavePosition"
---         | "RestorePosition"
---     increment: number
---     position: vector?
--- end
 declare extern type TerminalAction with
     function execute(self): ()
 end

@@ -137,6 +137,7 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
                 .with_value("thread", std_thread::create(luau)?)?
                 .with_value("luau", std_luau::create(luau)?)?
                 .with_value("args", std_args::create(luau)?)?
+                .with_value("terminal", std_terminal::create(luau)?)?
                 .build_readonly()
             )
         },

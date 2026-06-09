@@ -146,7 +146,7 @@ fn create_event_table(luau: &Lua, event: Event) -> LuaResult<LuaTable> {
 }
 
 fn capture_mouse(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
-    let function_name = "input.capture.mouse(enabled: boolean)";
+    let function_name = "terminal.capture.mouse(enabled: boolean)";
     let should_capture = match value {
         LuaValue::Boolean(b) => b,
         other => {
@@ -223,7 +223,7 @@ fn capture_paste(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
 }
 
 pub(super) fn events(luau: &Lua, value: LuaValue) -> LuaResult<LuaFunction> {
-    let function_name = "input.events(poll: Duration?)";
+    let function_name = "terminal.events(poll: Duration?)";
     let poll_duration = match value {
         LuaValue::UserData(ud) => {
             if let Ok(duration) = ud.borrow::<TimeDuration>() {
