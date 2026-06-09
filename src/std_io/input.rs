@@ -8,7 +8,7 @@ use rustyline::error::ReadlineError;
 
 use atty::Stream::{Stdout, Stderr};
 
-use std::io::{self, Write};
+use std::io::{self, BufRead, Read, Write};
 use std::sync::OnceLock;
 
 #[derive(Debug)]
@@ -92,9 +92,9 @@ pub fn input_readline(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResu
     };
 
     if atty::isnt(atty::Stream::Stdin) || atty::isnt(atty::Stream::Stdout) {
-        match input_rawline(luau, if prompt.is_empty() { None } else { Some(prompt) }) {
-            Ok(s) => {
-                return ok_string(s, luau);
+        match get_line_bytes_from_stdin(if prompt.is_empty() { None } else { Some(prompt) }) {
+            Ok(bytes) => {
+                return ok_string(bytes, luau);
             },
             Err(err) => {
                 return wrap_err!("{}: unable to fallback to non-tty due to err: {}", function_name, err);
@@ -168,9 +168,9 @@ pub fn input_editline(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResu
         // not an amazing solution because program will have to copy/read from stdout, gsub, and send left + response + right back
         let combined = left.clone() + "<CURSOR>" + &right.unwrap_or_default();
         puts!("{}", &combined)?;
-        match input_rawline(luau, Some(combined)) {
-            Ok(s) => {
-                return ok_string(s, luau);
+        match get_line_bytes_from_stdin(Some(combined)) {
+            Ok(bytes) => {
+                return ok_string(bytes, luau);
             },
             Err(err) => {
                 return wrap_err!("{}: unable to fallback to non-tty due to err: {}", function_name, err);
@@ -209,6 +209,19 @@ pub fn input_editline(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResu
     ok_string(line, luau)
 }
 
+fn input_read(luau: &Lua, _: ()) -> LuaValueResult {
+    let function_name = "input.read()";
+    let mut buffy: Vec<u8> = Vec::new();
+    if let Err(err) = io::stdin().read_to_end(&mut buffy) {
+        return wrap_err!("{}: unable to read from stdin to EOF or fill buffer: {}", function_name, err);
+    }
+    if buffy.is_empty() {
+        Ok(LuaNil)
+    } else {
+        ok_string(buffy, luau)
+    }
+}
+
 fn input_interrupt(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "input.interrupt(code: \"CtrlC\" | \"CtrlD\")";
     match value {
@@ -228,14 +241,13 @@ fn input_interrupt(luau: &Lua, value: LuaValue) -> LuaValueResult {
     }
 }
 
-
-
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function("get", input_get)?
         .with_function("readline", input_readline)?
         .with_function("editline", input_editline)?
         .with_function("rawline", input_rawline)?
+        .with_function("read", input_read)?
         .with_function("interrupt", input_interrupt)?
         .build_readonly()
 }

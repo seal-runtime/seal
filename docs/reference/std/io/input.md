@@ -138,7 +138,34 @@ function input.interrupt(key: "CtrlC" | "CtrlD"): interrupt
 
 </h4>
 
+<details>
+
+<summary> See the docs </summary
+
+Reads all of stdin until EOF, returning the full contents as a string.
+
+Blocks until the stream closes — either a pipe closes or the user presses <kbd>Ctrl+D</kbd> in a TTY.
+
+Useful for consuming piped input in scripts, e.g. `echo "hello" | seal script.luau`.
+
+## Returns
+
+- A `string` containing all bytes read from stdin before EOF.
+
+## Errors
+
+- *Throws* an error if reading from stdin fails (e.g. a broken pipe or IO error).
+
+## Usage
+
+```luau
+local contents = input.read()
+print(`got {#contents} bytes from stdin`)
+```
+
 Returns an `interrupt` userdata object. For reasons. Maybe control flow.
+
+</details>
 
 ---
 

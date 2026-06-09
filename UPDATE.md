@@ -99,11 +99,13 @@ Rewritten completely to take advantage of the new `@std/terminal` libraries; the
 
 - `io.output.writeln(content: string | buffer) -> error?` - write to stdout with a trailing newline
 - `io.output.ewriteln(content: string | buffer) -> error?` - write to stderr with a trailing newline
+- `io.input.read() -> string?` - reads from stdin until reaching EOF, similar to Lune's `stdio.readToEnd`. Returns `nil` if stdin was empty.
 
 ## Fixes
 
 - Standard output and stderr-writing functions `output.write` and `output.ewrite` no longer are documented to have a `flush` parameter - the parameter was useless and didn't work. For manual control over flushes, use `terminal.write` and `terminal.execute` instead.
 - `prompt.pick` from `@std/io/prompt` was completely rewritten to be more stable.
+- `io.input.rawline` now accepts invalid utf-8 input.
 
 ## Known issues
 
