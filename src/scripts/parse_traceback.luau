@@ -1,4 +1,4 @@
-local input = require("@std/io/input")
+local terminal = require("@std/terminal")
 local env = require("@std/env")
 local success, cwd = pcall(function()
     return env.cwd() -- pcalling here to prevent downstream panic in err.rs if cwd doesn't exist
@@ -29,7 +29,7 @@ local function get_line_context(path: string, context_line_number: number): { st
 end
 
 local function parse_traceback(traceback: string): string
-    local is_tty = input.tty()
+    local is_tty = terminal.tty()
     local pretty: boolean do
         local pretty_var = env.vars.get("SEAL_PRETTY_ERRORS")
         local seal_no_colors = env.vars.get("SEAL_NO_COLORS")

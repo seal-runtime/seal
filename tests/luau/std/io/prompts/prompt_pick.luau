@@ -41,9 +41,11 @@ end
 confirmshadowspick()
 
 local function manyoptions()
-    local files = fs.listdir(".")
-    print(`we have {#files}`)
-    local file = prompt.pick("pick a file in your cwd", files, 1)
+    -- local c = fs.listdir(fs.path.join(fs.path.canonicalize("./")))
+    -- local c = str.splitlines(fs.readfile("./tests/data/funny_story.txt"))
+    local c = fs.listdir("./")
+    print(`we have {#c}`)
+    local file = prompt.pick("Would you like to pick a line?", c, 1)
 end
 
 manyoptions()

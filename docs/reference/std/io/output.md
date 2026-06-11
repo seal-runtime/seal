@@ -14,7 +14,7 @@ Write to the terminal's stdout/stderr.
 <h4>
 
 ```luau
-function output.write(contents: string | buffer, flush: boolean?) -> error?,
+function output.write(contents: string | buffer) -> error?,
 ```
 
 </h4>
@@ -23,7 +23,10 @@ function output.write(contents: string | buffer, flush: boolean?) -> error?,
 
 <summary> See the docs </summary
 
-Writes `contents` to stdout without any intermediate utf-8 validation, flushing the stream immediately.
+Writes `contents` to stdout without any intermediate utf-8 validation.
+
+The stream is flushed immediately after each write. Manual control over when flushing occurs is not available.
+If you need explicit control over flushing or want to batch multiple writes before flushing, use `@std/terminal` with `terminal.write()` and `terminal.execute()` instead.
 
 ## Windows Portability Concerns
 
@@ -33,7 +36,7 @@ Additionally, on Windows it may fail silently when used in a child process.
 
 ## Returns
 
-- An `error` instance if either writing to the stream failed or flushing the stream failed.
+- An `error` instance if writing to the stream failed or flushing failed.
 
 ## Usage
 
@@ -48,12 +51,12 @@ end
 
 ---
 
-### output.ewrite
+### output.writeln
 
 <h4>
 
 ```luau
-function output.ewrite(contents: string | buffer, flush: boolean?) -> error?,
+function output.writeln(contents: string | buffer) -> error?,
 ```
 
 </h4>
@@ -62,7 +65,9 @@ function output.ewrite(contents: string | buffer, flush: boolean?) -> error?,
 
 <summary> See the docs </summary
 
-Writes `contents` to stderr without any intermediate utf-8 validation, flushing the stream immediately.
+Writes `contents` to stdout without any intermediate utf-8 validation, adding a trailing newline.
+
+The stream is flushed immediately after writing.
 
 ## Windows Portability Concerns
 
@@ -72,13 +77,78 @@ Additionally, on Windows it may fail silently when used in a child process.
 
 ## Returns
 
-- An `error` instance if either writing to the stream failed or flushing the stream failed.
+- An `error` instance if writing to the stream failed or flushing failed.
+
+</details>
+
+---
+
+### output.ewrite
+
+<h4>
+
+```luau
+function output.ewrite(contents: string | buffer) -> error?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Writes `contents` to stderr without any intermediate utf-8 validation.
+
+The stream is flushed immediately after each write. Manual control over when flushing occurs is not available.
+If you need explicit control over flushing or want to batch multiple writes before flushing, consider buffering your output or use a file handle with `@std/fs` instead.
+
+## Windows Portability Concerns
+
+On Windows, this function may return an error if `contents` is invalid utf-8.
+
+Additionally, on Windows it may fail silently when used in a child process.
+
+## Returns
+
+- An `error` instance if writing to the stream failed or flushing failed.
 
 ## Usage
 
 ```luau
 local err = output.ewrite("error message\n")
 ```
+
+</details>
+
+---
+
+### output.ewriteln
+
+<h4>
+
+```luau
+function output.ewriteln(contents: string | buffer) -> error?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Writes `contents` to stderr without any intermediate utf-8 validation, adding a trailing newline.
+
+The stream is flushed immediately after writing.
+
+## Windows Portability Concerns
+
+On Windows, this function may return an error if `contents` is invalid utf-8.
+
+Additionally, on Windows it may fail silently when used in a child process.
+
+## Returns
+
+- An `error` instance if writing to the stream failed or flushing failed.
 
 </details>
 
@@ -95,60 +165,6 @@ function output.clear() -> (),
 </h4>
 
  clears stdout akin to `cls` or `clear`.
-
----
-
-### output.size
-
-<h4>
-
-```luau
-function output.size() -> vector,
-```
-
-</h4>
-
- Returns the size of the terminal as a vector of (column, rows, 0). Errors if terminal unavailable.
-
----
-
-### output.switch
-
-<h4>
-
-```luau
-function output.switch(screen: "Alternate" | "Main") -> (),
-```
-
-</h4>
-
- Switch to crossterm's "Alternate" or "Main" terminal screen of stdout.
-
----
-
-### output.resize
-
-<h4>
-
-```luau
-function output.resize(cols: number, rows: number) -> (),
-```
-
-</h4>
-
----
-
-### output.cursor
-
-<h4>
-
-```luau
-function output.cursor() -> vector,
-```
-
-</h4>
-
- returns a vector of (column, rows, 0); might block if you're polling on unix
 
 ---
 

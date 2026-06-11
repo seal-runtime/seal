@@ -217,6 +217,10 @@ declare extern type TimeSpan with
     function __sub(self, other: TimeSpan): TimeSpan
 end
 
+declare extern type TerminalAction with
+    function execute(self): ()
+end
+
 declare extern type Duration with
     years: number
     months: number

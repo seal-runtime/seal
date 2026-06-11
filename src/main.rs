@@ -47,6 +47,7 @@ mod require;
 mod std_crypt;
 #[macro_use]
 mod std_io;
+mod std_terminal;
 mod std_net;
 mod std_serde;
 mod std_str_internal;

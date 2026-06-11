@@ -11,9 +11,9 @@ use rustyline::error::ReadlineError;
 
 fn prompt_line(luau: &Lua, message: &str, function_name: &'static str) -> LuaResult<String> {
     if atty::isnt(atty::Stream::Stdin) || atty::isnt(atty::Stream::Stdout) {
-        match std_io::input::input_rawline(luau, if message.is_empty() { None } else { Some(message.to_owned()) }) {
-            Ok(s) => {
-                return Ok(s);
+        match std_io::input::get_line_bytes_from_stdin(if message.is_empty() { None } else { Some(message.to_owned()) }) {
+            Ok(bytes) => {
+                return Ok(String::from_utf8_lossy(&bytes).into_owned());
             },
             Err(err) => {
                 return wrap_err!("{}: unable to fallback to non-tty due to err: {}", function_name, err);
@@ -108,9 +108,9 @@ pub fn prompt_edit(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult 
         // not an amazing solution because program will have to copy/read from stdout, gsub, and send left + response + right back
         let combined = left.clone() + "<CURSOR>" + &right.unwrap_or_default();
         puts!("{}", &combined)?;
-        match std_io::input::input_rawline(luau, Some(combined)) {
-            Ok(s) => {
-                return ok_string(s, luau);
+        match std_io::input::get_line_bytes_from_stdin(Some(combined)) {
+            Ok(bytes) => {
+                return ok_string(bytes, luau);
             },
             Err(err) => {
                 return wrap_err!("{}: unable to fallback to non-tty due to err: {}", function_name, err);

@@ -1,0 +1,61 @@
+{
+  "Prelude imports": {
+    "scope": "rust",
+    "prefix": "sprel",
+    "body": [
+      "use mluau::prelude::*;",
+      "use crate::prelude::*;"
+    ],
+    "description": "Import mluau and crate preludes"
+  },
+  "Function that returns LuaValueResult": {
+    "scope": "rust",
+    "prefix": "flvr",
+    "body": [
+      "fn ${1:function}(luau: &Lua, value: LuaValue) -> LuaValueResult {",
+      "    let function_name = \"$0\";",
+      "}"
+    ]
+  },
+  "Function that returns nothing": {
+    "scope": "rust",
+    "prefix": "fnone",
+    "body": [
+      "fn ${1:function}(luau: &Lua, value: LuaValue) -> LuaResult<()> {",
+      "    let function_name = \"$0\";",
+      "}"
+    ]
+  },
+  "Function that takes MultiValue": {
+    "scope": "rust",
+    "prefix": "fnmut",
+    "body": [
+      "fn ${1:function}(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {",
+      "    let function_name = \"$0\";",
+      "}"
+    ]
+  },
+  "Function that takes MultiValue and returns nothing": {
+    "scope": "rust",
+    "prefix": "fnmut",
+    "body": [
+      "fn ${1:function}(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<()> {",
+      "    let function_name = \"$0\";",
+      "}"
+    ]
+  },
+  "Auxiliary function": {
+    "scope": "rust",
+    "prefix": "flaux",
+    "body": [
+      "fn ${1:function}($3, function_name: &'static str) -> LuaResult<$2> {",
+      "    $0",
+      "}"
+    ]
+  },
+  "return wrap_err!": {
+    "scope": "rust",
+    "prefix": "rerr",
+    "body": "return wrap_err!(\"{}: $0\", function_name);"
+  }
+}

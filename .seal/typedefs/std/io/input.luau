@@ -8,21 +8,6 @@ function input.get(raw_prompt: string): string
     return nil :: any
 end
 
---> io.input.tty(stream: "Stdout" | "Stderr" | "Stdin"?): boolean
---[=[
-    Determine whether we're connected to a sane [TTY](https://en.wikipedia.org/wiki/Tty_(Unix)) terminal.
-
-    This can be used to detect if users can provide rich input at runtime (`io.prompt.*` or `io.input.readline`) or if we're limited to basic stdin (`io.input.rawline`)
-
-    - If `stream` is nil or unspecified, returns true if *all* streams are TTY.
-    - Otherwise, returns `true` if `stream` is a TTY.
-
-    If *seal* is being run in a child process, this will almost always return `false` (because users can't easily write input).
-]=]
-function input.tty(stream: "Stdout" | "Stderr" | "Stdin"?): boolean
-    return nil :: any
-end
-
 --> io.input.rawline(prompt: string?): string
 --[=[
     Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
@@ -99,146 +84,36 @@ function input.editline(prompt: string, left: string, right: string?): string | 
 end
 
 --[=[
+    Reads all of stdin until EOF, returning the full contents as a string.
+
+    Blocks until the stream closes — either a pipe closes or the user presses <kbd>Ctrl+D</kbd> in a TTY.
+
+    Useful for consuming piped input in scripts, e.g. `echo "hello" | seal script.luau`.
+
+    ## Returns
+
+    - A `string` containing all bytes read from stdin before EOF.
+
+    ## Errors
+
+    - *Throws* an error if reading from stdin fails (e.g. a broken pipe or IO error).
+
+    ## Usage
+
+    ```luau
+    local contents = input.read()
+    print(`got {#contents} bytes from stdin`)
+    ```
+]=]
+function input.read(): string
+    return nil :: any
+end
+
+--[=[
     Returns an `interrupt` userdata object. For reasons. Maybe control flow.
 ]=]
 function input.interrupt(key: "CtrlC" | "CtrlD"): interrupt
     return nil :: any
 end
-
---[=[
-    Set stdin to raw mode, allowing you direct control over incoming keypresses.
-
-    Use this with `input.events` to write a TUI.
-
-    ## ⚠️ Safety
-
-    - Do ***not*** use this in multithreaded programs (`@std/thread`) where another thread
-    might be writing to stdout or reading from stdin at the same time. This may cause unexpected behavior.
-    - Enabling this in a `ChildProcess (@std/process)` will somehow cause `output.write` to write to the parent process' stdout.
-]=]
-function input.rawmode(enabled: boolean)
-    return nil :: any
-end
-
-input.capture = {}
-
---- Allows `MouseEvents` to be reported by `input.events()`.
-function input.capture.mouse(enabled: boolean)
-end
---- Allows `FocusGained` and `FocusLost` events to be reported by `input.events()`.
-function input.capture.focus(enabled: boolean)
-end
---- Allows `Paste` events to be reported by `input.events()`.<br>Might not work correctly when multiple lines are copied.
-function input.capture.paste(enabled: boolean)
-end
-
---[=[
-    Listens for raw terminal events from stdin, returning an iterator over those events.
-
-    Use this function to write interactive TUIs that immediately redraw and respond to user input.
-
-    ## ⚠️ Safety
-
-    This function has specific usage requirements:
-
-    - Stdin **must** be a valid TTY; use `input.tty()` to check.
-    - Rawmode **must** be enabled before calling this function; set it with `input.rawmode(true)`.
-    - Remember to check for/intercept Ctrl-C and Ctrl-D events otherwise users might not be able to cancel or exit your program.
-    - Remember to disable rawmode once you're done listening to terminal events, otherwise you might break
-    the user's terminal, prevent them from exiting your program, or worse.
-    
-    ## Usage
-
-    To enable `Mouse`, `Focus`, and clipboard `Paste` events, check out the `input.capture` apis.
-
-    ```luau
-    if input.tty() then -- MUST be checked
-        input.rawmode(true)
-        input.capture.paste(true)
-        output.write("\27[?25l") -- hide cursor
-
-        local interrupted: interrupt?
-
-        for event in input.events(time.milliseconds(40)) do
-            if event.is == "Key" then
-                if event.modifiers.ctrl and event.key == "c" then
-                    interrupted = input.interrupt("CtrlC")
-                    break -- user pressed Ctrl + C
-                elseif event.modifiers.ctrl and event.key == "d" then
-                    interrupted = input.interrupt("CtrlD")
-                    break -- user pressed Ctrl + D
-                end
-
-                if event.key == "Up" then
-                    -- up arrow key
-                elseif event.key == "Left" then
-                    -- left arrow key
-                elseif event.key == "Enter" then
-                    -- user pressed Enter or Return
-                elseif event.key == "Space" then
-                    -- user pressed spacebar
-                else
-                    print(event.key)
-                end
-            elseif event.is == "Paste" then
-                print(`user pasted {event.contents}`)
-            end
-        end
-
-        output.write("\27[?25h") -- show cursor
-        input.capture.paste(false)
-        input.rawmode(false)
-    end
-    ```
-]=]
-function input.events(poll: Duration): () -> TerminalEvent
-    return nil :: any
-end
-
---- Note this modifier table is ***REUSED*** across all iterations. Don't try to store it in a table or anything please.
-export type KeyModifiers = {
-    ctrl: boolean,
-    shift: boolean,
-    alt: boolean,
-}
-
-export type KeyEvent = {
-    is: "Key",
-    key: string,
-    modifiers: KeyModifiers,
-}
-export type MouseEvent = {
-    is: "Mouse",
-    kind: string,
-    column: number,
-    row: number,
-    modifiers: KeyModifiers,
-}
-export type ResizeEvent = {
-    is: "Resize",
-    columns: number,
-    rows: number,
-}
-export type FocusGained = {
-    is: "FocusGained",
-}
-export type FocusLost = {
-    is: "FocusLost",
-}
-export type PasteEvent = {
-    is: "Paste",
-    contents: string,
-}
-export type Empty = {
-    is: "Empty",
-}
-
-export type TerminalEvent = 
-    | KeyEvent 
-    | MouseEvent
-    | ResizeEvent
-    | PasteEvent
-    | FocusGained | FocusLost 
-    | Empty
 
 return input :: input

@@ -112,6 +112,29 @@ pub fn display_error_and_exit(err: LuaError) -> ! {
     let error_message = format!("{}[ERR]{} {}", colors::BOLD_RED, colors::RESET, err);
 
     let mut stderr = std::io::stderr().lock();
+
+    // if Luau code hits an error while in rawmode it can lock out the entire terminal.
+    // we need to ensure seal gives user back control over their terminal so they're not
+    // stuck in rawmode in an alternate screen; this also ensures we display the actual error
+    // message correctly and legibly instead of having it scattered across all different columns.
+    if let Ok(is_raw) = crossterm::terminal::is_raw_mode_enabled() && is_raw {
+        let _ = crossterm::terminal::disable_raw_mode();
+        let _  = crossterm::execute!(
+            std::io::stdout(),
+            crossterm::event::DisableMouseCapture,
+            crossterm::event::DisableFocusChange,
+            crossterm::event::DisableBracketedPaste,
+            crossterm::terminal::LeaveAlternateScreen,
+            crossterm::terminal::EnableLineWrap,
+            crossterm::cursor::SetCursorStyle::DefaultUserShape,
+            crossterm::cursor::MoveToColumn(0),
+            crossterm::cursor::Show,
+            crossterm::terminal::Clear(crossterm::terminal::ClearType::FromCursorDown),
+        );
+        let warning_message = format!("{}[WARN]{} the program errored in terminal raw mode; switching back to cooked mode and returning control to the user.", colors::BOLD_YELLOW, colors::RESET);
+        let _ = writeln!(stderr, "{}", warning_message);
+    }
+
     if writeln!(stderr, "{}", error_message).is_err() {
         // welp we can't even write to stderr, ig best we can do is throw the error message in a log file?
         match std::env::var("SEAL_SKIP_BACKUP_LOGFILE") {

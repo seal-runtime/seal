@@ -69,10 +69,13 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std/io/input" => ok_table(std_io::input::create(luau)),
         "@std/io/output" => ok_table(std_io::output::create(luau)),
         "@std/io/colors" => ok_table(colors::create(luau)),
-        "@std/io/clear" => ok_function(std_io::output::clear, luau),
+        "@std/io/clear" => ok_function(std_io::output::output_clear, luau),
         "@std/io/format" => ok_table(std_io::format::create(luau)),
         "@std/io/prompt" => ok_table(std_io::prompt::create(luau)),
         "@std/colors" => ok_table(colors::create(luau)),
+        
+        "@std/terminal" => ok_table(std_terminal::create(luau)),
+        "@std/terminal/cursor" => ok_table(std_terminal::cursor::create(luau)),
 
         "@std/time" => ok_table(std_time::create(luau)),
         "@std/datetime" => ok_table(std_time::datetime::create(luau)),
@@ -134,6 +137,7 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
                 .with_value("thread", std_thread::create(luau)?)?
                 .with_value("luau", std_luau::create(luau)?)?
                 .with_value("args", std_args::create(luau)?)?
+                .with_value("terminal", std_terminal::create(luau)?)?
                 .build_readonly()
             )
         },

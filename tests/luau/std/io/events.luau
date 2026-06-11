@@ -1,11 +1,11 @@
 local time = require("@std/time")
-local input = require("@std/io/input")
+local terminal = require("@std/terminal")
 local output = require("@std/io/output")
 
-input.rawmode(true)
+terminal.rawmode.enable()
 
-for event in input.events(time.milliseconds(20)) do
-    if event.is == "Key" then
+for event in terminal.events(time.milliseconds(20)) do
+    if event.type == "Key" then
         if event.key == "c" and event.modifiers.ctrl then
             print("\r\n")
             break
@@ -30,4 +30,4 @@ for event in input.events(time.milliseconds(20)) do
     end
 end
 
-input.rawmode(false)
+terminal.rawmode.disable()
