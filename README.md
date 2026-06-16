@@ -3,10 +3,17 @@
 <!-- markdownlint-disable MD033 -->
 <table>
   <tr>
-    <td><img src="assets/seal-smaller.png" width="240" alt="seal mascot reading reference book" /></td>
+    <td><img src="assets/seal-smaller.png" width="400" alt="seal mascot reading reference book" /></td>
     <td valign="top">
       <em>seal, the cutest scripting runtime</em><br /><br />
-      Docs: <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
+      <strong>Usecases:</strong>
+      <ul>
+        <li>scripting tool with autocomplete</li>
+        <li>faster Python replacement</li>
+        <li>write cute TUIs</li>
+        <li>quickly deploy on major platforms</li>
+      </ul>
+      <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
     </td>
   </tr>
 </table>
@@ -16,7 +23,7 @@ Use *seal* to write anything from self-contained scripts to cute TUIs to full GU
 
 ## Install
 
-Grab the [latest release](https://github.com/deviaze/seal/releases/latest) or check out [these install instructions](https://github.com/seal-runtime/seal/blob/main/docs/install.md) for a detailed walkthrough.
+Grab the [latest release](https://github.com/deviaze/seal/releases/latest) or check out [these install instructions](docs/install.md) for a detailed walkthrough.
 
 To get started, you just need:
 
@@ -36,7 +43,8 @@ Check out the full [usage instructions](docs/usage.md) for more.
 
 ## Programming
 
-See the [standard library reference](/docs/reference/) for all current features and APIs.
+Check out [the programming intro](docs/libraries_and_programming.md) to get started
+or the [standard library reference](/docs/reference/) for all current features and APIs.
 
 A quick example (calling an API with an API key):
 
