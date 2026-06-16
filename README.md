@@ -2,24 +2,26 @@
 
 <!-- markdownlint-disable MD033 -->
 <table>
-  <tr>
-    <td><img src="assets/seal-smaller.png" width="400" alt="seal mascot reading reference book" /></td>
-    <td valign="top">
-      <em>seal, the cutest scripting runtime</em><br /><br />
-      <strong>Usecases:</strong>
-      <ul>
-        <li>scripting tool with autocomplete</li>
-        <li>faster Python replacement</li>
-        <li>write cute TUIs</li>
-        <li>quickly deploy on major platforms</li>
-      </ul>
-      <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
-    </td>
-  </tr>
+    <tr>
+        <td><img src="assets/seal-smaller.png" width="400" alt="seal mascot reading reference book" /></td>
+        <td valign="top">
+            <em>seal, the cutest scripting runtime</em><br /><br />
+            <strong>Usecases:</strong>
+            <ul>
+                <li>cross-platform scripting tool with autocomplete</li>
+                <li>automation & task runner</li>
+                <li>faster Python replacement</li>
+                <li>write cute TUIs</li>
+                <li>quickly deploy to major platforms</li>
+                <li>data is pretty—just print it (colors included)</li>
+            </ul>
+            <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
+        </td>
+    </tr>
 </table>
 <!-- markdownlint-enable MD033 -->
 
-Use *seal* to write anything from self-contained scripts to cute TUIs to full GUI applications in Luau. *seal* provides a useful set of libraries builtin so you can get to writing dependable, type-safe projects with good inline documentation and tooling.
+*seal* provides a useful set of libraries builtin so you can start writing dependable, type-safe projects with good inline documentation and tooling.
 
 ## Install
 
@@ -92,6 +94,16 @@ elseif response.status.code >= 400 and response.status.code < 500 then
     error("invalid parameter name or value?")
 end
 ```
+
+## Reliability
+
+*seal* should be consistent, reliable, and have an easy-to-understand API. In most cases, runtime errors will be expressly documented or returned as an `error` type to facilitate nonthrowing error handling. In any case, if you encounter an error at runtime, you should easily be able to resolve it quickly thanks to *seal*'s
+<!-- Start-Precommit-Marker-1 -->
+1089
+<!-- End-Precommit-Marker-1 -->
+handcrafted error messages.
+
+If you encounter a bug, panic, or security vulnerability, please make an issue in this repo right away; you may attach a repro or send one privately to [dev@deviaze.com](mailto:dev@deviaze.com) or `@deviaze` on Discord.
 
 ## Roadmap
 
