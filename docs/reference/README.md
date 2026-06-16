@@ -70,9 +70,34 @@ declare channel: {
 - `dp`: debug print with line number and source file, also returns; good for investigating strings with arbitrary bytes.
 - `warn`: writes a yellow error message to stderr
 
+### `_RUNTIME`
+
+Structured metadata about the *seal* runtime, conforming to the [cross-runtime `_RUNTIME` spec](https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf).
+
+```luau
+_RUNTIME.name              -- "seal"
+_RUNTIME.version.display   -- e.g. "0.0.8-rc.2"
+_RUNTIME.version.semantic  -- { major, minor, patch, prerelease?, build? }
+_RUNTIME.version.git       -- { url, commit, branch }
+_RUNTIME.url               -- "https://github.com/seal-runtime/seal"
+_RUNTIME.extra.jit         -- boolean: Luau JIT (NCG) compiled in?
+_RUNTIME.extra.debug       -- boolean: true in debug builds, false in release
+```
+
+### `_LUAU`
+
+Structured metadata about the Luau version embedded in *seal*, conforming to the [cross-runtime `_LUAU` spec](https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf).
+
+```luau
+_LUAU.version.display  -- e.g. "0.722"
+_LUAU.version.major    -- 0
+_LUAU.version.minor    -- e.g. 722
+_LUAU.url              -- "https://github.com/luau-lang/luau"
+```
+
 ### Other globals
 
-- `_SEAL_VERSION`: *seal*'s version
+- `_SEAL_VERSION`: *seal*'s version string (prefer `_RUNTIME.version.display`)
 - `ecall`: converts a function that can return an `error` into one that throws an `error` (opposite of `pcall`)
 
 ## Internal Library

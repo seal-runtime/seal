@@ -1,4 +1,14 @@
-# Implement `@std/terminal` and `@std/terminal/cursor`
+# 0.9.0
+
+## Implement `_RUNTIME` and `_LUAU` specification, modify `_VERSION`
+
+I implemented [Bottersnike's specification](https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf) so it's easier for portable code to branch on Luau runtimes.
+
+### Breaking change to `_VERSION`
+
+`_VERSION` is now in the form `seal <_RUNTIME.version.display>+<_LUAU.version.display>` (`seal 0.0.8-rc.2+0.709`) to better match other runtimes such as Lune and Zune.
+
+## Implement `@std/terminal` and `@std/terminal/cursor`
 
 Implements new TUI libraries `@std/terminal` and its sublib `@std/terminal/cursor`, moving relevant functions from `@std/io/input` and `@std/io/output` to the new library, most importantly TUI-related functions and terminal event watching.
 
@@ -6,7 +16,7 @@ The biggest addition here is the ability to queue and execute terminal TUI comma
 
 Many of the existing auto-executing crossterm commands were converted into ones that instead return a `TerminalAction` extern type, which represents a queued crossterm `Command`; these must be invoked to be used and may be invoked by passing them to `terminal.execute` or by invoking their `:execute` method directly. From an API user standpoint, this is a bit more work than just having functions but allows for a more composable API that also provides flush control for efficiency reasons -- flushing is a relatively expensive syscall so we don't want to invoke it more than necessary. `terminal.execute` also executes all commands in a synchronized output block to eliminate visual flicker and bugs (on supported terminals).
 
-## Breaking changes (APIs moved)
+### Breaking changes (APIs moved)
 
 | Feature | Old location | New location |
 | ------------ | ------------- | -------------- |
@@ -25,7 +35,7 @@ Many of the existing auto-executing crossterm commands were converted into ones 
 
 `output.resize` sent `crossterm::terminal::SetSize` to ask the terminal emulator to physically resize its own window. Most terminal emulators ignore this escape sequence entirely. It has been removed with no replacement — if you genuinely need this, write the escape sequence directly via `output.write`.
 
-## Breaking changes (API surface changed)
+### Breaking changes (API surface changed)
 
 All terminal event types previously exported from `@std/io/input` are now defined in `@std/terminal`. The event enum type discriminant field has been **renamed from `.is` to `.type`** across all event variants:
 
@@ -39,7 +49,7 @@ All terminal event types previously exported from `@std/io/input` are now define
 | `event.is == "FocusLost"` | `event.type == "FocusLost"` |
 | `event.is == "Empty"` | `event.type == "Empty"` |
 
-### Additional structural changes to specific event types
+#### Additional structural changes to specific event types
 
 **`KeyEvent`**
 
@@ -56,7 +66,7 @@ All terminal event types previously exported from `@std/io/input` are now define
 
 - Similarly to `MouseEvent`, `ResizeEvent` has its `columns: number` and `rows: number` fields removed and replaced with `size: vector` (access as `event.size.x` for columns, `event.size.y` for rows) for consistency with vector APIs such as `MouseEvent.position`, `screen.size()`, and `cursor.position()`.
 
-## New features
+### New features
 
 - `terminal.execute(...TerminalAction)` - queue and execute multiple terminal actions with a single flush
 - `terminal.write(content: string) -> TerminalAction` - write to stdout without a newline; unlike `io.output.write`, accepts only valid UTF-8 and returns a `TerminalAction`
@@ -68,7 +78,7 @@ All terminal event types previously exported from `@std/io/input` are now define
 - `terminal.interrupt.check(event: TerminalEvent) -> interrupt?` - check if an event is a Ctrl+C or Ctrl+D interrupt; simplifies interrupt handling inside event loops
 - `terminal.reset()` - restore the terminal to its default state (disables raw mode, switches to Main screen, re-enables line wrap, resets and shows cursor, disables all captures); safe to call multiple times
 
-### `@std/terminal/cursor` library
+#### `@std/terminal/cursor` library
 
 The cursor sublib handles highly requested cursor positioning and styling functionality. This means you no longer need to rely on your own ANSI code libraries to write TUIs in *seal* :)
 
@@ -91,22 +101,22 @@ The cursor sublib handles highly requested cursor positioning and styling functi
 | `cursor.nextline(n: number?) -> TerminalAction` | Moves cursor down `n` lines and resets to first column |
 | `cursor.prevline(n: number?) -> TerminalAction` | Moves cursor up `n` lines and resets to first column |
 
-### `prompt.pick`
+#### `prompt.pick`
 
 Rewritten completely to take advantage of the new `@std/terminal` libraries; the function is now much more featureful with a much more responsive TUI interface, more UX modes to select options and with better handling of non-ASCII UTF-8 text. You can now use the scrollwheel to select options, and now you can scroll up and down inside the picker which correctly handles vertical resizing to fit more/fewer options depending on space available.
 
-### New functions added to existing libraries
+#### New functions added to existing libraries
 
 - `io.output.writeln(content: string | buffer) -> error?` - write to stdout with a trailing newline
 - `io.output.ewriteln(content: string | buffer) -> error?` - write to stderr with a trailing newline
 - `io.input.read() -> string?` - reads from stdin until reaching EOF, similar to Lune's `stdio.readToEnd`. Returns `nil` if stdin was empty.
 
-## Fixes
+### Fixes
 
 - Standard output and stderr-writing functions `output.write` and `output.ewrite` no longer are documented to have a `flush` parameter - the parameter was useless and didn't work. For manual control over flushes, use `terminal.write` and `terminal.execute` instead.
 - `prompt.pick` from `@std/io/prompt` was completely rewritten to be more stable.
 - `io.input.rawline` now accepts invalid utf-8 input.
 
-## Known issues
+### Known issues
 
 - `prompt.pick` does not correctly handle fast horizontal resizing, sometimes clobbering previously-outputted text above the picker's `top_position`. This is a limitation of TUIs that don't occupy the full terminal screen and cannot be fixed. Users are advised not to quickly horizontally resize the prompt picker.

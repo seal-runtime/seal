@@ -12,6 +12,65 @@ declare function warn<T...>(...: T...): ()
 
 declare _SEAL_VERSION: string
 
+--[=[
+    Information about the seal runtime, conforming to the cross-runtime
+    [`_RUNTIME` / `_LUAU` specification](https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf).
+    
+    All fields are read-only (frozen). `_RUNTIME` is always present;
+    `_LUAU` is always present in seal but the spec permits its omission
+    in other runtimes — check before use in portable code.
+]=]
+declare _RUNTIME: {
+    --- Always `"seal"`.
+    read name: "seal",
+    --- Version of the seal runtime itself.
+    read version: {
+        --- Stringified version, e.g. `"0.0.8-rc.2"`.
+        read display: string,
+        --- Semantic version components.
+        read semantic: {
+            read major: number,
+            read minor: number,
+            read patch: number,
+            read prerelease: string?,
+            read build: string?,
+        },
+        --- Git revision seal was built from.
+        read git: {
+            read url: string,
+            read commit: string,
+            read branch: string,
+        },
+    },
+    --- Link to the seal repository.
+    read url: string,
+    --- seal-specific extra metadata (spec `extra` field).
+    read extra: {
+        --- Whether seal was compiled with Luau JIT (NCG) support. Will only be false on Android.
+        read jit: boolean,
+        --- `true` when seal was compiled in debug mode, `false` for release builds.
+        read debug: boolean,
+    },
+}
+
+--[=[
+    Information about the Luau version embedded in seal, conforming to the cross-runtime
+    [`_RUNTIME` / `_LUAU` specification](https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf).
+]=]
+declare _LUAU: {
+    --- Luau version information.
+    read version: {
+        --- Stringified Luau version, e.g. `"0.722"`.
+        read display: string,
+        --- Major component (currently always `0`).
+        read major: number,
+        --- Minor component, e.g. `722`.
+        read minor: number,
+    },
+    --- Link to the upstream Luau repository.
+    read url: string,
+}
+
 declare script: {
     entry_path: string,
     context: string?,
