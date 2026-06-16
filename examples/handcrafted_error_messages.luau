@@ -22,15 +22,21 @@ end
 
 print(tostring(count))
 
+local start_tag = "<!-- Start-Precommit-Marker-1 -->"
+local end_tag = "<!-- End-Precommit-Marker-1 -->"
+
+local function find_plain(s: string, pattern: string, init: number?): number?
+    return string.find(s, pattern, init or 1, true)
+end
+
 local lines = {}
-local in_marker = false
 for _, line in fs.readlines("./README.md") do
-    if string.find(line, "Start-Precommit-Marker-1", 1, true) then
-        in_marker = true
-    elseif string.find(line, "End-Precommit-Marker-1", 1, true) then
-        in_marker = false
-    elseif in_marker then
-        line = string.gsub(line, "%d+", tostring(count), 1)
+    if find_plain(line, start_tag) then
+        local s = find_plain(line, start_tag) :: number + #start_tag
+        local e = find_plain(line, end_tag) :: number - 1
+        line = string.sub(line, 1, s - 1)
+            .. string.gsub(string.sub(line, s, e), "%d+", tostring(count), 1)
+            .. string.sub(line, e + 1)
     end
     table.insert(lines, line)
 end

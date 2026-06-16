@@ -97,11 +97,7 @@ end
 
 ## Reliability
 
-*seal* should be consistent, reliable, and have an easy-to-understand API. In most cases, runtime errors will be expressly documented or returned as an `error` type to facilitate nonthrowing error handling. In any case, if you encounter an error at runtime, you should easily be able to resolve it quickly thanks to *seal*'s
-<!-- Start-Precommit-Marker-1 -->
-1089
-<!-- End-Precommit-Marker-1 -->
-handcrafted error messages.
+*seal* should be consistent, reliable, and have an easy-to-understand API. In most cases, runtime errors will be expressly documented or returned as an `error` type to facilitate nonthrowing error handling. In any case, if you encounter an error at runtime, you should easily be able to resolve it quickly thanks to *seal*'s <!-- Start-Precommit-Marker-1 -->1089<!-- End-Precommit-Marker-1 --> handcrafted error messages.
 
 If you encounter a bug, panic, or security vulnerability, please make an issue in this repo right away; you may attach a repro or send one privately to [dev@deviaze.com](mailto:dev@deviaze.com) or `@deviaze` on Discord.
 
