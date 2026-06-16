@@ -26,15 +26,16 @@ impl ThreadSpawnOptions {
         let name = match t.raw_get("name")? {
             LuaValue::String(name) => name.to_string_lossy(),
             LuaNil => {
-                let Some(petname) = ({
-                    let alliterations = petname::Alliterations::default();
-                    alliterations.generate_one(3, "-")
-                }) else {
+                let alliterations = petname::Alliterations::default();
+                let mut rng = rand::rng();
+                let mut petname = String::new();
+                alliterations.generate_into(&mut petname, &mut rng, 3, "-");
+                if petname.is_empty() {
                     panic!(
                         "{}: unable to generate petname for ThreadSpawnOptions.name; this panic might seem ridiculous and this shouldn't happen lol",
                         function_name
                     );
-                };
+                }
                 petname
             }
             other => {
