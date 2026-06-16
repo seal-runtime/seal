@@ -1,11 +1,16 @@
 # *seal*, make shell scripts readable
 
-<div align="center">
-  <img src="assets/seal-smaller.png" width="200" />
-  <p><em>the cutest scripting runtime</em></p>
-</div>
-
-Docs: [Usage](/docs/usage.md) | [Programming](/docs/libraries_and_programming.md) | [API Reference](/docs/reference/)
+<!-- markdownlint-disable MD033 -->
+<table>
+  <tr>
+    <td><img src="assets/seal-smaller.png" width="400" alt="seal mascot reading reference book" /></td>
+    <td valign="top">
+      <em>the cutest scripting runtime</em><br /><br />
+      Docs: <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
+    </td>
+  </tr>
+</table>
+<!-- markdownlint-enable MD033 -->
 
 Use *seal* to write anything from self-contained scripts to cute TUIs to full GUI applications in Luau. *seal* provides a useful set of libraries builtin so you can get to writing dependable, type-safe projects with good inline documentation and tooling.
 
