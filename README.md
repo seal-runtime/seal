@@ -1,8 +1,9 @@
 # *seal*, make shell scripts readable
 
-![seal](assets/seal-smaller.png)
-
-- the cutest scripting runtime
+<div align="center">
+  <img src="assets/seal-smaller.png" width="200" />
+  <p><em>the cutest scripting runtime</em></p>
+</div>
 
 Docs: [Usage](/docs/usage.md) | [Programming](/docs/libraries_and_programming.md) | [API Reference](/docs/reference/)
 
