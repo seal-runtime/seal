@@ -3,9 +3,9 @@
 <!-- markdownlint-disable MD033 -->
 <table>
   <tr>
-    <td><img src="assets/seal-smaller.png" width="400" alt="seal mascot reading reference book" /></td>
+    <td><img src="assets/seal-smaller.png" width="240" alt="seal mascot reading reference book" /></td>
     <td valign="top">
-      <em>the cutest scripting runtime</em><br /><br />
+      <em>seal, the cutest scripting runtime</em><br /><br />
       Docs: <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
     </td>
   </tr>
