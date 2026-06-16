@@ -1,4 +1,5 @@
 --!nocheck
+local env = require("@std/env")
 
 -- does _G exist and can we do things to it
 assert(_G ~= nil, "why doesn't _G exist??")
@@ -21,3 +22,7 @@ print(reserved)
 -- -- print(real_globals)
 -- local n = 0
 -- print(_G.print)
+
+if env.os ~= "Android" then
+    assert(_RUNTIME.extra.jit == true, "JIT should be enabled if not on Android")
+end

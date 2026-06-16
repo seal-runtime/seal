@@ -37,6 +37,10 @@ pub fn warn(luau: &Lua, warn_value: LuaValue) -> LuaValueResult {
 }
 
 pub const SEAL_VERSION: &str = env!("CARGO_PKG_VERSION");
+const GIT_COMMIT: &str = env!("GIT_COMMIT_HASH");
+const GIT_BRANCH: &str = env!("GIT_BRANCH");
+const SEAL_URL: &str = "https://github.com/seal-runtime/seal";
+const LUAU_URL: &str = "https://github.com/mluau/luau";
 
 pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
     let globals: LuaTable = luau.globals();
@@ -51,7 +55,7 @@ pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
     globals.raw_set("ecall", luau.create_function(ecall)?)?;
     globals.raw_set("warn", luau.create_function(warn)?)?;
     globals.raw_set("_SEAL_VERSION", SEAL_VERSION)?;
-    globals.raw_set("_VERSION", format!("seal {} | {}", SEAL_VERSION, luau_version.to_string_lossy()))?;
+    globals.raw_set("_VERSION", format!("seal {}+{}", SEAL_VERSION, luau_version.to_string_lossy().strip_prefix("Luau ").expect("Luau version always has Luau prefix")))?;
     globals.raw_set("_G", TableBuilder::create(luau)?.build()?)?;
     globals.raw_set("_REQUIRE_CACHE", TableBuilder::create(luau)?.build()?)?;
     globals.raw_set("script", TableBuilder::create(luau)?
@@ -62,7 +66,83 @@ pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
         .build_readonly()?
     )?;
 
+    globals.raw_set("_RUNTIME", create_runtime_global(luau)?)?;
+    globals.raw_set("_LUAU", create_luau_global(luau, &luau_version.to_string_lossy())?)?;
+
     Ok(LuaNil)
+}
+
+fn parse_semver(version: &str) -> (u64, u64, u64, Option<String>, Option<String>) {
+    let (version_core, build) = match version.find('+') {
+        Some(i) => (&version[..i], Some(version[i + 1..].to_string())),
+        None => (version, None),
+    };
+    let (version_numbers, prerelease) = match version_core.find('-') {
+        Some(i) => (&version_core[..i], Some(version_core[i + 1..].to_string())),
+        None => (version_core, None),
+    };
+    let parts: Vec<&str> = version_numbers.split('.').collect();
+    let major = parts.first().and_then(|s| s.parse().ok()).unwrap_or(0);
+    let minor = parts.get(1).and_then(|s| s.parse().ok()).unwrap_or(0);
+    let patch = parts.get(2).and_then(|s| s.parse().ok()).unwrap_or(0);
+    (major, minor, patch, prerelease, build)
+}
+
+/// Create _RUNTIME global according to the spec at https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf
+fn create_runtime_global(luau: &Lua) -> LuaResult<LuaTable> {
+    let (major, minor, patch, prerelease, build) = parse_semver(SEAL_VERSION);
+
+    let semantic = TableBuilder::create(luau)?
+        .with_value("major", major)?
+        .with_value("minor", minor)?
+        .with_value("patch", patch)?
+        .with_value("prerelease", prerelease)?
+        .with_value("build", build)?
+        .build_readonly()?;
+
+    let git = TableBuilder::create(luau)?
+        .with_value("url", SEAL_URL)?
+        .with_value("commit", GIT_COMMIT)?
+        .with_value("branch", GIT_BRANCH)?
+        .build_readonly()?;
+
+    let version = TableBuilder::create(luau)?
+        .with_value("display", SEAL_VERSION)?
+        .with_value("semantic", semantic)?
+        .with_value("git", git)?
+        .build_readonly()?;
+
+    let extra = TableBuilder::create(luau)?
+        .with_value("jit", cfg!(not(target_os = "android")))?
+        .with_value("debug", cfg!(debug_assertions))?
+        .build_readonly()?;
+
+    TableBuilder::create(luau)?
+        .with_value("name", "seal")?
+        .with_value("version", version)?
+        .with_value("url", SEAL_URL)?
+        .with_value("extra", extra)?
+        .build_readonly()
+}
+
+/// Create _LUAU global according to the spec at https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf
+fn create_luau_global(luau: &Lua, raw_luau_version: &str) -> LuaResult<LuaTable> {
+    // raw_luau_version is "Luau 0.722" — strip "Luau " prefix
+    let display = raw_luau_version.strip_prefix("Luau ").unwrap_or(raw_luau_version);
+    let mut parts = display.splitn(2, '.');
+    let major: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+    let minor: u64 = parts.next().and_then(|s| s.parse().ok()).unwrap_or(0);
+
+    let version = TableBuilder::create(luau)?
+        .with_value("display", display)?
+        .with_value("major", major)?
+        .with_value("minor", minor)?
+        .build_readonly()?;
+
+    TableBuilder::create(luau)?
+        .with_value("version", version)?
+        .with_value("url", LUAU_URL)?
+        .build_readonly()
 }
 
 const SCRIPT_PATH_SRC: &str = r#"

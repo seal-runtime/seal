@@ -52,7 +52,7 @@ local function interruptreadtowithtimeout()
 	)
 end
 
-interruptreadtowithtimeout()
+cheese.retry(interruptreadtowithtimeout, 3)
 
 local function interruptedreadallowpartial()
 	local child = process.spawn {

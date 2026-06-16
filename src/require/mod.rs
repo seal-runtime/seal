@@ -1,5 +1,5 @@
-use mluau::prelude::*;
-use crate::{std_fs::pathlib::normalize_path, *};
+use crate::*;
+use crate::std_fs::pathlib::normalize_path;
 use std::{fs, io};
 
 const RESERVED_ALIASES: [&str; 3] = ["@std", "@interop", "@internal"];
