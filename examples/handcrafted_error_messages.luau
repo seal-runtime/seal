@@ -26,7 +26,7 @@ local start_tag = "<!-- Start-Precommit-Marker-1 -->"
 local end_tag = "<!-- End-Precommit-Marker-1 -->"
 
 local function find_plain(s: string, pattern: string, init: number?): number?
-    return string.find(s, pattern, init or 1, true)
+    return (string.find(s, pattern, init or 1, true))
 end
 
 local lines = {}
