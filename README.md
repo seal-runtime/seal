@@ -1,6 +1,6 @@
 # *seal*, make shell scripts readable
 
-![seal](assets/seal-2.png)
+![seal](assets/seal-smaller.png)
 
 - the cutest scripting runtime
 
