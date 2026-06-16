@@ -46,7 +46,23 @@ fs.writefile("./README.md", table.concat(lines, "\n"))
 -- create a commit hook to automatically run this script every time a commit is made
 local hook_path = ".git/hooks/pre-commit"
 if not fs.path.exists(hook_path) then
-    fs.writefile(hook_path, "#!/bin/sh\nseal examples/handcrafted_error_messages.luau\ngit add README.md\n")
+    local SCRIPT_SRC = str.unindent([[
+    #!/bin/sh
+    if command -v seal > /dev/null 2>&1; then
+        SEAL=seal
+    elif [ -x "./target/release/seal" ]; then
+        SEAL="./target/release/seal"
+    elif [ -x "./target/debug/seal" ]; then
+        SEAL="./target/debug/seal"
+    else
+        echo "warning: seal not found in PATH or ./target/, skipping handcrafted error message count update"
+        exit 0
+    fi
+    $SEAL examples/handcrafted_error_messages.luau
+    git add README.md
+    ]], "Spaces", 4)
+    
+    fs.writefile(hook_path, SCRIPT_SRC)
     if env.os ~= "Windows" then
         process.shell(`chmod +x {hook_path}`):unwrap()
     end
