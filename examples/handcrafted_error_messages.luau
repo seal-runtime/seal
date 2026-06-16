@@ -34,6 +34,7 @@ for _, line in fs.readlines("./README.md") do
     end
     table.insert(lines, line)
 end
+table.insert(lines, "") -- satisfy MD047 single-trailing-newline
 fs.writefile("./README.md", table.concat(lines, "\n"))
 
 -- create a commit hook to automatically run this script every time a commit is made
