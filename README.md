@@ -1,24 +1,20 @@
 # *seal*, make shell scripts readable
 
 <!-- markdownlint-disable MD033 -->
-<table>
-    <tr>
-        <td><img src="assets/seal-smaller.png" width="400" alt="seal mascot reading reference book" /></td>
-        <td valign="top">
-            <em>seal, the cutest scripting runtime</em><br /><br />
-            <strong>Usecases:</strong>
-            <ul>
-                <li>cross-platform scripting tool with autocomplete</li>
-                <li>automation & task runner</li>
-                <li>faster Python replacement</li>
-                <li>write cute TUIs</li>
-                <li>quickly deploy to major platforms</li>
-                <li>data is pretty—just print it (colors included)</li>
-            </ul>
-            <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
-        </td>
-    </tr>
-</table>
+<div align="center">
+    <img src="assets/seal-smaller.png" width="400" alt="seal mascot reading reference book" /><br />
+    <em>seal</em>, the cutest scripting runtime<br /><br />
+    <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
+</div>
+
+**Usecases:**
+
+- cross-platform scripting tool with autocomplete
+- automation & task runner
+- faster Python replacement
+- write cute TUIs
+- quickly deploy to major platforms
+- data is pretty—just print it (colors included)
 <!-- markdownlint-enable MD033 -->
 
 *seal* provides a useful set of libraries builtin so you can start writing dependable, type-safe projects with good inline documentation and tooling.
