@@ -21,6 +21,7 @@ type StandardLibrary = {
     name: string,
     path: string,
     apis: { Api },
+    sublibs: { [string]: string },
 }
 
 local function setup()
@@ -70,6 +71,7 @@ for _, filepath in typedefs_paths do
     local codeblock_preceding_whitespace: string? = nil
     
     local current_docs: { string } = {}
+    local sublibs: { [string]: string } = {}
 
     --- represents the 'path' to an api, such as 'SpawnOptions' or 'SpawnOptions.stream.stdout_capacity'
     local current_names: { string } = {}
@@ -165,6 +167,12 @@ for _, filepath in typedefs_paths do
             continue -- is comment
         end
 
+        local local_id, local_req = string.match(trimmed_line, "^local ([%w_]+) = require%(\"([^\"]+)\"%)%s*$")
+        if local_id and local_req then
+            sublibs[local_id] = local_req
+            continue
+        end
+
         if str.startswith(trimmed_line, "function") then
             trimmed_line = str.trimfront(trimmed_line, "function"):gsub("%(", ": (", 1)
         end
@@ -226,7 +234,8 @@ for _, filepath in typedefs_paths do
         is = "Library",
         name = library_name,
         path = library_path,
-        apis = apis_for_path
+        apis = apis_for_path,
+        sublibs = sublibs,
     }
 
     table.insert(libraries, library)
@@ -248,6 +257,23 @@ for _, library in libraries do
     local function push(line: string, newlines: number?)
         newlines = newlines or 1
         table.insert(lines, line .. string.rep("\n", newlines))
+    end
+
+    local function resolve_require_path(raw_path: string): string?
+        if str.startswith(raw_path, "@self/") then
+            local sublib = str.trimfront(raw_path, "@self/")
+            local lib_dir = if str.endswith(library.path, "/init")
+                then library.path:sub(1, #library.path - #"/init")
+                else library.path
+            return lib_dir .. "/" .. sublib
+        elseif str.startswith(raw_path, "@std/") then
+            return "std/" .. str.trimfront(raw_path, "@std/")
+        elseif str.startswith(raw_path, "./") then
+            local rel = str.trimfront(raw_path, "./")
+            local lib_dir = library.path:match("^(.+)/[^/]+$") or library.path
+            return lib_dir .. "/" .. rel
+        end
+        return nil
     end
 
     push("<!-- markdownlint-disable MD033 -->\n<!-- markdownlint-disable MD024 -->")
@@ -283,18 +309,13 @@ for _, library in libraries do
                 string.match(defs, `^return require%("([^"]+)"%)$`)
             local target_path: string? = nil
             if require_path then
-                if str.startswith(require_path, "@self/") then
-                    local sublib = str.trimfront(require_path, "@self/")
-                    local lib_dir = if str.endswith(library.path, "/init")
-                        then library.path:sub(1, #library.path - #"/init")
-                        else library.path
-                    target_path = lib_dir .. "/" .. sublib
-                elseif str.startswith(require_path, "@std/") then
-                    target_path = "std/" .. str.trimfront(require_path, "@std/")
-                elseif str.startswith(require_path, "./") then
-                    local rel = str.trimfront(require_path, "./")
-                    local lib_dir = library.path:match("^(.+)/[^/]+$") or library.path
-                    target_path = lib_dir .. "/" .. rel
+                target_path = resolve_require_path(require_path)
+            end
+            if not target_path then
+                local lib_id = string.match(defs, `^[%w_]+:%s+([%w_]+)%.[%w_]+,?$`)
+                local raw_path = if lib_id then library.sublibs[lib_id] else nil
+                if raw_path then
+                    target_path = resolve_require_path(raw_path)
                 end
             end
             if target_path then

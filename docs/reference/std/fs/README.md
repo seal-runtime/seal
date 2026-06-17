@@ -745,13 +745,7 @@ end
 
 ### fs.file
 
-<h4>
-
-```luau
-file: filelib.FileLib,
-```
-
-</h4>
+→ [@std/fs/file](/docs/reference/std/fs/file.md)
 
 A sublib for handling operations with files and `fs.FileEntry`s.
 
@@ -763,13 +757,7 @@ This library can be called as a function as a convenience alternative for `fs.fi
 
 ### fs.dir
 
-<h4>
-
-```luau
-dir: dirlib.DirLib,
-```
-
-</h4>
+→ [@std/fs/dir](/docs/reference/std/fs/dir.md)
 
 A sublib for handling operations with directories and `fs.DirectoryEntry`s.
 
@@ -779,13 +767,7 @@ This library can be called as a function as a convenience alternative to `fs.fin
 
 ### fs.path
 
-<h4>
-
-```luau
-path:  pathlib.PathLib,
-```
-
-</h4>
+→ [@std/fs/path](/docs/reference/std/fs/path.md)
 
 A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
 
@@ -809,13 +791,7 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ### fs.filesize
 
-<h4>
-
-```luau
-filesize: filesize.FileSizeLib
-```
-
-</h4>
+→ [@std/fs/filesize](/docs/reference/std/fs/filesize.md)
 
  Library for constructing `FileSize` instances.
 
