@@ -6,8 +6,9 @@
     <img src="assets/seal-smaller.png" width="320" alt="seal mascot reading reference book" /><br />
     <em>the cutest scripting runtime</em><br />
     <!-- Start-Precommit-Marker-2 --><img src="https://img.shields.io/badge/seal-0.0.8--rc.2-f0f8ff" alt="seal version" /><!-- End-Precommit-Marker-2 --> <!-- Start-Precommit-Marker-3 --><img src="https://img.shields.io/badge/Luau-0.715-4f99ba" alt="Luau version" /><!-- End-Precommit-Marker-3 --><br /><br />
-    <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
+    <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a><br />
 </div>
+
 <!-- markdownlint-enable MD033 -->
 
 *seal* is an all-in-one scripting tool that lets you write cross-platform scripts in Luau with a greater utility than shell scripts and less of a hassle than Python.
