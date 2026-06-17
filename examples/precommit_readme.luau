@@ -24,10 +24,10 @@ for _, file in rust_files do
     end
 end
 
-print(tostring(count))
-
 local seal_version = _RUNTIME.version.display
 local luau_version = _LUAU.version.display
+
+print(`replacing seal version {seal_version}, luau version {luau_version}, counted {count} wrap_err!s`)
 
 local function find_plain(s: string, pattern: string, init: number?): number?
     return (string.find(s, pattern, init or 1, true))

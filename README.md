@@ -1,24 +1,27 @@
 # *seal*, make shell scripts readable
 
 <!-- markdownlint-disable MD033 -->
+
 <div align="center">
     <img src="assets/seal-smaller.png" width="320" alt="seal mascot reading reference book" /><br />
     <em>the cutest scripting runtime</em><br />
-    <!-- Start-Precommit-Marker-2 --><img src="https://img.shields.io/badge/seal-0.0.8--rc.2-f0f8ff" alt="seal version" /><!-- End-Precommit-Marker-2 --> <!-- Start-Precommit-Marker-3 --><img src="https://img.shields.io/badge/Luau-0.715-4f99ba" alt="Luau version" /><!-- End-Precommit-Marker-3 --><br />
+    <!-- Start-Precommit-Marker-2 --><img src="https://img.shields.io/badge/seal-0.0.8--rc.2-f0f8ff" alt="seal version" /><!-- End-Precommit-Marker-2 --> <!-- Start-Precommit-Marker-3 --><img src="https://img.shields.io/badge/Luau-0.715-4f99ba" alt="Luau version" /><!-- End-Precommit-Marker-3 --><br /><br />
     <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
 </div>
+
+<!-- markdownlint-enable MD033 -->
+
+*seal* is an all-in-one scripting tool that lets you write cross-platform scripts in Luau with a greater utility than shell scripts and less of a hassle than Python. In supported editors, you can take advantage of modern tooling such as strict typing and autocomplete, inline documentation, automatic imports, and more.
 
 **Usecases:**
 
 - cross-platform scripting tool with autocomplete
-- automation & task runner
 - faster Python replacement
+- automation & task runner
+- data viewing, manipulation, serialization
 - write cute TUIs
 - quickly deploy to major platforms
 - data is pretty—just print it (colors included)
-<!-- markdownlint-enable MD033 -->
-
-*seal* provides a useful set of libraries builtin so you can start writing dependable, type-safe projects with good inline documentation and tooling.
 
 ## Install
 
@@ -94,7 +97,7 @@ end
 
 ## Reliability
 
-*seal* should be consistent, reliable, and have an easy-to-understand API. In most cases, runtime errors will be expressly documented or returned as an `error` type to facilitate nonthrowing error handling. In any case, if you encounter an error at runtime, you should easily be able to resolve it quickly thanks to *seal*'s <!-- Start-Precommit-Marker-1 -->1089<!-- End-Precommit-Marker-1 --> handcrafted error messages.
+*seal* should be consistent, reliable, and have an easy-to-understand API. In most cases, runtime errors will be expressly documented, and/or returned as an `error` type to facilitate nonthrowing error handling with the typechecker. *seal* has <!-- Start-Precommit-Marker-1 -->1089<!-- End-Precommit-Marker-1 --> handcrafted error messages to prevent confusion when something goes wrong at runtime.
 
 If you encounter a bug, panic, or security vulnerability, please make an issue in this repo right away; you may attach a repro or send one privately to [dev@deviaze.com](mailto:dev@deviaze.com) or `@deviaze` on Discord.
 
@@ -103,7 +106,8 @@ If you encounter a bug, panic, or security vulnerability, please make an issue i
 - More featureful `@extra` library.
 - Custom and customizable `seal setup` scripts.
 - Ecosystem of [external libraries](/docs/external_libraries.md) to expand *seal*'s functionality with native bindings.
+- MCP server to facilitate agentic scripting readable and vettable by humans.
 
 ## Community
 
-[Join the Discord](https://discord.gg/3MJ37CFNWh) if you need help or want to contribute!
+[Join the Discord](https://discord.gg/3MJ37CFNWh) if you want to talk about *seal* or Luau, need help, or want to contribute!
