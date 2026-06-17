@@ -58,8 +58,12 @@ for _, line in fs.readlines("./README.md") do
             string.gsub(m1, "%d+", tostring(count), 1)
         )
     end
-    line = replace_between(line, "<!-- Start-Precommit-Marker-2 -->", "<!-- End-Precommit-Marker-2 -->", seal_version)
-    line = replace_between(line, "<!-- Start-Precommit-Marker-3 -->", "<!-- End-Precommit-Marker-3 -->", luau_version)
+    line = replace_between(line, "<!-- Start-Precommit-Marker-2 -->", "<!-- End-Precommit-Marker-2 -->",
+        `<img src="https://img.shields.io/badge/seal-{string.gsub(seal_version, "%-", "--")}-f0f8ff" alt="seal version" />`
+    )
+    line = replace_between(line, "<!-- Start-Precommit-Marker-3 -->", "<!-- End-Precommit-Marker-3 -->",
+        `<img src="https://img.shields.io/badge/Luau-{luau_version}-4f99ba" alt="Luau version" />`
+    )
     table.insert(lines, line)
 end
 table.insert(lines, "") -- satisfy MD047 single-trailing-newline
