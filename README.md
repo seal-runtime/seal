@@ -11,7 +11,7 @@
 <br>
 <!-- markdownlint-enable MD033 -->
 
-*seal* is an all-in-one scripting tool that lets you write cross-platform scripts in Luau with a greater utility than shell scripts and less of a hassle than Python.
+*seal* is an all-in-one scripting tool that lets you write cross-platform scripts and applications in Luau with a greater utility than shell scripts and with less of a hassle than Python.
 
 **Usecases:**
 
@@ -51,10 +51,10 @@ In supported editors, you can take advantage of modern tooling such as strict ty
 
 Some quick examples:
 
-- [Calling an API with API key](examples/basic_get.luau)
-- [File watching (upload files added to folder)](examples/upload_files_in_folder.luau)
-- [Remove files older than a week](examples/older_than_a_week.luau)
-- [Two column option picker TUI](examples/double_column_picker.luau)
+- [HTTP - calling an API with API key](examples/basic_get.luau)
+- [FS - file watching (upload files added to folder)](examples/upload_files_in_folder.luau)
+- [FS - remove files older than a week](examples/older_than_a_week.luau)
+- [TUI - two column option picker](examples/double_column_picker.luau)
 
 ## Reliability
 
@@ -71,4 +71,4 @@ If you encounter a bug, panic, or security vulnerability, please make an issue i
 
 ## Community
 
-[Join the Discord](https://discord.gg/3MJ37CFNWh) if you want to talk about *seal* or Luau, need help, or want to contribute!
+[Join the Discord](https://discord.gg/3MJ37CFNWh) if you want to talk about *seal*, need help, or want to contribute!
