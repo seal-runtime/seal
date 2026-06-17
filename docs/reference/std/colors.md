@@ -7,7 +7,7 @@
 
 ### colors
 
-→ [@std/io/colors](/docs/reference/std/io/colors.md)
+See [@std/io/colors](/docs/reference/std/io/colors.md)
 
 ---
 

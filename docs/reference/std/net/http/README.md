@@ -283,55 +283,55 @@ export type HttpMethod =
 ---
 
 ```luau
-| "GET"
+  | "GET"
 ```
 
 ---
 
 ```luau
-| "TRACE"
+  | "TRACE"
 ```
 
 ---
 
 ```luau
-| "DELETE"
+  | "DELETE"
 ```
 
 ---
 
 ```luau
-| "CONNECT"
+  | "CONNECT"
 ```
 
 ---
 
 ```luau
-| "HEAD"
+  | "HEAD"
 ```
 
 ---
 
 ```luau
-| "OPTIONS"
+  | "OPTIONS"
 ```
 
 ---
 
 ```luau
-| "POST"
+  | "POST"
 ```
 
 ---
 
 ```luau
-| "PATCH"
+  | "PATCH"
 ```
 
 ---
 
 ```luau
-| "PUT"
+  | "PUT"
 ```
 
 ---
@@ -350,12 +350,12 @@ Configure how quickly a request times out.
 
 ---
 
-### RequestTimeout.send_request
+#### RequestTimeout.send_request
 
 <h4>
 
 ```luau
-send_request: Duration?,
+  send_request: Duration?,
 ```
 
 </h4>
@@ -364,12 +364,12 @@ send_request: Duration?,
 
 ---
 
-### RequestTimeout.send_body
+#### RequestTimeout.send_body
 
 <h4>
 
 ```luau
-send_body: Duration?,
+  send_body: Duration?,
 ```
 
 </h4>
@@ -378,12 +378,12 @@ send_body: Duration?,
 
 ---
 
-### RequestTimeout.receive_response
+#### RequestTimeout.receive_response
 
 <h4>
 
 ```luau
-receive_response: Duration?,
+  receive_response: Duration?,
 ```
 
 </h4>
@@ -392,12 +392,12 @@ receive_response: Duration?,
 
 ---
 
-### RequestTimeout.receive_body
+#### RequestTimeout.receive_body
 
 <h4>
 
 ```luau
-receive_body: Duration?,
+  receive_body: Duration?,
 ```
 
 </h4>
@@ -430,12 +430,12 @@ export type HttpRequestWithoutBody = {
 
 ---
 
-### HttpRequestWithoutBody.url
+#### HttpRequestWithoutBody.url
 
 <h4>
 
 ```luau
-url: string,
+  url: string,
 ```
 
 </h4>
@@ -444,12 +444,12 @@ url: string,
 
 ---
 
-### HttpRequestWithoutBody.params.headers.timeout
+##### HttpRequestWithoutBody.params.headers.timeout
 
 <h4>
 
 ```luau
-timeout: Duration | RequestTimeout | nil,
+      timeout: Duration | RequestTimeout | nil,
 ```
 
 </h4>
@@ -472,12 +472,12 @@ Header keys are case-insensitive as per the HTTP spec; values must be valid ASCI
 
 ---
 
-### HttpRequestWithoutBody.params.headers.max_body_size
+##### HttpRequestWithoutBody.params.headers.max_body_size
 
 <h4>
 
 ```luau
-max_body_size: FileSize?,
+      max_body_size: FileSize?,
 ```
 
 </h4>
@@ -486,12 +486,12 @@ max_body_size: FileSize?,
 
 ---
 
-### HttpRequestWithoutBody.params.headers.max_redirects
+##### HttpRequestWithoutBody.params.headers.max_redirects
 
 <h4>
 
 ```luau
-max_redirects: number?,
+      max_redirects: number?,
 ```
 
 </h4>
@@ -512,12 +512,12 @@ export type HttpRequestWithBody = {
 
 ---
 
-### HttpRequestWithBody.url
+#### HttpRequestWithBody.url
 
 <h4>
 
 ```luau
-url: string,
+  url: string,
 ```
 
 </h4>
@@ -526,12 +526,12 @@ url: string,
 
 ---
 
-### HttpRequestWithBody.body
+#### HttpRequestWithBody.body
 
 <h4>
 
 ```luau
-body: string | JsonSerializable | buffer,
+  body: string | JsonSerializable | buffer,
 ```
 
 </h4>
@@ -543,12 +543,12 @@ Note that strings have to be valid utf-8; if you need to pass invalid utf-8 here
 
 ---
 
-### HttpRequestWithBody.params.headers.timeout
+##### HttpRequestWithBody.params.headers.timeout
 
 <h4>
 
 ```luau
-timeout: Duration | RequestTimeout | nil,
+      timeout: Duration | RequestTimeout | nil,
 ```
 
 </h4>
@@ -574,12 +574,12 @@ To override this behavior, set a `content-type` header explicitly.
 
 ---
 
-### HttpRequestWithBody.params.headers.max_body_size
+##### HttpRequestWithBody.params.headers.max_body_size
 
 <h4>
 
 ```luau
-max_body_size: FileSize?,
+      max_body_size: FileSize?,
 ```
 
 </h4>
@@ -588,12 +588,12 @@ max_body_size: FileSize?,
 
 ---
 
-### HttpRequestWithBody.params.headers.max_redirects
+##### HttpRequestWithBody.params.headers.max_redirects
 
 <h4>
 
 ```luau
-max_redirects: number?,
+      max_redirects: number?,
 ```
 
 </h4>
@@ -620,163 +620,163 @@ Content-Type header of a request/response.
 ---
 
 ```luau
-| "text/plain"
+  | "text/plain"
 ```
 
 ---
 
 ```luau
-| "text/html"
+  | "text/html"
 ```
 
 ---
 
 ```luau
-| "text/css"
+  | "text/css"
 ```
 
 ---
 
 ```luau
-| "text/csv"
+  | "text/csv"
 ```
 
 ---
 
 ```luau
-| "text/xml"
+  | "text/xml"
 ```
 
 ---
 
 ```luau
-| "application/json"
+  | "application/json"
 ```
 
 ---
 
 ```luau
-| "application/xml"
+  | "application/xml"
 ```
 
 ---
 
 ```luau
-| "application/octet-stream"
+  | "application/octet-stream"
 ```
 
 ---
 
 ```luau
-| "application/pdf"
+  | "application/pdf"
 ```
 
 ---
 
 ```luau
-| "application/zip"
+  | "application/zip"
 ```
 
 ---
 
 ```luau
-| "application/gzip"
+  | "application/gzip"
 ```
 
 ---
 
 ```luau
-| "application/x-www-form-urlencoded"
+  | "application/x-www-form-urlencoded"
 ```
 
 ---
 
 ```luau
-| "application/x-ndjson"
+  | "application/x-ndjson"
 ```
 
 ---
 
 ```luau
-| "multipart/form-data"
+  | "multipart/form-data"
 ```
 
 ---
 
 ```luau
-| "text/javascript"
+  | "text/javascript"
 ```
 
 ---
 
 ```luau
-| "application/javascript"
+  | "application/javascript"
 ```
 
 ---
 
 ```luau
-| "text/event-stream"
+  | "text/event-stream"
 ```
 
 ---
 
 ```luau
-| "image/png"
+  | "image/png"
 ```
 
 ---
 
 ```luau
-| "image/jpeg"
+  | "image/jpeg"
 ```
 
 ---
 
 ```luau
-| "image/gif"
+  | "image/gif"
 ```
 
 ---
 
 ```luau
-| "image/svg+xml"
+  | "image/svg+xml"
 ```
 
 ---
 
 ```luau
-| "image/webp"
+  | "image/webp"
 ```
 
 ---
 
 ```luau
-| "audio/mpeg"
+  | "audio/mpeg"
 ```
 
 ---
 
 ```luau
-| "audio/ogg"
+  | "audio/ogg"
 ```
 
 ---
 
 ```luau
-| "video/mp4"
+  | "video/mp4"
 ```
 
 ---
 
 ```luau
-| "video/webm"
+  | "video/webm"
 ```
 
 ---
 
 ```luau
-| string
+  | string
 ```
 
 ---
@@ -794,19 +794,19 @@ export type HttpResponseResult =
 ---
 
 ```luau
-| HttpResponse
+  | HttpResponse
 ```
 
 ---
 
 ```luau
-| HttpTimeoutError
+  | HttpTimeoutError
 ```
 
 ---
 
 ```luau
-| HttpIoError
+  | HttpIoError
 ```
 
 ---
@@ -823,12 +823,12 @@ export type HttpResponse = {
 
 ---
 
-### HttpResponse.ok
+#### HttpResponse.ok
 
 <h4>
 
 ```luau
-ok: boolean,
+  ok: boolean,
 ```
 
 </h4>
@@ -837,12 +837,12 @@ ok: boolean,
 
 ---
 
-### HttpResponse.kind
+#### HttpResponse.kind
 
 <h4>
 
 ```luau
-kind: "Ok" | "Error",
+  kind: "Ok" | "Error",
 ```
 
 </h4>
@@ -851,24 +851,24 @@ kind: "Ok" | "Error",
 
 ---
 
-### HttpResponse.status.code
+##### HttpResponse.status.code
 
 <h4>
 
 ```luau
-code: number,
+    code: number,
 ```
 
 </h4>
 
 ---
 
-### HttpResponse.status.reason
+##### HttpResponse.status.reason
 
 <h4>
 
 ```luau
-reason: string,
+    reason: string,
 ```
 
 </h4>
@@ -877,12 +877,12 @@ reason: string,
 
 ---
 
-### HttpResponse.body
+#### HttpResponse.body
 
 <h4>
 
 ```luau
-body: string,
+  body: string,
 ```
 
 </h4>
@@ -891,12 +891,12 @@ body: string,
 
 ---
 
-### HttpResponse.content_type.mime_type
+##### HttpResponse.content_type.mime_type
 
 <h4>
 
 ```luau
-mime_type: MimeType?,
+    mime_type: MimeType?,
 ```
 
 </h4>
@@ -924,12 +924,12 @@ This field is `nil` if the server didn't send a `content-type` header at all.
 
 ---
 
-### HttpResponse.content_type.charset
+##### HttpResponse.content_type.charset
 
 <h4>
 
 ```luau
-charset: string?,
+    charset: string?,
 ```
 
 </h4>
@@ -939,12 +939,12 @@ charset: string?,
 
 ---
 
-### HttpResponse.content_type.try_json
+##### HttpResponse.content_type.try_json
 
 <h4>
 
 ```luau
-function HttpResponse.content_type.try_json<T>(self: HttpResponse) -> T?,
+    function HttpResponse.content_type.try_json<T>(self: HttpResponse) -> T?,
 ```
 
 </h4>
@@ -984,12 +984,12 @@ end
 
 ---
 
-### HttpResponse.content_type.expect_json
+##### HttpResponse.content_type.expect_json
 
 <h4>
 
 ```luau
-function HttpResponse.content_type.expect_json<T>(self: HttpResponse) -> T,
+    function HttpResponse.content_type.expect_json<T>(self: HttpResponse) -> T,
 ```
 
 </h4>
@@ -1030,48 +1030,48 @@ The request timed out because you set `HttpRequestOptions.timeout`.
 
 ---
 
-### HttpTimeoutError.ok
+#### HttpTimeoutError.ok
 
 <h4>
 
 ```luau
-ok: false,
+  ok: false,
 ```
 
 </h4>
 
 ---
 
-### HttpTimeoutError.kind
+#### HttpTimeoutError.kind
 
 <h4>
 
 ```luau
-kind: "Timeout",
+  kind: "Timeout",
 ```
 
 </h4>
 
 ---
 
-### HttpTimeoutError.reason
+#### HttpTimeoutError.reason
 
 <h4>
 
 ```luau
-reason: string,
+  reason: string,
 ```
 
 </h4>
 
 ---
 
-### HttpTimeoutError.phase
+#### HttpTimeoutError.phase
 
 <h4>
 
 ```luau
-phase: "Global" | "SendRequest" | "ReceiveResponse" | "SendBody" | "ReceiveBody" | "Connect" | "Resolve" | "Other"
+  phase: "Global" | "SendRequest" | "ReceiveResponse" | "SendBody" | "ReceiveBody" | "Connect" | "Resolve" | "Other"
 ```
 
 </h4>
@@ -1093,36 +1093,36 @@ receiving a proper response.
 
 ---
 
-### HttpIoError.ok
+#### HttpIoError.ok
 
 <h4>
 
 ```luau
-ok: false,
+  ok: false,
 ```
 
 </h4>
 
 ---
 
-### HttpIoError.kind
+#### HttpIoError.kind
 
 <h4>
 
 ```luau
-kind: "BodyExceedsLimit" | "NetworkError" | "ConnectionFailed" | "TooManyRedirects" | "Other",
+  kind: "BodyExceedsLimit" | "NetworkError" | "ConnectionFailed" | "TooManyRedirects" | "Other",
 ```
 
 </h4>
 
 ---
 
-### HttpIoError.reason
+#### HttpIoError.reason
 
 <h4>
 
 ```luau
-reason: string,
+  reason: string,
 ```
 
 </h4>

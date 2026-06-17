@@ -281,6 +281,14 @@ for _, library in libraries do
     local require_path = str.split(library.path, "/init")[1]
     push("`" .. `local {fs.path.child(require_path)} = require("@{require_path}")` .. "`")
 
+    local main_type_name: string? = nil
+    for _, a in library.apis do
+        if a.is == "Type" then
+            main_type_name = a.name
+            break
+        end
+    end
+
     for index, api in library.apis do
         if #library.apis > 1 and index == 1 then
             push(api.docs, 2)
@@ -288,17 +296,30 @@ for _, library in libraries do
             continue
         end
 
-        local name = 
-            if api.is == "Type" then 
+        local name =
+            if api.is == "Type" then
                 `\`export type\` {api.name}`
             elseif api.is == "Enum" then
                 `\`enum\` {api.name}`
             else api.name
         local defs = api.defs
 
+        local first_name_segment = api.name:match("^([^%.]+)")
+        local is_nested_in_type = (api.is == "Property" or api.is == "Function")
+            and main_type_name ~= nil
+            and first_name_segment ~= main_type_name
+        local type_depth = 0
+        if is_nested_in_type then
+            for _ in api.name:gmatch("%.") do type_depth += 1 end
+        end
+        local indent = if api.is == "Enum" then "  " else string.rep("  ", type_depth)
+
         if api.is ~= "Enum" then
             if api.is == "Type" then
                 push(`## {name}`)
+            elseif is_nested_in_type then
+                local h = if type_depth >= 2 then "#####" else "####"
+                push(`{h} {name}`)
             else
                 push(`### {name}`)
             end
@@ -308,6 +329,8 @@ for _, library in libraries do
                 string.match(defs, `^[%w_]+: typeof%(require%("([^"]+)"%)%),?$`) or
                 string.match(defs, `^return require%("([^"]+)"%)$`)
             local target_path: string? = nil
+            local target_anchor: string? = nil
+            local target_display: string? = nil
             if require_path then
                 target_path = resolve_require_path(require_path)
             end
@@ -318,16 +341,26 @@ for _, library in libraries do
                     target_path = resolve_require_path(raw_path)
                 end
             end
+            if not target_path then
+                local lib_id, type_name = string.match(defs, `^%s*export type [%w_]+ = ([%w_]+)%.([%w_]+)%s*$`)
+                local raw_path = if lib_id then library.sublibs[lib_id] else nil
+                if raw_path then
+                    target_path = resolve_require_path(raw_path)
+                    target_anchor = "#export-type-" .. string.lower(type_name)
+                    target_display = `{type_name} in @{target_path}`
+                end
+            end
             if target_path then
                 local suffix = if init_lib_paths[target_path] then "/README.md" else ".md"
-                local display = "@" .. target_path
-                push(`→ [{display}](/docs/reference/{target_path}{suffix})`, 2)
+                local anchor = target_anchor or ""
+                local display = target_display or ("@" .. target_path)
+                push(`See [{display}](/docs/reference/{target_path}{suffix}{anchor})`, 2)
             else
                 if api.is ~= "Enum" then
                     push("<h4>", 2)
                 end
                 push("```luau", 0)
-                push(defs, 0)
+                push(indent .. defs, 0)
                 push("```", 2)
                 if api.is ~= "Enum" then
                     push("</h4>")

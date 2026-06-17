@@ -9,13 +9,7 @@
 
 ## `export type` FileBuilder
 
-<h4>
-
-```luau
-export type FileBuilder = common_types.FileBuilder
-```
-
-</h4>
+See [FileBuilder in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-filebuilder)
 
 ---
 
@@ -31,12 +25,12 @@ export type FileLib = setmetatable<{
 
 ---
 
-### FileLib.from
+#### FileLib.from
 
 <h4>
 
 ```luau
-function FileLib.from(path: string) -> FileEntry,
+  function FileLib.from(path: string) -> FileEntry,
 ```
 
 </h4>
@@ -45,12 +39,12 @@ Create a `FileEntry` from `path`; errors if unable to create the `FileEntry` if 
 
 ---
 
-### FileLib.build
+#### FileLib.build
 
 <h4>
 
 ```luau
-function FileLib.build(name: string, content: string) -> FileBuilder,
+  function FileLib.build(name: string, content: string) -> FileBuilder,
 ```
 
 </h4>
@@ -59,12 +53,12 @@ function FileLib.build(name: string, content: string) -> FileBuilder,
 
 ---
 
-### FileLib.create
+#### FileLib.create
 
 <h4>
 
 ```luau
-function FileLib.create(path: string) -> FileEntry,
+  function FileLib.create(path: string) -> FileEntry,
 ```
 
 </h4>
@@ -73,12 +67,12 @@ function FileLib.create(path: string) -> FileEntry,
 
 ---
 
-### FileLib.try_read
+#### FileLib.try_read
 
 <h4>
 
 ```luau
-function FileLib.try_read(path: string) -> (string?, "Ok" | "NotFound" | "PermissionDenied"),
+  function FileLib.try_read(path: string) -> (string?, "Ok" | "NotFound" | "PermissionDenied"),
 ```
 
 </h4>
@@ -109,12 +103,12 @@ end
 
 ---
 
-### FileLib.try_readbytes
+#### FileLib.try_readbytes
 
 <h4>
 
 ```luau
-function FileLib.try_readbytes(path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> (buffer?, "Ok" | "NotFound" | "PermissionDenied"),
+  function FileLib.try_readbytes(path: string, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> (buffer?, "Ok" | "NotFound" | "PermissionDenied"),
 ```
 
 </h4>
@@ -151,12 +145,12 @@ end
 
 ---
 
-### FileLib.try_write
+#### FileLib.try_write
 
 <h4>
 
 ```luau
-function FileLib.try_write(path: string, content: string | buffer) -> (boolean, "Ok" | "PermissionDenied"),
+  function FileLib.try_write(path: string, content: string | buffer) -> (boolean, "Ok" | "PermissionDenied"),
 ```
 
 </h4>
@@ -182,12 +176,12 @@ end
 
 ---
 
-### FileLib.try_remove
+#### FileLib.try_remove
 
 <h4>
 
 ```luau
-function FileLib.try_remove(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "IsADirectory")
+  function FileLib.try_remove(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "IsADirectory")
 ```
 
 </h4>
@@ -202,12 +196,12 @@ Doesn't follow symlinks.
 
 ---
 
-### FileLib.__call
+#### FileLib.__call
 
 <h4>
 
 ```luau
-function FileLib.__call(self: any, path: string) -> FileEntry?,
+  function FileLib.__call(self: any, path: string) -> FileEntry?,
 ```
 
 </h4>

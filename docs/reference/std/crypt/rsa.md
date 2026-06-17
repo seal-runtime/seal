@@ -55,24 +55,24 @@ type RsaKeys = {
 
 ---
 
-### RsaKeys.public
+#### RsaKeys.public
 
 <h4>
 
 ```luau
-public: string,
+  public: string,
 ```
 
 </h4>
 
 ---
 
-### RsaKeys.private
+#### RsaKeys.private
 
 <h4>
 
 ```luau
-private: string
+  private: string
 ```
 
 </h4>

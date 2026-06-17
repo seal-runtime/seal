@@ -69,12 +69,12 @@ Use `Zstd` compression.
 
 ---
 
-### zstd.compress
+#### zstd.compress
 
 <h4>
 
 ```luau
-function zstd.compress(data: buffer | string, level: number?, options: ZstdOptions?) -> buffer,
+  function zstd.compress(data: buffer | string, level: number?, options: ZstdOptions?) -> buffer,
 ```
 
 </h4>
@@ -100,12 +100,12 @@ zstd.compress(data, level, zstd_options)
 
 ---
 
-### zstd.decompress
+#### zstd.decompress
 
 <h4>
 
 ```luau
-function zstd.decompress(compressed: buffer) -> buffer,
+  function zstd.decompress(compressed: buffer) -> buffer,
 ```
 
 </h4>

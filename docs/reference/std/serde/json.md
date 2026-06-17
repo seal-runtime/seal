@@ -136,12 +136,12 @@ export type EncodeOptions = {
 
 ---
 
-### EncodeOptions.pretty
+#### EncodeOptions.pretty
 
 <h4>
 
 ```luau
-pretty: boolean?,
+  pretty: boolean?,
 ```
 
 </h4>
@@ -150,12 +150,12 @@ pretty: boolean?,
 
 ---
 
-### EncodeOptions.sorted
+#### EncodeOptions.sorted
 
 <h4>
 
 ```luau
-sorted: boolean?,
+  sorted: boolean?,
 ```
 
 </h4>

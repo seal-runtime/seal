@@ -238,12 +238,12 @@ export type RunResult = {
 
 ---
 
-### RunResult.unwrap
+#### RunResult.unwrap
 
 <h4>
 
 ```luau
-function RunResult.unwrap(self: RunResult) -> string,
+  function RunResult.unwrap(self: RunResult) -> string,
 ```
 
 </h4>
@@ -253,12 +253,12 @@ function RunResult.unwrap(self: RunResult) -> string,
 
 ---
 
-### RunResult.unwrap_or
+#### RunResult.unwrap_or
 
 <h4>
 
 ```luau
-function RunResult.unwrap_or(self: RunResult, default: string | (result: RunResult) -> string) -> string
+  function RunResult.unwrap_or(self: RunResult, default: string | (result: RunResult) -> string) -> string
 ```
 
 </h4>
@@ -284,24 +284,24 @@ export type Ok = {
 
 ---
 
-### Ok.ok
+#### Ok.ok
 
 <h4>
 
 ```luau
-ok: true,
+  ok: true,
 ```
 
 </h4>
 
 ---
 
-### Ok.out
+#### Ok.out
 
 <h4>
 
 ```luau
-out: string,
+  out: string,
 ```
 
 </h4>
@@ -310,12 +310,12 @@ out: string,
 
 ---
 
-### Ok.stdout
+#### Ok.stdout
 
 <h4>
 
 ```luau
-stdout: string,
+  stdout: string,
 ```
 
 </h4>
@@ -324,12 +324,12 @@ stdout: string,
 
 ---
 
-### Ok.stderr
+#### Ok.stderr
 
 <h4>
 
 ```luau
-stderr: string,
+  stderr: string,
 ```
 
 </h4>
@@ -352,24 +352,24 @@ export type Err = {
 
 ---
 
-### Err.ok
+#### Err.ok
 
 <h4>
 
 ```luau
-ok: false,
+  ok: false,
 ```
 
 </h4>
 
 ---
 
-### Err.err
+#### Err.err
 
 <h4>
 
 ```luau
-err: string,
+  err: string,
 ```
 
 </h4>
@@ -378,24 +378,24 @@ err: string,
 
 ---
 
-### Err.stdout
+#### Err.stdout
 
 <h4>
 
 ```luau
-stdout: string,
+  stdout: string,
 ```
 
 </h4>
 
 ---
 
-### Err.stderr
+#### Err.stderr
 
 <h4>
 
 ```luau
-stderr: string,
+  stderr: string,
 ```
 
 </h4>
@@ -428,12 +428,12 @@ Options for `process.run`; implicitly added to `process.shell` as well.
 
 ---
 
-### RunOptions.program
+#### RunOptions.program
 
 <h4>
 
 ```luau
-program: string,
+  program: string,
 ```
 
 </h4>
@@ -442,12 +442,12 @@ program: string,
 
 ---
 
-### RunOptions.args
+#### RunOptions.args
 
 <h4>
 
 ```luau
-args: { string }?,
+  args: { string }?,
 ```
 
 </h4>
@@ -456,12 +456,12 @@ args: { string }?,
 
 ---
 
-### RunOptions.shell
+#### RunOptions.shell
 
 <h4>
 
 ```luau
-function RunOptions.shell(true | string)?,
+  function RunOptions.shell(true | string)?,
 ```
 
 </h4>
@@ -482,12 +482,12 @@ Be careful with shell escapes w/ user-provided values; can be a security risk.
 
 ---
 
-### RunOptions.cwd
+#### RunOptions.cwd
 
 <h4>
 
 ```luau
-cwd: string?,
+  cwd: string?,
 ```
 
 </h4>
@@ -496,12 +496,12 @@ cwd: string?,
 
 ---
 
-### RunOptions.stdio.stdout
+##### RunOptions.stdio.stdout
 
 <h4>
 
 ```luau
-stdout: Stdio?,
+    stdout: Stdio?,
 ```
 
 </h4>
@@ -528,36 +528,36 @@ or a table (if you want different per-stream behavior).
 
 ---
 
-### RunOptions.stdio.stderr
+##### RunOptions.stdio.stderr
 
 <h4>
 
 ```luau
-stderr: Stdio?,
+    stderr: Stdio?,
 ```
 
 </h4>
 
 ---
 
-### RunOptions.stdio.stdin
+##### RunOptions.stdio.stdin
 
 <h4>
 
 ```luau
-stdin: Stdio?,
+    stdin: Stdio?,
 ```
 
 </h4>
 
 ---
 
-### RunOptions.stdio.env.clear
+##### RunOptions.stdio.env.clear
 
 <h4>
 
 ```luau
-clear: boolean?,
+      clear: boolean?,
 ```
 
 </h4>
@@ -590,12 +590,12 @@ added).
 
 ---
 
-### RunOptions.stdio.env.add.remove
+##### RunOptions.stdio.env.add.remove
 
 <h4>
 
 ```luau
-remove: { string }?,
+        remove: { string }?,
 ```
 
 </h4>
@@ -614,12 +614,12 @@ export type SpawnOptions = {
 
 ---
 
-### SpawnOptions.program
+#### SpawnOptions.program
 
 <h4>
 
 ```luau
-program: string,
+  program: string,
 ```
 
 </h4>
@@ -628,12 +628,12 @@ program: string,
 
 ---
 
-### SpawnOptions.args
+#### SpawnOptions.args
 
 <h4>
 
 ```luau
-args: { string }?,
+  args: { string }?,
 ```
 
 </h4>
@@ -642,12 +642,12 @@ args: { string }?,
 
 ---
 
-### SpawnOptions.shell
+#### SpawnOptions.shell
 
 <h4>
 
 ```luau
-function SpawnOptions.shell(true | string)?,
+  function SpawnOptions.shell(true | string)?,
 ```
 
 </h4>
@@ -668,12 +668,12 @@ Be careful with shell escapes w/ user-provided values; can be a security risk.
 
 ---
 
-### SpawnOptions.cwd
+#### SpawnOptions.cwd
 
 <h4>
 
 ```luau
-cwd: string?,
+  cwd: string?,
 ```
 
 </h4>
@@ -682,12 +682,12 @@ cwd: string?,
 
 ---
 
-### SpawnOptions.stream.stdout_capacity
+##### SpawnOptions.stream.stdout_capacity
 
 <h4>
 
 ```luau
-stdout_capacity: number?,
+    stdout_capacity: number?,
 ```
 
 </h4>
@@ -727,12 +727,12 @@ By default, seal truncates bytes from the front of inner, causing old data to be
 
 ---
 
-### SpawnOptions.stream.stderr_capacity
+##### SpawnOptions.stream.stderr_capacity
 
 <h4>
 
 ```luau
-stderr_capacity: number?,
+    stderr_capacity: number?,
 ```
 
 </h4>
@@ -741,12 +741,12 @@ stderr_capacity: number?,
 
 ---
 
-### SpawnOptions.stream.stdout_truncate
+##### SpawnOptions.stream.stdout_truncate
 
 <h4>
 
 ```luau
-function SpawnOptions.stream.stdout_truncate("Front" | "Back")?,
+    function SpawnOptions.stream.stdout_truncate("Front" | "Back")?,
 ```
 
 </h4>
@@ -755,12 +755,12 @@ function SpawnOptions.stream.stdout_truncate("Front" | "Back")?,
 
 ---
 
-### SpawnOptions.stream.stderr_truncate
+##### SpawnOptions.stream.stderr_truncate
 
 <h4>
 
 ```luau
-function SpawnOptions.stream.stderr_truncate("Front" | "Back")?,
+    function SpawnOptions.stream.stderr_truncate("Front" | "Back")?,
 ```
 
 </h4>
@@ -769,12 +769,12 @@ function SpawnOptions.stream.stderr_truncate("Front" | "Back")?,
 
 ---
 
-### SpawnOptions.stream.stdio.stdout
+##### SpawnOptions.stream.stdio.stdout
 
 <h4>
 
 ```luau
-stdout: Stdio?,
+      stdout: Stdio?,
 ```
 
 </h4>
@@ -802,36 +802,36 @@ or a table (if you want different per-stream behavior).
 
 ---
 
-### SpawnOptions.stream.stdio.stderr
+##### SpawnOptions.stream.stdio.stderr
 
 <h4>
 
 ```luau
-stderr: Stdio?,
+      stderr: Stdio?,
 ```
 
 </h4>
 
 ---
 
-### SpawnOptions.stream.stdio.stdin
+##### SpawnOptions.stream.stdio.stdin
 
 <h4>
 
 ```luau
-stdin: Stdio?,
+      stdin: Stdio?,
 ```
 
 </h4>
 
 ---
 
-### SpawnOptions.stream.stdio.env.clear
+##### SpawnOptions.stream.stdio.env.clear
 
 <h4>
 
 ```luau
-clear: boolean?,
+        clear: boolean?,
 ```
 
 </h4>
@@ -864,12 +864,12 @@ added).
 
 ---
 
-### SpawnOptions.stream.stdio.env.add.remove
+##### SpawnOptions.stream.stdio.env.add.remove
 
 <h4>
 
 ```luau
-remove: { string }?,
+          remove: { string }?,
 ```
 
 </h4>
@@ -891,12 +891,12 @@ export type ChildProcessStream = setmetatable<{
 
 ---
 
-### ChildProcessStream.read
+#### ChildProcessStream.read
 
 <h4>
 
 ```luau
-function ChildProcessStream.read(self: ChildProcessStream, count: number?, timeout: number?) -> string?,
+  function ChildProcessStream.read(self: ChildProcessStream, count: number?, timeout: number?) -> string?,
 ```
 
 </h4>
@@ -949,12 +949,12 @@ local current_data = child.stdout:read(nil, 0.0)
 
 ---
 
-### ChildProcessStream.read_exact
+#### ChildProcessStream.read_exact
 
 <h4>
 
 ```luau
-function ChildProcessStream.read_exact(self: ChildProcessStream, count: number, timeout: number?) -> string?,
+  function ChildProcessStream.read_exact(self: ChildProcessStream, count: number, timeout: number?) -> string?,
 ```
 
 </h4>
@@ -1009,12 +1009,12 @@ end
 
 ---
 
-### ChildProcessStream.read_to
+#### ChildProcessStream.read_to
 
 <h4>
 
 ```luau
-function ChildProcessStream.read_to(self: ChildProcessStream, term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?,
+  function ChildProcessStream.read_to(self: ChildProcessStream, term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?,
 ```
 
 </h4>
@@ -1046,12 +1046,12 @@ Blocks the current VM until `term` is found, `timeout` seconds elapse, or the re
 
 ---
 
-### ChildProcessStream.fill
+#### ChildProcessStream.fill
 
 <h4>
 
 ```luau
-function ChildProcessStream.fill(self: ChildProcessStream, target: buffer, target_offset: number?, timeout: number?) -> number,
+  function ChildProcessStream.fill(self: ChildProcessStream, target: buffer, target_offset: number?, timeout: number?) -> number,
 ```
 
 </h4>
@@ -1092,12 +1092,12 @@ end
 
 ---
 
-### ChildProcessStream.fill_exact
+#### ChildProcessStream.fill_exact
 
 <h4>
 
 ```luau
-function ChildProcessStream.fill_exact(self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean,
+  function ChildProcessStream.fill_exact(self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean,
 ```
 
 </h4>
@@ -1128,12 +1128,12 @@ Pass a `timeout` of `0` seconds to prevent this function from blocking!
 
 ---
 
-### ChildProcessStream.len
+#### ChildProcessStream.len
 
 <h4>
 
 ```luau
-function ChildProcessStream.len(self: ChildProcessStream) -> number,
+  function ChildProcessStream.len(self: ChildProcessStream) -> number,
 ```
 
 </h4>
@@ -1142,12 +1142,12 @@ function ChildProcessStream.len(self: ChildProcessStream) -> number,
 
 ---
 
-### ChildProcessStream.capacity
+#### ChildProcessStream.capacity
 
 <h4>
 
 ```luau
-function ChildProcessStream.capacity(self: ChildProcessStream) -> number,
+  function ChildProcessStream.capacity(self: ChildProcessStream) -> number,
 ```
 
 </h4>
@@ -1156,12 +1156,12 @@ function ChildProcessStream.capacity(self: ChildProcessStream) -> number,
 
 ---
 
-### ChildProcessStream.lines
+#### ChildProcessStream.lines
 
 <h4>
 
 ```luau
-function ChildProcessStream.lines(self: ChildProcessStream, timeout: number?) -> (() -> string),
+  function ChildProcessStream.lines(self: ChildProcessStream, timeout: number?) -> (() -> string),
 ```
 
 </h4>
@@ -1214,12 +1214,12 @@ end
 
 ---
 
-### ChildProcessStream.iter
+#### ChildProcessStream.iter
 
 <h4>
 
 ```luau
-function ChildProcessStream.iter(self: ChildProcessStream, timeout: number?, write_delay_ms: number?) -> () -> string,
+  function ChildProcessStream.iter(self: ChildProcessStream, timeout: number?, write_delay_ms: number?) -> () -> string,
 ```
 
 </h4>
@@ -1243,12 +1243,12 @@ This function does *not* strip preceding '\r's and trailing '\n's (unlike `:line
 
 ---
 
-### ChildProcessStream.__iter
+#### ChildProcessStream.__iter
 
 <h4>
 
 ```luau
-function ChildProcessStream.__iter(self: ChildProcessStream) -> () -> string,
+  function ChildProcessStream.__iter(self: ChildProcessStream) -> () -> string,
 ```
 
 </h4>
@@ -1271,12 +1271,12 @@ type ChildProcessStdin = {
 
 ---
 
-### ChildProcessStdin.write
+#### ChildProcessStdin.write
 
 <h4>
 
 ```luau
-function ChildProcessStdin.write(self: ChildProcessStdin, data: string) -> error?,
+  function ChildProcessStdin.write(self: ChildProcessStdin, data: string) -> error?,
 ```
 
 </h4>
@@ -1285,12 +1285,12 @@ Attempts to write to the child process' stdin; if an error occurs (usually a bro
 
 ---
 
-### ChildProcessStdin.close
+#### ChildProcessStdin.close
 
 <h4>
 
 ```luau
-function ChildProcessStdin.close(self: ChildProcessStdin) -> (),
+  function ChildProcessStdin.close(self: ChildProcessStdin) -> (),
 ```
 
 </h4>
@@ -1338,12 +1338,12 @@ By default, stdout, stderr, and stdin are piped; cast the result of `process.spa
 
 ---
 
-### ChildProcess.id
+#### ChildProcess.id
 
 <h4>
 
 ```luau
-id: number,
+  id: number,
 ```
 
 </h4>
@@ -1352,60 +1352,60 @@ id: number,
 
 ---
 
-### ChildProcess.alive
+#### ChildProcess.alive
 
 <h4>
 
 ```luau
-function ChildProcess.alive(self: ChildProcess | PipedChild) -> boolean,
+  function ChildProcess.alive(self: ChildProcess | PipedChild) -> boolean,
 ```
 
 </h4>
 
 ---
 
-### ChildProcess.kill
+#### ChildProcess.kill
 
 <h4>
 
 ```luau
-function ChildProcess.kill(self: ChildProcess | PipedChild) -> (),
+  function ChildProcess.kill(self: ChildProcess | PipedChild) -> (),
 ```
 
 </h4>
 
 ---
 
-### ChildProcess.stdout
+#### ChildProcess.stdout
 
 <h4>
 
 ```luau
-stdout: ChildProcessStream?,
+  stdout: ChildProcessStream?,
 ```
 
 </h4>
 
 ---
 
-### ChildProcess.stderr
+#### ChildProcess.stderr
 
 <h4>
 
 ```luau
-stderr: ChildProcessStream?,
+  stderr: ChildProcessStream?,
 ```
 
 </h4>
 
 ---
 
-### ChildProcess.stdin
+#### ChildProcess.stdin
 
 <h4>
 
 ```luau
-stdin: ChildProcessStdin?,
+  stdin: ChildProcessStdin?,
 ```
 
 </h4>
@@ -1426,12 +1426,12 @@ Default kind of `ChildProcess` created by `process.spawn` pipes for stdout, stde
 
 ---
 
-### PipedChild.id
+#### PipedChild.id
 
 <h4>
 
 ```luau
-id: number,
+  id: number,
 ```
 
 </h4>
@@ -1440,60 +1440,60 @@ id: number,
 
 ---
 
-### PipedChild.alive
+#### PipedChild.alive
 
 <h4>
 
 ```luau
-function PipedChild.alive(self: ChildProcess | PipedChild) -> boolean,
+  function PipedChild.alive(self: ChildProcess | PipedChild) -> boolean,
 ```
 
 </h4>
 
 ---
 
-### PipedChild.kill
+#### PipedChild.kill
 
 <h4>
 
 ```luau
-function PipedChild.kill(self: ChildProcess | PipedChild) -> (),
+  function PipedChild.kill(self: ChildProcess | PipedChild) -> (),
 ```
 
 </h4>
 
 ---
 
-### PipedChild.stdout
+#### PipedChild.stdout
 
 <h4>
 
 ```luau
-stdout: ChildProcessStream,
+  stdout: ChildProcessStream,
 ```
 
 </h4>
 
 ---
 
-### PipedChild.stderr
+#### PipedChild.stderr
 
 <h4>
 
 ```luau
-stderr: ChildProcessStream,
+  stderr: ChildProcessStream,
 ```
 
 </h4>
 
 ---
 
-### PipedChild.stdin
+#### PipedChild.stdin
 
 <h4>
 
 ```luau
-stdin: ChildProcessStdin,
+  stdin: ChildProcessStdin,
 ```
 
 </h4>

@@ -359,3583 +359,3583 @@ export type IanaTimezone =
 ---
 
 ```luau
-| "AUTO" -- timezone info already included in input data
+  | "AUTO" -- timezone info already included in input data
 ```
 
 ---
 
 ```luau
-| "Africa/Abidjan"
+  | "Africa/Abidjan"
 ```
 
 ---
 
 ```luau
-| "Africa/Accra"
+  | "Africa/Accra"
 ```
 
 ---
 
 ```luau
-| "Africa/Addis_Ababa"
+  | "Africa/Addis_Ababa"
 ```
 
 ---
 
 ```luau
-| "Africa/Algiers"
+  | "Africa/Algiers"
 ```
 
 ---
 
 ```luau
-| "Africa/Asmara"
+  | "Africa/Asmara"
 ```
 
 ---
 
 ```luau
-| "Africa/Asmera"
+  | "Africa/Asmera"
 ```
 
 ---
 
 ```luau
-| "Africa/Bamako"
+  | "Africa/Bamako"
 ```
 
 ---
 
 ```luau
-| "Africa/Bangui"
+  | "Africa/Bangui"
 ```
 
 ---
 
 ```luau
-| "Africa/Banjul"
+  | "Africa/Banjul"
 ```
 
 ---
 
 ```luau
-| "Africa/Bissau"
+  | "Africa/Bissau"
 ```
 
 ---
 
 ```luau
-| "Africa/Blantyre"
+  | "Africa/Blantyre"
 ```
 
 ---
 
 ```luau
-| "Africa/Brazzaville"
+  | "Africa/Brazzaville"
 ```
 
 ---
 
 ```luau
-| "Africa/Bujumbura"
+  | "Africa/Bujumbura"
 ```
 
 ---
 
 ```luau
-| "Africa/Cairo"
+  | "Africa/Cairo"
 ```
 
 ---
 
 ```luau
-| "Africa/Casablanca"
+  | "Africa/Casablanca"
 ```
 
 ---
 
 ```luau
-| "Africa/Ceuta"
+  | "Africa/Ceuta"
 ```
 
 ---
 
 ```luau
-| "Africa/Conakry"
+  | "Africa/Conakry"
 ```
 
 ---
 
 ```luau
-| "Africa/Dakar"
+  | "Africa/Dakar"
 ```
 
 ---
 
 ```luau
-| "Africa/Dar_es_Salaam"
+  | "Africa/Dar_es_Salaam"
 ```
 
 ---
 
 ```luau
-| "Africa/Djibouti"
+  | "Africa/Djibouti"
 ```
 
 ---
 
 ```luau
-| "Africa/Douala"
+  | "Africa/Douala"
 ```
 
 ---
 
 ```luau
-| "Africa/El_Aaiun"
+  | "Africa/El_Aaiun"
 ```
 
 ---
 
 ```luau
-| "Africa/Freetown"
+  | "Africa/Freetown"
 ```
 
 ---
 
 ```luau
-| "Africa/Gaborone"
+  | "Africa/Gaborone"
 ```
 
 ---
 
 ```luau
-| "Africa/Harare"
+  | "Africa/Harare"
 ```
 
 ---
 
 ```luau
-| "Africa/Johannesburg"
+  | "Africa/Johannesburg"
 ```
 
 ---
 
 ```luau
-| "Africa/Juba"
+  | "Africa/Juba"
 ```
 
 ---
 
 ```luau
-| "Africa/Kampala"
+  | "Africa/Kampala"
 ```
 
 ---
 
 ```luau
-| "Africa/Khartoum"
+  | "Africa/Khartoum"
 ```
 
 ---
 
 ```luau
-| "Africa/Kigali"
+  | "Africa/Kigali"
 ```
 
 ---
 
 ```luau
-| "Africa/Kinshasa"
+  | "Africa/Kinshasa"
 ```
 
 ---
 
 ```luau
-| "Africa/Lagos"
+  | "Africa/Lagos"
 ```
 
 ---
 
 ```luau
-| "Africa/Libreville"
+  | "Africa/Libreville"
 ```
 
 ---
 
 ```luau
-| "Africa/Lome"
+  | "Africa/Lome"
 ```
 
 ---
 
 ```luau
-| "Africa/Luanda"
+  | "Africa/Luanda"
 ```
 
 ---
 
 ```luau
-| "Africa/Lubumbashi"
+  | "Africa/Lubumbashi"
 ```
 
 ---
 
 ```luau
-| "Africa/Lusaka"
+  | "Africa/Lusaka"
 ```
 
 ---
 
 ```luau
-| "Africa/Malabo"
+  | "Africa/Malabo"
 ```
 
 ---
 
 ```luau
-| "Africa/Maputo"
+  | "Africa/Maputo"
 ```
 
 ---
 
 ```luau
-| "Africa/Maseru"
+  | "Africa/Maseru"
 ```
 
 ---
 
 ```luau
-| "Africa/Mbabane"
+  | "Africa/Mbabane"
 ```
 
 ---
 
 ```luau
-| "Africa/Mogadishu"
+  | "Africa/Mogadishu"
 ```
 
 ---
 
 ```luau
-| "Africa/Monrovia"
+  | "Africa/Monrovia"
 ```
 
 ---
 
 ```luau
-| "Africa/Nairobi"
+  | "Africa/Nairobi"
 ```
 
 ---
 
 ```luau
-| "Africa/Ndjamena"
+  | "Africa/Ndjamena"
 ```
 
 ---
 
 ```luau
-| "Africa/Niamey"
+  | "Africa/Niamey"
 ```
 
 ---
 
 ```luau
-| "Africa/Nouakchott"
+  | "Africa/Nouakchott"
 ```
 
 ---
 
 ```luau
-| "Africa/Ouagadougou"
+  | "Africa/Ouagadougou"
 ```
 
 ---
 
 ```luau
-| "Africa/Porto-Novo"
+  | "Africa/Porto-Novo"
 ```
 
 ---
 
 ```luau
-| "Africa/Sao_Tome"
+  | "Africa/Sao_Tome"
 ```
 
 ---
 
 ```luau
-| "Africa/Timbuktu"
+  | "Africa/Timbuktu"
 ```
 
 ---
 
 ```luau
-| "Africa/Tripoli"
+  | "Africa/Tripoli"
 ```
 
 ---
 
 ```luau
-| "Africa/Tunis"
+  | "Africa/Tunis"
 ```
 
 ---
 
 ```luau
-| "Africa/Windhoek"
+  | "Africa/Windhoek"
 ```
 
 ---
 
 ```luau
-| "America/Adak"
+  | "America/Adak"
 ```
 
 ---
 
 ```luau
-| "America/Anchorage"
+  | "America/Anchorage"
 ```
 
 ---
 
 ```luau
-| "America/Anguilla"
+  | "America/Anguilla"
 ```
 
 ---
 
 ```luau
-| "America/Antigua"
+  | "America/Antigua"
 ```
 
 ---
 
 ```luau
-| "America/Araguaina"
+  | "America/Araguaina"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/Buenos_Aires"
+  | "America/Argentina/Buenos_Aires"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/Catamarca"
+  | "America/Argentina/Catamarca"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/ComodRivadavia"
+  | "America/Argentina/ComodRivadavia"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/Cordoba"
+  | "America/Argentina/Cordoba"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/Jujuy"
+  | "America/Argentina/Jujuy"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/La_Rioja"
+  | "America/Argentina/La_Rioja"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/Mendoza"
+  | "America/Argentina/Mendoza"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/Rio_Gallegos"
+  | "America/Argentina/Rio_Gallegos"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/Salta"
+  | "America/Argentina/Salta"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/San_Juan"
+  | "America/Argentina/San_Juan"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/San_Luis"
+  | "America/Argentina/San_Luis"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/Tucuman"
+  | "America/Argentina/Tucuman"
 ```
 
 ---
 
 ```luau
-| "America/Argentina/Ushuaia"
+  | "America/Argentina/Ushuaia"
 ```
 
 ---
 
 ```luau
-| "America/Aruba"
+  | "America/Aruba"
 ```
 
 ---
 
 ```luau
-| "America/Asuncion"
+  | "America/Asuncion"
 ```
 
 ---
 
 ```luau
-| "America/Atikokan"
+  | "America/Atikokan"
 ```
 
 ---
 
 ```luau
-| "America/Atka"
+  | "America/Atka"
 ```
 
 ---
 
 ```luau
-| "America/Bahia"
+  | "America/Bahia"
 ```
 
 ---
 
 ```luau
-| "America/Bahia_Banderas"
+  | "America/Bahia_Banderas"
 ```
 
 ---
 
 ```luau
-| "America/Barbados"
+  | "America/Barbados"
 ```
 
 ---
 
 ```luau
-| "America/Belem"
+  | "America/Belem"
 ```
 
 ---
 
 ```luau
-| "America/Belize"
+  | "America/Belize"
 ```
 
 ---
 
 ```luau
-| "America/Blanc-Sablon"
+  | "America/Blanc-Sablon"
 ```
 
 ---
 
 ```luau
-| "America/Boa_Vista"
+  | "America/Boa_Vista"
 ```
 
 ---
 
 ```luau
-| "America/Bogota"
+  | "America/Bogota"
 ```
 
 ---
 
 ```luau
-| "America/Boise"
+  | "America/Boise"
 ```
 
 ---
 
 ```luau
-| "America/Buenos_Aires"
+  | "America/Buenos_Aires"
 ```
 
 ---
 
 ```luau
-| "America/Cambridge_Bay"
+  | "America/Cambridge_Bay"
 ```
 
 ---
 
 ```luau
-| "America/Campo_Grande"
+  | "America/Campo_Grande"
 ```
 
 ---
 
 ```luau
-| "America/Cancun"
+  | "America/Cancun"
 ```
 
 ---
 
 ```luau
-| "America/Caracas"
+  | "America/Caracas"
 ```
 
 ---
 
 ```luau
-| "America/Catamarca"
+  | "America/Catamarca"
 ```
 
 ---
 
 ```luau
-| "America/Cayenne"
+  | "America/Cayenne"
 ```
 
 ---
 
 ```luau
-| "America/Cayman"
+  | "America/Cayman"
 ```
 
 ---
 
 ```luau
-| "America/Chicago"
+  | "America/Chicago"
 ```
 
 ---
 
 ```luau
-| "America/Chihuahua"
+  | "America/Chihuahua"
 ```
 
 ---
 
 ```luau
-| "America/Ciudad_Juarez"
+  | "America/Ciudad_Juarez"
 ```
 
 ---
 
 ```luau
-| "America/Coral_Harbour"
+  | "America/Coral_Harbour"
 ```
 
 ---
 
 ```luau
-| "America/Cordoba"
+  | "America/Cordoba"
 ```
 
 ---
 
 ```luau
-| "America/Costa_Rica"
+  | "America/Costa_Rica"
 ```
 
 ---
 
 ```luau
-| "America/Creston"
+  | "America/Creston"
 ```
 
 ---
 
 ```luau
-| "America/Cuiaba"
+  | "America/Cuiaba"
 ```
 
 ---
 
 ```luau
-| "America/Curacao"
+  | "America/Curacao"
 ```
 
 ---
 
 ```luau
-| "America/Danmarkshavn"
+  | "America/Danmarkshavn"
 ```
 
 ---
 
 ```luau
-| "America/Dawson"
+  | "America/Dawson"
 ```
 
 ---
 
 ```luau
-| "America/Dawson_Creek"
+  | "America/Dawson_Creek"
 ```
 
 ---
 
 ```luau
-| "America/Denver"
+  | "America/Denver"
 ```
 
 ---
 
 ```luau
-| "America/Detroit"
+  | "America/Detroit"
 ```
 
 ---
 
 ```luau
-| "America/Dominica"
+  | "America/Dominica"
 ```
 
 ---
 
 ```luau
-| "America/Edmonton"
+  | "America/Edmonton"
 ```
 
 ---
 
 ```luau
-| "America/Eirunepe"
+  | "America/Eirunepe"
 ```
 
 ---
 
 ```luau
-| "America/El_Salvador"
+  | "America/El_Salvador"
 ```
 
 ---
 
 ```luau
-| "America/Ensenada"
+  | "America/Ensenada"
 ```
 
 ---
 
 ```luau
-| "America/Fort_Nelson"
+  | "America/Fort_Nelson"
 ```
 
 ---
 
 ```luau
-| "America/Fort_Wayne"
+  | "America/Fort_Wayne"
 ```
 
 ---
 
 ```luau
-| "America/Fortaleza"
+  | "America/Fortaleza"
 ```
 
 ---
 
 ```luau
-| "America/Glace_Bay"
+  | "America/Glace_Bay"
 ```
 
 ---
 
 ```luau
-| "America/Godthab"
+  | "America/Godthab"
 ```
 
 ---
 
 ```luau
-| "America/Goose_Bay"
+  | "America/Goose_Bay"
 ```
 
 ---
 
 ```luau
-| "America/Grand_Turk"
+  | "America/Grand_Turk"
 ```
 
 ---
 
 ```luau
-| "America/Grenada"
+  | "America/Grenada"
 ```
 
 ---
 
 ```luau
-| "America/Guadeloupe"
+  | "America/Guadeloupe"
 ```
 
 ---
 
 ```luau
-| "America/Guatemala"
+  | "America/Guatemala"
 ```
 
 ---
 
 ```luau
-| "America/Guayaquil"
+  | "America/Guayaquil"
 ```
 
 ---
 
 ```luau
-| "America/Guyana"
+  | "America/Guyana"
 ```
 
 ---
 
 ```luau
-| "America/Halifax"
+  | "America/Halifax"
 ```
 
 ---
 
 ```luau
-| "America/Havana"
+  | "America/Havana"
 ```
 
 ---
 
 ```luau
-| "America/Hermosillo"
+  | "America/Hermosillo"
 ```
 
 ---
 
 ```luau
-| "America/Indiana/Indianapolis"
+  | "America/Indiana/Indianapolis"
 ```
 
 ---
 
 ```luau
-| "America/Indiana/Knox"
+  | "America/Indiana/Knox"
 ```
 
 ---
 
 ```luau
-| "America/Indiana/Marengo"
+  | "America/Indiana/Marengo"
 ```
 
 ---
 
 ```luau
-| "America/Indiana/Petersburg"
+  | "America/Indiana/Petersburg"
 ```
 
 ---
 
 ```luau
-| "America/Indiana/Tell_City"
+  | "America/Indiana/Tell_City"
 ```
 
 ---
 
 ```luau
-| "America/Indiana/Vevay"
+  | "America/Indiana/Vevay"
 ```
 
 ---
 
 ```luau
-| "America/Indiana/Vincennes"
+  | "America/Indiana/Vincennes"
 ```
 
 ---
 
 ```luau
-| "America/Indiana/Winamac"
+  | "America/Indiana/Winamac"
 ```
 
 ---
 
 ```luau
-| "America/Indianapolis"
+  | "America/Indianapolis"
 ```
 
 ---
 
 ```luau
-| "America/Inuvik"
+  | "America/Inuvik"
 ```
 
 ---
 
 ```luau
-| "America/Iqaluit"
+  | "America/Iqaluit"
 ```
 
 ---
 
 ```luau
-| "America/Jamaica"
+  | "America/Jamaica"
 ```
 
 ---
 
 ```luau
-| "America/Jujuy"
+  | "America/Jujuy"
 ```
 
 ---
 
 ```luau
-| "America/Juneau"
+  | "America/Juneau"
 ```
 
 ---
 
 ```luau
-| "America/Kentucky/Louisville"
+  | "America/Kentucky/Louisville"
 ```
 
 ---
 
 ```luau
-| "America/Kentucky/Monticello"
+  | "America/Kentucky/Monticello"
 ```
 
 ---
 
 ```luau
-| "America/Knox_IN"
+  | "America/Knox_IN"
 ```
 
 ---
 
 ```luau
-| "America/Kralendijk"
+  | "America/Kralendijk"
 ```
 
 ---
 
 ```luau
-| "America/La_Paz"
+  | "America/La_Paz"
 ```
 
 ---
 
 ```luau
-| "America/Lima"
+  | "America/Lima"
 ```
 
 ---
 
 ```luau
-| "America/Los_Angeles"
+  | "America/Los_Angeles"
 ```
 
 ---
 
 ```luau
-| "America/Louisville"
+  | "America/Louisville"
 ```
 
 ---
 
 ```luau
-| "America/Lower_Princes"
+  | "America/Lower_Princes"
 ```
 
 ---
 
 ```luau
-| "America/Maceio"
+  | "America/Maceio"
 ```
 
 ---
 
 ```luau
-| "America/Managua"
+  | "America/Managua"
 ```
 
 ---
 
 ```luau
-| "America/Manaus"
+  | "America/Manaus"
 ```
 
 ---
 
 ```luau
-| "America/Marigot"
+  | "America/Marigot"
 ```
 
 ---
 
 ```luau
-| "America/Martinique"
+  | "America/Martinique"
 ```
 
 ---
 
 ```luau
-| "America/Matamoros"
+  | "America/Matamoros"
 ```
 
 ---
 
 ```luau
-| "America/Mazatlan"
+  | "America/Mazatlan"
 ```
 
 ---
 
 ```luau
-| "America/Mendoza"
+  | "America/Mendoza"
 ```
 
 ---
 
 ```luau
-| "America/Menominee"
+  | "America/Menominee"
 ```
 
 ---
 
 ```luau
-| "America/Merida"
+  | "America/Merida"
 ```
 
 ---
 
 ```luau
-| "America/Metlakatla"
+  | "America/Metlakatla"
 ```
 
 ---
 
 ```luau
-| "America/Mexico_City"
+  | "America/Mexico_City"
 ```
 
 ---
 
 ```luau
-| "America/Miquelon"
+  | "America/Miquelon"
 ```
 
 ---
 
 ```luau
-| "America/Moncton"
+  | "America/Moncton"
 ```
 
 ---
 
 ```luau
-| "America/Monterrey"
+  | "America/Monterrey"
 ```
 
 ---
 
 ```luau
-| "America/Montevideo"
+  | "America/Montevideo"
 ```
 
 ---
 
 ```luau
-| "America/Montreal"
+  | "America/Montreal"
 ```
 
 ---
 
 ```luau
-| "America/Montserrat"
+  | "America/Montserrat"
 ```
 
 ---
 
 ```luau
-| "America/Nassau"
+  | "America/Nassau"
 ```
 
 ---
 
 ```luau
-| "America/New_York"
+  | "America/New_York"
 ```
 
 ---
 
 ```luau
-| "America/Nipigon"
+  | "America/Nipigon"
 ```
 
 ---
 
 ```luau
-| "America/Nome"
+  | "America/Nome"
 ```
 
 ---
 
 ```luau
-| "America/Noronha"
+  | "America/Noronha"
 ```
 
 ---
 
 ```luau
-| "America/North_Dakota/Beulah"
+  | "America/North_Dakota/Beulah"
 ```
 
 ---
 
 ```luau
-| "America/North_Dakota/Center"
+  | "America/North_Dakota/Center"
 ```
 
 ---
 
 ```luau
-| "America/North_Dakota/New_Salem"
+  | "America/North_Dakota/New_Salem"
 ```
 
 ---
 
 ```luau
-| "America/Nuuk"
+  | "America/Nuuk"
 ```
 
 ---
 
 ```luau
-| "America/Ojinaga"
+  | "America/Ojinaga"
 ```
 
 ---
 
 ```luau
-| "America/Panama"
+  | "America/Panama"
 ```
 
 ---
 
 ```luau
-| "America/Pangnirtung"
+  | "America/Pangnirtung"
 ```
 
 ---
 
 ```luau
-| "America/Paramaribo"
+  | "America/Paramaribo"
 ```
 
 ---
 
 ```luau
-| "America/Phoenix"
+  | "America/Phoenix"
 ```
 
 ---
 
 ```luau
-| "America/Port-au-Prince"
+  | "America/Port-au-Prince"
 ```
 
 ---
 
 ```luau
-| "America/Port_of_Spain"
+  | "America/Port_of_Spain"
 ```
 
 ---
 
 ```luau
-| "America/Porto_Acre"
+  | "America/Porto_Acre"
 ```
 
 ---
 
 ```luau
-| "America/Porto_Velho"
+  | "America/Porto_Velho"
 ```
 
 ---
 
 ```luau
-| "America/Puerto_Rico"
+  | "America/Puerto_Rico"
 ```
 
 ---
 
 ```luau
-| "America/Punta_Arenas"
+  | "America/Punta_Arenas"
 ```
 
 ---
 
 ```luau
-| "America/Rainy_River"
+  | "America/Rainy_River"
 ```
 
 ---
 
 ```luau
-| "America/Rankin_Inlet"
+  | "America/Rankin_Inlet"
 ```
 
 ---
 
 ```luau
-| "America/Recife"
+  | "America/Recife"
 ```
 
 ---
 
 ```luau
-| "America/Regina"
+  | "America/Regina"
 ```
 
 ---
 
 ```luau
-| "America/Resolute"
+  | "America/Resolute"
 ```
 
 ---
 
 ```luau
-| "America/Rio_Branco"
+  | "America/Rio_Branco"
 ```
 
 ---
 
 ```luau
-| "America/Rosario"
+  | "America/Rosario"
 ```
 
 ---
 
 ```luau
-| "America/Santa_Isabel"
+  | "America/Santa_Isabel"
 ```
 
 ---
 
 ```luau
-| "America/Santarem"
+  | "America/Santarem"
 ```
 
 ---
 
 ```luau
-| "America/Santiago"
+  | "America/Santiago"
 ```
 
 ---
 
 ```luau
-| "America/Santo_Domingo"
+  | "America/Santo_Domingo"
 ```
 
 ---
 
 ```luau
-| "America/Sao_Paulo"
+  | "America/Sao_Paulo"
 ```
 
 ---
 
 ```luau
-| "America/Scoresbysund"
+  | "America/Scoresbysund"
 ```
 
 ---
 
 ```luau
-| "America/Shiprock"
+  | "America/Shiprock"
 ```
 
 ---
 
 ```luau
-| "America/Sitka"
+  | "America/Sitka"
 ```
 
 ---
 
 ```luau
-| "America/St_Barthelemy"
+  | "America/St_Barthelemy"
 ```
 
 ---
 
 ```luau
-| "America/St_Johns"
+  | "America/St_Johns"
 ```
 
 ---
 
 ```luau
-| "America/St_Kitts"
+  | "America/St_Kitts"
 ```
 
 ---
 
 ```luau
-| "America/St_Lucia"
+  | "America/St_Lucia"
 ```
 
 ---
 
 ```luau
-| "America/St_Thomas"
+  | "America/St_Thomas"
 ```
 
 ---
 
 ```luau
-| "America/St_Vincent"
+  | "America/St_Vincent"
 ```
 
 ---
 
 ```luau
-| "America/Swift_Current"
+  | "America/Swift_Current"
 ```
 
 ---
 
 ```luau
-| "America/Tegucigalpa"
+  | "America/Tegucigalpa"
 ```
 
 ---
 
 ```luau
-| "America/Thule"
+  | "America/Thule"
 ```
 
 ---
 
 ```luau
-| "America/Thunder_Bay"
+  | "America/Thunder_Bay"
 ```
 
 ---
 
 ```luau
-| "America/Tijuana"
+  | "America/Tijuana"
 ```
 
 ---
 
 ```luau
-| "America/Toronto"
+  | "America/Toronto"
 ```
 
 ---
 
 ```luau
-| "America/Tortola"
+  | "America/Tortola"
 ```
 
 ---
 
 ```luau
-| "America/Vancouver"
+  | "America/Vancouver"
 ```
 
 ---
 
 ```luau
-| "America/Virgin"
+  | "America/Virgin"
 ```
 
 ---
 
 ```luau
-| "America/Whitehorse"
+  | "America/Whitehorse"
 ```
 
 ---
 
 ```luau
-| "America/Winnipeg"
+  | "America/Winnipeg"
 ```
 
 ---
 
 ```luau
-| "America/Yakutat"
+  | "America/Yakutat"
 ```
 
 ---
 
 ```luau
-| "America/Yellowknife"
+  | "America/Yellowknife"
 ```
 
 ---
 
 ```luau
-| "Antarctica/Casey"
+  | "Antarctica/Casey"
 ```
 
 ---
 
 ```luau
-| "Antarctica/Davis"
+  | "Antarctica/Davis"
 ```
 
 ---
 
 ```luau
-| "Antarctica/DumontDUrville"
+  | "Antarctica/DumontDUrville"
 ```
 
 ---
 
 ```luau
-| "Antarctica/Macquarie"
+  | "Antarctica/Macquarie"
 ```
 
 ---
 
 ```luau
-| "Antarctica/Mawson"
+  | "Antarctica/Mawson"
 ```
 
 ---
 
 ```luau
-| "Antarctica/McMurdo"
+  | "Antarctica/McMurdo"
 ```
 
 ---
 
 ```luau
-| "Antarctica/Palmer"
+  | "Antarctica/Palmer"
 ```
 
 ---
 
 ```luau
-| "Antarctica/Rothera"
+  | "Antarctica/Rothera"
 ```
 
 ---
 
 ```luau
-| "Antarctica/South_Pole"
+  | "Antarctica/South_Pole"
 ```
 
 ---
 
 ```luau
-| "Antarctica/Syowa"
+  | "Antarctica/Syowa"
 ```
 
 ---
 
 ```luau
-| "Antarctica/Troll"
+  | "Antarctica/Troll"
 ```
 
 ---
 
 ```luau
-| "Antarctica/Vostok"
+  | "Antarctica/Vostok"
 ```
 
 ---
 
 ```luau
-| "Arctic/Longyearbyen"
+  | "Arctic/Longyearbyen"
 ```
 
 ---
 
 ```luau
-| "Asia/Aden"
+  | "Asia/Aden"
 ```
 
 ---
 
 ```luau
-| "Asia/Almaty"
+  | "Asia/Almaty"
 ```
 
 ---
 
 ```luau
-| "Asia/Amman"
+  | "Asia/Amman"
 ```
 
 ---
 
 ```luau
-| "Asia/Anadyr"
+  | "Asia/Anadyr"
 ```
 
 ---
 
 ```luau
-| "Asia/Aqtau"
+  | "Asia/Aqtau"
 ```
 
 ---
 
 ```luau
-| "Asia/Aqtobe"
+  | "Asia/Aqtobe"
 ```
 
 ---
 
 ```luau
-| "Asia/Ashgabat"
+  | "Asia/Ashgabat"
 ```
 
 ---
 
 ```luau
-| "Asia/Ashkhabad"
+  | "Asia/Ashkhabad"
 ```
 
 ---
 
 ```luau
-| "Asia/Atyrau"
+  | "Asia/Atyrau"
 ```
 
 ---
 
 ```luau
-| "Asia/Baghdad"
+  | "Asia/Baghdad"
 ```
 
 ---
 
 ```luau
-| "Asia/Bahrain"
+  | "Asia/Bahrain"
 ```
 
 ---
 
 ```luau
-| "Asia/Baku"
+  | "Asia/Baku"
 ```
 
 ---
 
 ```luau
-| "Asia/Bangkok"
+  | "Asia/Bangkok"
 ```
 
 ---
 
 ```luau
-| "Asia/Barnaul"
+  | "Asia/Barnaul"
 ```
 
 ---
 
 ```luau
-| "Asia/Beirut"
+  | "Asia/Beirut"
 ```
 
 ---
 
 ```luau
-| "Asia/Bishkek"
+  | "Asia/Bishkek"
 ```
 
 ---
 
 ```luau
-| "Asia/Brunei"
+  | "Asia/Brunei"
 ```
 
 ---
 
 ```luau
-| "Asia/Calcutta"
+  | "Asia/Calcutta"
 ```
 
 ---
 
 ```luau
-| "Asia/Chita"
+  | "Asia/Chita"
 ```
 
 ---
 
 ```luau
-| "Asia/Choibalsan"
+  | "Asia/Choibalsan"
 ```
 
 ---
 
 ```luau
-| "Asia/Chongqing"
+  | "Asia/Chongqing"
 ```
 
 ---
 
 ```luau
-| "Asia/Chungking"
+  | "Asia/Chungking"
 ```
 
 ---
 
 ```luau
-| "Asia/Colombo"
+  | "Asia/Colombo"
 ```
 
 ---
 
 ```luau
-| "Asia/Dacca"
+  | "Asia/Dacca"
 ```
 
 ---
 
 ```luau
-| "Asia/Damascus"
+  | "Asia/Damascus"
 ```
 
 ---
 
 ```luau
-| "Asia/Dhaka"
+  | "Asia/Dhaka"
 ```
 
 ---
 
 ```luau
-| "Asia/Dili"
+  | "Asia/Dili"
 ```
 
 ---
 
 ```luau
-| "Asia/Dubai"
+  | "Asia/Dubai"
 ```
 
 ---
 
 ```luau
-| "Asia/Dushanbe"
+  | "Asia/Dushanbe"
 ```
 
 ---
 
 ```luau
-| "Asia/Famagusta"
+  | "Asia/Famagusta"
 ```
 
 ---
 
 ```luau
-| "Asia/Gaza"
+  | "Asia/Gaza"
 ```
 
 ---
 
 ```luau
-| "Asia/Harbin"
+  | "Asia/Harbin"
 ```
 
 ---
 
 ```luau
-| "Asia/Hebron"
+  | "Asia/Hebron"
 ```
 
 ---
 
 ```luau
-| "Asia/Ho_Chi_Minh"
+  | "Asia/Ho_Chi_Minh"
 ```
 
 ---
 
 ```luau
-| "Asia/Hong_Kong"
+  | "Asia/Hong_Kong"
 ```
 
 ---
 
 ```luau
-| "Asia/Hovd"
+  | "Asia/Hovd"
 ```
 
 ---
 
 ```luau
-| "Asia/Irkutsk"
+  | "Asia/Irkutsk"
 ```
 
 ---
 
 ```luau
-| "Asia/Istanbul"
+  | "Asia/Istanbul"
 ```
 
 ---
 
 ```luau
-| "Asia/Jakarta"
+  | "Asia/Jakarta"
 ```
 
 ---
 
 ```luau
-| "Asia/Jayapura"
+  | "Asia/Jayapura"
 ```
 
 ---
 
 ```luau
-| "Asia/Jerusalem"
+  | "Asia/Jerusalem"
 ```
 
 ---
 
 ```luau
-| "Asia/Kabul"
+  | "Asia/Kabul"
 ```
 
 ---
 
 ```luau
-| "Asia/Kamchatka"
+  | "Asia/Kamchatka"
 ```
 
 ---
 
 ```luau
-| "Asia/Karachi"
+  | "Asia/Karachi"
 ```
 
 ---
 
 ```luau
-| "Asia/Kashgar"
+  | "Asia/Kashgar"
 ```
 
 ---
 
 ```luau
-| "Asia/Kathmandu"
+  | "Asia/Kathmandu"
 ```
 
 ---
 
 ```luau
-| "Asia/Katmandu"
+  | "Asia/Katmandu"
 ```
 
 ---
 
 ```luau
-| "Asia/Khandyga"
+  | "Asia/Khandyga"
 ```
 
 ---
 
 ```luau
-| "Asia/Kolkata"
+  | "Asia/Kolkata"
 ```
 
 ---
 
 ```luau
-| "Asia/Krasnoyarsk"
+  | "Asia/Krasnoyarsk"
 ```
 
 ---
 
 ```luau
-| "Asia/Kuala_Lumpur"
+  | "Asia/Kuala_Lumpur"
 ```
 
 ---
 
 ```luau
-| "Asia/Kuching"
+  | "Asia/Kuching"
 ```
 
 ---
 
 ```luau
-| "Asia/Kuwait"
+  | "Asia/Kuwait"
 ```
 
 ---
 
 ```luau
-| "Asia/Macao"
+  | "Asia/Macao"
 ```
 
 ---
 
 ```luau
-| "Asia/Macau"
+  | "Asia/Macau"
 ```
 
 ---
 
 ```luau
-| "Asia/Magadan"
+  | "Asia/Magadan"
 ```
 
 ---
 
 ```luau
-| "Asia/Makassar"
+  | "Asia/Makassar"
 ```
 
 ---
 
 ```luau
-| "Asia/Manila"
+  | "Asia/Manila"
 ```
 
 ---
 
 ```luau
-| "Asia/Muscat"
+  | "Asia/Muscat"
 ```
 
 ---
 
 ```luau
-| "Asia/Nicosia"
+  | "Asia/Nicosia"
 ```
 
 ---
 
 ```luau
-| "Asia/Novokuznetsk"
+  | "Asia/Novokuznetsk"
 ```
 
 ---
 
 ```luau
-| "Asia/Novosibirsk"
+  | "Asia/Novosibirsk"
 ```
 
 ---
 
 ```luau
-| "Asia/Omsk"
+  | "Asia/Omsk"
 ```
 
 ---
 
 ```luau
-| "Asia/Oral"
+  | "Asia/Oral"
 ```
 
 ---
 
 ```luau
-| "Asia/Phnom_Penh"
+  | "Asia/Phnom_Penh"
 ```
 
 ---
 
 ```luau
-| "Asia/Pontianak"
+  | "Asia/Pontianak"
 ```
 
 ---
 
 ```luau
-| "Asia/Pyongyang"
+  | "Asia/Pyongyang"
 ```
 
 ---
 
 ```luau
-| "Asia/Qatar"
+  | "Asia/Qatar"
 ```
 
 ---
 
 ```luau
-| "Asia/Qostanay"
+  | "Asia/Qostanay"
 ```
 
 ---
 
 ```luau
-| "Asia/Qyzylorda"
+  | "Asia/Qyzylorda"
 ```
 
 ---
 
 ```luau
-| "Asia/Rangoon"
+  | "Asia/Rangoon"
 ```
 
 ---
 
 ```luau
-| "Asia/Riyadh"
+  | "Asia/Riyadh"
 ```
 
 ---
 
 ```luau
-| "Asia/Saigon"
+  | "Asia/Saigon"
 ```
 
 ---
 
 ```luau
-| "Asia/Sakhalin"
+  | "Asia/Sakhalin"
 ```
 
 ---
 
 ```luau
-| "Asia/Samarkand"
+  | "Asia/Samarkand"
 ```
 
 ---
 
 ```luau
-| "Asia/Seoul"
+  | "Asia/Seoul"
 ```
 
 ---
 
 ```luau
-| "Asia/Shanghai"
+  | "Asia/Shanghai"
 ```
 
 ---
 
 ```luau
-| "Asia/Singapore"
+  | "Asia/Singapore"
 ```
 
 ---
 
 ```luau
-| "Asia/Srednekolymsk"
+  | "Asia/Srednekolymsk"
 ```
 
 ---
 
 ```luau
-| "Asia/Taipei"
+  | "Asia/Taipei"
 ```
 
 ---
 
 ```luau
-| "Asia/Tashkent"
+  | "Asia/Tashkent"
 ```
 
 ---
 
 ```luau
-| "Asia/Tbilisi"
+  | "Asia/Tbilisi"
 ```
 
 ---
 
 ```luau
-| "Asia/Tehran"
+  | "Asia/Tehran"
 ```
 
 ---
 
 ```luau
-| "Asia/Tel_Aviv"
+  | "Asia/Tel_Aviv"
 ```
 
 ---
 
 ```luau
-| "Asia/Thimbu"
+  | "Asia/Thimbu"
 ```
 
 ---
 
 ```luau
-| "Asia/Thimphu"
+  | "Asia/Thimphu"
 ```
 
 ---
 
 ```luau
-| "Asia/Tokyo"
+  | "Asia/Tokyo"
 ```
 
 ---
 
 ```luau
-| "Asia/Tomsk"
+  | "Asia/Tomsk"
 ```
 
 ---
 
 ```luau
-| "Asia/Ujung_Pandang"
+  | "Asia/Ujung_Pandang"
 ```
 
 ---
 
 ```luau
-| "Asia/Ulaanbaatar"
+  | "Asia/Ulaanbaatar"
 ```
 
 ---
 
 ```luau
-| "Asia/Ulan_Bator"
+  | "Asia/Ulan_Bator"
 ```
 
 ---
 
 ```luau
-| "Asia/Urumqi"
+  | "Asia/Urumqi"
 ```
 
 ---
 
 ```luau
-| "Asia/Ust-Nera"
+  | "Asia/Ust-Nera"
 ```
 
 ---
 
 ```luau
-| "Asia/Vientiane"
+  | "Asia/Vientiane"
 ```
 
 ---
 
 ```luau
-| "Asia/Vladivostok"
+  | "Asia/Vladivostok"
 ```
 
 ---
 
 ```luau
-| "Asia/Yakutsk"
+  | "Asia/Yakutsk"
 ```
 
 ---
 
 ```luau
-| "Asia/Yangon"
+  | "Asia/Yangon"
 ```
 
 ---
 
 ```luau
-| "Asia/Yekaterinburg"
+  | "Asia/Yekaterinburg"
 ```
 
 ---
 
 ```luau
-| "Asia/Yerevan"
+  | "Asia/Yerevan"
 ```
 
 ---
 
 ```luau
-| "Atlantic/Azores"
+  | "Atlantic/Azores"
 ```
 
 ---
 
 ```luau
-| "Atlantic/Bermuda"
+  | "Atlantic/Bermuda"
 ```
 
 ---
 
 ```luau
-| "Atlantic/Canary"
+  | "Atlantic/Canary"
 ```
 
 ---
 
 ```luau
-| "Atlantic/Cape_Verde"
+  | "Atlantic/Cape_Verde"
 ```
 
 ---
 
 ```luau
-| "Atlantic/Faeroe"
+  | "Atlantic/Faeroe"
 ```
 
 ---
 
 ```luau
-| "Atlantic/Faroe"
+  | "Atlantic/Faroe"
 ```
 
 ---
 
 ```luau
-| "Atlantic/Jan_Mayen"
+  | "Atlantic/Jan_Mayen"
 ```
 
 ---
 
 ```luau
-| "Atlantic/Madeira"
+  | "Atlantic/Madeira"
 ```
 
 ---
 
 ```luau
-| "Atlantic/Reykjavik"
+  | "Atlantic/Reykjavik"
 ```
 
 ---
 
 ```luau
-| "Atlantic/South_Georgia"
+  | "Atlantic/South_Georgia"
 ```
 
 ---
 
 ```luau
-| "Atlantic/St_Helena"
+  | "Atlantic/St_Helena"
 ```
 
 ---
 
 ```luau
-| "Atlantic/Stanley"
+  | "Atlantic/Stanley"
 ```
 
 ---
 
 ```luau
-| "Australia/ACT"
+  | "Australia/ACT"
 ```
 
 ---
 
 ```luau
-| "Australia/Adelaide"
+  | "Australia/Adelaide"
 ```
 
 ---
 
 ```luau
-| "Australia/Brisbane"
+  | "Australia/Brisbane"
 ```
 
 ---
 
 ```luau
-| "Australia/Broken_Hill"
+  | "Australia/Broken_Hill"
 ```
 
 ---
 
 ```luau
-| "Australia/Canberra"
+  | "Australia/Canberra"
 ```
 
 ---
 
 ```luau
-| "Australia/Currie"
+  | "Australia/Currie"
 ```
 
 ---
 
 ```luau
-| "Australia/Darwin"
+  | "Australia/Darwin"
 ```
 
 ---
 
 ```luau
-| "Australia/Eucla"
+  | "Australia/Eucla"
 ```
 
 ---
 
 ```luau
-| "Australia/Hobart"
+  | "Australia/Hobart"
 ```
 
 ---
 
 ```luau
-| "Australia/LHI"
+  | "Australia/LHI"
 ```
 
 ---
 
 ```luau
-| "Australia/Lindeman"
+  | "Australia/Lindeman"
 ```
 
 ---
 
 ```luau
-| "Australia/Lord_Howe"
+  | "Australia/Lord_Howe"
 ```
 
 ---
 
 ```luau
-| "Australia/Melbourne"
+  | "Australia/Melbourne"
 ```
 
 ---
 
 ```luau
-| "Australia/NSW"
+  | "Australia/NSW"
 ```
 
 ---
 
 ```luau
-| "Australia/North"
+  | "Australia/North"
 ```
 
 ---
 
 ```luau
-| "Australia/Perth"
+  | "Australia/Perth"
 ```
 
 ---
 
 ```luau
-| "Australia/Queensland"
+  | "Australia/Queensland"
 ```
 
 ---
 
 ```luau
-| "Australia/South"
+  | "Australia/South"
 ```
 
 ---
 
 ```luau
-| "Australia/Sydney"
+  | "Australia/Sydney"
 ```
 
 ---
 
 ```luau
-| "Australia/Tasmania"
+  | "Australia/Tasmania"
 ```
 
 ---
 
 ```luau
-| "Australia/Victoria"
+  | "Australia/Victoria"
 ```
 
 ---
 
 ```luau
-| "Australia/West"
+  | "Australia/West"
 ```
 
 ---
 
 ```luau
-| "Australia/Yancowinna"
+  | "Australia/Yancowinna"
 ```
 
 ---
 
 ```luau
-| "Brazil/Acre"
+  | "Brazil/Acre"
 ```
 
 ---
 
 ```luau
-| "Brazil/DeNoronha"
+  | "Brazil/DeNoronha"
 ```
 
 ---
 
 ```luau
-| "Brazil/East"
+  | "Brazil/East"
 ```
 
 ---
 
 ```luau
-| "Brazil/West"
+  | "Brazil/West"
 ```
 
 ---
 
 ```luau
-| "CET"
+  | "CET"
 ```
 
 ---
 
 ```luau
-| "CST6CDT"
+  | "CST6CDT"
 ```
 
 ---
 
 ```luau
-| "Canada/Atlantic"
+  | "Canada/Atlantic"
 ```
 
 ---
 
 ```luau
-| "Canada/Central"
+  | "Canada/Central"
 ```
 
 ---
 
 ```luau
-| "Canada/Eastern"
+  | "Canada/Eastern"
 ```
 
 ---
 
 ```luau
-| "Canada/Mountain"
+  | "Canada/Mountain"
 ```
 
 ---
 
 ```luau
-| "Canada/Newfoundland"
+  | "Canada/Newfoundland"
 ```
 
 ---
 
 ```luau
-| "Canada/Pacific"
+  | "Canada/Pacific"
 ```
 
 ---
 
 ```luau
-| "Canada/Saskatchewan"
+  | "Canada/Saskatchewan"
 ```
 
 ---
 
 ```luau
-| "Canada/Yukon"
+  | "Canada/Yukon"
 ```
 
 ---
 
 ```luau
-| "Chile/Continental"
+  | "Chile/Continental"
 ```
 
 ---
 
 ```luau
-| "Chile/EasterIsland"
+  | "Chile/EasterIsland"
 ```
 
 ---
 
 ```luau
-| "Cuba"
+  | "Cuba"
 ```
 
 ---
 
 ```luau
-| "EET"
+  | "EET"
 ```
 
 ---
 
 ```luau
-| "EST"
+  | "EST"
 ```
 
 ---
 
 ```luau
-| "EST5EDT"
+  | "EST5EDT"
 ```
 
 ---
 
 ```luau
-| "Egypt"
+  | "Egypt"
 ```
 
 ---
 
 ```luau
-| "Eire"
+  | "Eire"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT"
+  | "Etc/GMT"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+0"
+  | "Etc/GMT+0"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+1"
+  | "Etc/GMT+1"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+10"
+  | "Etc/GMT+10"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+11"
+  | "Etc/GMT+11"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+12"
+  | "Etc/GMT+12"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+2"
+  | "Etc/GMT+2"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+3"
+  | "Etc/GMT+3"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+4"
+  | "Etc/GMT+4"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+5"
+  | "Etc/GMT+5"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+6"
+  | "Etc/GMT+6"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+7"
+  | "Etc/GMT+7"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+8"
+  | "Etc/GMT+8"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT+9"
+  | "Etc/GMT+9"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-0"
+  | "Etc/GMT-0"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-1"
+  | "Etc/GMT-1"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-10"
+  | "Etc/GMT-10"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-11"
+  | "Etc/GMT-11"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-12"
+  | "Etc/GMT-12"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-13"
+  | "Etc/GMT-13"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-14"
+  | "Etc/GMT-14"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-2"
+  | "Etc/GMT-2"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-3"
+  | "Etc/GMT-3"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-4"
+  | "Etc/GMT-4"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-5"
+  | "Etc/GMT-5"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-6"
+  | "Etc/GMT-6"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-7"
+  | "Etc/GMT-7"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-8"
+  | "Etc/GMT-8"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT-9"
+  | "Etc/GMT-9"
 ```
 
 ---
 
 ```luau
-| "Etc/GMT0"
+  | "Etc/GMT0"
 ```
 
 ---
 
 ```luau
-| "Etc/Greenwich"
+  | "Etc/Greenwich"
 ```
 
 ---
 
 ```luau
-| "Etc/UCT"
+  | "Etc/UCT"
 ```
 
 ---
 
 ```luau
-| "Etc/UTC"
+  | "Etc/UTC"
 ```
 
 ---
 
 ```luau
-| "Etc/Universal"
+  | "Etc/Universal"
 ```
 
 ---
 
 ```luau
-| "Etc/Zulu"
+  | "Etc/Zulu"
 ```
 
 ---
 
 ```luau
-| "Europe/Amsterdam"
+  | "Europe/Amsterdam"
 ```
 
 ---
 
 ```luau
-| "Europe/Andorra"
+  | "Europe/Andorra"
 ```
 
 ---
 
 ```luau
-| "Europe/Astrakhan"
+  | "Europe/Astrakhan"
 ```
 
 ---
 
 ```luau
-| "Europe/Athens"
+  | "Europe/Athens"
 ```
 
 ---
 
 ```luau
-| "Europe/Belfast"
+  | "Europe/Belfast"
 ```
 
 ---
 
 ```luau
-| "Europe/Belgrade"
+  | "Europe/Belgrade"
 ```
 
 ---
 
 ```luau
-| "Europe/Berlin"
+  | "Europe/Berlin"
 ```
 
 ---
 
 ```luau
-| "Europe/Bratislava"
+  | "Europe/Bratislava"
 ```
 
 ---
 
 ```luau
-| "Europe/Brussels"
+  | "Europe/Brussels"
 ```
 
 ---
 
 ```luau
-| "Europe/Bucharest"
+  | "Europe/Bucharest"
 ```
 
 ---
 
 ```luau
-| "Europe/Budapest"
+  | "Europe/Budapest"
 ```
 
 ---
 
 ```luau
-| "Europe/Busingen"
+  | "Europe/Busingen"
 ```
 
 ---
 
 ```luau
-| "Europe/Chisinau"
+  | "Europe/Chisinau"
 ```
 
 ---
 
 ```luau
-| "Europe/Copenhagen"
+  | "Europe/Copenhagen"
 ```
 
 ---
 
 ```luau
-| "Europe/Dublin"
+  | "Europe/Dublin"
 ```
 
 ---
 
 ```luau
-| "Europe/Gibraltar"
+  | "Europe/Gibraltar"
 ```
 
 ---
 
 ```luau
-| "Europe/Guernsey"
+  | "Europe/Guernsey"
 ```
 
 ---
 
 ```luau
-| "Europe/Helsinki"
+  | "Europe/Helsinki"
 ```
 
 ---
 
 ```luau
-| "Europe/Isle_of_Man"
+  | "Europe/Isle_of_Man"
 ```
 
 ---
 
 ```luau
-| "Europe/Istanbul"
+  | "Europe/Istanbul"
 ```
 
 ---
 
 ```luau
-| "Europe/Jersey"
+  | "Europe/Jersey"
 ```
 
 ---
 
 ```luau
-| "Europe/Kaliningrad"
+  | "Europe/Kaliningrad"
 ```
 
 ---
 
 ```luau
-| "Europe/Kiev"
+  | "Europe/Kiev"
 ```
 
 ---
 
 ```luau
-| "Europe/Kirov"
+  | "Europe/Kirov"
 ```
 
 ---
 
 ```luau
-| "Europe/Kyiv"
+  | "Europe/Kyiv"
 ```
 
 ---
 
 ```luau
-| "Europe/Lisbon"
+  | "Europe/Lisbon"
 ```
 
 ---
 
 ```luau
-| "Europe/Ljubljana"
+  | "Europe/Ljubljana"
 ```
 
 ---
 
 ```luau
-| "Europe/London"
+  | "Europe/London"
 ```
 
 ---
 
 ```luau
-| "Europe/Luxembourg"
+  | "Europe/Luxembourg"
 ```
 
 ---
 
 ```luau
-| "Europe/Madrid"
+  | "Europe/Madrid"
 ```
 
 ---
 
 ```luau
-| "Europe/Malta"
+  | "Europe/Malta"
 ```
 
 ---
 
 ```luau
-| "Europe/Mariehamn"
+  | "Europe/Mariehamn"
 ```
 
 ---
 
 ```luau
-| "Europe/Minsk"
+  | "Europe/Minsk"
 ```
 
 ---
 
 ```luau
-| "Europe/Monaco"
+  | "Europe/Monaco"
 ```
 
 ---
 
 ```luau
-| "Europe/Moscow"
+  | "Europe/Moscow"
 ```
 
 ---
 
 ```luau
-| "Europe/Nicosia"
+  | "Europe/Nicosia"
 ```
 
 ---
 
 ```luau
-| "Europe/Oslo"
+  | "Europe/Oslo"
 ```
 
 ---
 
 ```luau
-| "Europe/Paris"
+  | "Europe/Paris"
 ```
 
 ---
 
 ```luau
-| "Europe/Podgorica"
+  | "Europe/Podgorica"
 ```
 
 ---
 
 ```luau
-| "Europe/Prague"
+  | "Europe/Prague"
 ```
 
 ---
 
 ```luau
-| "Europe/Riga"
+  | "Europe/Riga"
 ```
 
 ---
 
 ```luau
-| "Europe/Rome"
+  | "Europe/Rome"
 ```
 
 ---
 
 ```luau
-| "Europe/Samara"
+  | "Europe/Samara"
 ```
 
 ---
 
 ```luau
-| "Europe/San_Marino"
+  | "Europe/San_Marino"
 ```
 
 ---
 
 ```luau
-| "Europe/Sarajevo"
+  | "Europe/Sarajevo"
 ```
 
 ---
 
 ```luau
-| "Europe/Saratov"
+  | "Europe/Saratov"
 ```
 
 ---
 
 ```luau
-| "Europe/Simferopol"
+  | "Europe/Simferopol"
 ```
 
 ---
 
 ```luau
-| "Europe/Skopje"
+  | "Europe/Skopje"
 ```
 
 ---
 
 ```luau
-| "Europe/Sofia"
+  | "Europe/Sofia"
 ```
 
 ---
 
 ```luau
-| "Europe/Stockholm"
+  | "Europe/Stockholm"
 ```
 
 ---
 
 ```luau
-| "Europe/Tallinn"
+  | "Europe/Tallinn"
 ```
 
 ---
 
 ```luau
-| "Europe/Tirane"
+  | "Europe/Tirane"
 ```
 
 ---
 
 ```luau
-| "Europe/Tiraspol"
+  | "Europe/Tiraspol"
 ```
 
 ---
 
 ```luau
-| "Europe/Ulyanovsk"
+  | "Europe/Ulyanovsk"
 ```
 
 ---
 
 ```luau
-| "Europe/Uzhgorod"
+  | "Europe/Uzhgorod"
 ```
 
 ---
 
 ```luau
-| "Europe/Vaduz"
+  | "Europe/Vaduz"
 ```
 
 ---
 
 ```luau
-| "Europe/Vatican"
+  | "Europe/Vatican"
 ```
 
 ---
 
 ```luau
-| "Europe/Vienna"
+  | "Europe/Vienna"
 ```
 
 ---
 
 ```luau
-| "Europe/Vilnius"
+  | "Europe/Vilnius"
 ```
 
 ---
 
 ```luau
-| "Europe/Volgograd"
+  | "Europe/Volgograd"
 ```
 
 ---
 
 ```luau
-| "Europe/Warsaw"
+  | "Europe/Warsaw"
 ```
 
 ---
 
 ```luau
-| "Europe/Zagreb"
+  | "Europe/Zagreb"
 ```
 
 ---
 
 ```luau
-| "Europe/Zaporozhye"
+  | "Europe/Zaporozhye"
 ```
 
 ---
 
 ```luau
-| "Europe/Zurich"
+  | "Europe/Zurich"
 ```
 
 ---
 
 ```luau
-| "GB"
+  | "GB"
 ```
 
 ---
 
 ```luau
-| "GB-Eire"
+  | "GB-Eire"
 ```
 
 ---
 
 ```luau
-| "GMT"
+  | "GMT"
 ```
 
 ---
 
 ```luau
-| "GMT+0"
+  | "GMT+0"
 ```
 
 ---
 
 ```luau
-| "GMT-0"
+  | "GMT-0"
 ```
 
 ---
 
 ```luau
-| "GMT0"
+  | "GMT0"
 ```
 
 ---
 
 ```luau
-| "Greenwich"
+  | "Greenwich"
 ```
 
 ---
 
 ```luau
-| "HST"
+  | "HST"
 ```
 
 ---
 
 ```luau
-| "Hongkong"
+  | "Hongkong"
 ```
 
 ---
 
 ```luau
-| "Iceland"
+  | "Iceland"
 ```
 
 ---
 
 ```luau
-| "Indian/Antananarivo"
+  | "Indian/Antananarivo"
 ```
 
 ---
 
 ```luau
-| "Indian/Chagos"
+  | "Indian/Chagos"
 ```
 
 ---
 
 ```luau
-| "Indian/Christmas"
+  | "Indian/Christmas"
 ```
 
 ---
 
 ```luau
-| "Indian/Cocos"
+  | "Indian/Cocos"
 ```
 
 ---
 
 ```luau
-| "Indian/Comoro"
+  | "Indian/Comoro"
 ```
 
 ---
 
 ```luau
-| "Indian/Kerguelen"
+  | "Indian/Kerguelen"
 ```
 
 ---
 
 ```luau
-| "Indian/Mahe"
+  | "Indian/Mahe"
 ```
 
 ---
 
 ```luau
-| "Indian/Maldives"
+  | "Indian/Maldives"
 ```
 
 ---
 
 ```luau
-| "Indian/Mauritius"
+  | "Indian/Mauritius"
 ```
 
 ---
 
 ```luau
-| "Indian/Mayotte"
+  | "Indian/Mayotte"
 ```
 
 ---
 
 ```luau
-| "Indian/Reunion"
+  | "Indian/Reunion"
 ```
 
 ---
 
 ```luau
-| "Iran"
+  | "Iran"
 ```
 
 ---
 
 ```luau
-| "Israel"
+  | "Israel"
 ```
 
 ---
 
 ```luau
-| "Jamaica"
+  | "Jamaica"
 ```
 
 ---
 
 ```luau
-| "Japan"
+  | "Japan"
 ```
 
 ---
 
 ```luau
-| "Kwajalein"
+  | "Kwajalein"
 ```
 
 ---
 
 ```luau
-| "Libya"
+  | "Libya"
 ```
 
 ---
 
 ```luau
-| "MET"
+  | "MET"
 ```
 
 ---
 
 ```luau
-| "MST"
+  | "MST"
 ```
 
 ---
 
 ```luau
-| "MST7MDT"
+  | "MST7MDT"
 ```
 
 ---
 
 ```luau
-| "Mexico/BajaNorte"
+  | "Mexico/BajaNorte"
 ```
 
 ---
 
 ```luau
-| "Mexico/BajaSur"
+  | "Mexico/BajaSur"
 ```
 
 ---
 
 ```luau
-| "Mexico/General"
+  | "Mexico/General"
 ```
 
 ---
 
 ```luau
-| "NZ"
+  | "NZ"
 ```
 
 ---
 
 ```luau
-| "NZ-CHAT"
+  | "NZ-CHAT"
 ```
 
 ---
 
 ```luau
-| "Navajo"
+  | "Navajo"
 ```
 
 ---
 
 ```luau
-| "PRC"
+  | "PRC"
 ```
 
 ---
 
 ```luau
-| "PST8PDT"
+  | "PST8PDT"
 ```
 
 ---
 
 ```luau
-| "Pacific/Apia"
+  | "Pacific/Apia"
 ```
 
 ---
 
 ```luau
-| "Pacific/Auckland"
+  | "Pacific/Auckland"
 ```
 
 ---
 
 ```luau
-| "Pacific/Bougainville"
+  | "Pacific/Bougainville"
 ```
 
 ---
 
 ```luau
-| "Pacific/Chatham"
+  | "Pacific/Chatham"
 ```
 
 ---
 
 ```luau
-| "Pacific/Chuuk"
+  | "Pacific/Chuuk"
 ```
 
 ---
 
 ```luau
-| "Pacific/Easter"
+  | "Pacific/Easter"
 ```
 
 ---
 
 ```luau
-| "Pacific/Efate"
+  | "Pacific/Efate"
 ```
 
 ---
 
 ```luau
-| "Pacific/Enderbury"
+  | "Pacific/Enderbury"
 ```
 
 ---
 
 ```luau
-| "Pacific/Fakaofo"
+  | "Pacific/Fakaofo"
 ```
 
 ---
 
 ```luau
-| "Pacific/Fiji"
+  | "Pacific/Fiji"
 ```
 
 ---
 
 ```luau
-| "Pacific/Funafuti"
+  | "Pacific/Funafuti"
 ```
 
 ---
 
 ```luau
-| "Pacific/Galapagos"
+  | "Pacific/Galapagos"
 ```
 
 ---
 
 ```luau
-| "Pacific/Gambier"
+  | "Pacific/Gambier"
 ```
 
 ---
 
 ```luau
-| "Pacific/Guadalcanal"
+  | "Pacific/Guadalcanal"
 ```
 
 ---
 
 ```luau
-| "Pacific/Guam"
+  | "Pacific/Guam"
 ```
 
 ---
 
 ```luau
-| "Pacific/Honolulu"
+  | "Pacific/Honolulu"
 ```
 
 ---
 
 ```luau
-| "Pacific/Johnston"
+  | "Pacific/Johnston"
 ```
 
 ---
 
 ```luau
-| "Pacific/Kanton"
+  | "Pacific/Kanton"
 ```
 
 ---
 
 ```luau
-| "Pacific/Kiritimati"
+  | "Pacific/Kiritimati"
 ```
 
 ---
 
 ```luau
-| "Pacific/Kosrae"
+  | "Pacific/Kosrae"
 ```
 
 ---
 
 ```luau
-| "Pacific/Kwajalein"
+  | "Pacific/Kwajalein"
 ```
 
 ---
 
 ```luau
-| "Pacific/Majuro"
+  | "Pacific/Majuro"
 ```
 
 ---
 
 ```luau
-| "Pacific/Marquesas"
+  | "Pacific/Marquesas"
 ```
 
 ---
 
 ```luau
-| "Pacific/Midway"
+  | "Pacific/Midway"
 ```
 
 ---
 
 ```luau
-| "Pacific/Nauru"
+  | "Pacific/Nauru"
 ```
 
 ---
 
 ```luau
-| "Pacific/Niue"
+  | "Pacific/Niue"
 ```
 
 ---
 
 ```luau
-| "Pacific/Norfolk"
+  | "Pacific/Norfolk"
 ```
 
 ---
 
 ```luau
-| "Pacific/Noumea"
+  | "Pacific/Noumea"
 ```
 
 ---
 
 ```luau
-| "Pacific/Pago_Pago"
+  | "Pacific/Pago_Pago"
 ```
 
 ---
 
 ```luau
-| "Pacific/Palau"
+  | "Pacific/Palau"
 ```
 
 ---
 
 ```luau
-| "Pacific/Pitcairn"
+  | "Pacific/Pitcairn"
 ```
 
 ---
 
 ```luau
-| "Pacific/Pohnpei"
+  | "Pacific/Pohnpei"
 ```
 
 ---
 
 ```luau
-| "Pacific/Ponape"
+  | "Pacific/Ponape"
 ```
 
 ---
 
 ```luau
-| "Pacific/Port_Moresby"
+  | "Pacific/Port_Moresby"
 ```
 
 ---
 
 ```luau
-| "Pacific/Rarotonga"
+  | "Pacific/Rarotonga"
 ```
 
 ---
 
 ```luau
-| "Pacific/Saipan"
+  | "Pacific/Saipan"
 ```
 
 ---
 
 ```luau
-| "Pacific/Samoa"
+  | "Pacific/Samoa"
 ```
 
 ---
 
 ```luau
-| "Pacific/Tahiti"
+  | "Pacific/Tahiti"
 ```
 
 ---
 
 ```luau
-| "Pacific/Tarawa"
+  | "Pacific/Tarawa"
 ```
 
 ---
 
 ```luau
-| "Pacific/Tongatapu"
+  | "Pacific/Tongatapu"
 ```
 
 ---
 
 ```luau
-| "Pacific/Truk"
+  | "Pacific/Truk"
 ```
 
 ---
 
 ```luau
-| "Pacific/Wake"
+  | "Pacific/Wake"
 ```
 
 ---
 
 ```luau
-| "Pacific/Wallis"
+  | "Pacific/Wallis"
 ```
 
 ---
 
 ```luau
-| "Pacific/Yap"
+  | "Pacific/Yap"
 ```
 
 ---
 
 ```luau
-| "Poland"
+  | "Poland"
 ```
 
 ---
 
 ```luau
-| "Portugal"
+  | "Portugal"
 ```
 
 ---
 
 ```luau
-| "ROC"
+  | "ROC"
 ```
 
 ---
 
 ```luau
-| "ROK"
+  | "ROK"
 ```
 
 ---
 
 ```luau
-| "Singapore"
+  | "Singapore"
 ```
 
 ---
 
 ```luau
-| "Turkey"
+  | "Turkey"
 ```
 
 ---
 
 ```luau
-| "UCT"
+  | "UCT"
 ```
 
 ---
 
 ```luau
-| "US/Alaska"
+  | "US/Alaska"
 ```
 
 ---
 
 ```luau
-| "US/Aleutian"
+  | "US/Aleutian"
 ```
 
 ---
 
 ```luau
-| "US/Arizona"
+  | "US/Arizona"
 ```
 
 ---
 
 ```luau
-| "US/Central"
+  | "US/Central"
 ```
 
 ---
 
 ```luau
-| "US/East-Indiana"
+  | "US/East-Indiana"
 ```
 
 ---
 
 ```luau
-| "US/Eastern"
+  | "US/Eastern"
 ```
 
 ---
 
 ```luau
-| "US/Hawaii"
+  | "US/Hawaii"
 ```
 
 ---
 
 ```luau
-| "US/Indiana-Starke"
+  | "US/Indiana-Starke"
 ```
 
 ---
 
 ```luau
-| "US/Michigan"
+  | "US/Michigan"
 ```
 
 ---
 
 ```luau
-| "US/Mountain"
+  | "US/Mountain"
 ```
 
 ---
 
 ```luau
-| "US/Pacific"
+  | "US/Pacific"
 ```
 
 ---
 
 ```luau
-| "US/Samoa"
+  | "US/Samoa"
 ```
 
 ---
 
 ```luau
-| "UTC"
+  | "UTC"
 ```
 
 ---
 
 ```luau
-| "Universal"
+  | "Universal"
 ```
 
 ---
 
 ```luau
-| "W-SU"
+  | "W-SU"
 ```
 
 ---
 
 ```luau
-| "WET"
+  | "WET"
 ```
 
 ---
 
 ```luau
-| "Zulu"
+  | "Zulu"
 ```
 
 ---

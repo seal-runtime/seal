@@ -642,37 +642,37 @@ type ClearMode =
 ---
 
 ```luau
-| "All"
+  | "All"
 ```
 
 ---
 
 ```luau
-| "Purge"
+  | "Purge"
 ```
 
 ---
 
 ```luau
-| "FromCursorDown"
+  | "FromCursorDown"
 ```
 
 ---
 
 ```luau
-| "FromCursorUp"
+  | "FromCursorUp"
 ```
 
 ---
 
 ```luau
-| "CurrentLine"
+  | "CurrentLine"
 ```
 
 ---
 
 ```luau
-| "UntilNewLine"
+  | "UntilNewLine"
 ```
 
 ---
@@ -690,43 +690,43 @@ export type TerminalEvent =
 ---
 
 ```luau
-| KeyEvent
+  | KeyEvent
 ```
 
 ---
 
 ```luau
-| MouseEvent
+  | MouseEvent
 ```
 
 ---
 
 ```luau
-| ResizeEvent
+  | ResizeEvent
 ```
 
 ---
 
 ```luau
-| PasteEvent
+  | PasteEvent
 ```
 
 ---
 
 ```luau
-| FocusGained
+  | FocusGained
 ```
 
 ---
 
 ```luau
-| FocusLost
+  | FocusLost
 ```
 
 ---
 
 ```luau
-| Empty
+  | Empty
 ```
 
 ---
@@ -745,36 +745,36 @@ export type KeyModifiers = {
 
 ---
 
-### KeyModifiers.ctrl
+#### KeyModifiers.ctrl
 
 <h4>
 
 ```luau
-ctrl: boolean,
+  ctrl: boolean,
 ```
 
 </h4>
 
 ---
 
-### KeyModifiers.shift
+#### KeyModifiers.shift
 
 <h4>
 
 ```luau
-shift: boolean,
+  shift: boolean,
 ```
 
 </h4>
 
 ---
 
-### KeyModifiers.alt
+#### KeyModifiers.alt
 
 <h4>
 
 ```luau
-alt: boolean,
+  alt: boolean,
 ```
 
 </h4>
@@ -793,24 +793,24 @@ export type ResizeEvent = {
 
 ---
 
-### ResizeEvent.type
+#### ResizeEvent.type
 
 <h4>
 
 ```luau
-type: "Resize",
+  type: "Resize",
 ```
 
 </h4>
 
 ---
 
-### ResizeEvent.size
+#### ResizeEvent.size
 
 <h4>
 
 ```luau
-size: vector,
+  size: vector,
 ```
 
 </h4>
@@ -831,12 +831,12 @@ export type FocusGained = {
 
 ---
 
-### FocusGained.type
+#### FocusGained.type
 
 <h4>
 
 ```luau
-type: "FocusGained",
+  type: "FocusGained",
 ```
 
 </h4>
@@ -855,12 +855,12 @@ export type FocusLost = {
 
 ---
 
-### FocusLost.type
+#### FocusLost.type
 
 <h4>
 
 ```luau
-type: "FocusLost",
+  type: "FocusLost",
 ```
 
 </h4>
@@ -879,24 +879,24 @@ export type PasteEvent = {
 
 ---
 
-### PasteEvent.type
+#### PasteEvent.type
 
 <h4>
 
 ```luau
-type: "Paste",
+  type: "Paste",
 ```
 
 </h4>
 
 ---
 
-### PasteEvent.contents
+#### PasteEvent.contents
 
 <h4>
 
 ```luau
-contents: string,
+  contents: string,
 ```
 
 </h4>
@@ -918,12 +918,12 @@ export type Empty = {
 
 ---
 
-### Empty.type
+#### Empty.type
 
 <h4>
 
 ```luau
-type: "Empty",
+  type: "Empty",
 ```
 
 </h4>
@@ -942,24 +942,24 @@ export type KeyEvent = {
 
 ---
 
-### KeyEvent.type
+#### KeyEvent.type
 
 <h4>
 
 ```luau
-type: "Key",
+  type: "Key",
 ```
 
 </h4>
 
 ---
 
-### KeyEvent.key
+#### KeyEvent.key
 
 <h4>
 
 ```luau
-key: KeyCode,
+  key: KeyCode,
 ```
 
 </h4>
@@ -994,24 +994,24 @@ The spacebar key is `"Space"`.
 
 ---
 
-### KeyEvent.kind
+#### KeyEvent.kind
 
 <h4>
 
 ```luau
-kind: KeyEventKind,
+  kind: KeyEventKind,
 ```
 
 </h4>
 
 ---
 
-### KeyEvent.modifiers
+#### KeyEvent.modifiers
 
 <h4>
 
 ```luau
-modifiers: KeyModifiers,
+  modifiers: KeyModifiers,
 ```
 
 </h4>
@@ -1031,7 +1031,7 @@ export type KeyCode =
 ---
 
 ```luau
-| "Backspace"
+  | "Backspace"
 ```
 
  Navigation and control keys
@@ -1039,85 +1039,85 @@ export type KeyCode =
 ---
 
 ```luau
-| "Enter"
+  | "Enter"
 ```
 
 ---
 
 ```luau
-| "Left"
+  | "Left"
 ```
 
 ---
 
 ```luau
-| "Right"
+  | "Right"
 ```
 
 ---
 
 ```luau
-| "Up"
+  | "Up"
 ```
 
 ---
 
 ```luau
-| "Down"
+  | "Down"
 ```
 
 ---
 
 ```luau
-| "Home"
+  | "Home"
 ```
 
 ---
 
 ```luau
-| "End"
+  | "End"
 ```
 
 ---
 
 ```luau
-| "Page Up"
+  | "Page Up"
 ```
 
 ---
 
 ```luau
-| "Page Down"
+  | "Page Down"
 ```
 
 ---
 
 ```luau
-| "Tab"
+  | "Tab"
 ```
 
 ---
 
 ```luau
-| "Back Tab"
+  | "Back Tab"
 ```
 
 ---
 
 ```luau
-| "Delete"
+  | "Delete"
 ```
 
 ---
 
 ```luau
-| "Insert"
+  | "Insert"
 ```
 
 ---
 
 ```luau
-| "F1"
+  | "F1"
 ```
 
  Function keys F1 through F24
@@ -1125,145 +1125,145 @@ export type KeyCode =
 ---
 
 ```luau
-| "F2"
+  | "F2"
 ```
 
 ---
 
 ```luau
-| "F3"
+  | "F3"
 ```
 
 ---
 
 ```luau
-| "F4"
+  | "F4"
 ```
 
 ---
 
 ```luau
-| "F5"
+  | "F5"
 ```
 
 ---
 
 ```luau
-| "F6"
+  | "F6"
 ```
 
 ---
 
 ```luau
-| "F7"
+  | "F7"
 ```
 
 ---
 
 ```luau
-| "F8"
+  | "F8"
 ```
 
 ---
 
 ```luau
-| "F9"
+  | "F9"
 ```
 
 ---
 
 ```luau
-| "F10"
+  | "F10"
 ```
 
 ---
 
 ```luau
-| "F11"
+  | "F11"
 ```
 
 ---
 
 ```luau
-| "F12"
+  | "F12"
 ```
 
 ---
 
 ```luau
-| "F13"
+  | "F13"
 ```
 
 ---
 
 ```luau
-| "F14"
+  | "F14"
 ```
 
 ---
 
 ```luau
-| "F15"
+  | "F15"
 ```
 
 ---
 
 ```luau
-| "F16"
+  | "F16"
 ```
 
 ---
 
 ```luau
-| "F17"
+  | "F17"
 ```
 
 ---
 
 ```luau
-| "F18"
+  | "F18"
 ```
 
 ---
 
 ```luau
-| "F19"
+  | "F19"
 ```
 
 ---
 
 ```luau
-| "F20"
+  | "F20"
 ```
 
 ---
 
 ```luau
-| "F21"
+  | "F21"
 ```
 
 ---
 
 ```luau
-| "F22"
+  | "F22"
 ```
 
 ---
 
 ```luau
-| "F23"
+  | "F23"
 ```
 
 ---
 
 ```luau
-| "F24"
+  | "F24"
 ```
 
 ---
 
 ```luau
-| "a"
+  | "a"
 ```
 
  Character keys: lowercase letters (all printable characters normalized to lowercase)
@@ -1271,157 +1271,157 @@ export type KeyCode =
 ---
 
 ```luau
-| "b"
+  | "b"
 ```
 
 ---
 
 ```luau
-| "c"
+  | "c"
 ```
 
 ---
 
 ```luau
-| "d"
+  | "d"
 ```
 
 ---
 
 ```luau
-| "e"
+  | "e"
 ```
 
 ---
 
 ```luau
-| "f"
+  | "f"
 ```
 
 ---
 
 ```luau
-| "g"
+  | "g"
 ```
 
 ---
 
 ```luau
-| "h"
+  | "h"
 ```
 
 ---
 
 ```luau
-| "i"
+  | "i"
 ```
 
 ---
 
 ```luau
-| "j"
+  | "j"
 ```
 
 ---
 
 ```luau
-| "k"
+  | "k"
 ```
 
 ---
 
 ```luau
-| "l"
+  | "l"
 ```
 
 ---
 
 ```luau
-| "m"
+  | "m"
 ```
 
 ---
 
 ```luau
-| "n"
+  | "n"
 ```
 
 ---
 
 ```luau
-| "o"
+  | "o"
 ```
 
 ---
 
 ```luau
-| "p"
+  | "p"
 ```
 
 ---
 
 ```luau
-| "q"
+  | "q"
 ```
 
 ---
 
 ```luau
-| "r"
+  | "r"
 ```
 
 ---
 
 ```luau
-| "s"
+  | "s"
 ```
 
 ---
 
 ```luau
-| "t"
+  | "t"
 ```
 
 ---
 
 ```luau
-| "u"
+  | "u"
 ```
 
 ---
 
 ```luau
-| "v"
+  | "v"
 ```
 
 ---
 
 ```luau
-| "w"
+  | "w"
 ```
 
 ---
 
 ```luau
-| "x"
+  | "x"
 ```
 
 ---
 
 ```luau
-| "y"
+  | "y"
 ```
 
 ---
 
 ```luau
-| "z"
+  | "z"
 ```
 
 ---
 
 ```luau
-| "0"
+  | "0"
 ```
 
  Character keys: digits
@@ -1429,61 +1429,61 @@ export type KeyCode =
 ---
 
 ```luau
-| "1"
+  | "1"
 ```
 
 ---
 
 ```luau
-| "2"
+  | "2"
 ```
 
 ---
 
 ```luau
-| "3"
+  | "3"
 ```
 
 ---
 
 ```luau
-| "4"
+  | "4"
 ```
 
 ---
 
 ```luau
-| "5"
+  | "5"
 ```
 
 ---
 
 ```luau
-| "6"
+  | "6"
 ```
 
 ---
 
 ```luau
-| "7"
+  | "7"
 ```
 
 ---
 
 ```luau
-| "8"
+  | "8"
 ```
 
 ---
 
 ```luau
-| "9"
+  | "9"
 ```
 
 ---
 
 ```luau
-| "Space"
+  | "Space"
 ```
 
  Special character keys
@@ -1491,61 +1491,61 @@ export type KeyCode =
 ---
 
 ```luau
-| "Null"
+  | "Null"
 ```
 
 ---
 
 ```luau
-| "Esc"
+  | "Esc"
 ```
 
 ---
 
 ```luau
-| "Caps Lock"
+  | "Caps Lock"
 ```
 
 ---
 
 ```luau
-| "Scroll Lock"
+  | "Scroll Lock"
 ```
 
 ---
 
 ```luau
-| "Num Lock"
+  | "Num Lock"
 ```
 
 ---
 
 ```luau
-| "Print Screen"
+  | "Print Screen"
 ```
 
 ---
 
 ```luau
-| "Pause"
+  | "Pause"
 ```
 
 ---
 
 ```luau
-| "Menu"
+  | "Menu"
 ```
 
 ---
 
 ```luau
-| "Begin"
+  | "Begin"
 ```
 
 ---
 
 ```luau
-| "Play"
+  | "Play"
 ```
 
  Media keys (cross-platform normalized)
@@ -1553,79 +1553,79 @@ export type KeyCode =
 ---
 
 ```luau
-| "Pause"
+  | "Pause"
 ```
 
 ---
 
 ```luau
-| "Play/Pause"
+  | "Play/Pause"
 ```
 
 ---
 
 ```luau
-| "Reverse"
+  | "Reverse"
 ```
 
 ---
 
 ```luau
-| "Stop"
+  | "Stop"
 ```
 
 ---
 
 ```luau
-| "Fast Forward"
+  | "Fast Forward"
 ```
 
 ---
 
 ```luau
-| "Rewind"
+  | "Rewind"
 ```
 
 ---
 
 ```luau
-| "Next Track"
+  | "Next Track"
 ```
 
 ---
 
 ```luau
-| "Previous Track"
+  | "Previous Track"
 ```
 
 ---
 
 ```luau
-| "Record"
+  | "Record"
 ```
 
 ---
 
 ```luau
-| "Lower Volume"
+  | "Lower Volume"
 ```
 
 ---
 
 ```luau
-| "Raise Volume"
+  | "Raise Volume"
 ```
 
 ---
 
 ```luau
-| "Mute Volume"
+  | "Mute Volume"
 ```
 
 ---
 
 ```luau
-| "Left Shift"
+  | "Left Shift"
 ```
 
  Modifier keys (cross-platform normalized)
@@ -1633,79 +1633,79 @@ export type KeyCode =
 ---
 
 ```luau
-| "Right Shift"
+  | "Right Shift"
 ```
 
 ---
 
 ```luau
-| "Left Ctrl"
+  | "Left Ctrl"
 ```
 
 ---
 
 ```luau
-| "Right Ctrl"
+  | "Right Ctrl"
 ```
 
 ---
 
 ```luau
-| "Left Alt"
+  | "Left Alt"
 ```
 
 ---
 
 ```luau
-| "Right Alt"
+  | "Right Alt"
 ```
 
 ---
 
 ```luau
-| "Left Super"
+  | "Left Super"
 ```
 
 ---
 
 ```luau
-| "Right Super"
+  | "Right Super"
 ```
 
 ---
 
 ```luau
-| "Left Hyper"
+  | "Left Hyper"
 ```
 
 ---
 
 ```luau
-| "Right Hyper"
+  | "Right Hyper"
 ```
 
 ---
 
 ```luau
-| "Left Meta"
+  | "Left Meta"
 ```
 
 ---
 
 ```luau
-| "Right Meta"
+  | "Right Meta"
 ```
 
 ---
 
 ```luau
-| "Iso Level 3 Shift"
+  | "Iso Level 3 Shift"
 ```
 
 ---
 
 ```luau
-| "Iso Level 5 Shift"
+  | "Iso Level 5 Shift"
 ```
 
 ---
@@ -1723,19 +1723,19 @@ export type KeyEventKind =
 ---
 
 ```luau
-| "Press"
+  | "Press"
 ```
 
 ---
 
 ```luau
-| "Release"
+  | "Release"
 ```
 
 ---
 
 ```luau
-| "Repeat"
+  | "Repeat"
 ```
 
 ---
@@ -1752,36 +1752,36 @@ export type MouseEvent = {
 
 ---
 
-### MouseEvent.type
+#### MouseEvent.type
 
 <h4>
 
 ```luau
-type: "Mouse",
+  type: "Mouse",
 ```
 
 </h4>
 
 ---
 
-### MouseEvent.kind
+#### MouseEvent.kind
 
 <h4>
 
 ```luau
-kind: MouseEventKind,
+  kind: MouseEventKind,
 ```
 
 </h4>
 
 ---
 
-### MouseEvent.position
+#### MouseEvent.position
 
 <h4>
 
 ```luau
-position: vector,
+  position: vector,
 ```
 
 </h4>
@@ -1790,12 +1790,12 @@ position: vector,
 
 ---
 
-### MouseEvent.modifiers
+#### MouseEvent.modifiers
 
 <h4>
 
 ```luau
-modifiers: KeyModifiers,
+  modifiers: KeyModifiers,
 ```
 
 </h4>
@@ -1815,7 +1815,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "Down(Left)"
+  | "Down(Left)"
 ```
 
  User started left clicking
@@ -1823,7 +1823,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "Down(Right)"
+  | "Down(Right)"
 ```
 
  User started right clicking
@@ -1831,7 +1831,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "Down(Middle)"
+  | "Down(Middle)"
 ```
 
  User started middle clicking
@@ -1839,7 +1839,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "Up(Left)"
+  | "Up(Left)"
 ```
 
  User released a left click
@@ -1847,7 +1847,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "Up(Right)"
+  | "Up(Right)"
 ```
 
  User released a right click
@@ -1855,7 +1855,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "Up(Middle)"
+  | "Up(Middle)"
 ```
 
  User released a middle click
@@ -1863,7 +1863,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "Drag(Left)"
+  | "Drag(Left)"
 ```
 
  User moved the mouse while left click is down
@@ -1871,7 +1871,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "Drag(Right)"
+  | "Drag(Right)"
 ```
 
  User moved the mouse while right click is down
@@ -1879,7 +1879,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "Drag(Middle)"
+  | "Drag(Middle)"
 ```
 
  User moved the mouse while middle click is down
@@ -1887,7 +1887,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "Moved"
+  | "Moved"
 ```
 
  User moved the mouse without a mouse button being down
@@ -1895,7 +1895,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "ScrollDown"
+  | "ScrollDown"
 ```
 
  User scrolled the mouse wheel/touchpad downwards (towards the user's lap)
@@ -1903,7 +1903,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "ScrollUp"
+  | "ScrollUp"
 ```
 
  User scrolled the mouse wheel/touchpad upwards (away from the user's lap)
@@ -1911,7 +1911,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "ScrollLeft"
+  | "ScrollLeft"
 ```
 
  User scrolled to the left (usually reported moreso on laptop touchpads)
@@ -1919,7 +1919,7 @@ export type MouseEventKind =
 ---
 
 ```luau
-| "ScrollRight"
+  | "ScrollRight"
 ```
 
  User scrolled to the right (usually reported on laptop touchpads)

@@ -57,96 +57,96 @@ type SemverFields = {
 
 ---
 
-### SemverFields.major
+#### SemverFields.major
 
 <h4>
 
 ```luau
-major: number,
+  major: number,
 ```
 
 </h4>
 
 ---
 
-### SemverFields.minor
+#### SemverFields.minor
 
 <h4>
 
 ```luau
-minor: number,
+  minor: number,
 ```
 
 </h4>
 
 ---
 
-### SemverFields.patch
+#### SemverFields.patch
 
 <h4>
 
 ```luau
-patch: number,
+  patch: number,
 ```
 
 </h4>
 
 ---
 
-### SemverFields.metadata.release_candidate.tag
+##### SemverFields.metadata.release_candidate.tag
 
 <h4>
 
 ```luau
-tag: string,
+      tag: string,
 ```
 
 </h4>
 
 ---
 
-### SemverFields.metadata.release_candidate.ver
+##### SemverFields.metadata.release_candidate.ver
 
 <h4>
 
 ```luau
-ver: number,
+      ver: number,
 ```
 
 </h4>
 
 ---
 
-### SemverFields.metadata.release_candidate.build
+##### SemverFields.metadata.release_candidate.build
 
 <h4>
 
 ```luau
-build: string?,
+      build: string?,
 ```
 
 </h4>
 
 ---
 
-### semver.from
+##### semver.from
 
 <h4>
 
 ```luau
-function semver.from(s: string): Semver
+    function semver.from(s: string): Semver
 ```
 
 </h4>
 
 ---
 
-### Semver.satisfies
+#### Semver.satisfies
 
 <h4>
 
 ```luau
-function Semver.satisfies(self: Semver, semver_range: string): boolean
+  function Semver.satisfies(self: Semver, semver_range: string): boolean
 ```
 
 </h4>
@@ -186,48 +186,48 @@ end
 
 ---
 
-### Semver.__eq
+#### Semver.__eq
 
 <h4>
 
 ```luau
-function Semver.__eq(self: Semver, other: Semver): boolean
+  function Semver.__eq(self: Semver, other: Semver): boolean
 ```
 
 </h4>
 
 ---
 
-### Semver.__lt
+#### Semver.__lt
 
 <h4>
 
 ```luau
-function Semver.__lt(self: Semver, other: Semver): boolean
+  function Semver.__lt(self: Semver, other: Semver): boolean
 ```
 
 </h4>
 
 ---
 
-### Semver.__le
+#### Semver.__le
 
 <h4>
 
 ```luau
-function Semver.__le(self: Semver, other: Semver): boolean
+  function Semver.__le(self: Semver, other: Semver): boolean
 ```
 
 </h4>
 
 ---
 
-### Semver.__tostring
+#### Semver.__tostring
 
 <h4>
 
 ```luau
-function Semver.__tostring(self: Semver): string
+  function Semver.__tostring(self: Semver): string
 ```
 
 </h4>
@@ -247,31 +247,31 @@ type SemverVals =
 ---
 
 ```luau
-| "AND UP"
+  | "AND UP"
 ```
 
 ---
 
 ```luau
-| "EXACTLY EQUAL"
+  | "EXACTLY EQUAL"
 ```
 
 ---
 
 ```luau
-| "LESS THAN OR EQUAL"
+  | "LESS THAN OR EQUAL"
 ```
 
 ---
 
 ```luau
-| "LESS THAN"
+  | "LESS THAN"
 ```
 
 ---
 
 ```luau
-| "GREATER THAN NOT INCLUDING"
+  | "GREATER THAN NOT INCLUDING"
 ```
 
 ---

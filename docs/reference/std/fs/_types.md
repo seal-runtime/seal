@@ -70,12 +70,12 @@ export type FileEntry = {
 
 ---
 
-### FileEntry.name
+#### FileEntry.name
 
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
@@ -84,12 +84,12 @@ name: string,
 
 ---
 
-### FileEntry.path
+#### FileEntry.path
 
 <h4>
 
 ```luau
-path: string,
+  path: string,
 ```
 
 </h4>
@@ -98,24 +98,24 @@ path: string,
 
 ---
 
-### FileEntry.type
+#### FileEntry.type
 
 <h4>
 
 ```luau
-type: "File",
+  type: "File",
 ```
 
 </h4>
 
 ---
 
-### FileEntry.read
+#### FileEntry.read
 
 <h4>
 
 ```luau
-function FileEntry.read(self: FileEntry) -> string,
+  function FileEntry.read(self: FileEntry) -> string,
 ```
 
 </h4>
@@ -140,12 +140,12 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### FileEntry.size
+#### FileEntry.size
 
 <h4>
 
 ```luau
-function FileEntry.size(self: FileEntry) -> number,
+  function FileEntry.size(self: FileEntry) -> number,
 ```
 
 </h4>
@@ -154,12 +154,12 @@ function FileEntry.size(self: FileEntry) -> number,
 
 ---
 
-### FileEntry.readlines
+#### FileEntry.readlines
 
 <h4>
 
 ```luau
-function FileEntry.readlines(self: FileEntry) -> () -> (number, string),
+  function FileEntry.readlines(self: FileEntry) -> () -> (number, string),
 ```
 
 </h4>
@@ -184,12 +184,12 @@ end
 
 ---
 
-### FileEntry.readbytes
+#### FileEntry.readbytes
 
 <h4>
 
 ```luau
-function FileEntry.readbytes(self: FileEntry, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
+  function FileEntry.readbytes(self: FileEntry, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?) -> buffer,
 ```
 
 </h4>
@@ -224,12 +224,12 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### FileEntry.append
+#### FileEntry.append
 
 <h4>
 
 ```luau
-function FileEntry.append(self: FileEntry, content: buffer | string) -> (),
+  function FileEntry.append(self: FileEntry, content: buffer | string) -> (),
 ```
 
 </h4>
@@ -252,24 +252,24 @@ Like `fs.writefile`, `content` does not have to be a valid utf-8 encoded string 
 
 ---
 
-### FileEntry.is_valid_utf8
+#### FileEntry.is_valid_utf8
 
 <h4>
 
 ```luau
-function FileEntry.is_valid_utf8(self: FileEntry) -> boolean,
+  function FileEntry.is_valid_utf8(self: FileEntry) -> boolean,
 ```
 
 </h4>
 
 ---
 
-### FileEntry.metadata
+#### FileEntry.metadata
 
 <h4>
 
 ```luau
-function FileEntry.metadata(self: FileEntry) -> FsMetadata,
+  function FileEntry.metadata(self: FileEntry) -> FsMetadata,
 ```
 
 </h4>
@@ -278,48 +278,48 @@ Returns a `FsMetadata` table containing timestamps for creation, modified, and a
 
 ---
 
-### FileEntry.copy_to
+#### FileEntry.copy_to
 
 <h4>
 
 ```luau
-function FileEntry.copy_to(self: FileEntry, to: string) -> (),
+  function FileEntry.copy_to(self: FileEntry, to: string) -> (),
 ```
 
 </h4>
 
 ---
 
-### FileEntry.move_to
+#### FileEntry.move_to
 
 <h4>
 
 ```luau
-function FileEntry.move_to(self: FileEntry, to: string) -> (),
+  function FileEntry.move_to(self: FileEntry, to: string) -> (),
 ```
 
 </h4>
 
 ---
 
-### FileEntry.rename
+#### FileEntry.rename
 
 <h4>
 
 ```luau
-function FileEntry.rename(self: FileEntry, name: string) -> (),
+  function FileEntry.rename(self: FileEntry, name: string) -> (),
 ```
 
 </h4>
 
 ---
 
-### FileEntry.remove
+#### FileEntry.remove
 
 <h4>
 
 ```luau
-function FileEntry.remove(self: FileEntry) -> (),
+  function FileEntry.remove(self: FileEntry) -> (),
 ```
 
 </h4>
@@ -340,12 +340,12 @@ export type DirectoryEntry = {
 
 ---
 
-### DirectoryEntry.name
+#### DirectoryEntry.name
 
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
@@ -354,12 +354,12 @@ name: string,
 
 ---
 
-### DirectoryEntry.path
+#### DirectoryEntry.path
 
 <h4>
 
 ```luau
-path: string,
+  path: string,
 ```
 
 </h4>
@@ -369,24 +369,24 @@ path: string,
 
 ---
 
-### DirectoryEntry.type
+#### DirectoryEntry.type
 
 <h4>
 
 ```luau
-type: "Directory",
+  type: "Directory",
 ```
 
 </h4>
 
 ---
 
-### DirectoryEntry.list
+#### DirectoryEntry.list
 
 <h4>
 
 ```luau
-function DirectoryEntry.list(self: DirectoryEntry, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
+  function DirectoryEntry.list(self: DirectoryEntry, recursive: boolean?, filter: ((path: string) -> boolean)?) -> { string },
 ```
 
 </h4>
@@ -396,12 +396,12 @@ function DirectoryEntry.list(self: DirectoryEntry, recursive: boolean?, filter: 
 
 ---
 
-### DirectoryEntry.join
+#### DirectoryEntry.join
 
 <h4>
 
 ```luau
-function DirectoryEntry.join(self: DirectoryEntry, ...string) -> string,
+  function DirectoryEntry.join(self: DirectoryEntry, ...string) -> string,
 ```
 
 </h4>
@@ -411,36 +411,36 @@ function DirectoryEntry.join(self: DirectoryEntry, ...string) -> string,
 
 ---
 
-### DirectoryEntry.find
+#### DirectoryEntry.find
 
 <h4>
 
 ```luau
-function DirectoryEntry.find(self: DirectoryEntry, name: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
+  function DirectoryEntry.find(self: DirectoryEntry, name: string, options: { follow_symlinks: boolean?, error_if_permission_denied: boolean? }?) -> FindResult,
 ```
 
 </h4>
 
 ---
 
-### DirectoryEntry.entries
+#### DirectoryEntry.entries
 
 <h4>
 
 ```luau
-function DirectoryEntry.entries(self: DirectoryEntry) -> { [string]: Entry },
+  function DirectoryEntry.entries(self: DirectoryEntry) -> { [string]: Entry },
 ```
 
 </h4>
 
 ---
 
-### DirectoryEntry.expect_file
+#### DirectoryEntry.expect_file
 
 <h4>
 
 ```luau
-function DirectoryEntry.expect_file(self: DirectoryEntry, name: string) -> FileEntry,
+  function DirectoryEntry.expect_file(self: DirectoryEntry, name: string) -> FileEntry,
 ```
 
 </h4>
@@ -449,12 +449,12 @@ function DirectoryEntry.expect_file(self: DirectoryEntry, name: string) -> FileE
 
 ---
 
-### DirectoryEntry.expect_dir
+#### DirectoryEntry.expect_dir
 
 <h4>
 
 ```luau
-function DirectoryEntry.expect_dir(self: DirectoryEntry, name: string) -> DirectoryEntry,
+  function DirectoryEntry.expect_dir(self: DirectoryEntry, name: string) -> DirectoryEntry,
 ```
 
 </h4>
@@ -463,12 +463,12 @@ function DirectoryEntry.expect_dir(self: DirectoryEntry, name: string) -> Direct
 
 ---
 
-### DirectoryEntry.add_file
+#### DirectoryEntry.add_file
 
 <h4>
 
 ```luau
-function DirectoryEntry.add_file(self: DirectoryEntry, name: string, content: string | buffer) -> DirectoryEntry,
+  function DirectoryEntry.add_file(self: DirectoryEntry, name: string, content: string | buffer) -> DirectoryEntry,
 ```
 
 </h4>
@@ -496,12 +496,12 @@ local src = fs.dir.ensure("./src")
 
 ---
 
-### DirectoryEntry.add_tree
+#### DirectoryEntry.add_tree
 
 <h4>
 
 ```luau
-function DirectoryEntry.add_tree(self: DirectoryEntry, name: string, builder: TreeBuilder) -> DirectoryEntry,
+  function DirectoryEntry.add_tree(self: DirectoryEntry, name: string, builder: TreeBuilder) -> DirectoryEntry,
 ```
 
 </h4>
@@ -530,12 +530,12 @@ local src = fs.dir.ensure("./src")
 
 ---
 
-### DirectoryEntry.metadata
+#### DirectoryEntry.metadata
 
 <h4>
 
 ```luau
-function DirectoryEntry.metadata(self: DirectoryEntry) -> FsMetadata,
+  function DirectoryEntry.metadata(self: DirectoryEntry) -> FsMetadata,
 ```
 
 </h4>
@@ -544,48 +544,48 @@ Returns a `FsMetadata` table containing timestamps for creation, modified, and a
 
 ---
 
-### DirectoryEntry.copy_to
+#### DirectoryEntry.copy_to
 
 <h4>
 
 ```luau
-function DirectoryEntry.copy_to(self: DirectoryEntry, to: string) -> (),
+  function DirectoryEntry.copy_to(self: DirectoryEntry, to: string) -> (),
 ```
 
 </h4>
 
 ---
 
-### DirectoryEntry.move_to
+#### DirectoryEntry.move_to
 
 <h4>
 
 ```luau
-function DirectoryEntry.move_to(self: DirectoryEntry, to: string) -> (),
+  function DirectoryEntry.move_to(self: DirectoryEntry, to: string) -> (),
 ```
 
 </h4>
 
 ---
 
-### DirectoryEntry.rename
+#### DirectoryEntry.rename
 
 <h4>
 
 ```luau
-function DirectoryEntry.rename(self: DirectoryEntry, name: string) -> (),
+  function DirectoryEntry.rename(self: DirectoryEntry, name: string) -> (),
 ```
 
 </h4>
 
 ---
 
-### DirectoryEntry.remove
+#### DirectoryEntry.remove
 
 <h4>
 
 ```luau
-function DirectoryEntry.remove(self: DirectoryEntry) -> (),
+  function DirectoryEntry.remove(self: DirectoryEntry) -> (),
 ```
 
 </h4>
@@ -618,12 +618,12 @@ export type FsMetadata = {
 
 ---
 
-### FsMetadata.created_at
+#### FsMetadata.created_at
 
 <h4>
 
 ```luau
-created_at: DateTime?,
+  created_at: DateTime?,
 ```
 
 </h4>
@@ -633,12 +633,12 @@ created_at: DateTime?,
 
 ---
 
-### FsMetadata.modified_at
+#### FsMetadata.modified_at
 
 <h4>
 
 ```luau
-modified_at: DateTime?,
+  modified_at: DateTime?,
 ```
 
 </h4>
@@ -648,12 +648,12 @@ modified_at: DateTime?,
 
 ---
 
-### FsMetadata.accessed_at
+#### FsMetadata.accessed_at
 
 <h4>
 
 ```luau
-accessed_at: DateTime?,
+  accessed_at: DateTime?,
 ```
 
 </h4>
@@ -663,12 +663,12 @@ accessed_at: DateTime?,
 
 ---
 
-### FsMetadata.permissions.readonly
+##### FsMetadata.permissions.readonly
 
 <h4>
 
 ```luau
-readonly: boolean,
+    readonly: boolean,
 ```
 
 </h4>
@@ -677,12 +677,12 @@ readonly: boolean,
 
 ---
 
-### FsMetadata.permissions.unix_mode
+##### FsMetadata.permissions.unix_mode
 
 <h4>
 
 ```luau
-unix_mode: number?,
+    unix_mode: number?,
 ```
 
 </h4>
@@ -704,12 +704,12 @@ export type FindResult = { -- can't make this type more accurate w/ unions bc it
 
 ---
 
-### FindResult.ok
+#### FindResult.ok
 
 <h4>
 
 ```luau
-ok: boolean,
+  ok: boolean,
 ```
 
 </h4>
@@ -718,36 +718,36 @@ ok: boolean,
 
 ---
 
-### FindResult.path
+#### FindResult.path
 
 <h4>
 
 ```luau
-path: string,
+  path: string,
 ```
 
 </h4>
 
 ---
 
-### FindResult.type
+#### FindResult.type
 
 <h4>
 
 ```luau
-type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
+  type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
 ```
 
 </h4>
 
 ---
 
-### FindResult.exists
+#### FindResult.exists
 
 <h4>
 
 ```luau
-function FindResult.exists(self: FindResult) -> boolean,
+  function FindResult.exists(self: FindResult) -> boolean,
 ```
 
 </h4>
@@ -768,12 +768,12 @@ end
 
 ---
 
-### FindResult.try_file
+#### FindResult.try_file
 
 <h4>
 
 ```luau
-function FindResult.try_file(self: FindResult) -> FileEntry?,
+  function FindResult.try_file(self: FindResult) -> FileEntry?,
 ```
 
 </h4>
@@ -791,12 +791,12 @@ end
 
 ---
 
-### FindResult.try_dir
+#### FindResult.try_dir
 
 <h4>
 
 ```luau
-function FindResult.try_dir(self: FindResult) -> DirectoryEntry?,
+  function FindResult.try_dir(self: FindResult) -> DirectoryEntry?,
 ```
 
 </h4>
@@ -814,12 +814,12 @@ end
 
 ---
 
-### FindResult.unwrap_file
+#### FindResult.unwrap_file
 
 <h4>
 
 ```luau
-function FindResult.unwrap_file(self: FindResult) -> FileEntry,
+  function FindResult.unwrap_file(self: FindResult) -> FileEntry,
 ```
 
 </h4>
@@ -828,12 +828,12 @@ function FindResult.unwrap_file(self: FindResult) -> FileEntry,
 
 ---
 
-### FindResult.unwrap_dir
+#### FindResult.unwrap_dir
 
 <h4>
 
 ```luau
-function FindResult.unwrap_dir(self: FindResult) -> DirectoryEntry,
+  function FindResult.unwrap_dir(self: FindResult) -> DirectoryEntry,
 ```
 
 </h4>
@@ -854,36 +854,36 @@ export type FileBuilder = {
 
 ---
 
-### FileBuilder.name
+#### FileBuilder.name
 
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
 
 ---
 
-### FileBuilder.type
+#### FileBuilder.type
 
 <h4>
 
 ```luau
-type: "File",
+  type: "File",
 ```
 
 </h4>
 
 ---
 
-### FileBuilder.content
+#### FileBuilder.content
 
 <h4>
 
 ```luau
-content: string,
+  content: string,
 ```
 
 </h4>
@@ -902,36 +902,36 @@ export type DirectoryBuilder = {
 
 ---
 
-### DirectoryBuilder.name
+#### DirectoryBuilder.name
 
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
 
 ---
 
-### DirectoryBuilder.type
+#### DirectoryBuilder.type
 
 <h4>
 
 ```luau
-type: "Directory",
+  type: "Directory",
 ```
 
 </h4>
 
 ---
 
-### DirectoryBuilder.children
+#### DirectoryBuilder.children
 
 <h4>
 
 ```luau
-children: DirectoryTree,
+  children: DirectoryTree,
 ```
 
 </h4>

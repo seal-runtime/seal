@@ -142,24 +142,24 @@ Represents a password hashed with the PBKDF2_HMAC_SHA256 algorithm.
 
 ---
 
-### HashedPassword.salt
+#### HashedPassword.salt
 
 <h4>
 
 ```luau
-salt: buffer,
+  salt: buffer,
 ```
 
 </h4>
 
 ---
 
-### HashedPassword.hash
+#### HashedPassword.hash
 
 <h4>
 
 ```luau
-hash: buffer,
+  hash: buffer,
 ```
 
 </h4>
@@ -178,24 +178,24 @@ export type PasswordVerifyOptions = {
 
 ---
 
-### PasswordVerifyOptions.raw_password
+#### PasswordVerifyOptions.raw_password
 
 <h4>
 
 ```luau
-raw_password: string,
+  raw_password: string,
 ```
 
 </h4>
 
 ---
 
-### PasswordVerifyOptions.hashed_password
+#### PasswordVerifyOptions.hashed_password
 
 <h4>
 
 ```luau
-hashed_password: HashedPassword,
+  hashed_password: HashedPassword,
 ```
 
 </h4>

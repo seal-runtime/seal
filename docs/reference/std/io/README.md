@@ -19,31 +19,31 @@ libraries as you need them instead.
 
 ### io.input
 
-→ [@std/io/input](/docs/reference/std/io/input.md)
+See [@std/io/input](/docs/reference/std/io/input.md)
 
 ---
 
 ### io.output
 
-→ [@std/io/output](/docs/reference/std/io/output.md)
+See [@std/io/output](/docs/reference/std/io/output.md)
 
 ---
 
 ### io.colors
 
-→ [@std/io/colors](/docs/reference/std/io/colors.md)
+See [@std/io/colors](/docs/reference/std/io/colors.md)
 
 ---
 
 ### io.format
 
-→ [@std/io/format](/docs/reference/std/io/format.md)
+See [@std/io/format](/docs/reference/std/io/format.md)
 
 ---
 
 ### io.prompt
 
-→ [@std/io/prompt](/docs/reference/std/io/prompt.md)
+See [@std/io/prompt](/docs/reference/std/io/prompt.md)
 
 ---
 

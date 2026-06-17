@@ -745,7 +745,7 @@ end
 
 ### fs.file
 
-→ [@std/fs/file](/docs/reference/std/fs/file.md)
+See [@std/fs/file](/docs/reference/std/fs/file.md)
 
 A sublib for handling operations with files and `fs.FileEntry`s.
 
@@ -757,7 +757,7 @@ This library can be called as a function as a convenience alternative for `fs.fi
 
 ### fs.dir
 
-→ [@std/fs/dir](/docs/reference/std/fs/dir.md)
+See [@std/fs/dir](/docs/reference/std/fs/dir.md)
 
 A sublib for handling operations with directories and `fs.DirectoryEntry`s.
 
@@ -767,7 +767,7 @@ This library can be called as a function as a convenience alternative to `fs.fin
 
 ### fs.path
 
-→ [@std/fs/path](/docs/reference/std/fs/path.md)
+See [@std/fs/path](/docs/reference/std/fs/path.md)
 
 A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
 
@@ -791,7 +791,7 @@ Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, 
 
 ### fs.filesize
 
-→ [@std/fs/filesize](/docs/reference/std/fs/filesize.md)
+See [@std/fs/filesize](/docs/reference/std/fs/filesize.md)
 
  Library for constructing `FileSize` instances.
 
@@ -810,152 +810,110 @@ export type PathIs =
 ---
 
 ```luau
-| "File"
+  | "File"
 ```
 
 ---
 
 ```luau
-| "Directory"
+  | "Directory"
 ```
 
 ---
 
 ```luau
-| "Symlink"
+  | "Symlink"
 ```
 
 ---
 
 ```luau
-| "UnixSocket"
+  | "UnixSocket"
 ```
 
 ---
 
 ```luau
-| "UnixFifo"
+  | "UnixFifo"
 ```
 
 ---
 
 ```luau
-| "UnixCharDevice"
+  | "UnixCharDevice"
 ```
 
 ---
 
 ```luau
-| "UnixBlockDevice"
+  | "UnixBlockDevice"
 ```
 
 ---
 
 ```luau
-| "WindowsReparsePoint"
+  | "WindowsReparsePoint"
 ```
 
 ---
 
 ```luau
-| "Other"
+  | "Other"
 ```
 
 ---
 
 ```luau
-| "NotFound"
+  | "NotFound"
 ```
 
 ---
 
 ```luau
-| "PermissionDenied"
+  | "PermissionDenied"
 ```
 
 ---
 
 ## `export type` DirectoryTree
 
-<h4>
-
-```luau
-export type DirectoryTree = common_types.DirectoryTree
-```
-
-</h4>
+See [DirectoryTree in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-directorytree)
 
 ---
 
 ## `export type` DirectoryBuilder
 
-<h4>
-
-```luau
-export type DirectoryBuilder = common_types.DirectoryBuilder
-```
-
-</h4>
+See [DirectoryBuilder in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-directorybuilder)
 
 ---
 
 ## `export type` TreeBuilder
 
-<h4>
-
-```luau
-export type TreeBuilder = common_types.TreeBuilder
-```
-
-</h4>
+See [TreeBuilder in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-treebuilder)
 
 ---
 
 ## `export type` FindResult
 
-<h4>
-
-```luau
-export type FindResult = common_types.FindResult
-```
-
-</h4>
+See [FindResult in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-findresult)
 
 ---
 
 ## `export type` Entry
 
-<h4>
-
-```luau
-export type Entry = common_types.Entry
-```
-
-</h4>
+See [Entry in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-entry)
 
 ---
 
 ## `export type` FileEntry
 
-<h4>
-
-```luau
-export type FileEntry = common_types.FileEntry
-```
-
-</h4>
+See [FileEntry in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-fileentry)
 
 ---
 
 ## `export type` DirectoryEntry
 
-<h4>
-
-```luau
-export type DirectoryEntry = common_types.DirectoryEntry
-```
-
-</h4>
+See [DirectoryEntry in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-directoryentry)
 
 ---
 
@@ -971,24 +929,24 @@ export type WatchOptions = {
 
 ---
 
-### WatchOptions.recursive
+#### WatchOptions.recursive
 
 <h4>
 
 ```luau
-recursive: boolean?,
+  recursive: boolean?,
 ```
 
 </h4>
 
 ---
 
-### WatchOptions.timeout_ms
+#### WatchOptions.timeout_ms
 
 <h4>
 
 ```luau
-timeout_ms: number?,
+  timeout_ms: number?,
 ```
 
 </h4>
@@ -1022,85 +980,85 @@ Some usage notes:
 ---
 
 ```luau
-| "Read" -- note that Read ~= open for reading (which is in Open)
+  | "Read" -- note that Read ~= open for reading (which is in Open)
 ```
 
 ---
 
 ```luau
-| "Execute"
+  | "Execute"
 ```
 
 ---
 
 ```luau
-| "Open"
+  | "Open"
 ```
 
 ---
 
 ```luau
-| "Close"
+  | "Close"
 ```
 
 ---
 
 ```luau
-| "Access"
+  | "Access"
 ```
 
 ---
 
 ```luau
-| "Create"
+  | "Create"
 ```
 
 ---
 
 ```luau
-| "Rename"
+  | "Rename"
 ```
 
 ---
 
 ```luau
-| "Modify::Data"
+  | "Modify::Data"
 ```
 
 ---
 
 ```luau
-| "Modify::Metadata"
+  | "Modify::Metadata"
 ```
 
 ---
 
 ```luau
-| "Modify::Other"
+  | "Modify::Other"
 ```
 
 ---
 
 ```luau
-| "Remove"
+  | "Remove"
 ```
 
 ---
 
 ```luau
-| "Other"
+  | "Other"
 ```
 
 ---
 
 ```luau
-| "Unknown"
+  | "Unknown"
 ```
 
 ---
 
 ```luau
-| "None"
+  | "None"
 ```
 
 ---
@@ -1117,36 +1075,36 @@ export type WatchEventInfo = {
 
 ---
 
-### WatchEventInfo.paths
+#### WatchEventInfo.paths
 
 <h4>
 
 ```luau
-paths: { string },
+  paths: { string },
 ```
 
 </h4>
 
 ---
 
-### WatchEventInfo.kind
+#### WatchEventInfo.kind
 
 <h4>
 
 ```luau
-kind: WatchKind,
+  kind: WatchKind,
 ```
 
 </h4>
 
 ---
 
-### WatchEventInfo.is_write
+#### WatchEventInfo.is_write
 
 <h4>
 
 ```luau
-is_write: boolean,
+  is_write: boolean,
 ```
 
 </h4>
@@ -1185,253 +1143,253 @@ export type WatchKind =
 ---
 
 ```luau
-| "Read"
+  | "Read"
 ```
 
 ---
 
 ```luau
-| "Open::Execute"
+  | "Open::Execute"
 ```
 
 ---
 
 ```luau
-| "Open::Read"
+  | "Open::Read"
 ```
 
 ---
 
 ```luau
-| "Open::Write"
+  | "Open::Write"
 ```
 
 ---
 
 ```luau
-| "Open::Other"
+  | "Open::Other"
 ```
 
 ---
 
 ```luau
-| "Close::Execute"
+  | "Close::Execute"
 ```
 
 ---
 
 ```luau
-| "Close::Read"
+  | "Close::Read"
 ```
 
 ---
 
 ```luau
-| "Close::Write"
+  | "Close::Write"
 ```
 
 ---
 
 ```luau
-| "Close::Other"
+  | "Close::Other"
 ```
 
 ---
 
 ```luau
-| "Close::Any"
+  | "Close::Any"
 ```
 
 ---
 
 ```luau
-| "Open::Any"
+  | "Open::Any"
 ```
 
 ---
 
 ```luau
-| "Access::Any"
+  | "Access::Any"
 ```
 
 ---
 
 ```luau
-| "Access::Other"
+  | "Access::Other"
 ```
 
 ---
 
 ```luau
-| "Create::File"
+  | "Create::File"
 ```
 
 ---
 
 ```luau
-| "Create::Directory" -- sent on macos and unixlike
+  | "Create::Directory" -- sent on macos and unixlike
 ```
 
 ---
 
 ```luau
-| "Create::Other"
+  | "Create::Other"
 ```
 
 ---
 
 ```luau
-| "Create::Any"
+  | "Create::Any"
 ```
 
 ---
 
 ```luau
-| "Rename::Any"
+  | "Rename::Any"
 ```
 
 ---
 
 ```luau
-| "Rename::From"
+  | "Rename::From"
 ```
 
 ---
 
 ```luau
-| "Rename::To"
+  | "Rename::To"
 ```
 
 ---
 
 ```luau
-| "Rename::Both"
+  | "Rename::Both"
 ```
 
 ---
 
 ```luau
-| "Rename::Other"
+  | "Rename::Other"
 ```
 
 ---
 
 ```luau
-| "Modify::Data" -- sent on unixlike
+  | "Modify::Data" -- sent on unixlike
 ```
 
 ---
 
 ```luau
-| "Modify::Data::Content"
+  | "Modify::Data::Content"
 ```
 
 ---
 
 ```luau
-| "Modify::Data::Size"
+  | "Modify::Data::Size"
 ```
 
 ---
 
 ```luau
-| "Modify::Data::Other" -- sent on windows
+  | "Modify::Data::Other" -- sent on windows
 ```
 
 ---
 
 ```luau
-| "Modify::Metadata::AccessTime"
+  | "Modify::Metadata::AccessTime"
 ```
 
 ---
 
 ```luau
-| "Modify::Metadata::WriteTime"
+  | "Modify::Metadata::WriteTime"
 ```
 
 ---
 
 ```luau
-| "Modify::Metadata::Ownership"
+  | "Modify::Metadata::Ownership"
 ```
 
 ---
 
 ```luau
-| "Modify::Metadata::Permissions"
+  | "Modify::Metadata::Permissions"
 ```
 
 ---
 
 ```luau
-| "Modify::Metadata::Extended"
+  | "Modify::Metadata::Extended"
 ```
 
 ---
 
 ```luau
-| "Modify::Metadata::Other"
+  | "Modify::Metadata::Other"
 ```
 
 ---
 
 ```luau
-| "Modify::Metadata::Any"
+  | "Modify::Metadata::Any"
 ```
 
 ---
 
 ```luau
-| "Modify::Any"
+  | "Modify::Any"
 ```
 
 ---
 
 ```luau
-| "Modify::Other"
+  | "Modify::Other"
 ```
 
 ---
 
 ```luau
-| "Remove::File" -- sent on unixlike
+  | "Remove::File" -- sent on unixlike
 ```
 
 ---
 
 ```luau
-| "Remove::Directory" -- sent on unixlike
+  | "Remove::Directory" -- sent on unixlike
 ```
 
 ---
 
 ```luau
-| "Remove::Other"
+  | "Remove::Other"
 ```
 
 ---
 
 ```luau
-| "Remove::Any" -- sent on Windows
+  | "Remove::Any" -- sent on Windows
 ```
 
 ---
 
 ```luau
-| "Other"
+  | "Other"
 ```
 
 ---
 
 ```luau
-| "Unknown"
+  | "Unknown"
 ```
 
 ---
 
 ```luau
-| "None::Timeout"
+  | "None::Timeout"
 ```
 
 ---

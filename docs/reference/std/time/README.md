@@ -50,7 +50,7 @@ If you need a more accurate way to wait you might need to spin (while true do lo
 
 ### time.datetime
 
-→ [@std/time/datetime](/docs/reference/std/time/datetime.md)
+See [@std/time/datetime](/docs/reference/std/time/datetime.md)
 
  `DateTime` and `TimeSpan` libraries.
 

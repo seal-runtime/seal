@@ -78,145 +78,145 @@ type StatusCode =
 ---
 
 ```luau
-| "200 OK"
+  | "200 OK"
 ```
 
 ---
 
 ```luau
-| "201 Created"
+  | "201 Created"
 ```
 
 ---
 
 ```luau
-| "204 No Content"
+  | "204 No Content"
 ```
 
 ---
 
 ```luau
-| "301 Moved Permanently"
+  | "301 Moved Permanently"
 ```
 
 ---
 
 ```luau
-| "302 Found"
+  | "302 Found"
 ```
 
 ---
 
 ```luau
-| "304 Not Modified"
+  | "304 Not Modified"
 ```
 
 ---
 
 ```luau
-| "307 Temporary Redirect"
+  | "307 Temporary Redirect"
 ```
 
 ---
 
 ```luau
-| "308 Permanent Redirect"
+  | "308 Permanent Redirect"
 ```
 
 ---
 
 ```luau
-| "400 Bad Request"
+  | "400 Bad Request"
 ```
 
 ---
 
 ```luau
-| "401 Unauthorized"
+  | "401 Unauthorized"
 ```
 
 ---
 
 ```luau
-| "403 Forbidden"
+  | "403 Forbidden"
 ```
 
 ---
 
 ```luau
-| "404 Not Found"
+  | "404 Not Found"
 ```
 
 ---
 
 ```luau
-| "405 Method Not Allowed"
+  | "405 Method Not Allowed"
 ```
 
 ---
 
 ```luau
-| "409 Conflict"
+  | "409 Conflict"
 ```
 
 ---
 
 ```luau
-| "410 Gone"
+  | "410 Gone"
 ```
 
 ---
 
 ```luau
-| "412 Precondition Failed"
+  | "412 Precondition Failed"
 ```
 
 ---
 
 ```luau
-| "415 Unsupported Media Type"
+  | "415 Unsupported Media Type"
 ```
 
 ---
 
 ```luau
-| "429 Too Many Requests"
+  | "429 Too Many Requests"
 ```
 
 ---
 
 ```luau
-| "500 Internal Server Error"
+  | "500 Internal Server Error"
 ```
 
 ---
 
 ```luau
-| "501 Not Implemented"
+  | "501 Not Implemented"
 ```
 
 ---
 
 ```luau
-| "502 Bad Gateway"
+  | "502 Bad Gateway"
 ```
 
 ---
 
 ```luau
-| "503 Service Unavailable"
+  | "503 Service Unavailable"
 ```
 
 ---
 
 ```luau
-| "504 Gateway Timeout"
+  | "504 Gateway Timeout"
 ```
 
 ---
 
 ```luau
-| "505 HTTP Version Not Supported"
+  | "505 HTTP Version Not Supported"
 ```
 
 ---
@@ -234,49 +234,49 @@ type ContentType =
 ---
 
 ```luau
-| "Text"
+  | "Text"
 ```
 
 ---
 
 ```luau
-| "HTML"
+  | "HTML"
 ```
 
 ---
 
 ```luau
-| "JSON"
+  | "JSON"
 ```
 
 ---
 
 ```luau
-| "XML"
+  | "XML"
 ```
 
 ---
 
 ```luau
-| "CSS"
+  | "CSS"
 ```
 
 ---
 
 ```luau
-| "JavaScript"
+  | "JavaScript"
 ```
 
 ---
 
 ```luau
-| "Binary"
+  | "Binary"
 ```
 
 ---
 
 ```luau
-| string
+  | string
 ```
 
 ---
@@ -293,60 +293,60 @@ export type ServeRequest = {
 
 ---
 
-### ServeRequest.peer_address
+#### ServeRequest.peer_address
 
 <h4>
 
 ```luau
-peer_address: string,
+  peer_address: string,
 ```
 
 </h4>
 
 ---
 
-### ServeRequest.method
+#### ServeRequest.method
 
 <h4>
 
 ```luau
-method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 ```
 
 </h4>
 
 ---
 
-### ServeRequest.path
+#### ServeRequest.path
 
 <h4>
 
 ```luau
-path: string,
+  path: string,
 ```
 
 </h4>
 
 ---
 
-### ServeRequest.raw_text
+#### ServeRequest.raw_text
 
 <h4>
 
 ```luau
-raw_text: string,
+  raw_text: string,
 ```
 
 </h4>
 
 ---
 
-### ServeRequest.body
+#### ServeRequest.body
 
 <h4>
 
 ```luau
-body: string,
+  body: string,
 ```
 
 </h4>
@@ -365,72 +365,72 @@ export type ServeResponse = {
 
 ---
 
-### ServeResponse.status_code
+#### ServeResponse.status_code
 
 <h4>
 
 ```luau
-status_code: StatusCode,
+  status_code: StatusCode,
 ```
 
 </h4>
 
 ---
 
-### ServeResponse.content_type
+#### ServeResponse.content_type
 
 <h4>
 
 ```luau
-content_type: ContentType,
+  content_type: ContentType,
 ```
 
 </h4>
 
 ---
 
-### ServeResponse.body
+#### ServeResponse.body
 
 <h4>
 
 ```luau
-body: string,
+  body: string,
 ```
 
 </h4>
 
 ---
 
-### ServeResponse.headers.cookies.http_version
+##### ServeResponse.headers.cookies.http_version
 
 <h4>
 
 ```luau
-http_version: string?,
+      http_version: string?,
 ```
 
 </h4>
 
 ---
 
-### ServeResponse.headers.cookies.reason_phrase
+##### ServeResponse.headers.cookies.reason_phrase
 
 <h4>
 
 ```luau
-reason_phrase: string?,
+      reason_phrase: string?,
 ```
 
 </h4>
 
 ---
 
-### ServeResponse.headers.cookies.redirect_url
+##### ServeResponse.headers.cookies.redirect_url
 
 <h4>
 
 ```luau
-redirect_url: string?
+      redirect_url: string?
 ```
 
 </h4>
@@ -449,36 +449,36 @@ export type ServeConfig = {
 
 ---
 
-### ServeConfig.address
+#### ServeConfig.address
 
 <h4>
 
 ```luau
-address: string,
+  address: string,
 ```
 
 </h4>
 
 ---
 
-### ServeConfig.port
+#### ServeConfig.port
 
 <h4>
 
 ```luau
-port: string | number,
+  port: string | number,
 ```
 
 </h4>
 
 ---
 
-### ServeConfig.handler
+#### ServeConfig.handler
 
 <h4>
 
 ```luau
-function ServeConfig.handler(ServeRequest) -> ServeResponse,
+  function ServeConfig.handler(ServeRequest) -> ServeResponse,
 ```
 
 </h4>

@@ -218,12 +218,12 @@ export type EvalOptions = {
 
 ---
 
-### EvalOptions.name
+#### EvalOptions.name
 
 <h4>
 
 ```luau
-name: string?,
+  name: string?,
 ```
 
 </h4>
@@ -232,12 +232,12 @@ name: string?,
 
 ---
 
-### EvalOptions.stdlib
+#### EvalOptions.stdlib
 
 <h4>
 
 ```luau
-function EvalOptions.stdlib("Seal" | "Safe" | "None")?,
+  function EvalOptions.stdlib("Seal" | "Safe" | "None")?,
 ```
 
 </h4>
@@ -246,12 +246,12 @@ function EvalOptions.stdlib("Seal" | "Safe" | "None")?,
 
 ---
 
-### EvalOptions.globals
+#### EvalOptions.globals
 
 <h4>
 
 ```luau
-globals: { [string]: any }?,
+  globals: { [string]: any }?,
 ```
 
 </h4>
@@ -272,12 +272,12 @@ export type LuaurcAliases = {
 
 ---
 
-### LuaurcAliases.path
+#### LuaurcAliases.path
 
 <h4>
 
 ```luau
-path: string,
+  path: string,
 ```
 
 </h4>

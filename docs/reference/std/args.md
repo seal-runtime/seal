@@ -248,12 +248,12 @@ export type ArgParser = {
 
 ---
 
-### ArgParser.simple
+#### ArgParser.simple
 
 <h4>
 
 ```luau
-function ArgParser.simple(self: any, ...Arg) -> Parsed,
+  function ArgParser.simple(self: any, ...Arg) -> Parsed,
 ```
 
 </h4>
@@ -262,12 +262,12 @@ function ArgParser.simple(self: any, ...Arg) -> Parsed,
 
 ---
 
-### ArgParser.commands
+#### ArgParser.commands
 
 <h4>
 
 ```luau
-function ArgParser.commands(self: any, ...Command) -> Parsed,
+  function ArgParser.commands(self: any, ...Command) -> Parsed,
 ```
 
 </h4>
@@ -289,12 +289,12 @@ export type ProgramInfo = {
 
 ---
 
-### ProgramInfo.description
+#### ProgramInfo.description
 
 <h4>
 
 ```luau
-description: string?,
+  description: string?,
 ```
 
 </h4>
@@ -303,12 +303,12 @@ description: string?,
 
 ---
 
-### ProgramInfo.examples
+#### ProgramInfo.examples
 
 <h4>
 
 ```luau
-examples: { string }?,
+  examples: { string }?,
 ```
 
 </h4>
@@ -317,12 +317,12 @@ examples: { string }?,
 
 ---
 
-### ProgramInfo.footer
+#### ProgramInfo.footer
 
 <h4>
 
 ```luau
-footer: string?
+  footer: string?
 ```
 
 </h4>
@@ -343,60 +343,60 @@ export type Command = {
 
 ---
 
-### Command.name
+#### Command.name
 
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
 
 ---
 
-### Command.is
+#### Command.is
 
 <h4>
 
 ```luau
-is: "Command",
+  is: "Command",
 ```
 
 </h4>
 
 ---
 
-### Command.help
+#### Command.help
 
 <h4>
 
 ```luau
-help: string,
+  help: string,
 ```
 
 </h4>
 
 ---
 
-### Command.args
+#### Command.args
 
 <h4>
 
 ```luau
-function Command.args(self: Command, ...Arg) -> Command,
+  function Command.args(self: Command, ...Arg) -> Command,
 ```
 
 </h4>
 
 ---
 
-### Command.aliases
+#### Command.aliases
 
 <h4>
 
 ```luau
-function Command.aliases(self: Command, ...string) -> Command,
+  function Command.aliases(self: Command, ...string) -> Command,
 ```
 
 </h4>
@@ -417,72 +417,72 @@ export type Parsed = {
 
 ---
 
-### Parsed.command
+#### Parsed.command
 
 <h4>
 
 ```luau
-command: string | "default",
+  command: string | "default",
 ```
 
 </h4>
 
 ---
 
-### Parsed.get
+#### Parsed.get
 
 <h4>
 
 ```luau
-function Parsed.get<T>(self: Parsed, name: string, default: T?) -> T?,
+  function Parsed.get<T>(self: Parsed, name: string, default: T?) -> T?,
 ```
 
 </h4>
 
 ---
 
-### Parsed.expect
+#### Parsed.expect
 
 <h4>
 
 ```luau
-function Parsed.expect<T>(self: Parsed, name: string, assertion: string?) -> T,
+  function Parsed.expect<T>(self: Parsed, name: string, assertion: string?) -> T,
 ```
 
 </h4>
 
 ---
 
-### Parsed.help
+#### Parsed.help
 
 <h4>
 
 ```luau
-function Parsed.help(self: Parsed) -> string,
+  function Parsed.help(self: Parsed) -> string,
 ```
 
 </h4>
 
 ---
 
-### Parsed.flags
+#### Parsed.flags
 
 <h4>
 
 ```luau
-flags: { [string]: true? },
+  flags: { [string]: true? },
 ```
 
 </h4>
 
 ---
 
-### Parsed.args
+#### Parsed.args
 
 <h4>
 
 ```luau
-args: { Arg },
+  args: { Arg },
 ```
 
 </h4>
@@ -501,48 +501,48 @@ export type ArgList = {
 
 ---
 
-### ArgList.name
+#### ArgList.name
 
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
 
 ---
 
-### ArgList.is
+#### ArgList.is
 
 <h4>
 
 ```luau
-is: "ArgList",
+  is: "ArgList",
 ```
 
 </h4>
 
 ---
 
-### ArgList.help
+#### ArgList.help
 
 <h4>
 
 ```luau
-help: string,
+  help: string,
 ```
 
 </h4>
 
 ---
 
-### ArgList.values
+#### ArgList.values
 
 <h4>
 
 ```luau
-values: { string }?,
+  values: { string }?,
 ```
 
 </h4>
@@ -574,25 +574,25 @@ export type Arg =
 ---
 
 ```luau
-| Positional
+  | Positional
 ```
 
 ---
 
 ```luau
-| Flag
+  | Flag
 ```
 
 ---
 
 ```luau
-| Named
+  | Named
 ```
 
 ---
 
 ```luau
-| ArgList
+  | ArgList
 ```
 
 ---
@@ -609,60 +609,60 @@ export type Positional = {
 
 ---
 
-### Positional.name
+#### Positional.name
 
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
 
 ---
 
-### Positional.is
+#### Positional.is
 
 <h4>
 
 ```luau
-is: "Positional",
+  is: "Positional",
 ```
 
 </h4>
 
 ---
 
-### Positional.help
+#### Positional.help
 
 <h4>
 
 ```luau
-help: string,
+  help: string,
 ```
 
 </h4>
 
 ---
 
-### Positional.default
+#### Positional.default
 
 <h4>
 
 ```luau
-function Positional.default(any) -> Positional,
+  function Positional.default(any) -> Positional,
 ```
 
 </h4>
 
 ---
 
-### Positional.optional
+#### Positional.optional
 
 <h4>
 
 ```luau
-function Positional.optional(self: Positional) -> Positional,
+  function Positional.optional(self: Positional) -> Positional,
 ```
 
 </h4>
@@ -671,12 +671,12 @@ function Positional.optional(self: Positional) -> Positional,
 
 ---
 
-### Positional.validate
+#### Positional.validate
 
 <h4>
 
 ```luau
-function Positional.validate(self: Positional, validator: Validator) -> Positional,
+  function Positional.validate(self: Positional, validator: Validator) -> Positional,
 ```
 
 </h4>
@@ -686,12 +686,12 @@ function Positional.validate(self: Positional, validator: Validator) -> Position
 
 ---
 
-### Positional.value
+#### Positional.value
 
 <h4>
 
 ```luau
-value: any,
+  value: any,
 ```
 
 </h4>
@@ -710,12 +710,12 @@ export type Flag = {
 
 ---
 
-### Flag.name
+#### Flag.name
 
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
@@ -724,36 +724,36 @@ name: string,
 
 ---
 
-### Flag.is
+#### Flag.is
 
 <h4>
 
 ```luau
-is: "Flag",
+  is: "Flag",
 ```
 
 </h4>
 
 ---
 
-### Flag.help
+#### Flag.help
 
 <h4>
 
 ```luau
-help: string,
+  help: string,
 ```
 
 </h4>
 
 ---
 
-### Flag.aliases
+#### Flag.aliases
 
 <h4>
 
 ```luau
-function Flag.aliases(self: Flag, ...string) -> Flag,
+  function Flag.aliases(self: Flag, ...string) -> Flag,
 ```
 
 </h4>
@@ -762,24 +762,24 @@ function Flag.aliases(self: Flag, ...string) -> Flag,
 
 ---
 
-### Flag.default
+#### Flag.default
 
 <h4>
 
 ```luau
-function Flag.default(self: Flag, boolean) -> Flag,
+  function Flag.default(self: Flag, boolean) -> Flag,
 ```
 
 </h4>
 
 ---
 
-### Flag.value
+#### Flag.value
 
 <h4>
 
 ```luau
-value: boolean,
+  value: boolean,
 ```
 
 </h4>
@@ -798,12 +798,12 @@ export type Named = {
 
 ---
 
-### Named.name
+#### Named.name
 
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
@@ -812,48 +812,48 @@ name: string,
 
 ---
 
-### Named.is
+#### Named.is
 
 <h4>
 
 ```luau
-is: "Named",
+  is: "Named",
 ```
 
 </h4>
 
 ---
 
-### Named.help
+#### Named.help
 
 <h4>
 
 ```luau
-help: string,
+  help: string,
 ```
 
 </h4>
 
 ---
 
-### Named.default
+#### Named.default
 
 <h4>
 
 ```luau
-function Named.default(self: Named, any) -> Named,
+  function Named.default(self: Named, any) -> Named,
 ```
 
 </h4>
 
 ---
 
-### Named.aliases
+#### Named.aliases
 
 <h4>
 
 ```luau
-function Named.aliases(self: Named, ...string) -> Named,
+  function Named.aliases(self: Named, ...string) -> Named,
 ```
 
 </h4>
@@ -862,36 +862,36 @@ function Named.aliases(self: Named, ...string) -> Named,
 
 ---
 
-### Named.required
+#### Named.required
 
 <h4>
 
 ```luau
-function Named.required(self: Named) -> Named,
+  function Named.required(self: Named) -> Named,
 ```
 
 </h4>
 
 ---
 
-### Named.validate
+#### Named.validate
 
 <h4>
 
 ```luau
-function Named.validate(self: Named, validator: Validator) -> Named,
+  function Named.validate(self: Named, validator: Validator) -> Named,
 ```
 
 </h4>
 
 ---
 
-### Named.value
+#### Named.value
 
 <h4>
 
 ```luau
-value: any,
+  value: any,
 ```
 
 </h4>

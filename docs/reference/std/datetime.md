@@ -7,7 +7,7 @@
 
 ### datetime
 
-→ [@std/time/datetime](/docs/reference/std/time/datetime.md)
+See [@std/time/datetime](/docs/reference/std/time/datetime.md)
 
 ---
 

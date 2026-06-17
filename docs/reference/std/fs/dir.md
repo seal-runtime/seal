@@ -9,25 +9,13 @@
 
 ## `export type` DirectoryEntry
 
-<h4>
-
-```luau
-export type DirectoryEntry = common_types.DirectoryEntry
-```
-
-</h4>
+See [DirectoryEntry in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-directoryentry)
 
 ---
 
 ## `export type` DirectoryBuilder
 
-<h4>
-
-```luau
-export type DirectoryBuilder = common_types.DirectoryBuilder
-```
-
-</h4>
+See [DirectoryBuilder in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-directorybuilder)
 
 ---
 
@@ -43,12 +31,12 @@ export type DirLib = setmetatable<{
 
 ---
 
-### DirLib.from
+#### DirLib.from
 
 <h4>
 
 ```luau
-function DirLib.from(path: string) -> DirectoryEntry,
+  function DirLib.from(path: string) -> DirectoryEntry,
 ```
 
 </h4>
@@ -57,12 +45,12 @@ function DirLib.from(path: string) -> DirectoryEntry,
 
 ---
 
-### DirLib.build
+#### DirLib.build
 
 <h4>
 
 ```luau
-function DirLib.build(name: string, tree: DirectoryTree) -> DirectoryBuilder,
+  function DirLib.build(name: string, tree: DirectoryTree) -> DirectoryBuilder,
 ```
 
 </h4>
@@ -71,12 +59,12 @@ function DirLib.build(name: string, tree: DirectoryTree) -> DirectoryBuilder,
 
 ---
 
-### DirLib.create
+#### DirLib.create
 
 <h4>
 
 ```luau
-function DirLib.create(path: string) -> DirectoryEntry,
+  function DirLib.create(path: string) -> DirectoryEntry,
 ```
 
 </h4>
@@ -85,12 +73,12 @@ function DirLib.create(path: string) -> DirectoryEntry,
 
 ---
 
-### DirLib.ensure
+#### DirLib.ensure
 
 <h4>
 
 ```luau
-function DirLib.ensure(path: string, create_missing: boolean?) -> DirectoryEntry,
+  function DirLib.ensure(path: string, create_missing: boolean?) -> DirectoryEntry,
 ```
 
 </h4>
@@ -115,12 +103,12 @@ local settings_json = dot_vscode:find("settings.json"):try_file()
 
 ---
 
-### DirLib.try_remove
+#### DirLib.try_remove
 
 <h4>
 
 ```luau
-function DirLib.try_remove(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?),
+  function DirLib.try_remove(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?),
 ```
 
 </h4>
@@ -142,12 +130,12 @@ with result "Other", as well as an error kind string that describes what went wr
 
 ---
 
-### DirLib.home
+#### DirLib.home
 
 <h4>
 
 ```luau
-function DirLib.home() -> DirectoryEntry,
+  function DirLib.home() -> DirectoryEntry,
 ```
 
 </h4>
@@ -166,12 +154,12 @@ local zip_downloads = fs.dir.home()
 
 ---
 
-### DirLib.cwd
+#### DirLib.cwd
 
 <h4>
 
 ```luau
-function DirLib.cwd() -> DirectoryEntry,
+  function DirLib.cwd() -> DirectoryEntry,
 ```
 
 </h4>
@@ -183,12 +171,12 @@ where the user is when they execute your code.
 
 ---
 
-### DirLib.project
+#### DirLib.project
 
 <h4>
 
 ```luau
-function DirLib.project(n: number?) -> DirectoryEntry,
+  function DirLib.project(n: number?) -> DirectoryEntry,
 ```
 
 </h4>
@@ -223,12 +211,12 @@ local input_files = fs.dir.project()
 
 ---
 
-### DirLib.__call
+#### DirLib.__call
 
 <h4>
 
 ```luau
-function DirLib.__call(self: any, path: string) -> DirectoryEntry?,
+  function DirLib.__call(self: any, path: string) -> DirectoryEntry?,
 ```
 
 </h4>

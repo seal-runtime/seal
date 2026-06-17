@@ -36,79 +36,79 @@ export type CloseCode =
 ---
 
 ```luau
-| "Normal"
+  | "Normal"
 ```
 
 ---
 
 ```luau
-| "Away"
+  | "Away"
 ```
 
 ---
 
 ```luau
-| "Protocol"
+  | "Protocol"
 ```
 
 ---
 
 ```luau
-| "Unsupported"
+  | "Unsupported"
 ```
 
 ---
 
 ```luau
-| "Status"
+  | "Status"
 ```
 
 ---
 
 ```luau
-| "Abnormal"
+  | "Abnormal"
 ```
 
 ---
 
 ```luau
-| "Invalid"
+  | "Invalid"
 ```
 
 ---
 
 ```luau
-| "Policy"
+  | "Policy"
 ```
 
 ---
 
 ```luau
-| "Size"
+  | "Size"
 ```
 
 ---
 
 ```luau
-| "Extension"
+  | "Extension"
 ```
 
 ---
 
 ```luau
-| "Error"
+  | "Error"
 ```
 
 ---
 
 ```luau
-| "Tls"
+  | "Tls"
 ```
 
 ---
 
 ```luau
-| number
+  | number
 ```
 
 ---

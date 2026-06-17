@@ -204,12 +204,12 @@ export type ThreadHandle = {
 
 ---
 
-### ThreadHandle.name
+#### ThreadHandle.name
 
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
@@ -218,12 +218,12 @@ name: string,
 
 ---
 
-### ThreadHandle.join
+#### ThreadHandle.join
 
 <h4>
 
 ```luau
-function ThreadHandle.join(self: ThreadHandle) -> (),
+  function ThreadHandle.join(self: ThreadHandle) -> (),
 ```
 
 </h4>
@@ -234,12 +234,12 @@ Errors if the thread has already been joined or somehow disappeared.
 
 ---
 
-### ThreadHandle.send
+#### ThreadHandle.send
 
 <h4>
 
 ```luau
-function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | string) -> (),
+  function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | string) -> (),
 ```
 
 </h4>
@@ -260,12 +260,12 @@ Errors if the channel has somehow become disconnected or provided data isn't jso
 
 ---
 
-### ThreadHandle.try_send
+#### ThreadHandle.try_send
 
 <h4>
 
 ```luau
-function ThreadHandle.try_send(self: ThreadHandle, data: JsonSerializableTable | string) -> (boolean, "Sent" | "Disconnected" | "Full"),
+  function ThreadHandle.try_send(self: ThreadHandle, data: JsonSerializableTable | string) -> (boolean, "Sent" | "Disconnected" | "Full"),
 ```
 
 </h4>
@@ -287,12 +287,12 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
-### ThreadHandle.sendbytes
+#### ThreadHandle.sendbytes
 
 <h4>
 
 ```luau
-function ThreadHandle.sendbytes(self: ThreadHandle, data: buffer) -> (),
+  function ThreadHandle.sendbytes(self: ThreadHandle, data: buffer) -> (),
 ```
 
 </h4>
@@ -303,12 +303,12 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-### ThreadHandle.try_sendbytes
+#### ThreadHandle.try_sendbytes
 
 <h4>
 
 ```luau
-function ThreadHandle.try_sendbytes(self: ThreadHandle, data: buffer) -> (boolean, "Sent" | "Disconnected" | "Full"),
+  function ThreadHandle.try_sendbytes(self: ThreadHandle, data: buffer) -> (boolean, "Sent" | "Disconnected" | "Full"),
 ```
 
 </h4>
@@ -330,12 +330,12 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
-### ThreadHandle.read
+#### ThreadHandle.read
 
 <h4>
 
 ```luau
-function ThreadHandle.read(self: ThreadHandle) -> JsonSerializableTable? | string?,
+  function ThreadHandle.read(self: ThreadHandle) -> JsonSerializableTable? | string?,
 ```
 
 </h4>
@@ -346,12 +346,12 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-### ThreadHandle.read_await
+#### ThreadHandle.read_await
 
 <h4>
 
 ```luau
-function ThreadHandle.read_await(self: ThreadHandle) -> JsonSerializableTable | string,
+  function ThreadHandle.read_await(self: ThreadHandle) -> JsonSerializableTable | string,
 ```
 
 </h4>
@@ -362,12 +362,12 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-### ThreadHandle.readbytes
+#### ThreadHandle.readbytes
 
 <h4>
 
 ```luau
-function ThreadHandle.readbytes(self: ThreadHandle) -> buffer?,
+  function ThreadHandle.readbytes(self: ThreadHandle) -> buffer?,
 ```
 
 </h4>
@@ -378,12 +378,12 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
-### ThreadHandle.readbytes_await
+#### ThreadHandle.readbytes_await
 
 <h4>
 
 ```luau
-function ThreadHandle.readbytes_await(self: ThreadHandle) -> buffer,
+  function ThreadHandle.readbytes_await(self: ThreadHandle) -> buffer,
 ```
 
 </h4>
@@ -406,12 +406,12 @@ export type ThreadSpawnOptions = {
 
 ---
 
-### ThreadSpawnOptions.name
+#### ThreadSpawnOptions.name
 
 <h4>
 
 ```luau
-name: string?,
+  name: string?,
 ```
 
 </h4>
@@ -420,12 +420,12 @@ name: string?,
 
 ---
 
-### ThreadSpawnOptions.path
+#### ThreadSpawnOptions.path
 
 <h4>
 
 ```luau
-path: string?,
+  path: string?,
 ```
 
 </h4>
@@ -434,12 +434,12 @@ path: string?,
 
 ---
 
-### ThreadSpawnOptions.src
+#### ThreadSpawnOptions.src
 
 <h4>
 
 ```luau
-src: string?,
+  src: string?,
 ```
 
 </h4>
@@ -448,12 +448,12 @@ src: string?,
 
 ---
 
-### ThreadSpawnOptions.data
+#### ThreadSpawnOptions.data
 
 <h4>
 
 ```luau
-data: JsonSerializableTable?,
+  data: JsonSerializableTable?,
 ```
 
 </h4>
@@ -462,12 +462,12 @@ data: JsonSerializableTable?,
 
 ---
 
-### ThreadSpawnOptions.capacity.regular
+##### ThreadSpawnOptions.capacity.regular
 
 <h4>
 
 ```luau
-regular: number?,
+    regular: number?,
 ```
 
 </h4>
@@ -477,12 +477,12 @@ regular: number?,
 
 ---
 
-### ThreadSpawnOptions.capacity.bytes
+##### ThreadSpawnOptions.capacity.bytes
 
 <h4>
 
 ```luau
-bytes: number?,
+    bytes: number?,
 ```
 
 </h4>
