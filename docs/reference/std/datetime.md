@@ -7,13 +7,7 @@
 
 ### datetime
 
-<h4>
-
-```luau
-return require("./time/datetime")
-```
-
-</h4>
+→ [@std/time/datetime](/docs/reference/std/time/datetime.md)
 
 ---
 

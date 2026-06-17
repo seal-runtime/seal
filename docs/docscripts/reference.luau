@@ -234,6 +234,13 @@ end
 
 print(`finished processing in {os.clock() - processing_start_time} seconds!`)
 
+local init_lib_paths: { [string]: boolean } = {}
+for _, lib in libraries do
+    if str.endswith(lib.path, "/init") then
+        init_lib_paths[lib.path:sub(1, #lib.path - #"/init")] = true
+    end
+end
+
 local child_handles: { [string]: process.ChildProcess } = {}
 
 for _, library in libraries do
@@ -271,14 +278,39 @@ for _, library in libraries do
             end
         end
         if #api.defs > 0 then
-            if api.is ~= "Enum" then
-                push("<h4>", 2)
+            local require_path =
+                string.match(defs, `^[%w_]+: typeof%(require%("([^"]+)"%)%),?$`) or
+                string.match(defs, `^return require%("([^"]+)"%)$`)
+            local target_path: string? = nil
+            if require_path then
+                if str.startswith(require_path, "@self/") then
+                    local sublib = str.trimfront(require_path, "@self/")
+                    local lib_dir = if str.endswith(library.path, "/init")
+                        then library.path:sub(1, #library.path - #"/init")
+                        else library.path
+                    target_path = lib_dir .. "/" .. sublib
+                elseif str.startswith(require_path, "@std/") then
+                    target_path = "std/" .. str.trimfront(require_path, "@std/")
+                elseif str.startswith(require_path, "./") then
+                    local rel = str.trimfront(require_path, "./")
+                    local lib_dir = library.path:match("^(.+)/[^/]+$") or library.path
+                    target_path = lib_dir .. "/" .. rel
+                end
             end
-            push("```luau", 0)
-            push(defs, 0)
-            push("```", 2)
-            if api.is ~= "Enum" then
-                push("</h4>")
+            if target_path then
+                local suffix = if init_lib_paths[target_path] then "/README.md" else ".md"
+                local display = "@" .. target_path
+                push(`→ [{display}](/docs/reference/{target_path}{suffix})`, 2)
+            else
+                if api.is ~= "Enum" then
+                    push("<h4>", 2)
+                end
+                push("```luau", 0)
+                push(defs, 0)
+                push("```", 2)
+                if api.is ~= "Enum" then
+                    push("</h4>")
+                end
             end
         end
 

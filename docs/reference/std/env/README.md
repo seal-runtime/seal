@@ -83,13 +83,7 @@ Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission deni
 
 ### env.vars
 
-<h4>
-
-```luau
-vars: typeof(require("@self/vars"))
-```
-
-</h4>
+→ [@std/env/vars](/docs/reference/std/env/vars.md)
 
 ---
 

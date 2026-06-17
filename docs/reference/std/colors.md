@@ -7,13 +7,7 @@
 
 ### colors
 
-<h4>
-
-```luau
-return require("./io/colors")
-```
-
-</h4>
+→ [@std/io/colors](/docs/reference/std/io/colors.md)
 
 ---
 
