@@ -2,8 +2,9 @@
 
 <!-- markdownlint-disable MD033 -->
 <div align="center">
-    <img src="assets/seal-smaller.png" width="400" alt="seal mascot reading reference book" /><br />
+    <img src="assets/seal-smaller.png" width="320" alt="seal mascot reading reference book" /><br />
     <em>seal</em>, the cutest scripting runtime<br /><br />
+    <kbd>seal <!-- Start-Precommit-Marker-2 -->0.0.8-rc.2<!-- End-Precommit-Marker-2 --></kbd> <kbd>Luau <!-- Start-Precommit-Marker-3 -->0.715<!-- End-Precommit-Marker-3 --></kbd><br /><br />
     <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
 </div>
 

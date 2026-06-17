@@ -1,3 +1,7 @@
+-- This script is run by seal's git pre-commit hook to keep README.md up to date.
+-- It updates version badges and the handcrafted error message count in-place,
+-- and installs the hook itself on first run.
+
 local fs = require("@std/fs")
 local env = require("@std/env")
 local process = require("@std/process")
@@ -22,22 +26,40 @@ end
 
 print(tostring(count))
 
-local start_tag = "<!-- Start-Precommit-Marker-1 -->"
-local end_tag = "<!-- End-Precommit-Marker-1 -->"
+local seal_version = _RUNTIME.version.display
+local luau_version = _LUAU.version.display
 
 local function find_plain(s: string, pattern: string, init: number?): number?
     return (string.find(s, pattern, init or 1, true))
 end
 
+local function get_between(line: string, start_tag: string, end_tag: string): string?
+    local s = find_plain(line, start_tag)
+    if not s then return nil end
+    local cs = s + #start_tag
+    local e = find_plain(line, end_tag, cs)
+    if not e then return nil end
+    return string.sub(line, cs, e - 1)
+end
+
+local function replace_between(line: string, start_tag: string, end_tag: string, replacement: string): string
+    local s = find_plain(line, start_tag)
+    if not s then return line end
+    local cs = s + #start_tag
+    local e = (find_plain(line, end_tag, cs) :: number) - 1
+    return string.sub(line, 1, cs - 1) .. replacement .. string.sub(line, e + 1)
+end
+
 local lines = {}
 for _, line in fs.readlines("./README.md") do
-    if find_plain(line, start_tag) then
-        local s = find_plain(line, start_tag) :: number + #start_tag
-        local e = find_plain(line, end_tag) :: number - 1
-        line = string.sub(line, 1, s - 1)
-            .. string.gsub(string.sub(line, s, e), "%d+", tostring(count), 1)
-            .. string.sub(line, e + 1)
+    local m1 = get_between(line, "<!-- Start-Precommit-Marker-1 -->", "<!-- End-Precommit-Marker-1 -->")
+    if m1 then
+        line = replace_between(line, "<!-- Start-Precommit-Marker-1 -->", "<!-- End-Precommit-Marker-1 -->",
+            string.gsub(m1, "%d+", tostring(count), 1)
+        )
     end
+    line = replace_between(line, "<!-- Start-Precommit-Marker-2 -->", "<!-- End-Precommit-Marker-2 -->", seal_version)
+    line = replace_between(line, "<!-- Start-Precommit-Marker-3 -->", "<!-- End-Precommit-Marker-3 -->", luau_version)
     table.insert(lines, line)
 end
 table.insert(lines, "") -- satisfy MD047 single-trailing-newline
@@ -58,7 +80,7 @@ if not fs.path.exists(hook_path) then
         echo "warning: seal not found in PATH or ./target/, skipping handcrafted error message count update"
         exit 0
     fi
-    $SEAL examples/handcrafted_error_messages.luau
+    $SEAL examples/precommit_readme.luau
     git add README.md
     ]], "Spaces", 4)
     
