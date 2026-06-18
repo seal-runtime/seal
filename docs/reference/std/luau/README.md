@@ -294,25 +294,11 @@ export type LuaurcAliases = {
 
 ```luau
   aliases: {
-```
-
-</h4>
-
----
-
-#### LuaurcAliases.aliases.[string]
-
-<h4>
-
-```luau
     [string]: string
+  }
 ```
 
 </h4>
-
-```luau
-  } -- closes aliases
-```
 
 ```luau
 } -- closes LuaurcAliases

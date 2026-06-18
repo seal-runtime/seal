@@ -454,6 +454,8 @@ export type HttpRequestWithoutBody = {
 
 ```luau
   params: {
+    [string]: string,
+  }?,
 ```
 
 </h4>
@@ -464,28 +466,14 @@ Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 
 ---
 
-#### HttpRequestWithoutBody.params.[string]
-
-<h4>
-
-```luau
-    [string]: string,
-```
-
-</h4>
-
-```luau
-  }?, -- closes params
-```
-
----
-
 ### HttpRequestWithoutBody.headers
 
 <h4>
 
 ```luau
   headers: {
+    [string]: string,
+  }?,
 ```
 
 </h4>
@@ -495,22 +483,6 @@ Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 Common headers include `Authorization`, `Accept`, and `User-Agent`.
 
 Header keys are case-insensitive as per the HTTP spec; values must be valid ASCII.
-
----
-
-#### HttpRequestWithoutBody.headers.[string]
-
-<h4>
-
-```luau
-    [string]: string,
-```
-
-</h4>
-
-```luau
-  }?, -- closes headers
-```
 
 ---
 
@@ -609,6 +581,8 @@ Note that strings have to be valid utf-8; if you need to pass invalid utf-8 here
 
 ```luau
   params: {
+    [string]: string,
+  }?,
 ```
 
 </h4>
@@ -619,28 +593,14 @@ Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 
 ---
 
-#### HttpRequestWithBody.params.[string]
-
-<h4>
-
-```luau
-    [string]: string,
-```
-
-</h4>
-
-```luau
-  }?, -- closes params
-```
-
----
-
 ### HttpRequestWithBody.headers
 
 <h4>
 
 ```luau
   headers: {
+    [string]: string,
+  }?,
 ```
 
 </h4>
@@ -659,22 +619,6 @@ By default, *seal* automatically sets `Content-Type` for you when you send a str
 To override this behavior, set a `content-type` header explicitly.
 
 </details>
-
----
-
-#### HttpRequestWithBody.headers.[string]
-
-<h4>
-
-```luau
-    [string]: string,
-```
-
-</h4>
-
-```luau
-  }?, -- closes headers
-```
 
 ---
 
@@ -979,25 +923,11 @@ export type HttpResponse = {
 
 ```luau
   headers: {
-```
-
-</h4>
-
----
-
-#### HttpResponse.headers.[string]
-
-<h4>
-
-```luau
     [string]: string,
+  },
 ```
 
 </h4>
-
-```luau
-  }, -- closes headers
-```
 
 ---
 

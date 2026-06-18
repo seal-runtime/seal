@@ -78,21 +78,31 @@ for _, filepath in typedefs_paths do
     --- represents the 'path' to an api, such as 'SpawnOptions' or 'SpawnOptions.stream.stdout_capacity'
     local current_names: { string } = {}
     local current_indents: { number } = {}
-    local function push_name(name: string, indent: number)
+    -- index into apis_for_path for the Property api that opened this level (0 = no opener / Type level)
+    local current_opener_indices: { number } = {}
+    -- true when the opener at this level has received only map-type ([K]: V) children so far
+    local current_is_map_only: { boolean } = {}
+    local function push_name(name: string, indent: number, opener_idx: number?)
         assert(#current_names == #current_indents, "names/indents misaligned")
         table.insert(current_names, name)
         table.insert(current_indents, indent)
+        table.insert(current_opener_indices, opener_idx or 0) -- 0 = sentinel for "no opener"
+        table.insert(current_is_map_only, if opener_idx ~= nil then true else false)
     end
     local function pop_name()
         assert(#current_names == #current_indents, "names/indents misaligned")
         local n = #current_names
         local last_name = table.remove(current_names, n)
         local last_indent = table.remove(current_indents, n)
+        table.remove(current_opener_indices, n)
+        table.remove(current_is_map_only, n)
         return last_name, last_indent
     end
     local function clear_names()
         table.clear(current_names)
-        table.clear(current_indents)    
+        table.clear(current_indents)
+        table.clear(current_opener_indices)
+        table.clear(current_is_map_only)
     end
     local function last_indent()
         return current_indents[#current_indents] or 0
@@ -164,7 +174,7 @@ for _, filepath in typedefs_paths do
                 }
                 table.insert(apis_for_path, new_api)
                 table.clear(current_docs)
-                push_name(found_property_name, #indent)
+                push_name(found_property_name, #indent, #apis_for_path)
                 continue
             end
         end
@@ -172,7 +182,15 @@ for _, filepath in typedefs_paths do
         local found_indent, found_close = string.match(line, "^(%s*)(}%??[,]?)%s*$")
         if #current_names > 0 and found_indent ~= nil and #found_indent == last_indent() then
             local full_name = table.concat(current_names, ".")
-            api_closings[full_name] = found_close
+            local n = #current_names
+            local opener_idx = current_opener_indices[n]
+            local is_map_only = current_is_map_only[n]
+            if opener_idx > 0 and is_map_only then
+                -- fold closing into the opener's defs (no relative indent — same level as opener)
+                apis_for_path[opener_idx].defs ..= "\n" .. found_close
+            else
+                api_closings[full_name] = found_close
+            end
             pop_name()
         end
 
@@ -203,6 +221,10 @@ for _, filepath in typedefs_paths do
             table.insert(apis_for_path, new_api)
             table.clear(current_docs)
         elseif string.match(line, "[%w_]+: ") then
+            -- a named property means the current opener (if any) is not map-only
+            if #current_is_map_only > 0 then
+                current_is_map_only[#current_is_map_only] = false
+            end
             local front_name = table.concat(current_names, ".")
             if #front_name == 0 then front_name = library_name end
             if str.startswith(trimmed_line, "local ") then
@@ -234,17 +256,24 @@ for _, filepath in typedefs_paths do
             table.insert(apis_for_path, new_api)
             table.clear(current_docs)
         elseif string.match(trimmed_line, "^%[") then -- map/index types like [string]: string
-            local key_type, value_type = string.match(trimmed_line, "^%[([%w_%s%|%.]+)%]:%s*(.+)")
+            local key_type, value_type = string.match(trimmed_line, "^%[([%w_%s|%.]+)%]:%s*(.+)")
             if key_type and value_type then
-                local front_name = table.concat(current_names, ".")
-                if #front_name == 0 then front_name = library_name end
-                local new_api: Api = {
-                    name = front_name .. ".[" .. key_type .. "]",
-                    defs = "[" .. key_type .. "]: " .. value_type,
-                    docs = table.concat(current_docs, "\n"),
-                    is = "Property",
-                }
-                table.insert(apis_for_path, new_api)
+                local opener_idx = current_opener_indices[#current_opener_indices]
+                if opener_idx > 0 then
+                    -- fold into the opener's defs with one level of relative indent
+                    apis_for_path[opener_idx].defs ..= "\n  [" .. key_type .. "]: " .. value_type
+                else
+                    -- fallback: create a child API (e.g. map at Type level)
+                    local front_name = table.concat(current_names, ".")
+                    if #front_name == 0 then front_name = library_name end
+                    local new_api: Api = {
+                        name = front_name .. ".[" .. key_type .. "]",
+                        defs = "[" .. key_type .. "]: " .. value_type,
+                        docs = table.concat(current_docs, "\n"),
+                        is = "Property",
+                    }
+                    table.insert(apis_for_path, new_api)
+                end
                 table.clear(current_docs)
             end
         elseif #apis_for_path == 0 and string.match(trimmed_line, "return require") then
@@ -413,7 +442,9 @@ for _, library in libraries do
                     push("<h4>", 2)
                 end
                 push("```luau", 0)
-                push(indent .. defs, 0)
+                local indented_defs = if indent == "" then defs
+                    else defs:gsub("\n", "\n" .. indent)
+                push(indent .. indented_defs, 0)
                 push("```", 2)
                 if api.is ~= "Enum" then
                     push("</h4>")

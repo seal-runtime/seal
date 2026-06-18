@@ -335,25 +335,11 @@ export type ServeRequest = {
 
 ```luau
   headers: {
-```
-
-</h4>
-
----
-
-#### ServeRequest.headers.[string]
-
-<h4>
-
-```luau
     [string]: string,
+  },
 ```
 
 </h4>
-
-```luau
-  }, -- closes headers
-```
 
 ---
 
@@ -439,25 +425,11 @@ export type ServeResponse = {
 
 ```luau
   headers: {
-```
-
-</h4>
-
----
-
-#### ServeResponse.headers.[string]
-
-<h4>
-
-```luau
     [string]: string,
+  }?,
 ```
 
 </h4>
-
-```luau
-  }?, -- closes headers
-```
 
 ---
 
@@ -467,25 +439,11 @@ export type ServeResponse = {
 
 ```luau
   cookies: {
-```
-
-</h4>
-
----
-
-#### ServeResponse.cookies.[string]
-
-<h4>
-
-```luau
     [string]: string,
+  }?,
 ```
 
 </h4>
-
-```luau
-  }?, -- closes cookies
-```
 
 ---
 

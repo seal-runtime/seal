@@ -628,25 +628,11 @@ added).
 
 ```luau
       add: {
-```
-
-</h4>
-
----
-
-#### RunOptions.stdio.env.add.[string]
-
-<h4>
-
-```luau
         [string]: string
+      }?,
 ```
 
 </h4>
-
-```luau
-      }?, -- closes add
-```
 
 ---
 
@@ -975,25 +961,11 @@ added).
 
 ```luau
       add: {
-```
-
-</h4>
-
----
-
-#### SpawnOptions.stdio.env.add.[string]
-
-<h4>
-
-```luau
         [string]: string
+      }?,
 ```
 
 </h4>
-
-```luau
-      }?, -- closes add
-```
 
 ---
 
