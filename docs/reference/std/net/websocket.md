@@ -21,10 +21,6 @@ Connect to the WebSocket at `url` as a client, returning a `Websocket` handle.
 
 To send messages on the WebSocket, use `Websocket:send`; to receive messages, use `Websocket:read`.
 
-```luau
-}
-```
-
 ---
 
 ## `export type` CloseCode

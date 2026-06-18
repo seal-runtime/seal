@@ -348,10 +348,6 @@ function datetime.milliseconds(number) -> TimeSpan,
 
  Constructs a `TimeSpan` from milliseconds.
 
-```luau
-}
-```
-
 ---
 
 ## `export type` CommonFormats

@@ -795,10 +795,6 @@ See [@std/fs/filesize](/docs/reference/std/fs/filesize.md)
 
  Library for constructing `FileSize` instances.
 
-```luau
-}
-```
-
 ---
 
 ## `export type` PathIs

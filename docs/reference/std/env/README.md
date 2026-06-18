@@ -85,10 +85,6 @@ Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission deni
 
 See [@std/env/vars](/docs/reference/std/env/vars.md)
 
-```luau
-}
-```
-
 ---
 
 ## `export type` ARCH

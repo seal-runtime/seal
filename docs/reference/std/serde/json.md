@@ -122,10 +122,6 @@ function json.array<T>(t: { T }?) -> { T }
 
  If `t` isn't provided, returns a new array-like table that will serialize to a json array.
 
-```luau
-}
-```
-
 ---
 
 ## `export type` EncodeOptions

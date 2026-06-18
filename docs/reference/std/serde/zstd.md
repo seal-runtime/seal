@@ -53,10 +53,6 @@ window_log: number?,
 
 </h4>
 
-```luau
-}
-```
-
 ---
 
 ## `export type` zstd

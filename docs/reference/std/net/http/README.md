@@ -268,10 +268,6 @@ end
 
 </details>
 
-```luau
-}
-```
-
 ---
 
 ## `export type` HttpMethod

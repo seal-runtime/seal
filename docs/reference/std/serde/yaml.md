@@ -55,10 +55,6 @@ function yaml.writefile(path: string, content: YamlValue) -> (),
 
 </h4>
 
-```luau
-}
-```
-
 ---
 
 ## `export type` YamlValue

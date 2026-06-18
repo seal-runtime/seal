@@ -224,10 +224,6 @@ Immediately terminate the current program with exit `code`.
 
 Typically exit code 0 means success and exit code 1 means failure.
 
-```luau
-}
-```
-
 ---
 
 ## `export type` RunResult

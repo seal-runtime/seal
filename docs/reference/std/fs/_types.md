@@ -79,7 +79,7 @@ export type FileEntry = {
 <h4>
 
 ```luau
-  name: string,
+name: string,
 ```
 
 </h4>
@@ -93,7 +93,7 @@ export type FileEntry = {
 <h4>
 
 ```luau
-  path: string,
+path: string,
 ```
 
 </h4>
@@ -107,7 +107,7 @@ export type FileEntry = {
 <h4>
 
 ```luau
-  type: "File",
+type: "File",
 ```
 
 </h4>
@@ -353,7 +353,7 @@ export type DirectoryEntry = {
 <h4>
 
 ```luau
-  name: string,
+name: string,
 ```
 
 </h4>
@@ -367,7 +367,7 @@ export type DirectoryEntry = {
 <h4>
 
 ```luau
-  path: string,
+path: string,
 ```
 
 </h4>
@@ -382,7 +382,7 @@ export type DirectoryEntry = {
 <h4>
 
 ```luau
-  type: "Directory",
+type: "Directory",
 ```
 
 </h4>
@@ -635,7 +635,7 @@ export type FsMetadata = {
 <h4>
 
 ```luau
-  created_at: DateTime?,
+created_at: DateTime?,
 ```
 
 </h4>
@@ -650,7 +650,7 @@ export type FsMetadata = {
 <h4>
 
 ```luau
-  modified_at: DateTime?,
+modified_at: DateTime?,
 ```
 
 </h4>
@@ -665,7 +665,7 @@ export type FsMetadata = {
 <h4>
 
 ```luau
-  accessed_at: DateTime?,
+accessed_at: DateTime?,
 ```
 
 </h4>
@@ -680,19 +680,19 @@ export type FsMetadata = {
 <h4>
 
 ```luau
-  permissions: {
+permissions: {
 ```
 
 </h4>
 
 ---
 
-#### FsMetadata.permissions.readonly
+### FsMetadata.permissions.readonly
 
 <h4>
 
 ```luau
-    readonly: boolean,
+readonly: boolean,
 ```
 
 </h4>
@@ -701,12 +701,12 @@ export type FsMetadata = {
 
 ---
 
-#### FsMetadata.permissions.unix_mode
+### FsMetadata.permissions.unix_mode
 
 <h4>
 
 ```luau
-    unix_mode: number?,
+unix_mode: number?,
 ```
 
 </h4>
@@ -741,7 +741,7 @@ export type FindResult = { -- can't make this type more accurate w/ unions bc it
 <h4>
 
 ```luau
-  ok: boolean,
+ok: boolean,
 ```
 
 </h4>
@@ -755,7 +755,7 @@ export type FindResult = { -- can't make this type more accurate w/ unions bc it
 <h4>
 
 ```luau
-  path: string,
+path: string,
 ```
 
 </h4>
@@ -767,7 +767,7 @@ export type FindResult = { -- can't make this type more accurate w/ unions bc it
 <h4>
 
 ```luau
-  type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
+type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
 ```
 
 </h4>
@@ -895,7 +895,7 @@ export type FileBuilder = {
 <h4>
 
 ```luau
-  name: string,
+name: string,
 ```
 
 </h4>
@@ -907,7 +907,7 @@ export type FileBuilder = {
 <h4>
 
 ```luau
-  type: "File",
+type: "File",
 ```
 
 </h4>
@@ -919,7 +919,7 @@ export type FileBuilder = {
 <h4>
 
 ```luau
-  content: string,
+content: string,
 ```
 
 </h4>
@@ -947,7 +947,7 @@ export type DirectoryBuilder = {
 <h4>
 
 ```luau
-  name: string,
+name: string,
 ```
 
 </h4>
@@ -959,7 +959,7 @@ export type DirectoryBuilder = {
 <h4>
 
 ```luau
-  type: "Directory",
+type: "Directory",
 ```
 
 </h4>
@@ -971,7 +971,7 @@ export type DirectoryBuilder = {
 <h4>
 
 ```luau
-  children: DirectoryTree,
+children: DirectoryTree,
 ```
 
 </h4>

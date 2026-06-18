@@ -676,10 +676,6 @@ end
 
 </details>
 
-```luau
-}
-```
-
 ---
 
 ## `export type` ClearMode

@@ -111,10 +111,6 @@ end
 
 </details>
 
-```luau
-}
-```
-
 ---
 
 ## `export type` HashedPassword

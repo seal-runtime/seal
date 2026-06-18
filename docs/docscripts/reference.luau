@@ -304,10 +304,12 @@ for _, library in libraries do
     end
 
     local main_type_name: string? = nil
-    for _, a in library.apis do
-        if a.is == "Type" then
-            main_type_name = a.name
-            break
+    if not str.startswith(lib_child, "_") then
+        for _, a in library.apis do
+            if a.is == "Type" then
+                main_type_name = a.name
+                break
+            end
         end
     end
 
@@ -426,7 +428,7 @@ for _, library in libraries do
         for i = #current_ancestors, 1, -1 do
             local ancestor = current_ancestors[i]
             local closing = library.api_closings[ancestor]
-            if not next_ancestor_set[ancestor] and closing then
+            if not next_ancestor_set[ancestor] and closing and ancestor ~= main_type_name then
                 local ancestor_depth = 0
                 for _ in ancestor:gmatch("%.") do ancestor_depth += 1 end
                 local close_indent = string.rep("  ", ancestor_depth)

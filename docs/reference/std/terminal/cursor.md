@@ -353,10 +353,6 @@ Once invoked, moves the cursor up `l` lines and resets it to the first column.
 `TerminalActions` do nothing until invoked; pass the action to `terminal.execute`
 to queue and execute multiple commands, or call its `:execute()` method to directly invoke.
 
-```luau
-}
-```
-
 ---
 
 ## `export type` CursorMoveToColumnsAndRows

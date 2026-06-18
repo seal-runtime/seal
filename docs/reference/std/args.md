@@ -234,10 +234,6 @@ function args.default(...Arg) -> Command,
 
  Add a default command.
 
-```luau
-}
-```
-
 ---
 
 ## `export type` ArgParser

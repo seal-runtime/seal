@@ -204,10 +204,6 @@ function luau.expand_aliases(requested_path: string, aliases_by_luaurc: { Luaurc
 
 </h4>
 
-```luau
-}
-```
-
 ---
 
 ## `export type` EvalOptions

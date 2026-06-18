@@ -178,10 +178,6 @@ function thread.sleep(milliseconds: number) -> true,
 
 Literally the same as `time.wait`, except in milliseconds.
 
-```luau
-}
-```
-
 ---
 
 ## `export type` JsonSerializableTable

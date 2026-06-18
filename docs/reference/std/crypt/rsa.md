@@ -41,10 +41,6 @@ function rsa.decrypt(ciphertext: string, private_key: string) -> string,
 
 </h4>
 
-```luau
-}
-```
-
 ---
 
 ## `export type` RsaKeys
