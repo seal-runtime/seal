@@ -952,7 +952,7 @@ export type WatchOptions = {
 </h4>
 
 ```luau
-}
+} -- closes WatchOptions
 ```
 
 ---
@@ -1116,7 +1116,7 @@ export type WatchEventInfo = {
  if the event is *most likely* a write event (`Create::File` or `Modify::Data` or `Close::Write`)
 
 ```luau
-}
+} -- closes WatchEventInfo
 ```
 
 ---

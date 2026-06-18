@@ -163,7 +163,7 @@ export type EncodeOptions = {
  sorted in alphanumeric order (default false)
 
 ```luau
-}
+} -- closes EncodeOptions
 ```
 
 ---

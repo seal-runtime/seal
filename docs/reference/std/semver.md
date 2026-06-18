@@ -140,7 +140,7 @@ type SemverFields = {
 </h4>
 
 ```luau
-    }?,
+    }?, -- closes release_candidate
 ```
 
 ---
@@ -156,11 +156,11 @@ type SemverFields = {
 </h4>
 
 ```luau
-  }
+  } -- closes metadata
 ```
 
 ```luau
-}
+} -- closes SemverFields
 ```
 
 ---
@@ -176,7 +176,7 @@ function semver.from(s: string): Semver
 </h4>
 
 ```luau
-}
+} -- closes SemverImpl
 ```
 
 ---

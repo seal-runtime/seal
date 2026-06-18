@@ -68,7 +68,7 @@ function base64.urlsafe.decode(data: string) -> buffer
 </h4>
 
 ```luau
-  }
+  } -- closes urlsafe
 ```
 
 ---

@@ -341,6 +341,22 @@ export type ServeRequest = {
 
 ---
 
+#### ServeRequest.headers.[string]
+
+<h4>
+
+```luau
+    [string]: string,
+```
+
+</h4>
+
+```luau
+  }, -- closes headers
+```
+
+---
+
 ### ServeRequest.raw_text
 
 <h4>
@@ -364,7 +380,7 @@ export type ServeRequest = {
 </h4>
 
 ```luau
-}
+} -- closes ServeRequest
 ```
 
 ---
@@ -429,6 +445,22 @@ export type ServeResponse = {
 
 ---
 
+#### ServeResponse.headers.[string]
+
+<h4>
+
+```luau
+    [string]: string,
+```
+
+</h4>
+
+```luau
+  }?, -- closes headers
+```
+
+---
+
 ### ServeResponse.cookies
 
 <h4>
@@ -438,6 +470,22 @@ export type ServeResponse = {
 ```
 
 </h4>
+
+---
+
+#### ServeResponse.cookies.[string]
+
+<h4>
+
+```luau
+    [string]: string,
+```
+
+</h4>
+
+```luau
+  }?, -- closes cookies
+```
 
 ---
 
@@ -476,7 +524,7 @@ export type ServeResponse = {
 </h4>
 
 ```luau
-}
+} -- closes ServeResponse
 ```
 
 ---
@@ -528,7 +576,7 @@ function ServeConfig.handler(ServeRequest) -> ServeResponse,
 </h4>
 
 ```luau
-}
+} -- closes ServeConfig
 ```
 
 ---

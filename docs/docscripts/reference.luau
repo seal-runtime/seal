@@ -233,6 +233,20 @@ for _, filepath in typedefs_paths do
 
             table.insert(apis_for_path, new_api)
             table.clear(current_docs)
+        elseif string.match(trimmed_line, "^%[") then -- map/index types like [string]: string
+            local key_type, value_type = string.match(trimmed_line, "^%[([%w_%s%|%.]+)%]:%s*(.+)")
+            if key_type and value_type then
+                local front_name = table.concat(current_names, ".")
+                if #front_name == 0 then front_name = library_name end
+                local new_api: Api = {
+                    name = front_name .. ".[" .. key_type .. "]",
+                    defs = "[" .. key_type .. "]: " .. value_type,
+                    docs = table.concat(current_docs, "\n"),
+                    is = "Property",
+                }
+                table.insert(apis_for_path, new_api)
+                table.clear(current_docs)
+            end
         elseif #apis_for_path == 0 and string.match(trimmed_line, "return require") then
             local new_api: Api = {
                 name = library_name,
@@ -431,10 +445,23 @@ for _, library in libraries do
                 local ancestor_depth = 0
                 for _ in ancestor:gmatch("%.") do ancestor_depth += 1 end
                 local close_indent = string.rep("  ", ancestor_depth)
+                local short_name = ancestor:match("([^%.]+)$") or ancestor
                 push("```luau", 0)
-                push(close_indent .. closing, 0)
+                push(close_indent .. closing .. " -- closes " .. short_name, 0)
                 push("```", 2)
             end
+        end
+        -- also emit closing for the current api itself if it opened a sub-table
+        -- but has no child apis (e.g. add: { [string]: string }? where [string] can't be parsed)
+        local own_closing = library.api_closings[api.name]
+        if own_closing and api.name ~= main_type_name and not next_ancestor_set[api.name] then
+            local own_depth = 0
+            for _ in api.name:gmatch("%.") do own_depth += 1 end
+            local close_indent = string.rep("  ", own_depth)
+            local short_name = api.name:match("([^%.]+)$") or api.name
+            push("```luau", 0)
+            push(close_indent .. own_closing .. " -- closes " .. short_name, 0)
+            push("```", 2)
         end
 
         push("---")

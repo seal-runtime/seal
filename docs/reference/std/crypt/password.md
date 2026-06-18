@@ -165,7 +165,7 @@ Represents a password hashed with the PBKDF2_HMAC_SHA256 algorithm.
 </h4>
 
 ```luau
-}
+} -- closes HashedPassword
 ```
 
 ---
@@ -205,7 +205,7 @@ export type PasswordVerifyOptions = {
 </h4>
 
 ```luau
-}
+} -- closes PasswordVerifyOptions
 ```
 
 ---

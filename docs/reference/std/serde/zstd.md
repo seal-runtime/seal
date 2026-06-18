@@ -111,7 +111,7 @@ function zstd.decompress(compressed: buffer) -> buffer,
 </h4>
 
 ```luau
-}
+} -- closes zstd
 ```
 
 ---

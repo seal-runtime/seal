@@ -197,7 +197,7 @@ common_formats: {
 </h4>
 
 ```luau
-  },
+  }, -- closes common_formats
 ```
 
 ---

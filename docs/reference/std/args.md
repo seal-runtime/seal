@@ -276,7 +276,7 @@ function ArgParser.commands(self: any, ...Command) -> Parsed,
  generate commands.
 
 ```luau
-}
+} -- closes ArgParser
 ```
 
 ---
@@ -334,7 +334,7 @@ export type ProgramInfo = {
  put authors and/or repository link here
 
 ```luau
-}
+} -- closes ProgramInfo
 ```
 
 ---
@@ -412,7 +412,7 @@ function Command.aliases(self: Command, ...string) -> Command,
  Aliases for your command, like `seal r -> seal run`
 
 ```luau
-}
+} -- closes Command
 ```
 
 ---
@@ -500,7 +500,7 @@ function Parsed.help(self: Parsed) -> string,
 </h4>
 
 ```luau
-}
+} -- closes Parsed
 ```
 
 ---
@@ -564,7 +564,7 @@ export type ArgList = {
 </h4>
 
 ```luau
-}
+} -- closes ArgList
 ```
 
 ---
@@ -717,7 +717,7 @@ function Positional.validate(self: Positional, validator: Validator) -> Position
 </h4>
 
 ```luau
-}
+} -- closes Positional
 ```
 
 ---
@@ -809,7 +809,7 @@ function Flag.default(self: Flag, boolean) -> Flag,
 </h4>
 
 ```luau
-}
+} -- closes Flag
 ```
 
 ---
@@ -925,7 +925,7 @@ function Named.validate(self: Named, validator: Validator) -> Named,
 </h4>
 
 ```luau
-}
+} -- closes Named
 ```
 
 ---

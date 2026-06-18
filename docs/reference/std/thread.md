@@ -393,7 +393,7 @@ Read a message from the bytes channel, blocking until the next message is availa
 Errors if the channel has somehow become disconnected.
 
 ```luau
-}
+} -- closes ThreadHandle
 ```
 
 ---
@@ -507,11 +507,11 @@ export type ThreadSpawnOptions = {
  default is 24
 
 ```luau
-  }?
+  }? -- closes capacity
 ```
 
 ```luau
-}
+} -- closes ThreadSpawnOptions
 ```
 
 ---

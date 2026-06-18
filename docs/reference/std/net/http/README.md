@@ -405,7 +405,7 @@ Configure how quickly a request times out.
  Max duration to wait for receiving the response body.
 
 ```luau
-}
+} -- closes RequestTimeout
 ```
 
 ---
@@ -464,6 +464,22 @@ Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 
 ---
 
+#### HttpRequestWithoutBody.params.[string]
+
+<h4>
+
+```luau
+    [string]: string,
+```
+
+</h4>
+
+```luau
+  }?, -- closes params
+```
+
+---
+
 ### HttpRequestWithoutBody.headers
 
 <h4>
@@ -479,6 +495,22 @@ Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 Common headers include `Authorization`, `Accept`, and `User-Agent`.
 
 Header keys are case-insensitive as per the HTTP spec; values must be valid ASCII.
+
+---
+
+#### HttpRequestWithoutBody.headers.[string]
+
+<h4>
+
+```luau
+    [string]: string,
+```
+
+</h4>
+
+```luau
+  }?, -- closes headers
+```
 
 ---
 
@@ -523,7 +555,7 @@ Header keys are case-insensitive as per the HTTP spec; values must be valid ASCI
  Max number of redirects to redirect through before erroring out; defaults to 10. Pass 0 to not redirect anywhere and return the original response.
 
 ```luau
-}
+} -- closes HttpRequestWithoutBody
 ```
 
 ---
@@ -587,6 +619,22 @@ Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 
 ---
 
+#### HttpRequestWithBody.params.[string]
+
+<h4>
+
+```luau
+    [string]: string,
+```
+
+</h4>
+
+```luau
+  }?, -- closes params
+```
+
+---
+
 ### HttpRequestWithBody.headers
 
 <h4>
@@ -611,6 +659,22 @@ By default, *seal* automatically sets `Content-Type` for you when you send a str
 To override this behavior, set a `content-type` header explicitly.
 
 </details>
+
+---
+
+#### HttpRequestWithBody.headers.[string]
+
+<h4>
+
+```luau
+    [string]: string,
+```
+
+</h4>
+
+```luau
+  }?, -- closes headers
+```
 
 ---
 
@@ -655,7 +719,7 @@ To override this behavior, set a `content-type` header explicitly.
  Max number of redirects to redirect through before erroring out; defaults to 10. Pass 0 to not redirect anywhere and return the original response.
 
 ```luau
-}
+} -- closes HttpRequestWithBody
 ```
 
 ---
@@ -921,6 +985,22 @@ export type HttpResponse = {
 
 ---
 
+#### HttpResponse.headers.[string]
+
+<h4>
+
+```luau
+    [string]: string,
+```
+
+</h4>
+
+```luau
+  }, -- closes headers
+```
+
+---
+
 ### HttpResponse.status
 
 <h4>
@@ -958,7 +1038,7 @@ export type HttpResponse = {
  The canonical HTTP reason phase for the status code; such as "Not Found" for status code 404
 
 ```luau
-  },
+  }, -- closes status
 ```
 
 ---
@@ -1037,7 +1117,7 @@ This field is `nil` if the server didn't send a `content-type` header at all.
  Only present for text-based MIME types; typically absent for binary types like `"image/png"`.
 
 ```luau
-  }?,
+  }?, -- closes content_type
 ```
 
 ---
@@ -1118,7 +1198,7 @@ local data = http.get(options):expect_json<<ApiResponse>>()
 </details>
 
 ```luau
-}
+} -- closes HttpResponse
 ```
 
 ---
@@ -1184,7 +1264,7 @@ The request timed out because you set `HttpRequestOptions.timeout`.
 </h4>
 
 ```luau
-}
+} -- closes HttpTimeoutError
 ```
 
 ---
@@ -1239,7 +1319,7 @@ receiving a proper response.
 </h4>
 
 ```luau
-}
+} -- closes HttpIoError
 ```
 
 ---
