@@ -223,7 +223,7 @@ export type EvalOptions = {
 <h4>
 
 ```luau
-  name: string?,
+name: string?,
 ```
 
 </h4>
@@ -237,7 +237,7 @@ export type EvalOptions = {
 <h4>
 
 ```luau
-  stdlib: ("Seal" | "Safe" | "None")?,
+function EvalOptions.stdlib("Seal" | "Safe" | "None")?,
 ```
 
 </h4>
@@ -251,18 +251,12 @@ export type EvalOptions = {
 <h4>
 
 ```luau
-  globals: { [string]: any }?,
+globals: { [string]: any }?,
 ```
 
 </h4>
 
  add additional globals to the environment, including functions and variables.
-
----
-
-```luau
-} -- closes EvalOptions
-```
 
 ---
 
@@ -283,28 +277,10 @@ export type LuaurcAliases = {
 <h4>
 
 ```luau
-  path: string,
+path: string,
 ```
 
 </h4>
-
----
-
-### LuaurcAliases.aliases
-
-<h4>
-
-```luau
-  aliases: { [string]: string }
-```
-
-</h4>
-
----
-
-```luau
-} -- closes LuaurcAliases
-```
 
 ---
 

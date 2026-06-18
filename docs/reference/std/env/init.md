@@ -83,7 +83,13 @@ Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission deni
 
 ### env.vars
 
-See [@std/env/vars](/docs/reference/std/env/vars.md)
+<h4>
+
+```luau
+vars: typeof(require("@self/vars"))
+```
+
+</h4>
 
 ---
 
@@ -102,121 +108,121 @@ export type ARCH =
 ---
 
 ```luau
-  | "x86"
+| "x86"
 ```
 
 ---
 
 ```luau
-  | "x86_64"
+| "x86_64"
 ```
 
 ---
 
 ```luau
-  | "arm"
+| "arm"
 ```
 
 ---
 
 ```luau
-  | "aarch64"
+| "aarch64"
 ```
 
 ---
 
 ```luau
-  | "m68k"
+| "m68k"
 ```
 
 ---
 
 ```luau
-  | "mips"
+| "mips"
 ```
 
 ---
 
 ```luau
-  | "mips32r6"
+| "mips32r6"
 ```
 
 ---
 
 ```luau
-  | "mips64"
+| "mips64"
 ```
 
 ---
 
 ```luau
-  | "mips64r6"
+| "mips64r6"
 ```
 
 ---
 
 ```luau
-  | "csky"
+| "csky"
 ```
 
 ---
 
 ```luau
-  | "powerpc"
+| "powerpc"
 ```
 
 ---
 
 ```luau
-  | "powerpc64"
+| "powerpc64"
 ```
 
 ---
 
 ```luau
-  | "riscv32"
+| "riscv32"
 ```
 
 ---
 
 ```luau
-  | "riscv64"
+| "riscv64"
 ```
 
 ---
 
 ```luau
-  | "s390x"
+| "s390x"
 ```
 
 ---
 
 ```luau
-  | "sparc"
+| "sparc"
 ```
 
 ---
 
 ```luau
-  | "sparc64"
+| "sparc64"
 ```
 
 ---
 
 ```luau
-  | "hexagon"
+| "hexagon"
 ```
 
 ---
 
 ```luau
-  | "loongarch32"
+| "loongarch32"
 ```
 
 ---
 
 ```luau
-  | "loongarch64"
+| "loongarch64"
 ```
 
 ---

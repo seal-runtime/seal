@@ -506,7 +506,7 @@ export type fs = {
 
         Commonly used `fs.path` functions include: `fs.path.join` for combining paths and `fs.path.cwd` and `fs.path.home`.
     ]=]
-    path: pathlib.PathLib,
+    path:  pathlib.PathLib,
 
     -- fs.tree() -> TreeBuilder
     --[=[

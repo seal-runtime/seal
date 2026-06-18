@@ -21,8 +21,6 @@ type StandardLibrary = {
     name: string,
     path: string,
     apis: { Api },
-    sublibs: { [string]: string },
-    api_closings: { [string]: string },
 }
 
 local function setup()
@@ -72,37 +70,24 @@ for _, filepath in typedefs_paths do
     local codeblock_preceding_whitespace: string? = nil
     
     local current_docs: { string } = {}
-    local sublibs: { [string]: string } = {}
-    local api_closings: { [string]: string } = {}
 
     --- represents the 'path' to an api, such as 'SpawnOptions' or 'SpawnOptions.stream.stdout_capacity'
     local current_names: { string } = {}
     local current_indents: { number } = {}
-    -- index into apis_for_path for the Property api that opened this level (0 = no opener / Type level)
-    local current_opener_indices: { number } = {}
-    -- true when the opener at this level has received only map-type ([K]: V) children so far
-    local current_is_map_only: { boolean } = {}
-    local function push_name(name: string, indent: number, opener_idx: number?)
+    local function push_name(name: string, indent: number)
         assert(#current_names == #current_indents, "names/indents misaligned")
         table.insert(current_names, name)
         table.insert(current_indents, indent)
-        table.insert(current_opener_indices, opener_idx or 0) -- 0 = sentinel for "no opener"
-        table.insert(current_is_map_only, if opener_idx ~= nil then true else false)
     end
     local function pop_name()
         assert(#current_names == #current_indents, "names/indents misaligned")
-        local n = #current_names
-        local last_name = table.remove(current_names, n)
-        local last_indent = table.remove(current_indents, n)
-        table.remove(current_opener_indices, n)
-        table.remove(current_is_map_only, n)
+        local last_name = table.remove(current_names, #current_names)
+        local last_indent = table.remove(current_indents, #current_names)
         return last_name, last_indent
     end
     local function clear_names()
         table.clear(current_names)
-        table.clear(current_indents)
-        table.clear(current_opener_indices)
-        table.clear(current_is_map_only)
+        table.clear(current_indents)    
     end
     local function last_indent()
         return current_indents[#current_indents] or 0
@@ -164,33 +149,13 @@ for _, filepath in typedefs_paths do
         else
             local indent, found_property_name = string.match(line, "(%s*)([%w_]+): {%s*$")
             if indent and found_property_name then
-                local front_name = table.concat(current_names, ".")
-                if #front_name == 0 then front_name = library_name end
-                local new_api: Api = {
-                    name = front_name .. "." .. found_property_name,
-                    defs = found_property_name .. ": {",
-                    docs = table.concat(current_docs, "\n"),
-                    is = "Property",
-                }
-                table.insert(apis_for_path, new_api)
-                table.clear(current_docs)
-                push_name(found_property_name, #indent, #apis_for_path)
+                push_name(found_property_name, #indent)
                 continue
             end
         end
 
-        local found_indent, found_close = string.match(line, "^(%s*)(}%??[,]?)%s*$")
-        if #current_names > 0 and found_indent ~= nil and #found_indent == last_indent() and found_close then
-            local full_name = table.concat(current_names, ".")
-            local n = #current_names
-            local opener_idx = current_opener_indices[n]
-            local is_map_only = current_is_map_only[n]
-            if opener_idx > 0 and is_map_only then
-                -- fold closing inline: append " }?," etc.
-                apis_for_path[opener_idx].defs ..= " " .. found_close
-            else
-                api_closings[full_name] = found_close
-            end
+        local found_indent = string.match(line, "^(%s*)}[,]?%s*$")
+        if #current_names > 0 and found_indent and #found_indent == last_indent() then
             pop_name()
         end
 
@@ -198,12 +163,6 @@ for _, filepath in typedefs_paths do
 
         if str.startswith(trimmed_line, "--") then
             continue -- is comment
-        end
-
-        local local_id, local_req = string.match(trimmed_line, "^local ([%w_]+) = require%(\"([^\"]+)\"%)%s*$")
-        if local_id and local_req then
-            sublibs[local_id] = local_req
-            continue
         end
 
         if str.startswith(trimmed_line, "function") then
@@ -221,10 +180,6 @@ for _, filepath in typedefs_paths do
             table.insert(apis_for_path, new_api)
             table.clear(current_docs)
         elseif string.match(line, "[%w_]+: ") then
-            -- a named property means the current opener (if any) is not map-only
-            if #current_is_map_only > 0 then
-                current_is_map_only[#current_is_map_only] = false
-            end
             local front_name = table.concat(current_names, ".")
             if #front_name == 0 then front_name = library_name end
             if str.startswith(trimmed_line, "local ") then
@@ -239,7 +194,7 @@ for _, filepath in typedefs_paths do
 
             local is = "Property"
             local defs = rest
-            if (str.startswith(rest, "(") and (string.match(rest, " %-> ") or string.match(rest, "%):"))) or str.startswith(rest, "<T") then
+            if str.startswith(rest, "(") or str.startswith(rest, "<T") then
                 defs = `function {name}{rest}`
                 is = "Function"
             else
@@ -255,30 +210,6 @@ for _, filepath in typedefs_paths do
 
             table.insert(apis_for_path, new_api)
             table.clear(current_docs)
-        elseif string.match(trimmed_line, "^%[") then -- map/index types like [string]: string
-            local key_type, value_type = string.match(trimmed_line, "^%[([%w_%s|%.]+)%]:%s*(.+)")
-            if key_type and value_type then
-                local opener_idx = current_opener_indices[#current_opener_indices]
-                if opener_idx > 0 then
-                    -- fold inline: "name: { [K]: V }?,"
-                    local current_defs = apis_for_path[opener_idx].defs
-                    local sep = if current_defs:sub(-1) == "{" then " " else ", "
-                    local clean_value = value_type:gsub(",$", "")
-                    apis_for_path[opener_idx].defs = current_defs .. sep .. "[" .. key_type .. "]: " .. clean_value
-                else
-                    -- fallback: create a child API (e.g. map at Type level)
-                    local front_name = table.concat(current_names, ".")
-                    if #front_name == 0 then front_name = library_name end
-                    local new_api: Api = {
-                        name = front_name .. ".[" .. key_type .. "]",
-                        defs = "[" .. key_type .. "]: " .. value_type,
-                        docs = table.concat(current_docs, "\n"),
-                        is = "Property",
-                    }
-                    table.insert(apis_for_path, new_api)
-                end
-                table.clear(current_docs)
-            end
         elseif #apis_for_path == 0 and string.match(trimmed_line, "return require") then
             local new_api: Api = {
                 name = library_name,
@@ -295,22 +226,13 @@ for _, filepath in typedefs_paths do
         is = "Library",
         name = library_name,
         path = library_path,
-        apis = apis_for_path,
-        sublibs = sublibs,
-        api_closings = api_closings,
+        apis = apis_for_path
     }
 
     table.insert(libraries, library)
 end
 
 print(`finished processing in {os.clock() - processing_start_time} seconds!`)
-
-local init_lib_paths: { [string]: boolean } = {}
-for _, lib in libraries do
-    if str.endswith(lib.path, "/init") then
-        init_lib_paths[lib.path:sub(1, #lib.path - #"/init")] = true
-    end
-end
 
 local child_handles: { [string]: process.ChildProcess } = {}
 
@@ -321,137 +243,42 @@ for _, library in libraries do
         table.insert(lines, line .. string.rep("\n", newlines))
     end
 
-    local function resolve_require_path(raw_path: string): string?
-        if str.startswith(raw_path, "@self/") then
-            local sublib = str.trimfront(raw_path, "@self/")
-            local lib_dir = if str.endswith(library.path, "/init")
-                then library.path:sub(1, #library.path - #"/init")
-                else library.path
-            return lib_dir .. "/" .. sublib
-        elseif str.startswith(raw_path, "@std/") then
-            return "std/" .. str.trimfront(raw_path, "@std/")
-        elseif str.startswith(raw_path, "./") then
-            local rel = str.trimfront(raw_path, "./")
-            local lib_dir = library.path:match("^(.+)/[^/]+$") or library.path
-            return lib_dir .. "/" .. rel
-        end
-        return nil
-    end
-
     push("<!-- markdownlint-disable MD033 -->\n<!-- markdownlint-disable MD024 -->")
     push(`# {library.name}`)
     local require_path = str.split(library.path, "/init")[1]
-    local lib_child = fs.path.child(require_path) :: string
-    if str.startswith(lib_child, "_") then
-        local parent_path = library.path:match("^(.+)/[^/]+$") or library.path
-        push(`*This file contains common types and is not an importable library. See [this library's top level docs](/docs/reference/{parent_path}/README.md) for usage information.*`)
-    else
-        push("`" .. `local {lib_child} = require("@{require_path}")` .. "`")
-    end
-
-    local main_type_name: string? = nil
-    if not str.startswith(lib_child, "_") then
-        for _, a in library.apis do
-            if a.is == "Type" then
-                main_type_name = a.name
-                break
-            end
-        end
-    end
-
-    local function get_ancestors(name: string): { string }
-        local ancestors: { string } = {}
-        local prefix = ""
-        for segment in name:gmatch("([^%.]+)%.") do
-            if #prefix > 0 then prefix ..= "." end
-            prefix ..= segment
-            table.insert(ancestors, prefix)
-        end
-        return ancestors
-    end
+    push("`" .. `local {fs.path.child(require_path)} = require("@{require_path}")` .. "`")
 
     for index, api in library.apis do
-        if main_type_name ~= nil and #library.apis > 1 and index == 1 then
+        if #library.apis > 1 and index == 1 then
             push(api.docs, 2)
             push("---")
             continue
         end
 
-        local name =
-            if api.is == "Type" then
+        local name = 
+            if api.is == "Type" then 
                 `\`export type\` {api.name}`
             elseif api.is == "Enum" then
                 `\`enum\` {api.name}`
             else api.name
         local defs = api.defs
 
-        local first_name_segment = api.name:match("^([^%.]+)")
-        local dot_count = 0
-        for _ in api.name:gmatch("%.") do dot_count += 1 end
-        local type_depth = if main_type_name ~= nil and first_name_segment == main_type_name
-            then math.max(0, dot_count - 1)
-            else dot_count
-        local is_nested_in_type = (api.is == "Property" or api.is == "Function") and type_depth > 0
-        local indent = if api.is == "Enum" then "  "
-            elseif api.is == "Function" then ""
-            else string.rep("  ", type_depth)
-
-        if api.is == "Type" then
-            push(`## {name}`)
-        end
-
-        if api.is == "Property" or api.is == "Function" then
-            if is_nested_in_type then
-                local h = if type_depth >= 2 then "####" else "###"
-                push(`{h} {name}`)
+        if api.is ~= "Enum" then
+            if api.is == "Type" then
+                push(`## {name}`)
             else
                 push(`### {name}`)
             end
         end
-
         if #api.defs > 0 then
-            local derived_require_path =
-                string.match(defs, `^[%w_]+: typeof%(require%("([^"]+)"%)%),?$`) or
-                string.match(defs, `^return require%("([^"]+)"%)$`)
-            local target_path: string? = nil
-            local target_anchor: string? = nil
-            local target_display: string? = nil
-            if derived_require_path then
-                target_path = resolve_require_path(derived_require_path)
+            if api.is ~= "Enum" then
+                push("<h4>", 2)
             end
-            if not target_path then
-                local lib_id = string.match(defs, `^[%w_]+:%s+([%w_]+)%.[%w_]+,?$`)
-                local raw_path = if lib_id then library.sublibs[lib_id] else nil
-                if raw_path then
-                    target_path = resolve_require_path(raw_path)
-                end
-            end
-            if not target_path then
-                local lib_id, type_name = string.match(defs, `^%s*export type [%w_]+ = ([%w_]+)%.([%w_]+)%s*$`)
-                local raw_path = if lib_id then library.sublibs[lib_id] else nil
-                if raw_path and type_name then
-                    target_path = resolve_require_path(raw_path)
-                    target_anchor = "#export-type-" .. string.lower(type_name)
-                    target_display = `{type_name} in @{target_path}`
-                end
-            end
-            if target_path then
-                local suffix = if init_lib_paths[target_path] then "/README.md" else ".md"
-                local anchor = target_anchor or ""
-                local display = target_display or ("@" .. target_path)
-                push(`See [{display}](/docs/reference/{target_path}{suffix}{anchor})`, 2)
-            else
-                if api.is ~= "Enum" then
-                    push("<h4>", 2)
-                end
-                push("```luau", 0)
-                local indented_defs = if indent == "" then defs
-                    else defs:gsub("\n", "\n" .. indent)
-                push(indent .. indented_defs, 0)
-                push("```", 2)
-                if api.is ~= "Enum" then
-                    push("</h4>")
-                end
+            push("```luau", 0)
+            push(defs, 0)
+            push("```", 2)
+            if api.is ~= "Enum" then
+                push("</h4>")
             end
         end
 
@@ -463,43 +290,6 @@ for _, library in libraries do
             push(api.docs)
             push("</details>", 2)
         end
-
-        local next_api = library.apis[index + 1]
-        local current_ancestors = get_ancestors(api.name)
-        local next_ancestor_set: { [string]: boolean } = {}
-        if next_api then
-            for _, na in get_ancestors(next_api.name) do
-                next_ancestor_set[na] = true
-            end
-        end
-        for i = #current_ancestors, 1, -1 do
-            local ancestor = current_ancestors[i]
-            local closing = library.api_closings[ancestor]
-            if not next_ancestor_set[ancestor] and closing and ancestor ~= main_type_name then
-                local ancestor_depth = 0
-                for _ in ancestor:gmatch("%.") do ancestor_depth += 1 end
-                local close_indent = string.rep("  ", ancestor_depth)
-                local short_name = ancestor:match("([^%.]+)$") or ancestor
-                push("---")
-                push("```luau", 0)
-                push(close_indent .. closing .. " -- closes " .. short_name, 0)
-                push("```", 2)
-            end
-        end
-        -- also emit closing for the current api itself if it opened a sub-table
-        -- but has no child apis (e.g. add: { [string]: string }? where [string] can't be parsed)
-        local own_closing = library.api_closings[api.name]
-        if own_closing and api.name ~= main_type_name and not next_ancestor_set[api.name] then
-            local own_depth = 0
-            for _ in api.name:gmatch("%.") do own_depth += 1 end
-            local close_indent = string.rep("  ", own_depth)
-            local short_name = api.name:match("([^%.]+)$") or api.name
-            push("---")
-            push("```luau", 0)
-            push(close_indent .. own_closing .. " -- closes " .. short_name, 0)
-            push("```", 2)
-        end
-
         push("---")
     end
 
@@ -508,9 +298,7 @@ for _, library in libraries do
     push(`Autogenerated from ({library_path_dot_luau})[/.seal/typedefs/{library_path_dot_luau}].`, 2)
     push("*seal* is best experienced with inline, in-editor documentation. Please see the linked typedefs file if this documentation is confusing, too verbose, or inaccurate.")
 
-    local new_path = if str.endswith(library.path, "/init")
-        then fs.path.join(refs_path, fs.path.parent(library.path) :: string, "README.md")
-        else fs.path.join(refs_path, library.path .. ".md")
+    local new_path = fs.path.join(refs_path, library.path .. ".md")
     local parent_path = fs.path.parent(new_path)
     assert(parent_path ~= nil, "where parent path")
 

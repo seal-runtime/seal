@@ -10,7 +10,7 @@ use ring::digest::{Context, SHA256, SHA256_OUTPUT_LEN};
 use pkcs8::{EncodePrivateKey, EncodePublicKey, DecodePublicKey};
 
 use rsa::{pkcs8::{self, DecodePrivateKey}, Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
-use rand_core::OsRng;
+use rand::rngs::OsRng;
 
 use base64::engine::general_purpose::STANDARD as base64_standard;
 

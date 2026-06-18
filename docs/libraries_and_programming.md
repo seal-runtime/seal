@@ -37,7 +37,7 @@ Some fun things you could write with *seal*
 
 ## Read and write files/directories
 
-[@std/fs](/docs/reference/std/fs/README.md)
+[@std/fs](/docs/reference/std/fs/init.md)
 
 ```luau
 local fs = require("@std/fs")
@@ -165,7 +165,7 @@ Uploading a file whenever it gets added to a folder (file watching):
 
 ## Getting and sending stuff on the internet
 
-[@std/net/http](/docs/reference/std/net/http/README.md)
+[@std/net/http](/docs/reference/std/net/http/init.md)
 
 ```luau
 local http = require("@std/net/http")
@@ -310,7 +310,7 @@ print(`Hello {response}!`)
 
 ## Write a TUI
 
-[@std/terminal](/docs/reference/std/terminal/README.md) and [@std/terminal/cursor](/docs/reference/std/terminal/cursor.md)
+[@std/terminal](/docs/reference/std/terminal/init.md) and [@std/terminal/cursor](/docs/reference/std/terminal/cursor.md)
 
 For writing interactive terminal UIs: raw mode, terminal event polling, cursor control, screen switching, and batched rendering via `TerminalAction`.
 

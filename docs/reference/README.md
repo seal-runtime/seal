@@ -6,7 +6,7 @@ The *seal* standard library exposes functionality from Rust that you probably ne
 
 Look in the [std](/docs/reference/std) folder for the standard library reference.
 
-If a library contains multiple sub-libraries (like `@std/fs`), documentation for the top-level library will be at `library/README.md`.
+If a library contains multiple sub-libraries (like `@std/fs`), documentation for the top-level library will be at `library/init.md`.
 
 ## Extra Library
 

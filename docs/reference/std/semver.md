@@ -62,7 +62,7 @@ type SemverFields = {
 <h4>
 
 ```luau
-  major: number,
+major: number,
 ```
 
 </h4>
@@ -74,7 +74,7 @@ type SemverFields = {
 <h4>
 
 ```luau
-  minor: number,
+minor: number,
 ```
 
 </h4>
@@ -86,92 +86,50 @@ type SemverFields = {
 <h4>
 
 ```luau
-  patch: number,
+patch: number,
 ```
 
 </h4>
 
 ---
 
-### SemverFields.metadata
+### SemverFields.metadata.release_candidate.tag
 
 <h4>
 
 ```luau
-  metadata: {
+tag: string,
 ```
 
 </h4>
 
 ---
 
-#### SemverFields.metadata.release_candidate
+### SemverFields.metadata.release_candidate.ver
 
 <h4>
 
 ```luau
-    release_candidate: {
+ver: number,
 ```
 
 </h4>
 
 ---
 
-#### SemverFields.metadata.release_candidate.tag
+### SemverFields.metadata.release_candidate.build
 
 <h4>
 
 ```luau
-      tag: string,
+build: string?,
 ```
 
 </h4>
 
 ---
 
-#### SemverFields.metadata.release_candidate.ver
-
-<h4>
-
-```luau
-      ver: number,
-```
-
-</h4>
-
----
-
-```luau
-    }?, -- closes release_candidate
-```
-
----
-
-#### SemverFields.metadata.build
-
-<h4>
-
-```luau
-    build: string?,
-```
-
-</h4>
-
----
-
-```luau
-  } -- closes metadata
-```
-
----
-
-```luau
-} -- closes SemverFields
-```
-
----
-
-#### semver.from
+### semver.from
 
 <h4>
 
@@ -180,12 +138,6 @@ function semver.from(s: string): Semver
 ```
 
 </h4>
-
----
-
-```luau
-} -- closes SemverImpl
-```
 
 ---
 
@@ -295,31 +247,31 @@ type SemverVals =
 ---
 
 ```luau
-  | "AND UP"
+| "AND UP"
 ```
 
 ---
 
 ```luau
-  | "EXACTLY EQUAL"
+| "EXACTLY EQUAL"
 ```
 
 ---
 
 ```luau
-  | "LESS THAN OR EQUAL"
+| "LESS THAN OR EQUAL"
 ```
 
 ---
 
 ```luau
-  | "LESS THAN"
+| "LESS THAN"
 ```
 
 ---
 
 ```luau
-  | "GREATER THAN NOT INCLUDING"
+| "GREATER THAN NOT INCLUDING"
 ```
 
 ---
