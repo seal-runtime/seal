@@ -7,7 +7,13 @@
 
 ### datetime
 
-See [@std/time/datetime](/docs/reference/std/time/datetime.md)
+<h4>
+
+```luau
+return require("./time/datetime")
+```
+
+</h4>
 
 ---
 

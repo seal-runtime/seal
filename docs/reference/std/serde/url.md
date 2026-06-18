@@ -35,18 +35,6 @@ function url.decode(encoded: string) -> string,
 
 ---
 
-### url.binary
-
-<h4>
-
-```luau
-binary: {
-```
-
-</h4>
-
----
-
 ### url.binary.encode
 
 <h4>
@@ -68,12 +56,6 @@ function url.binary.decode(encoded: string) -> buffer,
 ```
 
 </h4>
-
----
-
-```luau
-  } -- closes binary
-```
 
 ---
 

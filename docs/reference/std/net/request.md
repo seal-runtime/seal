@@ -10,7 +10,7 @@
 <h4>
 
 ```luau
-  return require("@std/net/http").request
+return require("@std/net/http").request
 ```
 
 </h4>

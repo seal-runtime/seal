@@ -50,7 +50,13 @@ If you need a more accurate way to wait you might need to spin (while true do lo
 
 ### time.datetime
 
-See [@std/time/datetime](/docs/reference/std/time/datetime.md)
+<h4>
+
+```luau
+datetime: typeof(require("@self/datetime")),
+```
+
+</h4>
 
  `DateTime` and `TimeSpan` libraries.
 

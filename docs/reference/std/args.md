@@ -277,12 +277,6 @@ function ArgParser.commands(self: any, ...Command) -> Parsed,
 
 ---
 
-```luau
-} -- closes ArgParser
-```
-
----
-
 ## `export type` ProgramInfo
 
 <h4>
@@ -300,7 +294,7 @@ export type ProgramInfo = {
 <h4>
 
 ```luau
-  description: string?,
+description: string?,
 ```
 
 </h4>
@@ -314,7 +308,7 @@ export type ProgramInfo = {
 <h4>
 
 ```luau
-  examples: { string }?,
+examples: { string }?,
 ```
 
 </h4>
@@ -328,18 +322,12 @@ export type ProgramInfo = {
 <h4>
 
 ```luau
-  footer: string?
+footer: string?
 ```
 
 </h4>
 
  put authors and/or repository link here
-
----
-
-```luau
-} -- closes ProgramInfo
-```
 
 ---
 
@@ -360,7 +348,7 @@ export type Command = {
 <h4>
 
 ```luau
-  name: string,
+name: string,
 ```
 
 </h4>
@@ -372,7 +360,7 @@ export type Command = {
 <h4>
 
 ```luau
-  is: "Command",
+is: "Command",
 ```
 
 </h4>
@@ -384,7 +372,7 @@ export type Command = {
 <h4>
 
 ```luau
-  help: string,
+help: string,
 ```
 
 </h4>
@@ -417,12 +405,6 @@ function Command.aliases(self: Command, ...string) -> Command,
 
 ---
 
-```luau
-} -- closes Command
-```
-
----
-
 ## `export type` Parsed
 
 <h4>
@@ -440,7 +422,7 @@ export type Parsed = {
 <h4>
 
 ```luau
-  command: string | "default",
+command: string | "default",
 ```
 
 </h4>
@@ -488,7 +470,7 @@ function Parsed.help(self: Parsed) -> string,
 <h4>
 
 ```luau
-  flags: { [string]: true? },
+flags: { [string]: true? },
 ```
 
 </h4>
@@ -500,16 +482,10 @@ function Parsed.help(self: Parsed) -> string,
 <h4>
 
 ```luau
-  args: { Arg },
+args: { Arg },
 ```
 
 </h4>
-
----
-
-```luau
-} -- closes Parsed
-```
 
 ---
 
@@ -530,7 +506,7 @@ export type ArgList = {
 <h4>
 
 ```luau
-  name: string,
+name: string,
 ```
 
 </h4>
@@ -542,7 +518,7 @@ export type ArgList = {
 <h4>
 
 ```luau
-  is: "ArgList",
+is: "ArgList",
 ```
 
 </h4>
@@ -554,7 +530,7 @@ export type ArgList = {
 <h4>
 
 ```luau
-  help: string,
+help: string,
 ```
 
 </h4>
@@ -566,16 +542,10 @@ export type ArgList = {
 <h4>
 
 ```luau
-  values: { string }?,
+values: { string }?,
 ```
 
 </h4>
-
----
-
-```luau
-} -- closes ArgList
-```
 
 ---
 
@@ -604,25 +574,25 @@ export type Arg =
 ---
 
 ```luau
-  | Positional
+| Positional
 ```
 
 ---
 
 ```luau
-  | Flag
+| Flag
 ```
 
 ---
 
 ```luau
-  | Named
+| Named
 ```
 
 ---
 
 ```luau
-  | ArgList
+| ArgList
 ```
 
 ---
@@ -644,7 +614,7 @@ export type Positional = {
 <h4>
 
 ```luau
-  name: string,
+name: string,
 ```
 
 </h4>
@@ -656,7 +626,7 @@ export type Positional = {
 <h4>
 
 ```luau
-  is: "Positional",
+is: "Positional",
 ```
 
 </h4>
@@ -668,7 +638,7 @@ export type Positional = {
 <h4>
 
 ```luau
-  help: string,
+help: string,
 ```
 
 </h4>
@@ -721,16 +691,10 @@ function Positional.validate(self: Positional, validator: Validator) -> Position
 <h4>
 
 ```luau
-  value: any,
+value: any,
 ```
 
 </h4>
-
----
-
-```luau
-} -- closes Positional
-```
 
 ---
 
@@ -751,7 +715,7 @@ export type Flag = {
 <h4>
 
 ```luau
-  name: string,
+name: string,
 ```
 
 </h4>
@@ -765,7 +729,7 @@ export type Flag = {
 <h4>
 
 ```luau
-  is: "Flag",
+is: "Flag",
 ```
 
 </h4>
@@ -777,7 +741,7 @@ export type Flag = {
 <h4>
 
 ```luau
-  help: string,
+help: string,
 ```
 
 </h4>
@@ -815,16 +779,10 @@ function Flag.default(self: Flag, boolean) -> Flag,
 <h4>
 
 ```luau
-  value: boolean,
+value: boolean,
 ```
 
 </h4>
-
----
-
-```luau
-} -- closes Flag
-```
 
 ---
 
@@ -845,7 +803,7 @@ export type Named = {
 <h4>
 
 ```luau
-  name: string,
+name: string,
 ```
 
 </h4>
@@ -859,7 +817,7 @@ export type Named = {
 <h4>
 
 ```luau
-  is: "Named",
+is: "Named",
 ```
 
 </h4>
@@ -871,7 +829,7 @@ export type Named = {
 <h4>
 
 ```luau
-  help: string,
+help: string,
 ```
 
 </h4>
@@ -933,16 +891,10 @@ function Named.validate(self: Named, validator: Validator) -> Named,
 <h4>
 
 ```luau
-  value: any,
+value: any,
 ```
 
 </h4>
-
----
-
-```luau
-} -- closes Named
-```
 
 ---
 

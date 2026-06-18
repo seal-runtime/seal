@@ -60,7 +60,7 @@ type RsaKeys = {
 <h4>
 
 ```luau
-  public: string,
+public: string,
 ```
 
 </h4>
@@ -72,16 +72,10 @@ type RsaKeys = {
 <h4>
 
 ```luau
-  private: string
+private: string
 ```
 
 </h4>
-
----
-
-```luau
-} -- closes RsaKeys
-```
 
 ---
 

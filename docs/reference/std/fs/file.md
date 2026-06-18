@@ -9,7 +9,13 @@
 
 ## `export type` FileBuilder
 
-See [FileBuilder in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-filebuilder)
+<h4>
+
+```luau
+export type FileBuilder = common_types.FileBuilder
+```
+
+</h4>
 
 ---
 
