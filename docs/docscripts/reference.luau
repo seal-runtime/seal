@@ -325,7 +325,7 @@ for _, library in libraries do
     end
 
     for index, api in library.apis do
-        if #library.apis > 1 and index == 1 then
+        if main_type_name ~= nil and #library.apis > 1 and index == 1 then
             push(api.docs, 2)
             push("---")
             continue
@@ -341,8 +341,7 @@ for _, library in libraries do
 
         local first_name_segment = api.name:match("^([^%.]+)")
         local is_nested_in_type = (api.is == "Property" or api.is == "Function")
-            and main_type_name ~= nil
-            and first_name_segment ~= main_type_name
+            and (main_type_name == nil or first_name_segment ~= main_type_name)
         local type_depth = 0
         if is_nested_in_type then
             for _ in api.name:gmatch("%.") do type_depth += 1 end
