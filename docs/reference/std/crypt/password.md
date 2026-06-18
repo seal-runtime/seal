@@ -147,7 +147,7 @@ Represents a password hashed with the PBKDF2_HMAC_SHA256 algorithm.
 <h4>
 
 ```luau
-salt: buffer,
+  salt: buffer,
 ```
 
 </h4>
@@ -159,10 +159,16 @@ salt: buffer,
 <h4>
 
 ```luau
-hash: buffer,
+  hash: buffer,
 ```
 
 </h4>
+
+---
+
+```luau
+} -- closes HashedPassword
+```
 
 ---
 
@@ -183,7 +189,7 @@ export type PasswordVerifyOptions = {
 <h4>
 
 ```luau
-raw_password: string,
+  raw_password: string,
 ```
 
 </h4>
@@ -195,10 +201,16 @@ raw_password: string,
 <h4>
 
 ```luau
-hashed_password: HashedPassword,
+  hashed_password: HashedPassword,
 ```
 
 </h4>
+
+---
+
+```luau
+} -- closes PasswordVerifyOptions
+```
 
 ---
 

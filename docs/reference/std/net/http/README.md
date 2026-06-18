@@ -283,55 +283,55 @@ export type HttpMethod =
 ---
 
 ```luau
-| "GET"
+  | "GET"
 ```
 
 ---
 
 ```luau
-| "TRACE"
+  | "TRACE"
 ```
 
 ---
 
 ```luau
-| "DELETE"
+  | "DELETE"
 ```
 
 ---
 
 ```luau
-| "CONNECT"
+  | "CONNECT"
 ```
 
 ---
 
 ```luau
-| "HEAD"
+  | "HEAD"
 ```
 
 ---
 
 ```luau
-| "OPTIONS"
+  | "OPTIONS"
 ```
 
 ---
 
 ```luau
-| "POST"
+  | "POST"
 ```
 
 ---
 
 ```luau
-| "PATCH"
+  | "PATCH"
 ```
 
 ---
 
 ```luau
-| "PUT"
+  | "PUT"
 ```
 
 ---
@@ -355,7 +355,7 @@ Configure how quickly a request times out.
 <h4>
 
 ```luau
-send_request: Duration?,
+  send_request: Duration?,
 ```
 
 </h4>
@@ -369,7 +369,7 @@ send_request: Duration?,
 <h4>
 
 ```luau
-send_body: Duration?,
+  send_body: Duration?,
 ```
 
 </h4>
@@ -383,7 +383,7 @@ send_body: Duration?,
 <h4>
 
 ```luau
-receive_response: Duration?,
+  receive_response: Duration?,
 ```
 
 </h4>
@@ -397,12 +397,18 @@ receive_response: Duration?,
 <h4>
 
 ```luau
-receive_body: Duration?,
+  receive_body: Duration?,
 ```
 
 </h4>
 
  Max duration to wait for receiving the response body.
+
+---
+
+```luau
+} -- closes RequestTimeout
+```
 
 ---
 
@@ -435,7 +441,7 @@ export type HttpRequestWithoutBody = {
 <h4>
 
 ```luau
-url: string,
+  url: string,
 ```
 
 </h4>
@@ -444,40 +450,60 @@ url: string,
 
 ---
 
-### HttpRequestWithoutBody.params.headers.timeout
+### HttpRequestWithoutBody.params
 
 <h4>
 
 ```luau
-timeout: Duration | RequestTimeout | nil,
+  params: { [string]: string }?,
 ```
 
 </h4>
 
-<details>
-
-<summary> See the docs </summary
-
 [HTTP query parameters](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL#parameters) to append to `url`.
 
 Key-value pairs are serialized and appended as `?key=value&key2=value2`.
+
+---
+
+### HttpRequestWithoutBody.headers
+
+<h4>
+
+```luau
+  headers: { [string]: string }?,
+```
+
+</h4>
+
 [HTTP headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers) to send with the request.
 
 Common headers include `Authorization`, `Accept`, and `User-Agent`.
 
 Header keys are case-insensitive as per the HTTP spec; values must be valid ASCII.
- Prevent your request from taking forever. Pass a `Duration` from `@std/time` to set a global timeout or a `RequestTimeout` for more granular control.
-
-</details>
 
 ---
 
-### HttpRequestWithoutBody.params.headers.max_body_size
+### HttpRequestWithoutBody.timeout
 
 <h4>
 
 ```luau
-max_body_size: FileSize?,
+  timeout: Duration | RequestTimeout | nil,
+```
+
+</h4>
+
+ Prevent your request from taking forever. Pass a `Duration` from `@std/time` to set a global timeout or a `RequestTimeout` for more granular control.
+
+---
+
+### HttpRequestWithoutBody.max_body_size
+
+<h4>
+
+```luau
+  max_body_size: FileSize?,
 ```
 
 </h4>
@@ -486,17 +512,23 @@ max_body_size: FileSize?,
 
 ---
 
-### HttpRequestWithoutBody.params.headers.max_redirects
+### HttpRequestWithoutBody.max_redirects
 
 <h4>
 
 ```luau
-max_redirects: number?,
+  max_redirects: number?,
 ```
 
 </h4>
 
  Max number of redirects to redirect through before erroring out; defaults to 10. Pass 0 to not redirect anywhere and return the original response.
+
+---
+
+```luau
+} -- closes HttpRequestWithoutBody
+```
 
 ---
 
@@ -517,7 +549,7 @@ export type HttpRequestWithBody = {
 <h4>
 
 ```luau
-url: string,
+  url: string,
 ```
 
 </h4>
@@ -531,7 +563,7 @@ url: string,
 <h4>
 
 ```luau
-body: string | JsonSerializable | buffer,
+  body: string | JsonSerializable | buffer,
 ```
 
 </h4>
@@ -543,12 +575,28 @@ Note that strings have to be valid utf-8; if you need to pass invalid utf-8 here
 
 ---
 
-### HttpRequestWithBody.params.headers.timeout
+### HttpRequestWithBody.params
 
 <h4>
 
 ```luau
-timeout: Duration | RequestTimeout | nil,
+  params: { [string]: string }?,
+```
+
+</h4>
+
+[HTTP query parameters](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL#parameters) to append to `url`.
+
+Key-value pairs are serialized and appended as `?key=value&key2=value2`.
+
+---
+
+### HttpRequestWithBody.headers
+
+<h4>
+
+```luau
+  headers: { [string]: string }?,
 ```
 
 </h4>
@@ -557,9 +605,6 @@ timeout: Duration | RequestTimeout | nil,
 
 <summary> See the docs </summary
 
-[HTTP query parameters](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL#parameters) to append to `url`.
-
-Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 [HTTP headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers) to send with the request.
 
 Some common headers you'll want to send (or override) include `Authorization`, `Accept`, and `User-Agent`.
@@ -568,18 +613,31 @@ Header keys are case-insensitive as per the HTTP spec; values must be valid ASCI
 
 By default, *seal* automatically sets `Content-Type` for you when you send a string (text/plain), table (application/json), or buffer (application/octet-stream) as body.
 To override this behavior, set a `content-type` header explicitly.
- Prevent your request from taking forever. Pass a `Duration` from `@std/time` to set a global timeout or a `RequestTimeout` for more granular control.
 
 </details>
 
 ---
 
-### HttpRequestWithBody.params.headers.max_body_size
+### HttpRequestWithBody.timeout
 
 <h4>
 
 ```luau
-max_body_size: FileSize?,
+  timeout: Duration | RequestTimeout | nil,
+```
+
+</h4>
+
+ Prevent your request from taking forever. Pass a `Duration` from `@std/time` to set a global timeout or a `RequestTimeout` for more granular control.
+
+---
+
+### HttpRequestWithBody.max_body_size
+
+<h4>
+
+```luau
+  max_body_size: FileSize?,
 ```
 
 </h4>
@@ -588,17 +646,23 @@ max_body_size: FileSize?,
 
 ---
 
-### HttpRequestWithBody.params.headers.max_redirects
+### HttpRequestWithBody.max_redirects
 
 <h4>
 
 ```luau
-max_redirects: number?,
+  max_redirects: number?,
 ```
 
 </h4>
 
  Max number of redirects to redirect through before erroring out; defaults to 10. Pass 0 to not redirect anywhere and return the original response.
+
+---
+
+```luau
+} -- closes HttpRequestWithBody
+```
 
 ---
 
@@ -620,163 +684,163 @@ Content-Type header of a request/response.
 ---
 
 ```luau
-| "text/plain"
+  | "text/plain"
 ```
 
 ---
 
 ```luau
-| "text/html"
+  | "text/html"
 ```
 
 ---
 
 ```luau
-| "text/css"
+  | "text/css"
 ```
 
 ---
 
 ```luau
-| "text/csv"
+  | "text/csv"
 ```
 
 ---
 
 ```luau
-| "text/xml"
+  | "text/xml"
 ```
 
 ---
 
 ```luau
-| "application/json"
+  | "application/json"
 ```
 
 ---
 
 ```luau
-| "application/xml"
+  | "application/xml"
 ```
 
 ---
 
 ```luau
-| "application/octet-stream"
+  | "application/octet-stream"
 ```
 
 ---
 
 ```luau
-| "application/pdf"
+  | "application/pdf"
 ```
 
 ---
 
 ```luau
-| "application/zip"
+  | "application/zip"
 ```
 
 ---
 
 ```luau
-| "application/gzip"
+  | "application/gzip"
 ```
 
 ---
 
 ```luau
-| "application/x-www-form-urlencoded"
+  | "application/x-www-form-urlencoded"
 ```
 
 ---
 
 ```luau
-| "application/x-ndjson"
+  | "application/x-ndjson"
 ```
 
 ---
 
 ```luau
-| "multipart/form-data"
+  | "multipart/form-data"
 ```
 
 ---
 
 ```luau
-| "text/javascript"
+  | "text/javascript"
 ```
 
 ---
 
 ```luau
-| "application/javascript"
+  | "application/javascript"
 ```
 
 ---
 
 ```luau
-| "text/event-stream"
+  | "text/event-stream"
 ```
 
 ---
 
 ```luau
-| "image/png"
+  | "image/png"
 ```
 
 ---
 
 ```luau
-| "image/jpeg"
+  | "image/jpeg"
 ```
 
 ---
 
 ```luau
-| "image/gif"
+  | "image/gif"
 ```
 
 ---
 
 ```luau
-| "image/svg+xml"
+  | "image/svg+xml"
 ```
 
 ---
 
 ```luau
-| "image/webp"
+  | "image/webp"
 ```
 
 ---
 
 ```luau
-| "audio/mpeg"
+  | "audio/mpeg"
 ```
 
 ---
 
 ```luau
-| "audio/ogg"
+  | "audio/ogg"
 ```
 
 ---
 
 ```luau
-| "video/mp4"
+  | "video/mp4"
 ```
 
 ---
 
 ```luau
-| "video/webm"
+  | "video/webm"
 ```
 
 ---
 
 ```luau
-| string
+  | string
 ```
 
 ---
@@ -794,19 +858,19 @@ export type HttpResponseResult =
 ---
 
 ```luau
-| HttpResponse
+  | HttpResponse
 ```
 
 ---
 
 ```luau
-| HttpTimeoutError
+  | HttpTimeoutError
 ```
 
 ---
 
 ```luau
-| HttpIoError
+  | HttpIoError
 ```
 
 ---
@@ -828,7 +892,7 @@ export type HttpResponse = {
 <h4>
 
 ```luau
-ok: boolean,
+  ok: boolean,
 ```
 
 </h4>
@@ -842,7 +906,7 @@ ok: boolean,
 <h4>
 
 ```luau
-kind: "Ok" | "Error",
+  kind: "Ok" | "Error",
 ```
 
 </h4>
@@ -851,24 +915,48 @@ kind: "Ok" | "Error",
 
 ---
 
-### HttpResponse.status.code
+### HttpResponse.headers
 
 <h4>
 
 ```luau
-code: number,
+  headers: { [string]: string },
 ```
 
 </h4>
 
 ---
 
-### HttpResponse.status.reason
+### HttpResponse.status
 
 <h4>
 
 ```luau
-reason: string,
+  status: {
+```
+
+</h4>
+
+---
+
+#### HttpResponse.status.code
+
+<h4>
+
+```luau
+    code: number,
+```
+
+</h4>
+
+---
+
+#### HttpResponse.status.reason
+
+<h4>
+
+```luau
+    reason: string,
 ```
 
 </h4>
@@ -877,12 +965,18 @@ reason: string,
 
 ---
 
+```luau
+  }, -- closes status
+```
+
+---
+
 ### HttpResponse.body
 
 <h4>
 
 ```luau
-body: string,
+  body: string,
 ```
 
 </h4>
@@ -891,12 +985,12 @@ body: string,
 
 ---
 
-### HttpResponse.content_type.mime_type
+### HttpResponse.content_type
 
 <h4>
 
 ```luau
-mime_type: MimeType?,
+  content_type: {
 ```
 
 </h4>
@@ -916,20 +1010,33 @@ For example, `content-type: application/json; charset=utf-8` parses to:
 - `charset = "utf-8"`
 
 This field is `nil` if the server didn't send a `content-type` header at all.
- The MIME type of the response body — describes *what kind* of data it is,
- e.g. `"application/json"`, `"text/html"`, `"image/png"`.
- `nil` if the `content-type` header was present but had no MIME type.
 
 </details>
 
 ---
 
-### HttpResponse.content_type.charset
+#### HttpResponse.content_type.mime_type
 
 <h4>
 
 ```luau
-charset: string?,
+    mime_type: MimeType?,
+```
+
+</h4>
+
+ The MIME type of the response body — describes *what kind* of data it is,
+ e.g. `"application/json"`, `"text/html"`, `"image/png"`.
+ `nil` if the `content-type` header was present but had no MIME type.
+
+---
+
+#### HttpResponse.content_type.charset
+
+<h4>
+
+```luau
+    charset: string?,
 ```
 
 </h4>
@@ -939,12 +1046,18 @@ charset: string?,
 
 ---
 
-### HttpResponse.content_type.try_json
+```luau
+  }?, -- closes content_type
+```
+
+---
+
+### HttpResponse.try_json
 
 <h4>
 
 ```luau
-function HttpResponse.content_type.try_json<T>(self: HttpResponse) -> T?,
+function HttpResponse.try_json<T>(self: HttpResponse) -> T?,
 ```
 
 </h4>
@@ -984,12 +1097,12 @@ end
 
 ---
 
-### HttpResponse.content_type.expect_json
+### HttpResponse.expect_json
 
 <h4>
 
 ```luau
-function HttpResponse.content_type.expect_json<T>(self: HttpResponse) -> T,
+function HttpResponse.expect_json<T>(self: HttpResponse) -> T,
 ```
 
 </h4>
@@ -1016,6 +1129,12 @@ local data = http.get(options):expect_json<<ApiResponse>>()
 
 ---
 
+```luau
+} -- closes HttpResponse
+```
+
+---
+
 ## `export type` HttpTimeoutError
 
 <h4>
@@ -1035,7 +1154,7 @@ The request timed out because you set `HttpRequestOptions.timeout`.
 <h4>
 
 ```luau
-ok: false,
+  ok: false,
 ```
 
 </h4>
@@ -1047,7 +1166,7 @@ ok: false,
 <h4>
 
 ```luau
-kind: "Timeout",
+  kind: "Timeout",
 ```
 
 </h4>
@@ -1059,7 +1178,7 @@ kind: "Timeout",
 <h4>
 
 ```luau
-reason: string,
+  reason: string,
 ```
 
 </h4>
@@ -1071,10 +1190,16 @@ reason: string,
 <h4>
 
 ```luau
-phase: "Global" | "SendRequest" | "ReceiveResponse" | "SendBody" | "ReceiveBody" | "Connect" | "Resolve" | "Other"
+  phase: "Global" | "SendRequest" | "ReceiveResponse" | "SendBody" | "ReceiveBody" | "Connect" | "Resolve" | "Other"
 ```
 
 </h4>
+
+---
+
+```luau
+} -- closes HttpTimeoutError
+```
 
 ---
 
@@ -1098,7 +1223,7 @@ receiving a proper response.
 <h4>
 
 ```luau
-ok: false,
+  ok: false,
 ```
 
 </h4>
@@ -1110,7 +1235,7 @@ ok: false,
 <h4>
 
 ```luau
-kind: "BodyExceedsLimit" | "NetworkError" | "ConnectionFailed" | "TooManyRedirects" | "Other",
+  kind: "BodyExceedsLimit" | "NetworkError" | "ConnectionFailed" | "TooManyRedirects" | "Other",
 ```
 
 </h4>
@@ -1122,10 +1247,16 @@ kind: "BodyExceedsLimit" | "NetworkError" | "ConnectionFailed" | "TooManyRedirec
 <h4>
 
 ```luau
-reason: string,
+  reason: string,
 ```
 
 </h4>
+
+---
+
+```luau
+} -- closes HttpIoError
+```
 
 ---
 

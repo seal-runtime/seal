@@ -256,8 +256,6 @@ export type DirectoryBuilder = {
     children: DirectoryTree,
 }
 
-export type DirectoryTree = {
-    FileBuilder | DirectoryBuilder
-}
+export type DirectoryTree = { FileBuilder | DirectoryBuilder }
 
 return {}

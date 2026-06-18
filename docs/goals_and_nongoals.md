@@ -1,4 +1,14 @@
-# Non-goals/out of scope
+# Goals and non-goals
+
+*seal* is meant for general purpose programming and shell scripting, but doesn't try to be the lowest-level Luau runtime out there. Specifically, *seal* thinks that writing native FFI bindings in Luau is a mistake due to userdata overhead and the fact that Luau is a GCed language. Please just write C or Rust bindings instead.
+
+## Goals
+
+- Be a great cross-platform alternative to shell scripts, wrappers, and quick-and-dirty solutions in the terminal.
+- Provide a simple, useful, and expressive API that fulfills many high-level usecases, and can be composed to solve the rest.
+- Reliability. When you run into trouble, *seal* should tell you *exactly* what went wrong with a custom, handcrafted warning or error message.
+
+## Non-goals/out of scope
 
 - Fully featured standard library for all usecases: `seal` is primarily suited for high level scripting and light general purpose programming.
 - We don't want to add every single hash algorithm, nor bind to every single part of Rust's standard library—providing too many options might end up confusing to the average user.
