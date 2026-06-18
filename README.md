@@ -11,9 +11,11 @@
 <br>
 <!-- markdownlint-enable MD033 -->
 
-*seal* is an all-in-one scripting tool that lets you write cross-platform scripts and applications in Luau with a greater utility than shell scripts and with less of a hassle than Python.
+<!-- *seal* is an all-in-one scripting tool that lets you write cross-platform scripts and applications in Luau with a greater utility than shell scripts and with less of a hassle than Python. -->
 
-**Usecases:**
+***seal*** is a batteries-included cross-platform scripting tool that emphasizes readability, performance, and reliability.
+
+<!-- **Usecases:**
 
 - cross-platform scripting tool with autocomplete
 - faster Python replacement
@@ -21,7 +23,15 @@
 - data viewing, manipulation, serialization
 - write cute TUIs
 - quickly deploy to major platforms
-- data is pretty—just print it (colors included)
+- data is pretty—just print it (colors included) -->
+
+**Some features:**
+
+- Faster than Python for general purpose scripting.
+- *seal* projects are more scalable than shell scripts.
+- Built in terminal manipulation for TUIs.
+- Powerful multithreading.
+- <!-- Start-Precommit-Marker-1 -->1089<!-- End-Precommit-Marker-1 --> handcrafted error messages.
 
 ## Install
 
@@ -56,12 +66,6 @@ Some quick examples:
 - [FS - remove files older than a week](examples/older_than_a_week.luau)
 - [TUI - two column option picker](examples/double_column_picker.luau)
 
-## Reliability
-
-*seal* should be consistent, reliable, and have an easy-to-understand API. In most cases, runtime errors will be expressly documented, and/or returned as an `error` type to facilitate nonthrowing error handling with the typechecker. *seal* has <!-- Start-Precommit-Marker-1 -->1089<!-- End-Precommit-Marker-1 --> handcrafted error messages to prevent confusion when something goes wrong at runtime.
-
-If you encounter a bug, panic, or security vulnerability, please make an issue in this repo right away; you may attach a repro or send one privately to [dev@deviaze.com](mailto:dev@deviaze.com) or `@deviaze` on Discord.
-
 ## Roadmap
 
 - More featureful `@extra` library.
@@ -72,3 +76,9 @@ If you encounter a bug, panic, or security vulnerability, please make an issue i
 ## Community
 
 [Join the Discord](https://discord.gg/3MJ37CFNWh) if you want to talk about *seal*, need help, or want to contribute!
+
+## Reliability
+
+*seal* wants to empower you to write correct code that doesn't explode at runtime. In most cases, runtime errors will be expressly documented, and/or returned as an `error` type to facilitate nonthrowing error handling with the typechecker.
+
+If you encounter a bug, panic, or security vulnerability, please make an issue in this repo right away; you may attach a repro or send one privately to [dev@deviaze.com](mailto:dev@deviaze.com) or `@deviaze` on Discord.

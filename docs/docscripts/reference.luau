@@ -180,7 +180,7 @@ for _, filepath in typedefs_paths do
         end
 
         local found_indent, found_close = string.match(line, "^(%s*)(}%??[,]?)%s*$")
-        if #current_names > 0 and found_indent ~= nil and #found_indent == last_indent() then
+        if #current_names > 0 and found_indent ~= nil and #found_indent == last_indent() and found_close then
             local full_name = table.concat(current_names, ".")
             local n = #current_names
             local opener_idx = current_opener_indices[n]
@@ -410,14 +410,14 @@ for _, library in libraries do
         end
 
         if #api.defs > 0 then
-            local require_path =
+            local derived_require_path =
                 string.match(defs, `^[%w_]+: typeof%(require%("([^"]+)"%)%),?$`) or
                 string.match(defs, `^return require%("([^"]+)"%)$`)
             local target_path: string? = nil
             local target_anchor: string? = nil
             local target_display: string? = nil
-            if require_path then
-                target_path = resolve_require_path(require_path)
+            if derived_require_path then
+                target_path = resolve_require_path(derived_require_path)
             end
             if not target_path then
                 local lib_id = string.match(defs, `^[%w_]+:%s+([%w_]+)%.[%w_]+,?$`)
@@ -429,7 +429,7 @@ for _, library in libraries do
             if not target_path then
                 local lib_id, type_name = string.match(defs, `^%s*export type [%w_]+ = ([%w_]+)%.([%w_]+)%s*$`)
                 local raw_path = if lib_id then library.sublibs[lib_id] else nil
-                if raw_path then
+                if raw_path and type_name then
                     target_path = resolve_require_path(raw_path)
                     target_anchor = "#export-type-" .. string.lower(type_name)
                     target_display = `{type_name} in @{target_path}`
