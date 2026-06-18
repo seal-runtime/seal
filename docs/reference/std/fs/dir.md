@@ -31,57 +31,57 @@ export type DirLib = setmetatable<{
 
 ---
 
-#### DirLib.from
-
 <h4>
 
 ```luau
-  function DirLib.from(path: string) -> DirectoryEntry,
+function DirLib.from(path: string) -> DirectoryEntry,
 ```
 
 </h4>
+
+#### DirLib.from
 
  Creates a `DirectoryEntry` from the directory at `path`, erroring if the directory is NotFound/PermissionDenied, etc.
 
 ---
 
-#### DirLib.build
-
 <h4>
 
 ```luau
-  function DirLib.build(name: string, tree: DirectoryTree) -> DirectoryBuilder,
+function DirLib.build(name: string, tree: DirectoryTree) -> DirectoryBuilder,
 ```
 
 </h4>
+
+#### DirLib.build
 
  Returns a `DirectoryBuilder` table for `fs.readtree`, `fs.writetree`, etc.
 
 ---
 
-#### DirLib.create
-
 <h4>
 
 ```luau
-  function DirLib.create(path: string) -> DirectoryEntry,
+function DirLib.create(path: string) -> DirectoryEntry,
 ```
 
 </h4>
+
+#### DirLib.create
 
  Creates a *new* directory at `path`, erroring if an entry already exists there.
 
 ---
 
-#### DirLib.ensure
-
 <h4>
 
 ```luau
-  function DirLib.ensure(path: string, create_missing: boolean?) -> DirectoryEntry,
+function DirLib.ensure(path: string, create_missing: boolean?) -> DirectoryEntry,
 ```
 
 </h4>
+
+#### DirLib.ensure
 
 <details>
 
@@ -103,15 +103,15 @@ local settings_json = dot_vscode:find("settings.json"):try_file()
 
 ---
 
-#### DirLib.try_remove
-
 <h4>
 
 ```luau
-  function DirLib.try_remove(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?),
+function DirLib.try_remove(path: string) -> (boolean, "Ok" | "PermissionDenied" | "NotFound" | "NotADirectory" | "Other", string?),
 ```
 
 </h4>
+
+#### DirLib.try_remove
 
 <details>
 
@@ -130,15 +130,15 @@ with result "Other", as well as an error kind string that describes what went wr
 
 ---
 
-#### DirLib.home
-
 <h4>
 
 ```luau
-  function DirLib.home() -> DirectoryEntry,
+function DirLib.home() -> DirectoryEntry,
 ```
 
 </h4>
+
+#### DirLib.home
 
 Returns a `DirectoryEntry` corresponding to the user's home directory, erroring if not found.
 
@@ -154,15 +154,15 @@ local zip_downloads = fs.dir.home()
 
 ---
 
-#### DirLib.cwd
-
 <h4>
 
 ```luau
-  function DirLib.cwd() -> DirectoryEntry,
+function DirLib.cwd() -> DirectoryEntry,
 ```
 
 </h4>
+
+#### DirLib.cwd
 
 Constructs a `DirectoryEntry` from the user's current working directory (cwd)
 
@@ -171,15 +171,15 @@ where the user is when they execute your code.
 
 ---
 
-#### DirLib.project
-
 <h4>
 
 ```luau
-  function DirLib.project(n: number?) -> DirectoryEntry,
+function DirLib.project(n: number?) -> DirectoryEntry,
 ```
 
 </h4>
+
+#### DirLib.project
 
 <details>
 
@@ -211,15 +211,15 @@ local input_files = fs.dir.project()
 
 ---
 
-#### DirLib.__call
-
 <h4>
 
 ```luau
-  function DirLib.__call(self: any, path: string) -> DirectoryEntry?,
+function DirLib.__call(self: any, path: string) -> DirectoryEntry?,
 ```
 
 </h4>
+
+#### DirLib.__call
 
 Convenient and slightly more efficient alternative to `fs.find(path):try_dir()`
 

@@ -16,8 +16,6 @@ to be valid utf-8 encoded strings.
 
 ---
 
-### str.endswith
-
 <h4>
 
 ```luau
@@ -26,11 +24,11 @@ function str.endswith(s: string, suffix: string): boolean
 
 </h4>
 
+### str.endswith
+
  check if a string ends with `suffix`
 
 ---
-
-### str.starts
 
 <h4>
 
@@ -40,11 +38,11 @@ function str.starts(s: string, ...: string): boolean
 
 </h4>
 
+### str.starts
+
  like str.startswith, but accepts multiple prefixes
 
 ---
-
-### str.ends
 
 <h4>
 
@@ -54,11 +52,11 @@ function str.ends(s: string, ...: string): boolean
 
 </h4>
 
+### str.ends
+
  like str.endswith, but accepts multiple suffixes
 
 ---
-
-### str.trimfront
 
 <h4>
 
@@ -68,13 +66,13 @@ function str.trimfront(s: string, ...: string): string
 
 </h4>
 
+### str.trimfront
+
  trims any of the provided strings/characters from the front of the string `s`
 
  if no strings provided as ..., `str.trimfront` will trim whitespace (" ", "\n", etc.)
 
 ---
-
-### str.trimback
 
 <h4>
 
@@ -84,13 +82,13 @@ function str.trimback(s: string, ...: string): string
 
 </h4>
 
+### str.trimback
+
  trims any of the provided strings/characters/patterns from the back of the string `s`
 
  if no strings provided as ..., `str.trimback` will trim whitespace (" ", "\n", etc.)
 
 ---
-
-### str.trim
 
 <h4>
 
@@ -100,13 +98,13 @@ function str.trim(s: string, ...: string): string
 
 </h4>
 
+### str.trim
+
  trims one or many strings/characters/patterns from both front and back of string `s`
 
  if no strings provided to `...`, then default is whitespace
 
 ---
-
-### str.splitlines
 
 <h4>
 
@@ -116,12 +114,12 @@ function str.splitlines(s: string, trim_trailing_whitespace: boolean?): { string
 
 </h4>
 
+### str.splitlines
+
  splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
  without an extra empty string, etc.
 
 ---
-
-### str.len
 
 <h4>
 
@@ -131,11 +129,11 @@ function str.len(s: string): number
 
 </h4>
 
+### str.len
+
  returns the utf-8 length if `s` is utf-8 or the regular string length #
 
 ---
-
-### str.width
 
 <h4>
 
@@ -144,6 +142,8 @@ function str.width(s: string): number
 ```
 
 </h4>
+
+### str.width
 
 <details>
 
@@ -198,8 +198,6 @@ end
 
 ---
 
-### str.leftpad
-
 <h4>
 
 ```luau
@@ -208,11 +206,11 @@ function str.leftpad(s: string, width: number, pad: string?): string
 
 </h4>
 
+### str.leftpad
+
  left pads `s` to make it at least `width` characters long, using `pad` as the padding character.
 
 ---
-
-### str.escape
 
 <h4>
 
@@ -222,11 +220,11 @@ function str.escape(s: string): string
 
 </h4>
 
+### str.escape
+
  escapes special characters like `\n`, `\t`, `\\` for easier debugging
 
 ---
-
-### str.unescape
 
 <h4>
 
@@ -236,11 +234,11 @@ function str.unescape(s: string): string
 
 </h4>
 
+### str.unescape
+
  reverts `str.escape`
 
 ---
-
-### str.slice
 
 <h4>
 
@@ -250,11 +248,11 @@ function str.slice(s: string, first: number, final: number)
 
 </h4>
 
+### str.slice
+
  alias for string.sub
 
 ---
-
-### str.indent
 
 <h4>
 
@@ -264,11 +262,11 @@ function str.indent(s: string, whitespace_type: "Tabs" | "Spaces", count: number
 
 </h4>
 
+### str.indent
+
  indents multiline string `count` characters; lines separated by `sep` (default "\n")
 
 ---
-
-### str.unindent
 
 <h4>
 
@@ -278,11 +276,11 @@ function str.unindent(s: string, whitespace_type: "Tabs" | "Spaces", count: numb
 
 </h4>
 
+### str.unindent
+
  unindents multiline string by `count` characters; lines separated by `sep` (default "\n")
 
 ---
-
-### str.split
 
 <h4>
 
@@ -291,6 +289,8 @@ function str.split(s: string, ...: string): { string }
 ```
 
 </h4>
+
+### str.split
 
 <details>
 
@@ -330,8 +330,6 @@ local omit_hi = str.split("seals 🦭 say hi", " ", "hi")
 
 ---
 
-### str.splitaround
-
 <h4>
 
 ```luau
@@ -339,6 +337,8 @@ function str.splitaround(s: string, seps: string, ...: string): { string }
 ```
 
 </h4>
+
+### str.splitaround
 
 <details>
 
@@ -365,8 +365,6 @@ local tokens = str.splitaround(line, " ", ".", "(", ":", ",", ")")
 
 ---
 
-### str.splitbefore
-
 <h4>
 
 ```luau
@@ -374,6 +372,8 @@ function str.splitbefore(s: string, seps: string, ...: string): { string }
 ```
 
 </h4>
+
+### str.splitbefore
 
 <details>
 
@@ -400,8 +400,6 @@ print(splitted) -->
 
 ---
 
-### str.splitafter
-
 <h4>
 
 ```luau
@@ -409,6 +407,8 @@ function str.splitafter(s: string, seps: string, ...: string): { string }
 ```
 
 </h4>
+
+### str.splitafter
 
 <details>
 
@@ -434,8 +434,6 @@ local splitted = str.splitafter(httpheaders, "\r\n") -->
 
 ---
 
-### str.chars
-
 <h4>
 
 ```luau
@@ -444,13 +442,13 @@ function str.chars(s: string): (...any) -> (number, string)
 
 </h4>
 
+### str.chars
+
 Iterate over the human-readable characters (graphemes) of a string
 
 This function counts by 'characters', whereas `str.graphemes` provides byte indices for `string.sub`/`str.slice`
 
 ---
-
-### str.graphemes
 
 <h4>
 
@@ -459,6 +457,8 @@ function str.graphemes(s: string): (...any) -> (number, string)
 ```
 
 </h4>
+
+### str.graphemes
 
 <details>
 

@@ -9,8 +9,6 @@ Serialize TOML files.
 
 ---
 
-### toml.encode
-
 <h4>
 
 ```luau
@@ -19,9 +17,9 @@ function toml.encode(t: TomlValue) -> string,
 
 </h4>
 
----
+### toml.encode
 
-### toml.decode
+---
 
 <h4>
 
@@ -31,9 +29,9 @@ function toml.decode(toml_data: string) -> TomlValue,
 
 </h4>
 
----
+### toml.decode
 
-### toml.readfile
+---
 
 <h4>
 
@@ -43,9 +41,9 @@ function toml.readfile(path: string) -> TomlValue,
 
 </h4>
 
----
+### toml.readfile
 
-### toml.writefile
+---
 
 <h4>
 
@@ -54,6 +52,12 @@ function toml.writefile(path: string, content: TomlValue) -> (),
 ```
 
 </h4>
+
+### toml.writefile
+
+```luau
+}
+```
 
 ---
 

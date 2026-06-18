@@ -22,6 +22,7 @@ type StandardLibrary = {
     path: string,
     apis: { Api },
     sublibs: { [string]: string },
+    api_closings: { [string]: string },
 }
 
 local function setup()
@@ -72,6 +73,7 @@ for _, filepath in typedefs_paths do
     
     local current_docs: { string } = {}
     local sublibs: { [string]: string } = {}
+    local api_closings: { [string]: string } = {}
 
     --- represents the 'path' to an api, such as 'SpawnOptions' or 'SpawnOptions.stream.stdout_capacity'
     local current_names: { string } = {}
@@ -83,8 +85,9 @@ for _, filepath in typedefs_paths do
     end
     local function pop_name()
         assert(#current_names == #current_indents, "names/indents misaligned")
-        local last_name = table.remove(current_names, #current_names)
-        local last_indent = table.remove(current_indents, #current_names)
+        local n = #current_names
+        local last_name = table.remove(current_names, n)
+        local last_indent = table.remove(current_indents, n)
         return last_name, last_indent
     end
     local function clear_names()
@@ -151,13 +154,25 @@ for _, filepath in typedefs_paths do
         else
             local indent, found_property_name = string.match(line, "(%s*)([%w_]+): {%s*$")
             if indent and found_property_name then
+                local front_name = table.concat(current_names, ".")
+                if #front_name == 0 then front_name = library_name end
+                local new_api: Api = {
+                    name = front_name .. "." .. found_property_name,
+                    defs = found_property_name .. ": {",
+                    docs = table.concat(current_docs, "\n"),
+                    is = "Property",
+                }
+                table.insert(apis_for_path, new_api)
+                table.clear(current_docs)
                 push_name(found_property_name, #indent)
                 continue
             end
         end
 
-        local found_indent = string.match(line, "^(%s*)}[,]?%s*$")
-        if #current_names > 0 and found_indent and #found_indent == last_indent() then
+        local found_indent, found_close = string.match(line, "^(%s*)(}%??[,]?)%s*$")
+        if #current_names > 0 and found_indent ~= nil and #found_indent == last_indent() then
+            local full_name = table.concat(current_names, ".")
+            api_closings[full_name] = found_close
             pop_name()
         end
 
@@ -236,6 +251,7 @@ for _, filepath in typedefs_paths do
         path = library_path,
         apis = apis_for_path,
         sublibs = sublibs,
+        api_closings = api_closings,
     }
 
     table.insert(libraries, library)
@@ -279,7 +295,13 @@ for _, library in libraries do
     push("<!-- markdownlint-disable MD033 -->\n<!-- markdownlint-disable MD024 -->")
     push(`# {library.name}`)
     local require_path = str.split(library.path, "/init")[1]
-    push("`" .. `local {fs.path.child(require_path)} = require("@{require_path}")` .. "`")
+    local lib_child = fs.path.child(require_path) :: string
+    if str.startswith(lib_child, "_") then
+        local parent_path = library.path:match("^(.+)/[^/]+$") or library.path
+        push(`*This file contains common types and is not an importable library. See [this library's top level docs](/docs/reference/{parent_path}/README.md) for usage information.*`)
+    else
+        push("`" .. `local {lib_child} = require("@{require_path}")` .. "`")
+    end
 
     local main_type_name: string? = nil
     for _, a in library.apis do
@@ -287,6 +309,17 @@ for _, library in libraries do
             main_type_name = a.name
             break
         end
+    end
+
+    local function get_ancestors(name: string): { string }
+        local ancestors: { string } = {}
+        local prefix = ""
+        for segment in name:gmatch("([^%.]+)%.") do
+            if #prefix > 0 then prefix ..= "." end
+            prefix ..= segment
+            table.insert(ancestors, prefix)
+        end
+        return ancestors
     end
 
     for index, api in library.apis do
@@ -312,18 +345,14 @@ for _, library in libraries do
         if is_nested_in_type then
             for _ in api.name:gmatch("%.") do type_depth += 1 end
         end
-        local indent = if api.is == "Enum" then "  " else string.rep("  ", type_depth)
+        local indent = if api.is == "Enum" then "  "
+            elseif api.is == "Function" then ""
+            else string.rep("  ", type_depth)
 
-        if api.is ~= "Enum" then
-            if api.is == "Type" then
-                push(`## {name}`)
-            elseif is_nested_in_type then
-                local h = if type_depth >= 2 then "#####" else "####"
-                push(`{h} {name}`)
-            else
-                push(`### {name}`)
-            end
+        if api.is == "Type" then
+            push(`## {name}`)
         end
+
         if #api.defs > 0 then
             local require_path =
                 string.match(defs, `^[%w_]+: typeof%(require%("([^"]+)"%)%),?$`) or
@@ -368,6 +397,15 @@ for _, library in libraries do
             end
         end
 
+        if api.is == "Property" or api.is == "Function" then
+            if is_nested_in_type then
+                local h = if type_depth >= 2 then "#####" else "####"
+                push(`{h} {name}`)
+            else
+                push(`### {name}`)
+            end
+        end
+
         if #api.docs > 1 and #api.docs < 340 then
             push(api.docs)
         elseif #api.docs > 340 then
@@ -376,6 +414,28 @@ for _, library in libraries do
             push(api.docs)
             push("</details>", 2)
         end
+
+        local next_api = library.apis[index + 1]
+        local current_ancestors = get_ancestors(api.name)
+        local next_ancestor_set: { [string]: boolean } = {}
+        if next_api then
+            for _, na in get_ancestors(next_api.name) do
+                next_ancestor_set[na] = true
+            end
+        end
+        for i = #current_ancestors, 1, -1 do
+            local ancestor = current_ancestors[i]
+            local closing = library.api_closings[ancestor]
+            if not next_ancestor_set[ancestor] and closing then
+                local ancestor_depth = 0
+                for _ in ancestor:gmatch("%.") do ancestor_depth += 1 end
+                local close_indent = string.rep("  ", ancestor_depth)
+                push("```luau", 0)
+                push(close_indent .. closing, 0)
+                push("```", 2)
+            end
+        end
+
         push("---")
     end
 

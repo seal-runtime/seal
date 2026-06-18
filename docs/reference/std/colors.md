@@ -5,9 +5,9 @@
 
 `local colors = require("@std/colors")`
 
-### colors
-
 See [@std/io/colors](/docs/reference/std/io/colors.md)
+
+### colors
 
 ---
 

@@ -7,8 +7,6 @@
 
 ---
 
-### luau.eval
-
 <h4>
 
 ```luau
@@ -16,6 +14,8 @@ function luau.eval(src: string, options: EvalOptions?) -> unknown | error,
 ```
 
 </h4>
+
+### luau.eval
 
 <details>
 
@@ -67,8 +67,6 @@ end
 
 ---
 
-### luau.eval_unsafe
-
 <h4>
 
 ```luau
@@ -76,6 +74,8 @@ function luau.eval_unsafe(src: string | buffer, options: EvalOptions?) -> unknow
 ```
 
 </h4>
+
+### luau.eval_unsafe
 
 <details>
 
@@ -95,8 +95,6 @@ and *coredump*.
 
 ---
 
-### luau.bytecode
-
 <h4>
 
 ```luau
@@ -105,11 +103,11 @@ function luau.bytecode(src: string) -> buffer | error,
 
 </h4>
 
+### luau.bytecode
+
 Compiles `src` to Luau bytecode.
 
 ---
-
-### luau.bundle
 
 <h4>
 
@@ -118,6 +116,8 @@ function luau.bundle(path: string) -> string | error,
 ```
 
 </h4>
+
+### luau.bundle
 
 <details>
 
@@ -154,8 +154,6 @@ end
 
 ---
 
-### luau.require_resolver
-
 <h4>
 
 ```luau
@@ -164,11 +162,11 @@ function luau.require_resolver() -> {
 
 </h4>
 
+### luau.require_resolver
+
 Returns *seal*'s require resolver implementation used internally.
 
 ---
-
-### luau.resolve
 
 <h4>
 
@@ -178,11 +176,11 @@ function luau.resolve(requested_path: string, requiring_file_path: string) -> { 
 
 </h4>
 
+### luau.resolve
+
  Resolve a Luau require alias (`requested_path`) relative to `requiring_file_path` to find its location on the filesystem.
 
 ---
-
-### luau.get_aliases
 
 <h4>
 
@@ -192,9 +190,9 @@ function luau.get_aliases(requiring_file_path: string) -> ({ LuaurcAliases }?, s
 
 </h4>
 
----
+### luau.get_aliases
 
-### luau.expand_aliases
+---
 
 <h4>
 
@@ -203,6 +201,12 @@ function luau.expand_aliases(requested_path: string, aliases_by_luaurc: { Luaurc
 ```
 
 </h4>
+
+### luau.expand_aliases
+
+```luau
+}
+```
 
 ---
 
@@ -218,8 +222,6 @@ export type EvalOptions = {
 
 ---
 
-#### EvalOptions.name
-
 <h4>
 
 ```luau
@@ -228,25 +230,25 @@ export type EvalOptions = {
 
 </h4>
 
+#### EvalOptions.name
+
  the chunk_name of the code to be evaluated
 
 ---
 
-#### EvalOptions.stdlib
-
 <h4>
 
 ```luau
-  function EvalOptions.stdlib("Seal" | "Safe" | "None")?,
+function EvalOptions.stdlib("Seal" | "Safe" | "None")?,
 ```
 
 </h4>
 
+#### EvalOptions.stdlib
+
  the base set of globals to include; case-insensitive for backwards compatibility.
 
 ---
-
-#### EvalOptions.globals
 
 <h4>
 
@@ -256,7 +258,13 @@ export type EvalOptions = {
 
 </h4>
 
+#### EvalOptions.globals
+
  add additional globals to the environment, including functions and variables.
+
+```luau
+}
+```
 
 ---
 
@@ -272,8 +280,6 @@ export type LuaurcAliases = {
 
 ---
 
-#### LuaurcAliases.path
-
 <h4>
 
 ```luau
@@ -281,6 +287,24 @@ export type LuaurcAliases = {
 ```
 
 </h4>
+
+#### LuaurcAliases.path
+
+---
+
+<h4>
+
+```luau
+  aliases: {
+```
+
+</h4>
+
+#### LuaurcAliases.aliases
+
+```luau
+}
+```
 
 ---
 

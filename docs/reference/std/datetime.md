@@ -5,9 +5,9 @@
 
 `local datetime = require("@std/datetime")`
 
-### datetime
-
 See [@std/time/datetime](/docs/reference/std/time/datetime.md)
+
+### datetime
 
 ---
 

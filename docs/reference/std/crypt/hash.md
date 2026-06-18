@@ -11,8 +11,6 @@ Contains function sha2, which can be used to create an **unsalted** hash, return
 
 ---
 
-### hash.sha2
-
 <h4>
 
 ```luau
@@ -21,9 +19,15 @@ function hash.sha2(plaintext: string) -> buffer,
 
 </h4>
 
+### hash.sha2
+
 Hashes plaintext with the SHA2-256 algorithm, returns a buffer (of length 32) containing the result.
 
 You can use the @std/serde library to convert the result into a 'readable' format
+
+```luau
+}
+```
 
 ---
 

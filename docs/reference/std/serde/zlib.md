@@ -9,8 +9,6 @@ Encode/decode with the zlib compression algorithm provided by the flake2 crate.
 
 ---
 
-### zlib.compress
-
 <h4>
 
 ```luau
@@ -19,12 +17,12 @@ function zlib.compress(data: string | buffer, level: "Default" | "Fast" | "Best"
 
 </h4>
 
+### zlib.compress
+
 Encodes (or compresses) the input data with zlib; "Fast" optimizes for compression speed
 whereas "Best" optimizes for compressed size.
 
 ---
-
-### zlib.decompress
 
 <h4>
 
@@ -33,6 +31,12 @@ function zlib.decompress(compressed: buffer) -> buffer,
 ```
 
 </h4>
+
+### zlib.decompress
+
+```luau
+}
+```
 
 ---
 

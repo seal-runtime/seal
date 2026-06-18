@@ -5,8 +5,6 @@
 
 `local request = require("@std/net/request")`
 
-### net.request
-
 <h4>
 
 ```luau
@@ -14,6 +12,8 @@ return require("@std/net/http").request
 ```
 
 </h4>
+
+### net.request
 
 ---
 

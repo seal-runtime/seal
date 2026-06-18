@@ -138,8 +138,6 @@ end
 
 ---
 
-### args.parse
-
 <h4>
 
 ```luau
@@ -148,11 +146,11 @@ function args.parse(program: string, tagline: string, info: ProgramInfo?) -> Arg
 
 </h4>
 
+### args.parse
+
  Parse arguments, call either `:simple` or `:commands` on what this returns.
 
 ---
-
-### args.positional
 
 <h4>
 
@@ -162,11 +160,11 @@ function args.positional(name: string, help: string) -> Positional,
 
 </h4>
 
+### args.positional
+
  Add a positional argument
 
 ---
-
-### args.named
 
 <h4>
 
@@ -176,11 +174,11 @@ function args.named(name: string, help: string) -> Named,
 
 </h4>
 
+### args.named
+
  Add a named argument `--name=value` (or when aliased to -n, `-n value`). Named arguments must start with `--`
 
 ---
-
-### args.command
 
 <h4>
 
@@ -190,11 +188,11 @@ function args.command(name: string, help: string) -> Command,
 
 </h4>
 
+### args.command
+
  Add a new top-level command, must be used with `args.parse(program, desc, info):commands(...)`
 
 ---
-
-### args.flag
 
 <h4>
 
@@ -204,11 +202,11 @@ function args.flag(name: string, help: string) -> Flag,
 
 </h4>
 
+### args.flag
+
  Add a new flag argument like `--verbose` or `--override`. Flags must start with `--` and cannot be `--help` or `--commands`.
 
 ---
-
-### args.list
 
 <h4>
 
@@ -218,11 +216,11 @@ function args.list(name: string, help: string) -> ArgList,
 
 </h4>
 
+### args.list
+
  Add a new list (tail) argument that collects all remaining positional arguments into a `{ string }`
 
 ---
-
-### args.default
 
 <h4>
 
@@ -232,7 +230,13 @@ function args.default(...Arg) -> Command,
 
 </h4>
 
+### args.default
+
  Add a default command.
+
+```luau
+}
+```
 
 ---
 
@@ -248,32 +252,36 @@ export type ArgParser = {
 
 ---
 
-#### ArgParser.simple
-
 <h4>
 
 ```luau
-  function ArgParser.simple(self: any, ...Arg) -> Parsed,
+function ArgParser.simple(self: any, ...Arg) -> Parsed,
 ```
 
 </h4>
+
+#### ArgParser.simple
 
  Parse only arguments; pass in args with `args.positional`, `args.flag`, etc.
 
 ---
 
-#### ArgParser.commands
-
 <h4>
 
 ```luau
-  function ArgParser.commands(self: any, ...Command) -> Parsed,
+function ArgParser.commands(self: any, ...Command) -> Parsed,
 ```
 
 </h4>
 
+#### ArgParser.commands
+
  Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
  generate commands.
+
+```luau
+}
+```
 
 ---
 
@@ -289,8 +297,6 @@ export type ProgramInfo = {
 
 ---
 
-#### ProgramInfo.description
-
 <h4>
 
 ```luau
@@ -299,11 +305,11 @@ export type ProgramInfo = {
 
 </h4>
 
+#### ProgramInfo.description
+
  if provided, goes below program name/tagline in `--help`
 
 ---
-
-#### ProgramInfo.examples
 
 <h4>
 
@@ -313,11 +319,11 @@ export type ProgramInfo = {
 
 </h4>
 
+#### ProgramInfo.examples
+
  examples of arguments *following* program and path (already pre-filled)
 
 ---
-
-#### ProgramInfo.footer
 
 <h4>
 
@@ -327,7 +333,13 @@ export type ProgramInfo = {
 
 </h4>
 
+#### ProgramInfo.footer
+
  put authors and/or repository link here
+
+```luau
+}
+```
 
 ---
 
@@ -343,8 +355,6 @@ export type Command = {
 
 ---
 
-#### Command.name
-
 <h4>
 
 ```luau
@@ -353,9 +363,9 @@ export type Command = {
 
 </h4>
 
----
+#### Command.name
 
-#### Command.is
+---
 
 <h4>
 
@@ -365,9 +375,9 @@ export type Command = {
 
 </h4>
 
----
+#### Command.is
 
-#### Command.help
+---
 
 <h4>
 
@@ -377,31 +387,37 @@ export type Command = {
 
 </h4>
 
+#### Command.help
+
 ---
+
+<h4>
+
+```luau
+function Command.args(self: Command, ...Arg) -> Command,
+```
+
+</h4>
 
 #### Command.args
 
+---
+
 <h4>
 
 ```luau
-  function Command.args(self: Command, ...Arg) -> Command,
+function Command.aliases(self: Command, ...string) -> Command,
 ```
 
 </h4>
-
----
 
 #### Command.aliases
 
-<h4>
+ Aliases for your command, like `seal r -> seal run`
 
 ```luau
-  function Command.aliases(self: Command, ...string) -> Command,
+}
 ```
-
-</h4>
-
- Aliases for your command, like `seal r -> seal run`
 
 ---
 
@@ -417,8 +433,6 @@ export type Parsed = {
 
 ---
 
-#### Parsed.command
-
 <h4>
 
 ```luau
@@ -427,45 +441,45 @@ export type Parsed = {
 
 </h4>
 
+#### Parsed.command
+
 ---
+
+<h4>
+
+```luau
+function Parsed.get<T>(self: Parsed, name: string, default: T?) -> T?,
+```
+
+</h4>
 
 #### Parsed.get
 
+---
+
 <h4>
 
 ```luau
-  function Parsed.get<T>(self: Parsed, name: string, default: T?) -> T?,
+function Parsed.expect<T>(self: Parsed, name: string, assertion: string?) -> T,
 ```
 
 </h4>
-
----
 
 #### Parsed.expect
 
+---
+
 <h4>
 
 ```luau
-  function Parsed.expect<T>(self: Parsed, name: string, assertion: string?) -> T,
+function Parsed.help(self: Parsed) -> string,
 ```
 
 </h4>
-
----
 
 #### Parsed.help
 
-<h4>
-
-```luau
-  function Parsed.help(self: Parsed) -> string,
-```
-
-</h4>
-
 ---
-
-#### Parsed.flags
 
 <h4>
 
@@ -475,9 +489,9 @@ export type Parsed = {
 
 </h4>
 
----
+#### Parsed.flags
 
-#### Parsed.args
+---
 
 <h4>
 
@@ -486,6 +500,12 @@ export type Parsed = {
 ```
 
 </h4>
+
+#### Parsed.args
+
+```luau
+}
+```
 
 ---
 
@@ -501,8 +521,6 @@ export type ArgList = {
 
 ---
 
-#### ArgList.name
-
 <h4>
 
 ```luau
@@ -511,9 +529,9 @@ export type ArgList = {
 
 </h4>
 
----
+#### ArgList.name
 
-#### ArgList.is
+---
 
 <h4>
 
@@ -523,9 +541,9 @@ export type ArgList = {
 
 </h4>
 
----
+#### ArgList.is
 
-#### ArgList.help
+---
 
 <h4>
 
@@ -535,9 +553,9 @@ export type ArgList = {
 
 </h4>
 
----
+#### ArgList.help
 
-#### ArgList.values
+---
 
 <h4>
 
@@ -546,6 +564,12 @@ export type ArgList = {
 ```
 
 </h4>
+
+#### ArgList.values
+
+```luau
+}
+```
 
 ---
 
@@ -609,8 +633,6 @@ export type Positional = {
 
 ---
 
-#### Positional.name
-
 <h4>
 
 ```luau
@@ -619,9 +641,9 @@ export type Positional = {
 
 </h4>
 
----
+#### Positional.name
 
-#### Positional.is
+---
 
 <h4>
 
@@ -631,9 +653,9 @@ export type Positional = {
 
 </h4>
 
----
+#### Positional.is
 
-#### Positional.help
+---
 
 <h4>
 
@@ -643,50 +665,50 @@ export type Positional = {
 
 </h4>
 
+#### Positional.help
+
 ---
+
+<h4>
+
+```luau
+function Positional.default(any) -> Positional,
+```
+
+</h4>
 
 #### Positional.default
 
-<h4>
-
-```luau
-  function Positional.default(any) -> Positional,
-```
-
-</h4>
-
 ---
 
-#### Positional.optional
-
 <h4>
 
 ```luau
-  function Positional.optional(self: Positional) -> Positional,
+function Positional.optional(self: Positional) -> Positional,
 ```
 
 </h4>
+
+#### Positional.optional
 
  call this to turn the positional argument into an optional positional argument
 
 ---
 
-#### Positional.validate
-
 <h4>
 
 ```luau
-  function Positional.validate(self: Positional, validator: Validator) -> Positional,
+function Positional.validate(self: Positional, validator: Validator) -> Positional,
 ```
 
 </h4>
+
+#### Positional.validate
 
  validate the argument's input by passing a function that returns either the transformed
  validated input (such as converting input strings from p -> project) or an error object.
 
 ---
-
-#### Positional.value
 
 <h4>
 
@@ -695,6 +717,12 @@ export type Positional = {
 ```
 
 </h4>
+
+#### Positional.value
+
+```luau
+}
+```
 
 ---
 
@@ -710,8 +738,6 @@ export type Flag = {
 
 ---
 
-#### Flag.name
-
 <h4>
 
 ```luau
@@ -720,11 +746,11 @@ export type Flag = {
 
 </h4>
 
+#### Flag.name
+
  Must start with `--` and cannot be `--help` or `--commands`
 
 ---
-
-#### Flag.is
 
 <h4>
 
@@ -734,9 +760,9 @@ export type Flag = {
 
 </h4>
 
----
+#### Flag.is
 
-#### Flag.help
+---
 
 <h4>
 
@@ -746,35 +772,35 @@ export type Flag = {
 
 </h4>
 
----
+#### Flag.help
 
-#### Flag.aliases
+---
 
 <h4>
 
 ```luau
-  function Flag.aliases(self: Flag, ...string) -> Flag,
+function Flag.aliases(self: Flag, ...string) -> Flag,
 ```
 
 </h4>
+
+#### Flag.aliases
 
  flag aliases must start with `-` and cannot be `-h` (reserved for help)
 
 ---
 
-#### Flag.default
-
 <h4>
 
 ```luau
-  function Flag.default(self: Flag, boolean) -> Flag,
+function Flag.default(self: Flag, boolean) -> Flag,
 ```
 
 </h4>
 
----
+#### Flag.default
 
-#### Flag.value
+---
 
 <h4>
 
@@ -783,6 +809,12 @@ export type Flag = {
 ```
 
 </h4>
+
+#### Flag.value
+
+```luau
+}
+```
 
 ---
 
@@ -798,8 +830,6 @@ export type Named = {
 
 ---
 
-#### Named.name
-
 <h4>
 
 ```luau
@@ -808,11 +838,11 @@ export type Named = {
 
 </h4>
 
+#### Named.name
+
  Must start with `--` and cannot be `--help` or `--commands`
 
 ---
-
-#### Named.is
 
 <h4>
 
@@ -822,9 +852,9 @@ export type Named = {
 
 </h4>
 
----
+#### Named.is
 
-#### Named.help
+---
 
 <h4>
 
@@ -834,59 +864,59 @@ export type Named = {
 
 </h4>
 
+#### Named.help
+
 ---
+
+<h4>
+
+```luau
+function Named.default(self: Named, any) -> Named,
+```
+
+</h4>
 
 #### Named.default
 
-<h4>
-
-```luau
-  function Named.default(self: Named, any) -> Named,
-```
-
-</h4>
-
 ---
 
-#### Named.aliases
-
 <h4>
 
 ```luau
-  function Named.aliases(self: Named, ...string) -> Named,
+function Named.aliases(self: Named, ...string) -> Named,
 ```
 
 </h4>
+
+#### Named.aliases
 
  aliases must start with `-` and cannot be `-h` (reserved for help)
 
 ---
 
-#### Named.required
-
 <h4>
 
 ```luau
-  function Named.required(self: Named) -> Named,
+function Named.required(self: Named) -> Named,
 ```
 
 </h4>
 
+#### Named.required
+
 ---
+
+<h4>
+
+```luau
+function Named.validate(self: Named, validator: Validator) -> Named,
+```
+
+</h4>
 
 #### Named.validate
 
-<h4>
-
-```luau
-  function Named.validate(self: Named, validator: Validator) -> Named,
-```
-
-</h4>
-
 ---
-
-#### Named.value
 
 <h4>
 
@@ -895,6 +925,12 @@ export type Named = {
 ```
 
 </h4>
+
+#### Named.value
+
+```luau
+}
+```
 
 ---
 

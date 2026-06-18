@@ -11,8 +11,6 @@ See `datetime.parse`.
 
 ---
 
-### datetime.now
-
 <h4>
 
 ```luau
@@ -21,11 +19,11 @@ function datetime.now() -> DateTime,
 
 </h4>
 
+### datetime.now
+
  Constructs a `DateTime` from right now (based on system time) in your local timezone.
 
 ---
-
-### datetime.from
 
 <h4>
 
@@ -35,14 +33,14 @@ function datetime.from(timestamp: number, timezone: IanaTimezone, nanos: number?
 
 </h4>
 
+### datetime.from
+
 Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
 
 - `timezone` defaults to `"UTC"` if not specified
 - `nanos` defaults to `0` if not specified
 
 ---
-
-### datetime.parse
 
 <h4>
 
@@ -51,6 +49,8 @@ function datetime.parse(source: string, format: string | CommonFormats, timezone
 ```
 
 </h4>
+
+### datetime.parse
 
 <details>
 
@@ -76,7 +76,19 @@ local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AU
 
 ---
 
-### datetime.common_formats.ISO_8601
+<h4>
+
+```luau
+common_formats: {
+```
+
+</h4>
+
+### datetime.common_formats
+
+ Common DateTime format strings.
+
+---
 
 <h4>
 
@@ -86,11 +98,9 @@ ISO_8601: "%Y-%m-%d %H:%M",
 
 </h4>
 
- Common DateTime format strings.
+### datetime.common_formats.ISO_8601
 
 ---
-
-### datetime.common_formats.RFC_2822
 
 <h4>
 
@@ -100,9 +110,9 @@ RFC_2822: "%a, %d %b %Y %H:%M:%S %z",
 
 </h4>
 
----
+### datetime.common_formats.RFC_2822
 
-### datetime.common_formats.RFC_3339
+---
 
 <h4>
 
@@ -112,9 +122,9 @@ RFC_3339: "%Y-%m-%dT%H:%M:%S%:z",
 
 </h4>
 
----
+### datetime.common_formats.RFC_3339
 
-### datetime.common_formats.SHORT_DATE
+---
 
 <h4>
 
@@ -124,9 +134,9 @@ SHORT_DATE: "%Y-%m-%d",
 
 </h4>
 
----
+### datetime.common_formats.SHORT_DATE
 
-### datetime.common_formats.SHORT_TIME
+---
 
 <h4>
 
@@ -136,9 +146,9 @@ SHORT_TIME: "%H:%M",
 
 </h4>
 
----
+### datetime.common_formats.SHORT_TIME
 
-### datetime.common_formats.FULL_DATE_TIME
+---
 
 <h4>
 
@@ -148,9 +158,9 @@ FULL_DATE_TIME: "%A, %B %d, %Y %H:%M:%S",
 
 </h4>
 
----
+### datetime.common_formats.FULL_DATE_TIME
 
-### datetime.common_formats.LOGGING_24_HR
+---
 
 <h4>
 
@@ -160,9 +170,9 @@ LOGGING_24_HR: "%a %b %e %H:%M:%S %Z %Y",
 
 </h4>
 
----
+### datetime.common_formats.LOGGING_24_HR
 
-### datetime.common_formats.LOGGING_12_HR
+---
 
 <h4>
 
@@ -172,9 +182,9 @@ LOGGING_12_HR: "%a %b %e %I:%M:%S %p %Z %Y",
 
 </h4>
 
----
+### datetime.common_formats.LOGGING_12_HR
 
-### datetime.common_formats.AMERICAN_FULL_DATE_TIME
+---
 
 <h4>
 
@@ -184,9 +194,13 @@ AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
 
 </h4>
 
----
+### datetime.common_formats.AMERICAN_FULL_DATE_TIME
 
-### datetime.years
+```luau
+  },
+```
+
+---
 
 <h4>
 
@@ -195,6 +209,8 @@ function datetime.years(number, relative_to: DateTime?) -> TimeSpan,
 ```
 
 </h4>
+
+### datetime.years
 
 <details>
 
@@ -225,8 +241,6 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-### datetime.months
-
 <h4>
 
 ```luau
@@ -234,6 +248,8 @@ function datetime.months(number, relative_to: DateTime?) -> TimeSpan,
 ```
 
 </h4>
+
+### datetime.months
 
 <details>
 
@@ -264,8 +280,6 @@ assert(span2.relative_to ~= nil, "should have relative DateTime")
 
 ---
 
-### datetime.days
-
 <h4>
 
 ```luau
@@ -274,11 +288,11 @@ function datetime.days(number) -> TimeSpan,
 
 </h4>
 
+### datetime.days
+
  Constructs a `TimeSpan` from days. Assumes every day is 24 hours.
 
 ---
-
-### datetime.hours
 
 <h4>
 
@@ -288,11 +302,11 @@ function datetime.hours(number) -> TimeSpan,
 
 </h4>
 
+### datetime.hours
+
  Constructs a `TimeSpan` from hours.
 
 ---
-
-### datetime.minutes
 
 <h4>
 
@@ -302,11 +316,11 @@ function datetime.minutes(number) -> TimeSpan,
 
 </h4>
 
+### datetime.minutes
+
  Constructs a `TimeSpan` from minutes.
 
 ---
-
-### datetime.seconds
 
 <h4>
 
@@ -316,11 +330,11 @@ function datetime.seconds(number) -> TimeSpan,
 
 </h4>
 
+### datetime.seconds
+
  Constructs a `TimeSpan` from seconds.
 
 ---
-
-### datetime.milliseconds
 
 <h4>
 
@@ -330,7 +344,13 @@ function datetime.milliseconds(number) -> TimeSpan,
 
 </h4>
 
+### datetime.milliseconds
+
  Constructs a `TimeSpan` from milliseconds.
+
+```luau
+}
+```
 
 ---
 

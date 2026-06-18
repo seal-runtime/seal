@@ -7,8 +7,6 @@
 
 ---
 
-### rsa.generatekeys
-
 <h4>
 
 ```luau
@@ -17,9 +15,9 @@ function rsa.generatekeys() -> RsaKeys,
 
 </h4>
 
----
+### rsa.generatekeys
 
-### rsa.encrypt
+---
 
 <h4>
 
@@ -29,9 +27,9 @@ function rsa.encrypt(plaintext: string, public_key: string) -> string,
 
 </h4>
 
----
+### rsa.encrypt
 
-### rsa.decrypt
+---
 
 <h4>
 
@@ -40,6 +38,12 @@ function rsa.decrypt(ciphertext: string, private_key: string) -> string,
 ```
 
 </h4>
+
+### rsa.decrypt
+
+```luau
+}
+```
 
 ---
 
@@ -55,8 +59,6 @@ type RsaKeys = {
 
 ---
 
-#### RsaKeys.public
-
 <h4>
 
 ```luau
@@ -65,9 +67,9 @@ type RsaKeys = {
 
 </h4>
 
----
+#### RsaKeys.public
 
-#### RsaKeys.private
+---
 
 <h4>
 
@@ -76,6 +78,12 @@ type RsaKeys = {
 ```
 
 </h4>
+
+#### RsaKeys.private
+
+```luau
+}
+```
 
 ---
 

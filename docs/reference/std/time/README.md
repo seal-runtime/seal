@@ -9,8 +9,6 @@ A time library with `time.wait` and functions for creating `Duration` objects.
 
 ---
 
-### time.wait
-
 <h4>
 
 ```luau
@@ -18,6 +16,8 @@ function time.wait(duration: Duration | number) -> true,
 ```
 
 </h4>
+
+### time.wait
 
 <details>
 
@@ -48,15 +48,13 @@ If you need a more accurate way to wait you might need to spin (while true do lo
 
 ---
 
-### time.datetime
-
 See [@std/time/datetime](/docs/reference/std/time/datetime.md)
+
+### time.datetime
 
  `DateTime` and `TimeSpan` libraries.
 
 ---
-
-### time.years
 
 <h4>
 
@@ -66,11 +64,11 @@ function time.years(y: number) -> Duration,
 
 </h4>
 
+### time.years
+
  Constructs a `Duration` representing `y` years. This assumes years are `365` days long.
 
 ---
-
-### time.months
 
 <h4>
 
@@ -80,12 +78,12 @@ function time.months(months: number) -> Duration,
 
 </h4>
 
+### time.months
+
  Constructs a `Duration` representing `months` months. This assumes months are 365 / 12 days long.
  <br> For accurate months, use `TimeSpan`s instead.
 
 ---
-
-### time.days
 
 <h4>
 
@@ -95,11 +93,11 @@ function time.days(d: number) -> Duration,
 
 </h4>
 
+### time.days
+
  Constructs a `Duration` representing `d` days.
 
 ---
-
-### time.hours
 
 <h4>
 
@@ -109,11 +107,11 @@ function time.hours(h: number) -> Duration,
 
 </h4>
 
+### time.hours
+
  Constructs a `Duration` representing `h` hours.
 
 ---
-
-### time.minutes
 
 <h4>
 
@@ -123,11 +121,11 @@ function time.minutes(m: number) -> Duration,
 
 </h4>
 
+### time.minutes
+
  Constructs a `Duration` representing `m` minutes.
 
 ---
-
-### time.seconds
 
 <h4>
 
@@ -137,11 +135,11 @@ function time.seconds(s: number) -> Duration,
 
 </h4>
 
+### time.seconds
+
  Constructs a `Duration` representing `s` seconds.
 
 ---
-
-### time.milliseconds
 
 <h4>
 
@@ -151,11 +149,11 @@ function time.milliseconds(ms: number) -> Duration,
 
 </h4>
 
+### time.milliseconds
+
  Constructs a `Duration` representing `ms` milliseconds.
 
 ---
-
-### time.microseconds
 
 <h4>
 
@@ -165,11 +163,11 @@ function time.microseconds(us: number) -> Duration,
 
 </h4>
 
+### time.microseconds
+
  Constructs a `Duration` representing `us` microseconds.
 
 ---
-
-### time.nanoseconds
 
 <h4>
 
@@ -179,7 +177,13 @@ function time.nanoseconds(n: number) -> Duration,
 
 </h4>
 
+### time.nanoseconds
+
  Constructs a `Duration` representing `n` nanoseconds. This is accurate only up to ~285 years (expressed in nanoseconds).
+
+```luau
+}
+```
 
 ---
 

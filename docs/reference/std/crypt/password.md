@@ -11,8 +11,6 @@ Please use with caution.
 
 ---
 
-### password.hash
-
 <h4>
 
 ```luau
@@ -20,6 +18,8 @@ function password.hash(raw_password: string) -> HashedPassword,
 ```
 
 </h4>
+
+### password.hash
 
 <details>
 
@@ -56,8 +56,6 @@ end
 
 ---
 
-### password.verify
-
 <h4>
 
 ```luau
@@ -65,6 +63,8 @@ function password.verify(verify_options: PasswordVerifyOptions) -> boolean
 ```
 
 </h4>
+
+### password.verify
 
 <details>
 
@@ -111,6 +111,10 @@ end
 
 </details>
 
+```luau
+}
+```
+
 ---
 
 ## `export type` HashedPassword
@@ -142,8 +146,6 @@ Represents a password hashed with the PBKDF2_HMAC_SHA256 algorithm.
 
 ---
 
-#### HashedPassword.salt
-
 <h4>
 
 ```luau
@@ -152,9 +154,9 @@ Represents a password hashed with the PBKDF2_HMAC_SHA256 algorithm.
 
 </h4>
 
----
+#### HashedPassword.salt
 
-#### HashedPassword.hash
+---
 
 <h4>
 
@@ -163,6 +165,12 @@ Represents a password hashed with the PBKDF2_HMAC_SHA256 algorithm.
 ```
 
 </h4>
+
+#### HashedPassword.hash
+
+```luau
+}
+```
 
 ---
 
@@ -178,8 +186,6 @@ export type PasswordVerifyOptions = {
 
 ---
 
-#### PasswordVerifyOptions.raw_password
-
 <h4>
 
 ```luau
@@ -188,9 +194,9 @@ export type PasswordVerifyOptions = {
 
 </h4>
 
----
+#### PasswordVerifyOptions.raw_password
 
-#### PasswordVerifyOptions.hashed_password
+---
 
 <h4>
 
@@ -199,6 +205,12 @@ export type PasswordVerifyOptions = {
 ```
 
 </h4>
+
+#### PasswordVerifyOptions.hashed_password
+
+```luau
+}
+```
 
 ---
 

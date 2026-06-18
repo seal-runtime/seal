@@ -7,8 +7,6 @@
 
 ---
 
-### aes.generatekey
-
 <h4>
 
 ```luau
@@ -17,11 +15,11 @@ function aes.generatekey() -> string,
 
 </h4>
 
+### aes.generatekey
+
  Generate an AES-256 key.
 
 ---
-
-### aes.encrypt
 
 <h4>
 
@@ -31,11 +29,11 @@ function aes.encrypt(plaintext: string, key: string) -> string,
 
 </h4>
 
+### aes.encrypt
+
  Encrypt plaintext with an AES-256 key
 
 ---
-
-### aes.decrypt
 
 <h4>
 
@@ -45,7 +43,13 @@ function aes.decrypt(ciphertext: string, key: string) -> string,
 
 </h4>
 
+### aes.decrypt
+
  Decrypt ciphertext with an AES-256 key.
+
+```luau
+}
+```
 
 ---
 

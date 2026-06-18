@@ -7,8 +7,6 @@
 
 ---
 
-### fs.readfile
-
 <h4>
 
 ```luau
@@ -16,6 +14,8 @@ function fs.readfile(path: string) -> string,
 ```
 
 </h4>
+
+### fs.readfile
 
 <details>
 
@@ -37,8 +37,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### fs.readbytes
-
 <h4>
 
 ```luau
@@ -46,6 +44,8 @@ function fs.readbytes(path: string, file_offset: number?, count: number?, target
 ```
 
 </h4>
+
+### fs.readbytes
 
 <details>
 
@@ -84,8 +84,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### fs.readlines
-
 <h4>
 
 ```luau
@@ -93,6 +91,8 @@ function fs.readlines(path: string) -> () -> (number, string),
 ```
 
 </h4>
+
+### fs.readlines
 
 <details>
 
@@ -122,8 +122,6 @@ local _, line2 = nextline()
 
 ---
 
-### fs.writefile
-
 <h4>
 
 ```luau
@@ -131,6 +129,8 @@ function fs.writefile(path: string, content: string | buffer) -> (),
 ```
 
 </h4>
+
+### fs.writefile
 
 <details>
 
@@ -159,8 +159,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### fs.removefile
-
 <h4>
 
 ```luau
@@ -168,6 +166,8 @@ function fs.removefile(path: string) -> (),
 ```
 
 </h4>
+
+### fs.removefile
 
 Removes a regular file at `path` without following symlinks.
 
@@ -181,8 +181,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### fs.is
-
 <h4>
 
 ```luau
@@ -190,6 +188,8 @@ function fs.is(path: string) -> PathIs,
 ```
 
 </h4>
+
+### fs.is
 
 <details>
 
@@ -233,8 +233,6 @@ end
 
 ---
 
-### fs.symlink
-
 <h4>
 
 ```luau
@@ -242,6 +240,8 @@ function fs.symlink(target: string, link: string) -> boolean,
 ```
 
 </h4>
+
+### fs.symlink
 
 <details>
 
@@ -261,8 +261,6 @@ If you're on Windows, you need to run this program with Administrator permission
 
 ---
 
-### fs.unsymlink
-
 <h4>
 
 ```luau
@@ -270,6 +268,8 @@ function fs.unsymlink(link: string) -> boolean,
 ```
 
 </h4>
+
+### fs.unsymlink
 
 Removes the symlink at `link`.
 
@@ -284,8 +284,6 @@ Removes the symlink at `link`.
 
 ---
 
-### fs.readlink
-
 <h4>
 
 ```luau
@@ -293,6 +291,8 @@ function fs.readlink(symlink: string) -> string,
 ```
 
 </h4>
+
+### fs.readlink
 
 Follows `symlink` and returns the *path* targeted by the symlink.
 
@@ -302,8 +302,6 @@ Follows `symlink` and returns the *path* targeted by the symlink.
 
 ---
 
-### fs.watch
-
 <h4>
 
 ```luau
@@ -311,6 +309,8 @@ function fs.watch(paths: string | { string }, options: WatchOptions?) -> () -> (
 ```
 
 </h4>
+
+### fs.watch
 
 <details>
 
@@ -434,8 +434,6 @@ This function uses the Rust `notify` crate as its backend; please refer to its d
 
 ---
 
-### fs.readtree
-
 <h4>
 
 ```luau
@@ -444,11 +442,11 @@ function fs.readtree(path: string) -> DirectoryTree,
 
 </h4>
 
+### fs.readtree
+
 Recursively read contents of directory at `path` into a `fs.DirectoryTree` that can be passed into `fs.writetree` and `DirectoryEntry:add_tree` apis.
 
 ---
-
-### fs.writetree
 
 <h4>
 
@@ -457,6 +455,8 @@ function fs.writetree(path: string, tree: TreeBuilder | DirectoryTree) -> (),
 ```
 
 </h4>
+
+### fs.writetree
 
 <details>
 
@@ -501,8 +501,6 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
-### fs.removetree
-
 <h4>
 
 ```luau
@@ -510,6 +508,8 @@ function fs.removetree(path: string) -> (),
 ```
 
 </h4>
+
+### fs.removetree
 
 <details>
 
@@ -535,8 +535,6 @@ Please use this function carefully.
 
 ---
 
-### fs.makedir
-
 <h4>
 
 ```luau
@@ -544,6 +542,8 @@ function fs.makedir(path: string, options: { create_missing: boolean?, error_if_
 ```
 
 </h4>
+
+### fs.makedir
 
 <details>
 
@@ -579,8 +579,6 @@ fs.makedir(fs.path.join(fs.path.cwd(), "Config", "Editor", "Formatting"), {
 
 ---
 
-### fs.listdir
-
 <h4>
 
 ```luau
@@ -588,6 +586,8 @@ function fs.listdir(path: string, recursive: boolean?, filter: ((path: string) -
 ```
 
 </h4>
+
+### fs.listdir
 
 <details>
 
@@ -622,8 +622,6 @@ end)
 
 ---
 
-### fs.move
-
 <h4>
 
 ```luau
@@ -631,6 +629,8 @@ function fs.move(from: string, to: string) -> (),
 ```
 
 </h4>
+
+### fs.move
 
 Move a regular file or directory `from` a path `to` a new path.
 
@@ -643,8 +643,6 @@ TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 ---
 
-### fs.copy
-
 <h4>
 
 ```luau
@@ -653,13 +651,13 @@ function fs.copy(source: string, destination: string) -> (),
 
 </h4>
 
+### fs.copy
+
 Copy a regular file or directory from `source` to `destination`.
 
 TODO: streamline fs.move and fs.copy with Entry:move_to and Entry:copy_to.
 
 ---
-
-### fs.find
 
 <h4>
 
@@ -668,6 +666,8 @@ function fs.find(path: string, options: { follow_symlinks: boolean?, error_if_pe
 ```
 
 </h4>
+
+### fs.find
 
 <details>
 
@@ -717,8 +717,6 @@ end
 
 ---
 
-### fs.entries
-
 <h4>
 
 ```luau
@@ -726,6 +724,8 @@ function fs.entries(path: string) -> { [string]: Entry },
 ```
 
 </h4>
+
+### fs.entries
 
 Returns a table mapping the paths of the directory at `path` with their `fs.Entry`s.
 
@@ -743,9 +743,9 @@ end
 
 ---
 
-### fs.file
-
 See [@std/fs/file](/docs/reference/std/fs/file.md)
+
+### fs.file
 
 A sublib for handling operations with files and `fs.FileEntry`s.
 
@@ -755,9 +755,9 @@ This library can be called as a function as a convenience alternative for `fs.fi
 
 ---
 
-### fs.dir
-
 See [@std/fs/dir](/docs/reference/std/fs/dir.md)
+
+### fs.dir
 
 A sublib for handling operations with directories and `fs.DirectoryEntry`s.
 
@@ -765,17 +765,15 @@ This library can be called as a function as a convenience alternative to `fs.fin
 
 ---
 
-### fs.path
-
 See [@std/fs/path](/docs/reference/std/fs/path.md)
+
+### fs.path
 
 A sublib for handling file path operations with strings in an ergonomic and cross-platform-compliant manner.
 
 Commonly used `fs.path` functions include: `fs.path.join` for combining paths and `fs.path.cwd` and `fs.path.home`.
 
 ---
-
-### fs.tree
 
 <h4>
 
@@ -785,15 +783,21 @@ function fs.tree() -> TreeBuilder,
 
 </h4>
 
+### fs.tree
+
 Returns a `TreeBuilder` for use with `fs.writetree`, `DirectoryEntry:add_tree`, and `TreeBuilder:with_tree` apis.
 
 ---
 
-### fs.filesize
-
 See [@std/fs/filesize](/docs/reference/std/fs/filesize.md)
 
+### fs.filesize
+
  Library for constructing `FileSize` instances.
+
+```luau
+}
+```
 
 ---
 
@@ -929,8 +933,6 @@ export type WatchOptions = {
 
 ---
 
-#### WatchOptions.recursive
-
 <h4>
 
 ```luau
@@ -939,9 +941,9 @@ export type WatchOptions = {
 
 </h4>
 
----
+#### WatchOptions.recursive
 
-#### WatchOptions.timeout_ms
+---
 
 <h4>
 
@@ -950,6 +952,12 @@ export type WatchOptions = {
 ```
 
 </h4>
+
+#### WatchOptions.timeout_ms
+
+```luau
+}
+```
 
 ---
 
@@ -1075,8 +1083,6 @@ export type WatchEventInfo = {
 
 ---
 
-#### WatchEventInfo.paths
-
 <h4>
 
 ```luau
@@ -1085,9 +1091,9 @@ export type WatchEventInfo = {
 
 </h4>
 
----
+#### WatchEventInfo.paths
 
-#### WatchEventInfo.kind
+---
 
 <h4>
 
@@ -1097,9 +1103,9 @@ export type WatchEventInfo = {
 
 </h4>
 
----
+#### WatchEventInfo.kind
 
-#### WatchEventInfo.is_write
+---
 
 <h4>
 
@@ -1109,7 +1115,13 @@ export type WatchEventInfo = {
 
 </h4>
 
+#### WatchEventInfo.is_write
+
  if the event is *most likely* a write event (`Create::File` or `Modify::Data` or `Close::Write`)
+
+```luau
+}
+```
 
 ---
 

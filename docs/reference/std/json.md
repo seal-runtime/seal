@@ -18,8 +18,6 @@ json.writefile("./animals.json", data)
 
 ---
 
-### json.encode
-
 <h4>
 
 ```luau
@@ -28,11 +26,11 @@ function json.encode(t: JsonData, options: EncodeOptions?) -> string,
 
 </h4>
 
+### json.encode
+
  encodes a table as json; by default this encodes as a pretty-formatted string; use `json.raw` for a condensed version instead
 
 ---
-
-### json.raw
 
 <h4>
 
@@ -42,11 +40,11 @@ function json.raw(t: JsonData) -> string,
 
 </h4>
 
+### json.raw
+
  encodes a table as json in a condensed fashion for passing as data (without newlines, not as easily readable)
 
 ---
-
-### json.decode
 
 <h4>
 
@@ -56,9 +54,9 @@ function json.decode(json: string) -> JsonData,
 
 </h4>
 
----
+### json.decode
 
-### json.readfile
+---
 
 <h4>
 
@@ -68,9 +66,9 @@ function json.readfile(path: string) -> JsonData,
 
 </h4>
 
----
+### json.readfile
 
-### json.writefile
+---
 
 <h4>
 
@@ -80,9 +78,9 @@ function json.writefile(path: string, data: JsonData, options: EncodeOptions?) -
 
 </h4>
 
----
+### json.writefile
 
-### json.writefile_raw
+---
 
 <h4>
 
@@ -92,9 +90,9 @@ function json.writefile_raw(path: string, data: JsonData) -> (),
 
 </h4>
 
----
+### json.writefile_raw
 
-### json.null
+---
 
 <h4>
 
@@ -104,11 +102,11 @@ function json.null() -> any,
 
 </h4>
 
+### json.null
+
  returns an object that serializes to json's `null`
 
 ---
-
-### json.array
 
 <h4>
 
@@ -118,9 +116,15 @@ function json.array<T>(t: { T }?) -> { T }
 
 </h4>
 
+### json.array
+
  Treat `t` as an array (will always encode as `[]` even when empty).
 
  If `t` isn't provided, returns a new array-like table that will serialize to a json array.
+
+```luau
+}
+```
 
 ---
 
@@ -136,8 +140,6 @@ export type EncodeOptions = {
 
 ---
 
-#### EncodeOptions.pretty
-
 <h4>
 
 ```luau
@@ -146,11 +148,11 @@ export type EncodeOptions = {
 
 </h4>
 
+#### EncodeOptions.pretty
+
  with tabs/newlines/spaces for easy reading (default true)
 
 ---
-
-#### EncodeOptions.sorted
 
 <h4>
 
@@ -160,7 +162,13 @@ export type EncodeOptions = {
 
 </h4>
 
+#### EncodeOptions.sorted
+
  sorted in alphanumeric order (default false)
+
+```luau
+}
+```
 
 ---
 
