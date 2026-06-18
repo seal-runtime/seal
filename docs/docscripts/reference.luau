@@ -217,7 +217,7 @@ for _, filepath in typedefs_paths do
 
             local is = "Property"
             local defs = rest
-            if str.startswith(rest, "(") or str.startswith(rest, "<T") then
+            if (str.startswith(rest, "(") and (string.match(rest, " %-> ") or string.match(rest, "%):"))) or str.startswith(rest, "<T") then
                 defs = `function {name}{rest}`
                 is = "Function"
             else
@@ -340,12 +340,12 @@ for _, library in libraries do
         local defs = api.defs
 
         local first_name_segment = api.name:match("^([^%.]+)")
-        local is_nested_in_type = (api.is == "Property" or api.is == "Function")
-            and (main_type_name == nil or first_name_segment ~= main_type_name)
-        local type_depth = 0
-        if is_nested_in_type then
-            for _ in api.name:gmatch("%.") do type_depth += 1 end
-        end
+        local dot_count = 0
+        for _ in api.name:gmatch("%.") do dot_count += 1 end
+        local type_depth = if main_type_name ~= nil and first_name_segment == main_type_name
+            then math.max(0, dot_count - 1)
+            else dot_count
+        local is_nested_in_type = (api.is == "Property" or api.is == "Function") and type_depth > 0
         local indent = if api.is == "Enum" then "  "
             elseif api.is == "Function" then ""
             else string.rep("  ", type_depth)

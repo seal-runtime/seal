@@ -95,7 +95,7 @@ common_formats: {
 <h4>
 
 ```luau
-ISO_8601: "%Y-%m-%d %H:%M",
+  ISO_8601: "%Y-%m-%d %H:%M",
 ```
 
 </h4>
@@ -107,7 +107,7 @@ ISO_8601: "%Y-%m-%d %H:%M",
 <h4>
 
 ```luau
-RFC_2822: "%a, %d %b %Y %H:%M:%S %z",
+  RFC_2822: "%a, %d %b %Y %H:%M:%S %z",
 ```
 
 </h4>
@@ -119,7 +119,7 @@ RFC_2822: "%a, %d %b %Y %H:%M:%S %z",
 <h4>
 
 ```luau
-RFC_3339: "%Y-%m-%dT%H:%M:%S%:z",
+  RFC_3339: "%Y-%m-%dT%H:%M:%S%:z",
 ```
 
 </h4>
@@ -131,7 +131,7 @@ RFC_3339: "%Y-%m-%dT%H:%M:%S%:z",
 <h4>
 
 ```luau
-SHORT_DATE: "%Y-%m-%d",
+  SHORT_DATE: "%Y-%m-%d",
 ```
 
 </h4>
@@ -143,7 +143,7 @@ SHORT_DATE: "%Y-%m-%d",
 <h4>
 
 ```luau
-SHORT_TIME: "%H:%M",
+  SHORT_TIME: "%H:%M",
 ```
 
 </h4>
@@ -155,7 +155,7 @@ SHORT_TIME: "%H:%M",
 <h4>
 
 ```luau
-FULL_DATE_TIME: "%A, %B %d, %Y %H:%M:%S",
+  FULL_DATE_TIME: "%A, %B %d, %Y %H:%M:%S",
 ```
 
 </h4>
@@ -167,7 +167,7 @@ FULL_DATE_TIME: "%A, %B %d, %Y %H:%M:%S",
 <h4>
 
 ```luau
-LOGGING_24_HR: "%a %b %e %H:%M:%S %Z %Y",
+  LOGGING_24_HR: "%a %b %e %H:%M:%S %Z %Y",
 ```
 
 </h4>
@@ -179,7 +179,7 @@ LOGGING_24_HR: "%a %b %e %H:%M:%S %Z %Y",
 <h4>
 
 ```luau
-LOGGING_12_HR: "%a %b %e %I:%M:%S %p %Z %Y",
+  LOGGING_12_HR: "%a %b %e %I:%M:%S %p %Z %Y",
 ```
 
 </h4>
@@ -191,7 +191,7 @@ LOGGING_12_HR: "%a %b %e %I:%M:%S %p %Z %Y",
 <h4>
 
 ```luau
-AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
+  AMERICAN_FULL_DATE_TIME: "%A, %B %d, %Y %I:%M:%S %p",
 ```
 
 </h4>

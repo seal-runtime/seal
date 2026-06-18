@@ -237,7 +237,7 @@ export type EvalOptions = {
 <h4>
 
 ```luau
-function EvalOptions.stdlib("Seal" | "Safe" | "None")?,
+  stdlib: ("Seal" | "Safe" | "None")?,
 ```
 
 </h4>

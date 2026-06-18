@@ -469,7 +469,7 @@ Options for `process.run`; implicitly added to `process.shell` as well.
 <h4>
 
 ```luau
-function RunOptions.shell(true | string)?,
+  shell: (true | string)?,
 ```
 
 </h4>
@@ -695,7 +695,7 @@ export type SpawnOptions = {
 <h4>
 
 ```luau
-function SpawnOptions.shell(true | string)?,
+  shell: (true | string)?,
 ```
 
 </h4>
@@ -807,7 +807,7 @@ By default, seal truncates bytes from the front of inner, causing old data to be
 <h4>
 
 ```luau
-function SpawnOptions.stream.stdout_truncate("Front" | "Back")?,
+    stdout_truncate: ("Front" | "Back")?,
 ```
 
 </h4>
@@ -821,7 +821,7 @@ function SpawnOptions.stream.stdout_truncate("Front" | "Back")?,
 <h4>
 
 ```luau
-function SpawnOptions.stream.stderr_truncate("Front" | "Back")?,
+    stderr_truncate: ("Front" | "Back")?,
 ```
 
 </h4>

@@ -261,7 +261,7 @@ function str.unescape(s: string): string
 <h4>
 
 ```luau
-function str.slice(s: string, first: number, final: number)
+  slice: (s: string, first: number, final: number)
 ```
 
 </h4>
