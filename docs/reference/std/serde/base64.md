@@ -33,6 +33,18 @@ function base64.decode(data: string) -> buffer,
 
 ---
 
+### base64.urlsafe
+
+<h4>
+
+```luau
+urlsafe: {
+```
+
+</h4>
+
+---
+
 ### base64.urlsafe.encode
 
 <h4>
@@ -54,6 +66,12 @@ function base64.urlsafe.decode(data: string) -> buffer
 ```
 
 </h4>
+
+---
+
+```luau
+  } -- closes urlsafe
+```
 
 ---
 

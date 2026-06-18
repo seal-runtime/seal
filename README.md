@@ -1,18 +1,49 @@
-# *seal*, the cutest scripting runtime
+# *seal*, make shell scripts readable
 
-Use *seal* to write fun, maintainable, and easily-deployable programs in [Luau](https://luau.org), a simple, dependable, and fast scripting language with typechecking and tooling support.
+<!-- markdownlint-disable MD033 -->
 
-Docs: [Usage](/docs/usage.md) | [Programming](/docs/libraries_and_programming.md) | [API Reference](/docs/reference/)
+<div align="center">
+    <img src="assets/seal-smaller.png" width="240" alt="seal mascot reading reference book" /><br />
+    <em>the cutest scripting runtime</em><br />
+    <!-- Start-Precommit-Marker-2 --><img src="https://img.shields.io/badge/seal-0.0.8--rc.2-f0f8ff" alt="seal version" /><!-- End-Precommit-Marker-2 --> <!-- Start-Precommit-Marker-3 --><img src="https://img.shields.io/badge/Luau-0.715-4f99ba" alt="Luau version" /><!-- End-Precommit-Marker-3 --><br /><br />
+    <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
+</div>
+<br>
+<!-- markdownlint-enable MD033 -->
 
-## Goals
+<!-- *seal* is an all-in-one scripting tool that lets you write cross-platform scripts and applications in Luau with a greater utility than shell scripts and with less of a hassle than Python. -->
 
-- Be a great cross-platform alternative to shell scripts, wrappers, and quick-and-dirty solutions in the terminal. And when your project grows into a real program, *seal* will grow with it too; it's fast enough.
-- Provide a simple, useful, and expressive API that allows you to get right into your project and start writing code. You can prototype faster thanks to inline documentation, modern tooling, and type safety.
-- Put you back in control. When you run into trouble, *seal* should tell you *exactly* what went wrong with a custom, handcrafted warning or error message.
+***seal*** is a cross-platform scripting tool that emphasizes correctness, performance, and fun.
+
+It can surreptitiously replace your shell and single-use Python scripts with Luau scripts, making them more readable to everyone. Or you can use it to write a full application.
+
+<!-- **Usecases:**
+
+- cross-platform scripting tool with autocomplete
+- faster Python replacement
+- automation & task runner
+- data viewing, manipulation, serialization
+- write cute TUIs
+- quickly deploy to major platforms
+- data is pretty—just print it (colors included) -->
+
+**Some features:**
+
+- Faster than Python for general purpose scripting.
+- *seal* projects are more scalable than shell scripts.
+- Built in terminal manipulation for TUIs.
+- Powerful multithreading.
+- <!-- Start-Precommit-Marker-1 -->1089<!-- End-Precommit-Marker-1 --> handcrafted error messages.
 
 ## Install
 
-See the [install instructions](docs/install.md) for a detailed walkthrough of getting *seal* on your system. Basically you just need a text editor (VSCode, Zed, or nvim), [Luau Language Server](https://github.com/JohnnyMorganz/luau-lsp) installed in your text editor, and the [latest release](<https://github.com/deviaze/seal/releases/latest>) of *seal* in your `$PATH`.
+Grab the [latest release](https://github.com/deviaze/seal/releases/latest) or check out [these install instructions](docs/install.md) for a detailed walkthrough.
+
+To get started, you just need:
+
+1. A text editor (VSCode, Zed, and nvim are supported by Luau Language Server).
+2. [Luau Language Server](https://github.com/JohnnyMorganz/luau-lsp) installed in your editor.
+3. The *seal* executable in your `$PATH`
 
 ## Usage
 
@@ -20,23 +51,37 @@ To start a new project with *seal*, make a new directory, run `seal setup projec
 
 - `seal ./filename.luau` runs a Luau file with *seal*.
 - `seal run` runs the project at your current working directory.
-- `seal compile` bundles and compiles the project at your current working directory into a standalone executable.
+- `seal compile` bundles and compiles the project at your current working directory into a standalone executable for your platform.
 
 Check out the full [usage instructions](docs/usage.md) for more.
 
-## Programming and Standard Library
+## Programming
 
-If you're new to Luau, check out *seal*'s [Luau Book](/docs/luau-book/index.md). For a few examples of using *seal* libraries, check out [the programming intro](/docs/libraries_and_programming.md).
+Check out [the programming intro](docs/libraries_and_programming.md) to get started
+or the [standard library reference](/docs/reference/) for all current features and APIs.
+In supported editors, you can take advantage of modern tooling such as strict typechecking and autocomplete, inline documentation, automatic imports, etc.
 
-See the [standard library reference](/docs/reference/) for all current features and APIs.
+Some quick examples:
+
+- [HTTP - calling an API with API key](examples/basic_get.luau)
+- [FS - file watching (upload files added to folder)](examples/upload_files_in_folder.luau)
+- [FS - remove files older than a week](examples/older_than_a_week.luau)
+- [TUI - two column option picker](examples/double_column_picker.luau)
 
 ## Roadmap
 
-- Integrated webview for cross-platform GUI applications.
 - More featureful `@extra` library.
-- Custom project templates and improved `seal setup` workflow.
+- Custom and customizable `seal setup` scripts.
 - Ecosystem of [external libraries](/docs/external_libraries.md) to expand *seal*'s functionality with native bindings.
+- Cross-platform GUI and input automation libraries.
+- Dedicated tooling integrations such as extensions and an MCP server.
 
 ## Community
 
-[Join the Discord](https://discord.gg/3MJ37CFNWh) if you need help or want to contribute!
+[Join the Discord](https://discord.gg/3MJ37CFNWh) if you want to talk about *seal*, need help, or want to contribute!
+
+## Reliability
+
+*seal* wants to empower you to write correct code that doesn't explode at runtime. In most cases, runtime errors will be expressly documented, and/or returned as an `error` type to facilitate nonthrowing error handling with the typechecker.
+
+If you encounter a bug, panic, or security vulnerability, please make an issue in this repo right away; you may attach a repro or send one privately to [dev@deviaze.com](mailto:dev@deviaze.com) or `@deviaze` on Discord.

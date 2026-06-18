@@ -12,7 +12,7 @@
 <h4>
 
 ```luau
-function aes.generatekey() -> string,
+generatekey: () -> string,
 ```
 
 </h4>

@@ -7,11 +7,10 @@
 1. Download the [latest release](<https://github.com/deviaze/seal/releases/latest>) of *seal* for your system, or if you want the most up-to-date beta, download the newest [build artifact from GitHub Actions](https://github.com/deviaze/seal/actions).
 2. Once you've downloaded *seal*, you need to copy/move it somewhere in your `$PATH` to make it accessible in your terminal. If you don't know how to do this, don't worry, [read the tutorial on installing *seal* with *seal*](/docs/seal_install_script.md).
 3. Close and reopen your Windows Terminal and make sure running `seal --help` displays *seal*'s help message. This should ensure *seal* is available in your `$PATH`.
-4. Webview dependencies (for GUI programs, when implemented) should already be installed via Microsoft Edge.
 
 ## macOS
 
-1. Download either the [latest release](<https://github.com/deviaze/seal/releases/latest>) of *seal*, a recent [build artifact](https://github.com/deviaze/seal/actions), or if you have Rust installed, compile *seal* locally by cloning this repository and running `cargo build --release`.
+1. Download either the [latest release](<https://github.com/deviaze/seal/releases/latest>) of *seal*, a recent [build artifact](https://github.com/deviaze/seal/actions), or if you have Rust installed, compile *seal* locally by cloning this repository and running `cargo build --release`. This should install Rust nightly if you don't already have it.
 2. Move *seal* to a location like `/usr/local/bin/seal` or `~/bin/seal`.
 3. Because *seal* is not signed/notarized, macOS will block it from running by default. To allow it, first run `./seal --help` to cause macOS to show a warning, and then go to Mac **System Settings → Privacy & Security** and check the bottom for a message like "seal was blocked from use because it is not from an identified developer." Click **Allow Anyway**.
 4. Go back to your terminal and try `./seal --help` again. This may cause another warning to pop up with another confirmation dialog. Click **Open**.
@@ -22,7 +21,7 @@
 
 ## Linux
 
-1. Download either the [latest release](<https://github.com/deviaze/seal/releases/latest>) of *seal*, a recent [build artifact](<https://github.com/deviaze/seal/actions>), or compile *seal* locally by cloning this repository and running `cargo b --release`.
+1. Download either the [latest release](<https://github.com/deviaze/seal/releases/latest>) of *seal*, a recent [build artifact](<https://github.com/deviaze/seal/actions>), or compile *seal* locally by cloning this repository and running `cargo b --release`. This should install Rust nightly if you don't already have it.
 2. Move *seal* to `~/.local/bin/seal` (or wherever else you're comfortable) and make sure it's added to your `$PATH` with `export PATH="$HOME/.local/bin:$PATH` or similar.
 3. Confirm *seal* works by running `seal --help`.
 

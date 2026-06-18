@@ -5,6 +5,20 @@
 
 `local str = require("@std/str")`
 
+### str.startswith
+
+<h4>
+
+```luau
+function str.startswith(s: string, prefix: string): boolean
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
 Features ergonomic methods like `str.startwith`, `str.trimfront/trimback`, etc.
 
 This library features utf-8-aware string handling, including easy access to splitting utf-8 strings,
@@ -13,6 +27,8 @@ iterating over the graphemes of a string, etc.
 Unlike many seal standard libraries, inputs to `str` library functions don't necessarily have
 to be valid utf-8 encoded strings.
  check if a string starts with `prefix`
+
+</details>
 
 ---
 
@@ -245,7 +261,7 @@ function str.unescape(s: string): string
 <h4>
 
 ```luau
-function str.slice(s: string, first: number, final: number)
+  slice: (s: string, first: number, final: number)
 ```
 
 </h4>

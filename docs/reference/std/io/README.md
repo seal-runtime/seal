@@ -19,61 +19,31 @@ libraries as you need them instead.
 
 ### io.input
 
-<h4>
-
-```luau
-input: typeof(require("@self/input")),
-```
-
-</h4>
+See [@std/io/input](/docs/reference/std/io/input.md)
 
 ---
 
 ### io.output
 
-<h4>
-
-```luau
-output: typeof(require("@self/output")),
-```
-
-</h4>
+See [@std/io/output](/docs/reference/std/io/output.md)
 
 ---
 
 ### io.colors
 
-<h4>
-
-```luau
-colors: typeof(require("@self/colors")),
-```
-
-</h4>
+See [@std/io/colors](/docs/reference/std/io/colors.md)
 
 ---
 
 ### io.format
 
-<h4>
-
-```luau
-format: typeof(require("@self/format")),
-```
-
-</h4>
+See [@std/io/format](/docs/reference/std/io/format.md)
 
 ---
 
 ### io.prompt
 
-<h4>
-
-```luau
-prompt: typeof(require("@self/prompt")),
-```
-
-</h4>
+See [@std/io/prompt](/docs/reference/std/io/prompt.md)
 
 ---
 

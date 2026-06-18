@@ -2,11 +2,11 @@ i_like: 3
 am: 2
 why: 1
 this:
-- 1
-- 2
-- 3
-- 4
-- hi
+  - 1
+  - 2
+  - 3
+  - 4
+  - hi
 are:
   you:
     too: 1

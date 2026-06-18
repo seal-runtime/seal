@@ -9,25 +9,13 @@
 
 ## `export type` DirectoryEntry
 
-<h4>
-
-```luau
-export type DirectoryEntry = common_types.DirectoryEntry
-```
-
-</h4>
+See [DirectoryEntry in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-directoryentry)
 
 ---
 
 ## `export type` DirectoryBuilder
 
-<h4>
-
-```luau
-export type DirectoryBuilder = common_types.DirectoryBuilder
-```
-
-</h4>
+See [DirectoryBuilder in @std/fs/_types](/docs/reference/std/fs/_types.md#export-type-directorybuilder)
 
 ---
 

@@ -3,7 +3,17 @@
 
 # fs._types
 
-`local _types = require("@std/fs/_types")`
+*This file contains common types and is not an importable library. See [this library's top level docs](/docs/reference/std/fs/README.md) for usage information.*
+
+## `export type` TreeBuilder
+
+<h4>
+
+```luau
+export type TreeBuilder = {
+```
+
+</h4>
 
 ---
 
@@ -12,7 +22,7 @@
 <h4>
 
 ```luau
-inner: DirectoryTree,
+  inner: DirectoryTree,
 ```
 
 </h4>
@@ -58,6 +68,12 @@ local dir = fs.tree()
 
 ---
 
+```luau
+} -- closes TreeBuilder
+```
+
+---
+
 ## `export type` FileEntry
 
 <h4>
@@ -75,7 +91,7 @@ export type FileEntry = {
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
@@ -89,7 +105,7 @@ name: string,
 <h4>
 
 ```luau
-path: string,
+  path: string,
 ```
 
 </h4>
@@ -103,7 +119,7 @@ path: string,
 <h4>
 
 ```luau
-type: "File",
+  type: "File",
 ```
 
 </h4>
@@ -328,6 +344,12 @@ function FileEntry.remove(self: FileEntry) -> (),
 
 ---
 
+```luau
+} -- closes FileEntry
+```
+
+---
+
 ## `export type` DirectoryEntry
 
 <h4>
@@ -345,7 +367,7 @@ export type DirectoryEntry = {
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
@@ -359,7 +381,7 @@ name: string,
 <h4>
 
 ```luau
-path: string,
+  path: string,
 ```
 
 </h4>
@@ -374,7 +396,7 @@ path: string,
 <h4>
 
 ```luau
-type: "Directory",
+  type: "Directory",
 ```
 
 </h4>
@@ -594,6 +616,12 @@ function DirectoryEntry.remove(self: DirectoryEntry) -> (),
 
 ---
 
+```luau
+} -- closes DirectoryEntry
+```
+
+---
+
 ## `export type` Entry
 
 <h4>
@@ -623,7 +651,7 @@ export type FsMetadata = {
 <h4>
 
 ```luau
-created_at: DateTime?,
+  created_at: DateTime?,
 ```
 
 </h4>
@@ -638,7 +666,7 @@ created_at: DateTime?,
 <h4>
 
 ```luau
-modified_at: DateTime?,
+  modified_at: DateTime?,
 ```
 
 </h4>
@@ -653,7 +681,7 @@ modified_at: DateTime?,
 <h4>
 
 ```luau
-accessed_at: DateTime?,
+  accessed_at: DateTime?,
 ```
 
 </h4>
@@ -663,12 +691,24 @@ accessed_at: DateTime?,
 
 ---
 
-### FsMetadata.permissions.readonly
+### FsMetadata.permissions
 
 <h4>
 
 ```luau
-readonly: boolean,
+  permissions: {
+```
+
+</h4>
+
+---
+
+#### FsMetadata.permissions.readonly
+
+<h4>
+
+```luau
+    readonly: boolean,
 ```
 
 </h4>
@@ -677,18 +717,30 @@ readonly: boolean,
 
 ---
 
-### FsMetadata.permissions.unix_mode
+#### FsMetadata.permissions.unix_mode
 
 <h4>
 
 ```luau
-unix_mode: number?,
+    unix_mode: number?,
 ```
 
 </h4>
 
  Represents the numeric Unix permission bits for the `Entry`, combining read, write, and execute permissions
  for owner, group, and others. This field is optional because it's not available on Windows.
+
+---
+
+```luau
+  } -- closes permissions
+```
+
+---
+
+```luau
+} -- closes FsMetadata
+```
 
 ---
 
@@ -709,7 +761,7 @@ export type FindResult = { -- can't make this type more accurate w/ unions bc it
 <h4>
 
 ```luau
-ok: boolean,
+  ok: boolean,
 ```
 
 </h4>
@@ -723,7 +775,7 @@ ok: boolean,
 <h4>
 
 ```luau
-path: string,
+  path: string,
 ```
 
 </h4>
@@ -735,7 +787,7 @@ path: string,
 <h4>
 
 ```luau
-type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
+  type: "File" | "Directory" | "Symlink" | "NotFound" | "PermissionDenied",
 ```
 
 </h4>
@@ -842,6 +894,12 @@ function FindResult.unwrap_dir(self: FindResult) -> DirectoryEntry,
 
 ---
 
+```luau
+} -- closes FindResult
+```
+
+---
+
 ## `export type` FileBuilder
 
 <h4>
@@ -859,7 +917,7 @@ export type FileBuilder = {
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
@@ -871,7 +929,7 @@ name: string,
 <h4>
 
 ```luau
-type: "File",
+  type: "File",
 ```
 
 </h4>
@@ -883,10 +941,16 @@ type: "File",
 <h4>
 
 ```luau
-content: string,
+  content: string,
 ```
 
 </h4>
+
+---
+
+```luau
+} -- closes FileBuilder
+```
 
 ---
 
@@ -907,7 +971,7 @@ export type DirectoryBuilder = {
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
@@ -919,7 +983,7 @@ name: string,
 <h4>
 
 ```luau
-type: "Directory",
+  type: "Directory",
 ```
 
 </h4>
@@ -931,10 +995,16 @@ type: "Directory",
 <h4>
 
 ```luau
-children: DirectoryTree,
+  children: DirectoryTree,
 ```
 
 </h4>
+
+---
+
+```luau
+} -- closes DirectoryBuilder
+```
 
 ---
 
@@ -943,7 +1013,7 @@ children: DirectoryTree,
 <h4>
 
 ```luau
-export type DirectoryTree = {
+export type DirectoryTree = { FileBuilder | DirectoryBuilder }
 ```
 
 </h4>

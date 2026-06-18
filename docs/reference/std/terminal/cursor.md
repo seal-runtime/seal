@@ -392,43 +392,43 @@ export type CursorStyle =
 ---
 
 ```luau
-| "Default"
+  | "Default"
 ```
 
 ---
 
 ```luau
-| "BlinkingBlock"
+  | "BlinkingBlock"
 ```
 
 ---
 
 ```luau
-| "SteadyBlock"
+  | "SteadyBlock"
 ```
 
 ---
 
 ```luau
-| "BlinkingUnderScore"
+  | "BlinkingUnderScore"
 ```
 
 ---
 
 ```luau
-| "SteadyUnderScore"
+  | "SteadyUnderScore"
 ```
 
 ---
 
 ```luau
-| "BlinkingBar"
+  | "BlinkingBar"
 ```
 
 ---
 
 ```luau
-| "SteadyBar"
+  | "SteadyBar"
 ```
 
 ---

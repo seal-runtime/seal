@@ -209,7 +209,7 @@ export type ThreadHandle = {
 <h4>
 
 ```luau
-name: string,
+  name: string,
 ```
 
 </h4>
@@ -394,6 +394,12 @@ Errors if the channel has somehow become disconnected.
 
 ---
 
+```luau
+} -- closes ThreadHandle
+```
+
+---
+
 ## `export type` ThreadSpawnOptions
 
 <h4>
@@ -411,7 +417,7 @@ export type ThreadSpawnOptions = {
 <h4>
 
 ```luau
-name: string?,
+  name: string?,
 ```
 
 </h4>
@@ -425,7 +431,7 @@ name: string?,
 <h4>
 
 ```luau
-path: string?,
+  path: string?,
 ```
 
 </h4>
@@ -439,7 +445,7 @@ path: string?,
 <h4>
 
 ```luau
-src: string?,
+  src: string?,
 ```
 
 </h4>
@@ -453,7 +459,7 @@ src: string?,
 <h4>
 
 ```luau
-data: JsonSerializableTable?,
+  data: JsonSerializableTable?,
 ```
 
 </h4>
@@ -462,32 +468,57 @@ data: JsonSerializableTable?,
 
 ---
 
-### ThreadSpawnOptions.capacity.regular
+### ThreadSpawnOptions.capacity
 
 <h4>
 
 ```luau
-regular: number?,
+  capacity: {
 ```
 
 </h4>
 
  Override the queue capacity of your thread's regular and bytes channels.
- default is 12
 
 ---
 
-### ThreadSpawnOptions.capacity.bytes
+#### ThreadSpawnOptions.capacity.regular
 
 <h4>
 
 ```luau
-bytes: number?,
+    regular: number?,
+```
+
+</h4>
+
+ default is 12
+
+---
+
+#### ThreadSpawnOptions.capacity.bytes
+
+<h4>
+
+```luau
+    bytes: number?,
 ```
 
 </h4>
 
  default is 24
+
+---
+
+```luau
+  }? -- closes capacity
+```
+
+---
+
+```luau
+} -- closes ThreadSpawnOptions
+```
 
 ---
 
