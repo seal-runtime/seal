@@ -293,9 +293,7 @@ export type LuaurcAliases = {
 <h4>
 
 ```luau
-  aliases: {
-    [string]: string
-  }
+  aliases: { [string]: string }
 ```
 
 </h4>

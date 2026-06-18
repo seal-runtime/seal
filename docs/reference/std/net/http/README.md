@@ -453,9 +453,7 @@ export type HttpRequestWithoutBody = {
 <h4>
 
 ```luau
-  params: {
-    [string]: string,
-  }?,
+  params: { [string]: string }?,
 ```
 
 </h4>
@@ -471,9 +469,7 @@ Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 <h4>
 
 ```luau
-  headers: {
-    [string]: string,
-  }?,
+  headers: { [string]: string }?,
 ```
 
 </h4>
@@ -580,9 +576,7 @@ Note that strings have to be valid utf-8; if you need to pass invalid utf-8 here
 <h4>
 
 ```luau
-  params: {
-    [string]: string,
-  }?,
+  params: { [string]: string }?,
 ```
 
 </h4>
@@ -598,9 +592,7 @@ Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 <h4>
 
 ```luau
-  headers: {
-    [string]: string,
-  }?,
+  headers: { [string]: string }?,
 ```
 
 </h4>
@@ -922,9 +914,7 @@ export type HttpResponse = {
 <h4>
 
 ```luau
-  headers: {
-    [string]: string,
-  },
+  headers: { [string]: string },
 ```
 
 </h4>

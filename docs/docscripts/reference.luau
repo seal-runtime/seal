@@ -186,8 +186,8 @@ for _, filepath in typedefs_paths do
             local opener_idx = current_opener_indices[n]
             local is_map_only = current_is_map_only[n]
             if opener_idx > 0 and is_map_only then
-                -- fold closing into the opener's defs (no relative indent — same level as opener)
-                apis_for_path[opener_idx].defs ..= "\n" .. found_close
+                -- fold closing inline: append " }?," etc.
+                apis_for_path[opener_idx].defs ..= " " .. found_close
             else
                 api_closings[full_name] = found_close
             end
@@ -260,8 +260,11 @@ for _, filepath in typedefs_paths do
             if key_type and value_type then
                 local opener_idx = current_opener_indices[#current_opener_indices]
                 if opener_idx > 0 then
-                    -- fold into the opener's defs with one level of relative indent
-                    apis_for_path[opener_idx].defs ..= "\n  [" .. key_type .. "]: " .. value_type
+                    -- fold inline: "name: { [K]: V }?,"
+                    local current_defs = apis_for_path[opener_idx].defs
+                    local sep = if current_defs:sub(-1) == "{" then " " else ", "
+                    local clean_value = value_type:gsub(",$", "")
+                    apis_for_path[opener_idx].defs = current_defs .. sep .. "[" .. key_type .. "]: " .. clean_value
                 else
                     -- fallback: create a child API (e.g. map at Type level)
                     local front_name = table.concat(current_names, ".")

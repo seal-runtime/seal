@@ -627,9 +627,7 @@ added).
 <h4>
 
 ```luau
-      add: {
-        [string]: string
-      }?,
+      add: { [string]: string }?,
 ```
 
 </h4>
@@ -960,9 +958,7 @@ added).
 <h4>
 
 ```luau
-      add: {
-        [string]: string
-      }?,
+      add: { [string]: string }?,
 ```
 
 </h4>

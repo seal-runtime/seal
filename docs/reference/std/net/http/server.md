@@ -334,9 +334,7 @@ export type ServeRequest = {
 <h4>
 
 ```luau
-  headers: {
-    [string]: string,
-  },
+  headers: { [string]: string },
 ```
 
 </h4>
@@ -424,9 +422,7 @@ export type ServeResponse = {
 <h4>
 
 ```luau
-  headers: {
-    [string]: string,
-  }?,
+  headers: { [string]: string }?,
 ```
 
 </h4>
@@ -438,9 +434,7 @@ export type ServeResponse = {
 <h4>
 
 ```luau
-  cookies: {
-    [string]: string,
-  }?,
+  cookies: { [string]: string }?,
 ```
 
 </h4>
