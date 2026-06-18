@@ -13,7 +13,9 @@
 
 <!-- *seal* is an all-in-one scripting tool that lets you write cross-platform scripts and applications in Luau with a greater utility than shell scripts and with less of a hassle than Python. -->
 
-***seal*** is a batteries-included cross-platform scripting tool that emphasizes readability, performance, and reliability.
+***seal*** is a cross-platform scripting tool that emphasizes correctness, performance, and fun.
+
+It can surreptitiously replace your shell and single-use Python scripts with Luau scripts, making them more readable to everyone. Or you can use it to write a full application.
 
 <!-- **Usecases:**
 
@@ -71,7 +73,8 @@ Some quick examples:
 - More featureful `@extra` library.
 - Custom and customizable `seal setup` scripts.
 - Ecosystem of [external libraries](/docs/external_libraries.md) to expand *seal*'s functionality with native bindings.
-- MCP server to facilitate agentic scripting readable and vettable by humans.
+- Cross-platform GUI and input automation libraries.
+- Dedicated tooling integrations such as extensions and an MCP server.
 
 ## Community
 
