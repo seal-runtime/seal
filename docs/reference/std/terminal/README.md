@@ -10,6 +10,8 @@ if you're looking to run terminal commands, you probably want the `@std/process`
 
 ---
 
+### terminal.size
+
 <h4>
 
 ```luau
@@ -18,11 +20,11 @@ function terminal.size() -> vector,
 
 </h4>
 
-### terminal.size
-
  Returns the terminal screen buffer size as a vector of <columns, rows, 0>
 
 ---
+
+### terminal.tty
 
 <h4>
 
@@ -31,8 +33,6 @@ function terminal.tty(stream: "Stdout" | "Stderr" | "Stdin"?) -> boolean,
 ```
 
 </h4>
-
-### terminal.tty
 
 <details>
 
@@ -51,6 +51,8 @@ If *seal* is being run in a child process, this will almost always return `false
 
 ---
 
+### terminal.write
+
 <h4>
 
 ```luau
@@ -58,8 +60,6 @@ function terminal.write(content: string) -> TerminalAction,
 ```
 
 </h4>
-
-### terminal.write
 
 <details>
 
@@ -79,6 +79,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### terminal.title
+
 <h4>
 
 ```luau
@@ -87,14 +89,14 @@ function terminal.title(title: string) -> TerminalAction,
 
 </h4>
 
-### terminal.title
-
 Creates a <kbd>SetTitle</kbd> `TerminalAction` that sets the terminal window title.
 
 `TerminalActions` do nothing until invoked; pass the action to `terminal.execute`
 to queue and execute multiple commands, or call its `:execute()` method to directly invoke.
 
 ---
+
+### terminal.clear
 
 <h4>
 
@@ -103,8 +105,6 @@ function terminal.clear(mode: ClearMode?) -> TerminalAction,
 ```
 
 </h4>
-
-### terminal.clear
 
 <details>
 
@@ -127,6 +127,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### terminal.switch
+
 <h4>
 
 ```luau
@@ -134,8 +136,6 @@ function terminal.switch(screen: "Main" | "Alternate") -> TerminalAction,
 ```
 
 </h4>
-
-### terminal.switch
 
 <details>
 
@@ -172,6 +172,8 @@ terminal.execute(
 
 ---
 
+### terminal.linewrap
+
 <h4>
 
 ```luau
@@ -180,14 +182,14 @@ function terminal.linewrap(enabled: boolean) -> TerminalAction,
 
 </h4>
 
-### terminal.linewrap
-
 Creates a `TerminalAction` that when invoked, enables or disables terminal linewrapping.
 
 `TerminalActions` do nothing until invoked; pass the action to `terminal.execute`
 to queue and execute multiple commands, or call its `:execute()` method to directly invoke.
 
 ---
+
+### terminal.scroll
 
 <h4>
 
@@ -196,8 +198,6 @@ function terminal.scroll(lines: number) -> TerminalAction,
 ```
 
 </h4>
-
-### terminal.scroll
 
 Creates a <kbd>Scroll</kbd> `TerminalAction` that when invoked, scrolls the terminal.
 
@@ -208,6 +208,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### terminal.rawmode
+
 <h4>
 
 ```luau
@@ -215,8 +217,6 @@ rawmode: {
 ```
 
 </h4>
-
-### terminal.rawmode
 
 <details>
 
@@ -241,6 +241,8 @@ automatically printed to the terminal.
 
 ---
 
+### terminal.rawmode.enabled
+
 <h4>
 
 ```luau
@@ -249,11 +251,11 @@ function terminal.rawmode.enabled() -> boolean,
 
 </h4>
 
-### terminal.rawmode.enabled
-
  Determine if the terminal is currently in rawmode.
 
 ---
+
+### terminal.rawmode.enable
 
 <h4>
 
@@ -262,8 +264,6 @@ function terminal.rawmode.enable() -> (),
 ```
 
 </h4>
-
-### terminal.rawmode.enable
 
 <details>
 
@@ -286,6 +286,8 @@ and `output.write` to write to the parent process' stdout (at least on Linux).
 
 ---
 
+### terminal.rawmode.disable
+
 <h4>
 
 ```luau
@@ -293,8 +295,6 @@ function terminal.rawmode.disable() -> (),
 ```
 
 </h4>
-
-### terminal.rawmode.disable
 
 Switches back to **cooked** mode.
 
@@ -304,6 +304,8 @@ Switches back to **cooked** mode.
 
 ---
 
+### terminal.interrupt
+
 <h4>
 
 ```luau
@@ -312,9 +314,9 @@ interrupt: {
 
 </h4>
 
-### terminal.interrupt
-
 ---
+
+### terminal.interrupt.sigint
 
 <h4>
 
@@ -324,11 +326,11 @@ function terminal.interrupt.sigint() -> interrupt,
 
 </h4>
 
-### terminal.interrupt.sigint
-
  Returns an interrupt for Ctrl+C (SIGINT).
 
 ---
+
+### terminal.interrupt.eof
 
 <h4>
 
@@ -338,11 +340,11 @@ function terminal.interrupt.eof() -> interrupt,
 
 </h4>
 
-### terminal.interrupt.eof
-
  Returns an interrupt for Ctrl+D (EOF).
 
 ---
+
+### terminal.interrupt.check
 
 <h4>
 
@@ -351,8 +353,6 @@ function terminal.interrupt.check(event: TerminalEvent) -> interrupt?,
 ```
 
 </h4>
-
-### terminal.interrupt.check
 
 <details>
 
@@ -383,6 +383,8 @@ end
 
 ---
 
+### terminal.capture
+
 <h4>
 
 ```luau
@@ -391,9 +393,9 @@ capture: {
 
 </h4>
 
-### terminal.capture
-
 ---
+
+### terminal.capture.mouse
 
 <h4>
 
@@ -403,11 +405,11 @@ function terminal.capture.mouse(enabled: boolean) -> (),
 
 </h4>
 
-### terminal.capture.mouse
-
  Allows `MouseEvents` to be reported by `terminal.events()`.
 
 ---
+
+### terminal.capture.focus
 
 <h4>
 
@@ -417,11 +419,11 @@ function terminal.capture.focus(enabled: boolean) -> (),
 
 </h4>
 
-### terminal.capture.focus
-
  Allows `FocusGained` and `FocusLost` events to be reported by `terminal.events()`.
 
 ---
+
+### terminal.capture.paste
 
 <h4>
 
@@ -430,8 +432,6 @@ function terminal.capture.paste(enabled: boolean) -> (),
 ```
 
 </h4>
-
-### terminal.capture.paste
 
  Allows `Paste` events to be reported by `terminal.events()`.<br>
  Might not work correctly when multiple lines are copied.
@@ -442,6 +442,8 @@ function terminal.capture.paste(enabled: boolean) -> (),
 
 ---
 
+### terminal.events
+
 <h4>
 
 ```luau
@@ -449,8 +451,6 @@ function terminal.events(poll: Duration) -> (() -> TerminalEvent),
 ```
 
 </h4>
-
-### terminal.events
 
 <details>
 
@@ -584,6 +584,8 @@ end
 
 ---
 
+### terminal.reset
+
 <h4>
 
 ```luau
@@ -591,8 +593,6 @@ function terminal.reset() -> (),
 ```
 
 </h4>
-
-### terminal.reset
 
 <details>
 
@@ -612,6 +612,8 @@ This function is idempotent and safe to call multiple times.
 
 ---
 
+### terminal.execute
+
 <h4>
 
 ```luau
@@ -619,8 +621,6 @@ function terminal.execute(...TerminalAction) -> ()
 ```
 
 </h4>
-
-### terminal.execute
 
 <details>
 
@@ -798,6 +798,8 @@ export type KeyModifiers = {
 
 ---
 
+### KeyModifiers.ctrl
+
 <h4>
 
 ```luau
@@ -806,9 +808,9 @@ export type KeyModifiers = {
 
 </h4>
 
-#### KeyModifiers.ctrl
-
 ---
+
+### KeyModifiers.shift
 
 <h4>
 
@@ -818,9 +820,9 @@ export type KeyModifiers = {
 
 </h4>
 
-#### KeyModifiers.shift
-
 ---
+
+### KeyModifiers.alt
 
 <h4>
 
@@ -829,8 +831,6 @@ export type KeyModifiers = {
 ```
 
 </h4>
-
-#### KeyModifiers.alt
 
 ```luau
 }
@@ -850,6 +850,8 @@ export type ResizeEvent = {
 
 ---
 
+### ResizeEvent.type
+
 <h4>
 
 ```luau
@@ -858,9 +860,9 @@ export type ResizeEvent = {
 
 </h4>
 
-#### ResizeEvent.type
-
 ---
+
+### ResizeEvent.size
 
 <h4>
 
@@ -869,8 +871,6 @@ export type ResizeEvent = {
 ```
 
 </h4>
-
-#### ResizeEvent.size
 
  The new terminal size; a vector of `<columns, rows, 0>`; access via `size.x` (columns) and `size.y` (rows)
 
@@ -892,6 +892,8 @@ export type FocusGained = {
 
 ---
 
+### FocusGained.type
+
 <h4>
 
 ```luau
@@ -899,8 +901,6 @@ export type FocusGained = {
 ```
 
 </h4>
-
-#### FocusGained.type
 
 ```luau
 }
@@ -920,6 +920,8 @@ export type FocusLost = {
 
 ---
 
+### FocusLost.type
+
 <h4>
 
 ```luau
@@ -927,8 +929,6 @@ export type FocusLost = {
 ```
 
 </h4>
-
-#### FocusLost.type
 
 ```luau
 }
@@ -948,6 +948,8 @@ export type PasteEvent = {
 
 ---
 
+### PasteEvent.type
+
 <h4>
 
 ```luau
@@ -956,9 +958,9 @@ export type PasteEvent = {
 
 </h4>
 
-#### PasteEvent.type
-
 ---
+
+### PasteEvent.contents
 
 <h4>
 
@@ -967,8 +969,6 @@ export type PasteEvent = {
 ```
 
 </h4>
-
-#### PasteEvent.contents
 
 ```luau
 }
@@ -991,6 +991,8 @@ export type Empty = {
 
 ---
 
+### Empty.type
+
 <h4>
 
 ```luau
@@ -998,8 +1000,6 @@ export type Empty = {
 ```
 
 </h4>
-
-#### Empty.type
 
 ```luau
 }
@@ -1019,6 +1019,8 @@ export type KeyEvent = {
 
 ---
 
+### KeyEvent.type
+
 <h4>
 
 ```luau
@@ -1027,9 +1029,9 @@ export type KeyEvent = {
 
 </h4>
 
-#### KeyEvent.type
-
 ---
+
+### KeyEvent.key
 
 <h4>
 
@@ -1038,8 +1040,6 @@ export type KeyEvent = {
 ```
 
 </h4>
-
-#### KeyEvent.key
 
 <details>
 
@@ -1071,6 +1071,8 @@ The spacebar key is `"Space"`.
 
 ---
 
+### KeyEvent.kind
+
 <h4>
 
 ```luau
@@ -1079,9 +1081,9 @@ The spacebar key is `"Space"`.
 
 </h4>
 
-#### KeyEvent.kind
-
 ---
+
+### KeyEvent.modifiers
 
 <h4>
 
@@ -1090,8 +1092,6 @@ The spacebar key is `"Space"`.
 ```
 
 </h4>
-
-#### KeyEvent.modifiers
 
 ```luau
 }
@@ -1833,6 +1833,8 @@ export type MouseEvent = {
 
 ---
 
+### MouseEvent.type
+
 <h4>
 
 ```luau
@@ -1841,9 +1843,9 @@ export type MouseEvent = {
 
 </h4>
 
-#### MouseEvent.type
-
 ---
+
+### MouseEvent.kind
 
 <h4>
 
@@ -1853,9 +1855,9 @@ export type MouseEvent = {
 
 </h4>
 
-#### MouseEvent.kind
-
 ---
+
+### MouseEvent.position
 
 <h4>
 
@@ -1865,11 +1867,11 @@ export type MouseEvent = {
 
 </h4>
 
-#### MouseEvent.position
-
  The mouse position where the event occurred as vector of `<column, row, 0>`; access via `position.x` (column) and `position.y` (row)
 
 ---
+
+### MouseEvent.modifiers
 
 <h4>
 
@@ -1878,8 +1880,6 @@ export type MouseEvent = {
 ```
 
 </h4>
-
-#### MouseEvent.modifiers
 
 ```luau
 }

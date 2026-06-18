@@ -9,6 +9,8 @@ Write to the terminal's stdout/stderr.
 
 ---
 
+### output.write
+
 <h4>
 
 ```luau
@@ -16,8 +18,6 @@ function output.write(contents: string | buffer) -> error?,
 ```
 
 </h4>
-
-### output.write
 
 <details>
 
@@ -51,6 +51,8 @@ end
 
 ---
 
+### output.writeln
+
 <h4>
 
 ```luau
@@ -58,8 +60,6 @@ function output.writeln(contents: string | buffer) -> error?,
 ```
 
 </h4>
-
-### output.writeln
 
 <details>
 
@@ -83,6 +83,8 @@ Additionally, on Windows it may fail silently when used in a child process.
 
 ---
 
+### output.ewrite
+
 <h4>
 
 ```luau
@@ -90,8 +92,6 @@ function output.ewrite(contents: string | buffer) -> error?,
 ```
 
 </h4>
-
-### output.ewrite
 
 <details>
 
@@ -122,6 +122,8 @@ local err = output.ewrite("error message\n")
 
 ---
 
+### output.ewriteln
+
 <h4>
 
 ```luau
@@ -129,8 +131,6 @@ function output.ewriteln(contents: string | buffer) -> error?,
 ```
 
 </h4>
-
-### output.ewriteln
 
 <details>
 
@@ -154,6 +154,8 @@ Additionally, on Windows it may fail silently when used in a child process.
 
 ---
 
+### output.clear
+
 <h4>
 
 ```luau
@@ -161,8 +163,6 @@ function output.clear() -> (),
 ```
 
 </h4>
-
-### output.clear
 
  clears stdout akin to `cls` or `clear`.
 

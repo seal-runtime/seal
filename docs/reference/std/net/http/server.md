@@ -293,6 +293,8 @@ export type ServeRequest = {
 
 ---
 
+### ServeRequest.peer_address
+
 <h4>
 
 ```luau
@@ -301,9 +303,9 @@ export type ServeRequest = {
 
 </h4>
 
-#### ServeRequest.peer_address
-
 ---
+
+### ServeRequest.method
 
 <h4>
 
@@ -313,9 +315,9 @@ export type ServeRequest = {
 
 </h4>
 
-#### ServeRequest.method
-
 ---
+
+### ServeRequest.path
 
 <h4>
 
@@ -325,9 +327,9 @@ export type ServeRequest = {
 
 </h4>
 
-#### ServeRequest.path
-
 ---
+
+### ServeRequest.headers
 
 <h4>
 
@@ -337,9 +339,9 @@ export type ServeRequest = {
 
 </h4>
 
-#### ServeRequest.headers
-
 ---
+
+### ServeRequest.raw_text
 
 <h4>
 
@@ -349,9 +351,9 @@ export type ServeRequest = {
 
 </h4>
 
-#### ServeRequest.raw_text
-
 ---
+
+### ServeRequest.body
 
 <h4>
 
@@ -360,8 +362,6 @@ export type ServeRequest = {
 ```
 
 </h4>
-
-#### ServeRequest.body
 
 ```luau
 }
@@ -381,6 +381,8 @@ export type ServeResponse = {
 
 ---
 
+### ServeResponse.status_code
+
 <h4>
 
 ```luau
@@ -389,9 +391,9 @@ export type ServeResponse = {
 
 </h4>
 
-#### ServeResponse.status_code
-
 ---
+
+### ServeResponse.content_type
 
 <h4>
 
@@ -401,9 +403,9 @@ export type ServeResponse = {
 
 </h4>
 
-#### ServeResponse.content_type
-
 ---
+
+### ServeResponse.body
 
 <h4>
 
@@ -413,9 +415,9 @@ export type ServeResponse = {
 
 </h4>
 
-#### ServeResponse.body
-
 ---
+
+### ServeResponse.headers
 
 <h4>
 
@@ -425,9 +427,9 @@ export type ServeResponse = {
 
 </h4>
 
-#### ServeResponse.headers
-
 ---
+
+### ServeResponse.cookies
 
 <h4>
 
@@ -437,9 +439,9 @@ export type ServeResponse = {
 
 </h4>
 
-#### ServeResponse.cookies
-
 ---
+
+### ServeResponse.http_version
 
 <h4>
 
@@ -449,9 +451,9 @@ export type ServeResponse = {
 
 </h4>
 
-#### ServeResponse.http_version
-
 ---
+
+### ServeResponse.reason_phrase
 
 <h4>
 
@@ -461,9 +463,9 @@ export type ServeResponse = {
 
 </h4>
 
-#### ServeResponse.reason_phrase
-
 ---
+
+### ServeResponse.redirect_url
 
 <h4>
 
@@ -472,8 +474,6 @@ export type ServeResponse = {
 ```
 
 </h4>
-
-#### ServeResponse.redirect_url
 
 ```luau
 }
@@ -493,6 +493,8 @@ export type ServeConfig = {
 
 ---
 
+### ServeConfig.address
+
 <h4>
 
 ```luau
@@ -501,9 +503,9 @@ export type ServeConfig = {
 
 </h4>
 
-#### ServeConfig.address
-
 ---
+
+### ServeConfig.port
 
 <h4>
 
@@ -513,9 +515,9 @@ export type ServeConfig = {
 
 </h4>
 
-#### ServeConfig.port
-
 ---
+
+### ServeConfig.handler
 
 <h4>
 
@@ -524,8 +526,6 @@ function ServeConfig.handler(ServeRequest) -> ServeResponse,
 ```
 
 </h4>
-
-#### ServeConfig.handler
 
 ```luau
 }

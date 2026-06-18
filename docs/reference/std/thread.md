@@ -67,6 +67,8 @@ end
 
 ---
 
+### thread.spawn
+
 <h4>
 
 ```luau
@@ -74,8 +76,6 @@ function thread.spawn(spawn_options: ThreadSpawnOptions) -> ThreadHandle,
 ```
 
 </h4>
-
-### thread.spawn
 
 <details>
 
@@ -128,6 +128,8 @@ end
 
 ---
 
+### thread.parallelism
+
 <h4>
 
 ```luau
@@ -135,8 +137,6 @@ function thread.parallelism() -> number,
 ```
 
 </h4>
-
-### thread.parallelism
 
 <details>
 
@@ -166,6 +166,8 @@ Throws an error if Rust's `thread::available_parallelism` errors, including but 
 
 ---
 
+### thread.sleep
+
 <h4>
 
 ```luau
@@ -173,8 +175,6 @@ function thread.sleep(milliseconds: number) -> true,
 ```
 
 </h4>
-
-### thread.sleep
 
 Literally the same as `time.wait`, except in milliseconds.
 
@@ -208,6 +208,8 @@ export type ThreadHandle = {
 
 ---
 
+### ThreadHandle.name
+
 <h4>
 
 ```luau
@@ -216,11 +218,11 @@ export type ThreadHandle = {
 
 </h4>
 
-#### ThreadHandle.name
-
  the name of your thread (defaults to a petname if not provided)
 
 ---
+
+### ThreadHandle.join
 
 <h4>
 
@@ -230,13 +232,13 @@ function ThreadHandle.join(self: ThreadHandle) -> (),
 
 </h4>
 
-#### ThreadHandle.join
-
 Joins the child thread back to the main thread; don't forget to join your handles lest you want runaway threads!
 
 Errors if the thread has already been joined or somehow disappeared.
 
 ---
+
+### ThreadHandle.send
 
 <h4>
 
@@ -245,8 +247,6 @@ function ThreadHandle.send(self: ThreadHandle, data: JsonSerializableTable | str
 ```
 
 </h4>
-
-#### ThreadHandle.send
 
 <details>
 
@@ -264,6 +264,8 @@ Errors if the channel has somehow become disconnected or provided data isn't jso
 
 ---
 
+### ThreadHandle.try_send
+
 <h4>
 
 ```luau
@@ -271,8 +273,6 @@ function ThreadHandle.try_send(self: ThreadHandle, data: JsonSerializableTable |
 ```
 
 </h4>
-
-#### ThreadHandle.try_send
 
 <details>
 
@@ -291,6 +291,8 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
+### ThreadHandle.sendbytes
+
 <h4>
 
 ```luau
@@ -299,13 +301,13 @@ function ThreadHandle.sendbytes(self: ThreadHandle, data: buffer) -> (),
 
 </h4>
 
-#### ThreadHandle.sendbytes
-
 Sends a buffer on the bytes channel, blocking the current thread if the channel is full.
 
 Errors if the channel has somehow become disconnected.
 
 ---
+
+### ThreadHandle.try_sendbytes
 
 <h4>
 
@@ -314,8 +316,6 @@ function ThreadHandle.try_sendbytes(self: ThreadHandle, data: buffer) -> (boolea
 ```
 
 </h4>
-
-#### ThreadHandle.try_sendbytes
 
 <details>
 
@@ -334,6 +334,8 @@ This is usually caused by trying to send a message to a thread that's already be
 
 ---
 
+### ThreadHandle.read
+
 <h4>
 
 ```luau
@@ -342,13 +344,13 @@ function ThreadHandle.read(self: ThreadHandle) -> JsonSerializableTable? | strin
 
 </h4>
 
-#### ThreadHandle.read
-
 Read a message from the regular channel without blocking the current thread.
 
 Errors if the channel has somehow become disconnected.
 
 ---
+
+### ThreadHandle.read_await
 
 <h4>
 
@@ -358,13 +360,13 @@ function ThreadHandle.read_await(self: ThreadHandle) -> JsonSerializableTable | 
 
 </h4>
 
-#### ThreadHandle.read_await
-
 Read a message from the regular channel, blocking until the next message is available.
 
 Errors if the channel has somehow become disconnected.
 
 ---
+
+### ThreadHandle.readbytes
 
 <h4>
 
@@ -374,13 +376,13 @@ function ThreadHandle.readbytes(self: ThreadHandle) -> buffer?,
 
 </h4>
 
-#### ThreadHandle.readbytes
-
 Read a message from the bytes channel without blocking the current thread.
 
 Errors if the channel has somehow become disconnected.
 
 ---
+
+### ThreadHandle.readbytes_await
 
 <h4>
 
@@ -389,8 +391,6 @@ function ThreadHandle.readbytes_await(self: ThreadHandle) -> buffer,
 ```
 
 </h4>
-
-#### ThreadHandle.readbytes_await
 
 Read a message from the bytes channel, blocking until the next message is available.
 
@@ -414,6 +414,8 @@ export type ThreadSpawnOptions = {
 
 ---
 
+### ThreadSpawnOptions.name
+
 <h4>
 
 ```luau
@@ -422,11 +424,11 @@ export type ThreadSpawnOptions = {
 
 </h4>
 
-#### ThreadSpawnOptions.name
-
  Name your thread to quickly identify which one it is; if not provided a default alliterative petname will be provided instead.
 
 ---
+
+### ThreadSpawnOptions.path
 
 <h4>
 
@@ -436,11 +438,11 @@ export type ThreadSpawnOptions = {
 
 </h4>
 
-#### ThreadSpawnOptions.path
-
  Path to your source file you want to run in the separate thread, relative to the current file (not cwd).
 
 ---
+
+### ThreadSpawnOptions.src
 
 <h4>
 
@@ -450,11 +452,11 @@ export type ThreadSpawnOptions = {
 
 </h4>
 
-#### ThreadSpawnOptions.src
-
  Source code to evaluate; recommend passing a path instead.
 
 ---
+
+### ThreadSpawnOptions.data
 
 <h4>
 
@@ -464,11 +466,11 @@ export type ThreadSpawnOptions = {
 
 </h4>
 
-#### ThreadSpawnOptions.data
-
  Optional data you want to provide to your thread at startup; accessible with `channel.data` in the child thread.
 
 ---
+
+### ThreadSpawnOptions.capacity
 
 <h4>
 
@@ -478,11 +480,11 @@ export type ThreadSpawnOptions = {
 
 </h4>
 
-#### ThreadSpawnOptions.capacity
-
  Override the queue capacity of your thread's regular and bytes channels.
 
 ---
+
+#### ThreadSpawnOptions.capacity.regular
 
 <h4>
 
@@ -492,11 +494,11 @@ export type ThreadSpawnOptions = {
 
 </h4>
 
-##### ThreadSpawnOptions.capacity.regular
-
  default is 12
 
 ---
+
+#### ThreadSpawnOptions.capacity.bytes
 
 <h4>
 
@@ -505,8 +507,6 @@ export type ThreadSpawnOptions = {
 ```
 
 </h4>
-
-##### ThreadSpawnOptions.capacity.bytes
 
  default is 24
 

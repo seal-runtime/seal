@@ -18,6 +18,8 @@ Environment variables change this library's behavior:
 
 ---
 
+### vars.get
+
 <h4>
 
 ```luau
@@ -25,8 +27,6 @@ function vars.get(key: string) -> string?,
 ```
 
 </h4>
-
-### vars.get
 
 <details>
 
@@ -50,6 +50,8 @@ local API_KEY = vars.get("API_KEY") or error("missing API_KEY")
 
 ---
 
+### vars.flag
+
 <h4>
 
 ```luau
@@ -57,8 +59,6 @@ function vars.flag(name: string, default: boolean) -> boolean,
 ```
 
 </h4>
-
-### vars.flag
 
 <details>
 
@@ -85,6 +85,8 @@ local PROD = vars.flag("PROD", false)
 
 ---
 
+### vars.validate
+
 <h4>
 
 ```luau
@@ -92,8 +94,6 @@ function vars.validate<T>(key: string, f: (value: string?) -> T) -> T,
 ```
 
 </h4>
-
-### vars.validate
 
 <details>
 
@@ -124,6 +124,8 @@ end)
 
 ---
 
+### vars.set
+
 <h4>
 
 ```luau
@@ -131,8 +133,6 @@ function vars.set(key: string, value: string) -> (),
 ```
 
 </h4>
-
-### vars.set
 
 <details>
 
@@ -151,6 +151,8 @@ otherwise it may cause undefined behavior when used in multithreaded programs on
 
 ---
 
+### vars.unset
+
 <h4>
 
 ```luau
@@ -158,8 +160,6 @@ function vars.unset(key: string) -> (),
 ```
 
 </h4>
-
-### vars.unset
 
 Remove an environment variable for the currently-running program.
 
@@ -170,6 +170,8 @@ otherwise it may cause undefined behavior when used in multithreaded programs on
 
 ---
 
+### vars.all
+
 <h4>
 
 ```luau
@@ -178,14 +180,14 @@ function vars.all() -> { [string]: string },
 
 </h4>
 
-### vars.all
-
 Returns a map-like table that represents the snapshot of the process's environment variables
 at the time this function was called.
 
 If you want to modify these variables, use `vars.set`; modifying this table will cause an error.
 
 ---
+
+### vars.load
 
 <h4>
 
@@ -194,8 +196,6 @@ function vars.load(path: string, override: boolean?) -> (),
 ```
 
 </h4>
-
-### vars.load
 
 <details>
 

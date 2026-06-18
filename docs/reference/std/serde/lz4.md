@@ -9,6 +9,8 @@ lz4 bindings
 
 ---
 
+### lz4.compress
+
 <h4>
 
 ```luau
@@ -17,9 +19,9 @@ function lz4.compress(input: string | buffer) -> buffer,
 
 </h4>
 
-### lz4.compress
-
 ---
+
+### lz4.decompress
 
 <h4>
 
@@ -28,8 +30,6 @@ function lz4.decompress(compressed: string | buffer, expected_size: number) -> b
 ```
 
 </h4>
-
-### lz4.decompress
 
 ```luau
 }

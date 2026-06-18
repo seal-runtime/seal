@@ -9,6 +9,8 @@ A stdlib to interact with the script's running environment.
 
 ---
 
+### env.args
+
 <h4>
 
 ```luau
@@ -17,11 +19,11 @@ args: { string },
 
 </h4>
 
-### env.args
-
  a list of arguments passed to the program
 
 ---
+
+### env.os
 
 <h4>
 
@@ -31,11 +33,11 @@ os: "Windows" | "Linux" | "Android" | "MacOS" | string,
 
 </h4>
 
-### env.os
-
  your operating system
 
 ---
+
+### env.arch
 
 <h4>
 
@@ -45,11 +47,11 @@ arch: ARCH,
 
 </h4>
 
-### env.arch
-
  your system architecture, most likely `"x86_64"`
 
 ---
+
+### env.executable_path
 
 <h4>
 
@@ -59,11 +61,11 @@ executable_path: string,
 
 </h4>
 
-### env.executable_path
-
  path to the executable running your code; either *seal* itself or a compiled standalone version of *seal*.
 
 ---
+
+### env.cwd
 
 <h4>
 
@@ -73,17 +75,15 @@ function env.cwd() -> string,
 
 </h4>
 
-### env.cwd
-
 Get the current working directory of the running process.
 
 Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission denied).
 
 ---
 
-See [@std/env/vars](/docs/reference/std/env/vars.md)
-
 ### env.vars
+
+See [@std/env/vars](/docs/reference/std/env/vars.md)
 
 ```luau
 }

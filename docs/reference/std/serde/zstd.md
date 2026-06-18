@@ -7,6 +7,8 @@
 
 ---
 
+### ZstdOptions.checksum
+
 <h4>
 
 ```luau
@@ -15,9 +17,9 @@ checksum: boolean?,
 
 </h4>
 
-### ZstdOptions.checksum
-
 ---
+
+### ZstdOptions.content_size
 
 <h4>
 
@@ -27,9 +29,9 @@ content_size: boolean?,
 
 </h4>
 
-### ZstdOptions.content_size
-
 ---
+
+### ZstdOptions.dictid
 
 <h4>
 
@@ -39,9 +41,9 @@ dictid: boolean?,
 
 </h4>
 
-### ZstdOptions.dictid
-
 ---
+
+### ZstdOptions.window_log
 
 <h4>
 
@@ -50,8 +52,6 @@ window_log: number?,
 ```
 
 </h4>
-
-### ZstdOptions.window_log
 
 ```luau
 }
@@ -73,6 +73,8 @@ Use `Zstd` compression.
 
 ---
 
+### zstd.compress
+
 <h4>
 
 ```luau
@@ -80,8 +82,6 @@ function zstd.compress(data: buffer | string, level: number?, options: ZstdOptio
 ```
 
 </h4>
-
-#### zstd.compress
 
 <details>
 
@@ -104,6 +104,8 @@ zstd.compress(data, level, zstd_options)
 
 ---
 
+### zstd.decompress
+
 <h4>
 
 ```luau
@@ -111,8 +113,6 @@ function zstd.decompress(compressed: buffer) -> buffer,
 ```
 
 </h4>
-
-#### zstd.decompress
 
 ```luau
 }

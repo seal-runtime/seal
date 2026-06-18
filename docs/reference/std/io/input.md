@@ -9,6 +9,8 @@
 
 ---
 
+### input.get
+
 <h4>
 
 ```luau
@@ -17,11 +19,11 @@ function input.get(raw_prompt: string): string
 
 </h4>
 
-### input.get
-
  gets input with an optional `raw_prompt` to display before getting said input.
 
 ---
+
+### input.rawline
 
 <h4>
 
@@ -31,13 +33,13 @@ function input.rawline(prompt: string?): string
 
 </h4>
 
-### input.rawline
-
 Gets a line directly from stdout in a way that doesn't properly handle editing text (going back and forward with arrow keys), etc.
 
 But works with stdin in a child process/works while piped, making it a fallback for automated solutions or cursed ancient terminals.
 
 ---
+
+### input.readline
 
 <h4>
 
@@ -46,8 +48,6 @@ function input.readline(prompt: string): string | interrupt | error
 ```
 
 </h4>
-
-### input.readline
 
 <details>
 
@@ -91,6 +91,8 @@ end
 
 ---
 
+### input.editline
+
 <h4>
 
 ```luau
@@ -98,8 +100,6 @@ function input.editline(prompt: string, left: string, right: string?): string | 
 ```
 
 </h4>
-
-### input.editline
 
 <details>
 
@@ -128,6 +128,8 @@ This function shares most semantics with `input.readline`, including the followi
 
 ---
 
+### input.interrupt
+
 <h4>
 
 ```luau
@@ -135,8 +137,6 @@ function input.interrupt(key: "CtrlC" | "CtrlD"): interrupt
 ```
 
 </h4>
-
-### input.interrupt
 
 <details>
 

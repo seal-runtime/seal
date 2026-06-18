@@ -9,6 +9,8 @@ Deal with hex data.
 
 ---
 
+### hex.encode
+
 <h4>
 
 ```luau
@@ -17,9 +19,9 @@ function hex.encode(data: buffer | string) -> string,
 
 </h4>
 
-### hex.encode
-
 ---
+
+### hex.decode
 
 <h4>
 
@@ -28,8 +30,6 @@ function hex.decode(encoded: string) -> buffer,
 ```
 
 </h4>
-
-### hex.decode
 
 ```luau
 }

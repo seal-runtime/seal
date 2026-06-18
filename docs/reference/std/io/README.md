@@ -17,33 +17,33 @@ libraries as you need them instead.
 
 ---
 
-See [@std/io/input](/docs/reference/std/io/input.md)
-
 ### io.input
 
----
+See [@std/io/input](/docs/reference/std/io/input.md)
 
-See [@std/io/output](/docs/reference/std/io/output.md)
+---
 
 ### io.output
 
----
+See [@std/io/output](/docs/reference/std/io/output.md)
 
-See [@std/io/colors](/docs/reference/std/io/colors.md)
+---
 
 ### io.colors
 
----
+See [@std/io/colors](/docs/reference/std/io/colors.md)
 
-See [@std/io/format](/docs/reference/std/io/format.md)
+---
 
 ### io.format
 
+See [@std/io/format](/docs/reference/std/io/format.md)
+
 ---
 
-See [@std/io/prompt](/docs/reference/std/io/prompt.md)
-
 ### io.prompt
+
+See [@std/io/prompt](/docs/reference/std/io/prompt.md)
 
 ```luau
 }

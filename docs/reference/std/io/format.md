@@ -9,6 +9,8 @@ Format objects for pretty printing to stdout/stderr.
 
 ---
 
+### format.pretty
+
 <h4>
 
 ```luau
@@ -17,11 +19,11 @@ function format.pretty(item: unknown) -> string,
 
 </h4>
 
-### format.pretty
-
 Formats `item` in the same way as `print` or `pp`.
 
 ---
+
+### format.simple
 
 <h4>
 
@@ -31,11 +33,11 @@ function format.simple(item: unknown) -> string,
 
 </h4>
 
-### format.simple
-
 Like pretty printing but without colors.
 
 ---
+
+### format.debug
 
 <h4>
 
@@ -45,11 +47,11 @@ function format.debug(item: unknown) -> string,
 
 </h4>
 
-### format.debug
-
 Prints the debug representation of `item`, equivalent to using `{:?}` in Rust.
 
 ---
+
+### format.uncolor
 
 <h4>
 
@@ -59,11 +61,11 @@ function format.uncolor(s: string) -> string,
 
 </h4>
 
-### format.uncolor
-
 Removes ANSI color codes from a pretty formatted string.
 
 ---
+
+### format.hexdump
 
 <h4>
 
@@ -73,11 +75,11 @@ function format.hexdump(data: string | buffer) -> string,
 
 </h4>
 
-### format.hexdump
-
 Returns a hexdump-formatted string of the provided string or buffer, similar to `dp`.
 
 ---
+
+### format.__call
 
 <h4>
 
@@ -86,8 +88,6 @@ function format.__call(self: any, item: unknown) -> string,
 ```
 
 </h4>
-
-### format.__call
 
 ---
 

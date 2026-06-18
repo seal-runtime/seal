@@ -17,6 +17,8 @@ print(colors.blue("my blue text"))
 
 ---
 
+### colors.black
+
 <h4>
 
 ```luau
@@ -25,9 +27,9 @@ function colors.black(text: string) -> string,
 
 </h4>
 
-### colors.black
-
 ---
+
+### colors.red
 
 <h4>
 
@@ -37,9 +39,9 @@ function colors.red(text: string) -> string,
 
 </h4>
 
-### colors.red
-
 ---
+
+### colors.green
 
 <h4>
 
@@ -49,9 +51,9 @@ function colors.green(text: string) -> string,
 
 </h4>
 
-### colors.green
-
 ---
+
+### colors.yellow
 
 <h4>
 
@@ -61,9 +63,9 @@ function colors.yellow(text: string) -> string,
 
 </h4>
 
-### colors.yellow
-
 ---
+
+### colors.blue
 
 <h4>
 
@@ -73,9 +75,9 @@ function colors.blue(text: string) -> string,
 
 </h4>
 
-### colors.blue
-
 ---
+
+### colors.magenta
 
 <h4>
 
@@ -85,9 +87,9 @@ function colors.magenta(text: string) -> string,
 
 </h4>
 
-### colors.magenta
-
 ---
+
+### colors.cyan
 
 <h4>
 
@@ -97,9 +99,9 @@ function colors.cyan(text: string) -> string,
 
 </h4>
 
-### colors.cyan
-
 ---
+
+### colors.white
 
 <h4>
 
@@ -109,9 +111,9 @@ function colors.white(text: string) -> string,
 
 </h4>
 
-### colors.white
-
 ---
+
+### colors.bold
 
 <h4>
 
@@ -121,9 +123,9 @@ bold: {
 
 </h4>
 
-### colors.bold
-
 ---
+
+### colors.bold.black
 
 <h4>
 
@@ -133,9 +135,9 @@ function colors.bold.black(text: string) -> string,
 
 </h4>
 
-### colors.bold.black
-
 ---
+
+### colors.bold.red
 
 <h4>
 
@@ -145,9 +147,9 @@ function colors.bold.red(text: string) -> string,
 
 </h4>
 
-### colors.bold.red
-
 ---
+
+### colors.bold.green
 
 <h4>
 
@@ -157,9 +159,9 @@ function colors.bold.green(text: string) -> string,
 
 </h4>
 
-### colors.bold.green
-
 ---
+
+### colors.bold.yellow
 
 <h4>
 
@@ -169,9 +171,9 @@ function colors.bold.yellow(text: string) -> string,
 
 </h4>
 
-### colors.bold.yellow
-
 ---
+
+### colors.bold.blue
 
 <h4>
 
@@ -181,9 +183,9 @@ function colors.bold.blue(text: string) -> string,
 
 </h4>
 
-### colors.bold.blue
-
 ---
+
+### colors.bold.magenta
 
 <h4>
 
@@ -193,9 +195,9 @@ function colors.bold.magenta(text: string) -> string,
 
 </h4>
 
-### colors.bold.magenta
-
 ---
+
+### colors.bold.cyan
 
 <h4>
 
@@ -205,9 +207,9 @@ function colors.bold.cyan(text: string) -> string,
 
 </h4>
 
-### colors.bold.cyan
-
 ---
+
+### colors.bold.white
 
 <h4>
 
@@ -217,13 +219,13 @@ function colors.bold.white(text: string) -> string,
 
 </h4>
 
-### colors.bold.white
-
 ```luau
   },
 ```
 
 ---
+
+### colors.style
 
 <h4>
 
@@ -233,9 +235,9 @@ style: {
 
 </h4>
 
-### colors.style
-
 ---
+
+### colors.style.dim
 
 <h4>
 
@@ -245,9 +247,9 @@ function colors.style.dim(text: string) -> string,
 
 </h4>
 
-### colors.style.dim
-
 ---
+
+### colors.style.bold
 
 <h4>
 
@@ -257,9 +259,9 @@ function colors.style.bold(text: string) -> string,
 
 </h4>
 
-### colors.style.bold
-
 ---
+
+### colors.style.underline
 
 <h4>
 
@@ -269,13 +271,13 @@ function colors.style.underline(text: string) -> string,
 
 </h4>
 
-### colors.style.underline
-
 ```luau
   },
 ```
 
 ---
+
+### colors.codes
 
 <h4>
 
@@ -285,9 +287,9 @@ codes: {
 
 </h4>
 
-### colors.codes
-
 ---
+
+### colors.codes.RESET
 
 <h4>
 
@@ -297,9 +299,9 @@ RESET: "\x1b[0m",
 
 </h4>
 
-### colors.codes.RESET
-
 ---
+
+### colors.codes.BLACK
 
 <h4>
 
@@ -309,9 +311,9 @@ BLACK: "\x1b[30m",
 
 </h4>
 
-### colors.codes.BLACK
-
 ---
+
+### colors.codes.RED
 
 <h4>
 
@@ -321,9 +323,9 @@ RED: "\x1b[31m",
 
 </h4>
 
-### colors.codes.RED
-
 ---
+
+### colors.codes.GREEN
 
 <h4>
 
@@ -333,9 +335,9 @@ GREEN: "\x1b[32m",
 
 </h4>
 
-### colors.codes.GREEN
-
 ---
+
+### colors.codes.YELLOW
 
 <h4>
 
@@ -345,9 +347,9 @@ YELLOW: "\x1b[33m",
 
 </h4>
 
-### colors.codes.YELLOW
-
 ---
+
+### colors.codes.BLUE
 
 <h4>
 
@@ -357,9 +359,9 @@ BLUE: "\x1b[34m",
 
 </h4>
 
-### colors.codes.BLUE
-
 ---
+
+### colors.codes.MAGENTA
 
 <h4>
 
@@ -369,9 +371,9 @@ MAGENTA: "\x1b[35m",
 
 </h4>
 
-### colors.codes.MAGENTA
-
 ---
+
+### colors.codes.CYAN
 
 <h4>
 
@@ -381,9 +383,9 @@ CYAN: "\x1b[36m",
 
 </h4>
 
-### colors.codes.CYAN
-
 ---
+
+### colors.codes.WHITE
 
 <h4>
 
@@ -393,9 +395,9 @@ WHITE: "\x1b[37m",
 
 </h4>
 
-### colors.codes.WHITE
-
 ---
+
+### colors.codes.BOLD_BLACK
 
 <h4>
 
@@ -405,9 +407,9 @@ BOLD_BLACK: "\x1b[1;30m",
 
 </h4>
 
-### colors.codes.BOLD_BLACK
-
 ---
+
+### colors.codes.BOLD_RED
 
 <h4>
 
@@ -417,9 +419,9 @@ BOLD_RED: "\x1b[1;31m",
 
 </h4>
 
-### colors.codes.BOLD_RED
-
 ---
+
+### colors.codes.BOLD_GREEN
 
 <h4>
 
@@ -429,9 +431,9 @@ BOLD_GREEN: "\x1b[1;32m",
 
 </h4>
 
-### colors.codes.BOLD_GREEN
-
 ---
+
+### colors.codes.BOLD_YELLOW
 
 <h4>
 
@@ -441,9 +443,9 @@ BOLD_YELLOW: "\x1b[1;33m",
 
 </h4>
 
-### colors.codes.BOLD_YELLOW
-
 ---
+
+### colors.codes.BOLD_BLUE
 
 <h4>
 
@@ -453,9 +455,9 @@ BOLD_BLUE: "\x1b[1;34m",
 
 </h4>
 
-### colors.codes.BOLD_BLUE
-
 ---
+
+### colors.codes.BOLD_MAGENTA
 
 <h4>
 
@@ -465,9 +467,9 @@ BOLD_MAGENTA: "\x1b[1;35m",
 
 </h4>
 
-### colors.codes.BOLD_MAGENTA
-
 ---
+
+### colors.codes.BOLD_CYAN
 
 <h4>
 
@@ -477,9 +479,9 @@ BOLD_CYAN: "\x1b[1;36m",
 
 </h4>
 
-### colors.codes.BOLD_CYAN
-
 ---
+
+### colors.codes.BOLD_WHITE
 
 <h4>
 
@@ -489,9 +491,9 @@ BOLD_WHITE: "\x1b[1;37m",
 
 </h4>
 
-### colors.codes.BOLD_WHITE
-
 ---
+
+### colors.codes.BRIGHT_BLACK
 
 <h4>
 
@@ -501,9 +503,9 @@ BRIGHT_BLACK: "\x1b[90m",
 
 </h4>
 
-### colors.codes.BRIGHT_BLACK
-
 ---
+
+### colors.codes.BRIGHT_RED
 
 <h4>
 
@@ -513,9 +515,9 @@ BRIGHT_RED: "\x1b[91m",
 
 </h4>
 
-### colors.codes.BRIGHT_RED
-
 ---
+
+### colors.codes.BRIGHT_GREEN
 
 <h4>
 
@@ -525,9 +527,9 @@ BRIGHT_GREEN: "\x1b[92m",
 
 </h4>
 
-### colors.codes.BRIGHT_GREEN
-
 ---
+
+### colors.codes.BRIGHT_YELLOW
 
 <h4>
 
@@ -537,9 +539,9 @@ BRIGHT_YELLOW: "\x1b[93m",
 
 </h4>
 
-### colors.codes.BRIGHT_YELLOW
-
 ---
+
+### colors.codes.BRIGHT_BLUE
 
 <h4>
 
@@ -549,9 +551,9 @@ BRIGHT_BLUE: "\x1b[94m",
 
 </h4>
 
-### colors.codes.BRIGHT_BLUE
-
 ---
+
+### colors.codes.BRIGHT_MAGENTA
 
 <h4>
 
@@ -561,9 +563,9 @@ BRIGHT_MAGENTA: "\x1b[95m",
 
 </h4>
 
-### colors.codes.BRIGHT_MAGENTA
-
 ---
+
+### colors.codes.BRIGHT_CYAN
 
 <h4>
 
@@ -573,9 +575,9 @@ BRIGHT_CYAN: "\x1b[96m",
 
 </h4>
 
-### colors.codes.BRIGHT_CYAN
-
 ---
+
+### colors.codes.BRIGHT_WHITE
 
 <h4>
 
@@ -585,9 +587,9 @@ BRIGHT_WHITE: "\x1b[97m",
 
 </h4>
 
-### colors.codes.BRIGHT_WHITE
-
 ---
+
+### colors.codes.BLACK_BG
 
 <h4>
 
@@ -597,9 +599,9 @@ BLACK_BG: "\x1b[40m",
 
 </h4>
 
-### colors.codes.BLACK_BG
-
 ---
+
+### colors.codes.RED_BG
 
 <h4>
 
@@ -609,9 +611,9 @@ RED_BG: "\x1b[41m",
 
 </h4>
 
-### colors.codes.RED_BG
-
 ---
+
+### colors.codes.GREEN_BG
 
 <h4>
 
@@ -621,9 +623,9 @@ GREEN_BG: "\x1b[42m",
 
 </h4>
 
-### colors.codes.GREEN_BG
-
 ---
+
+### colors.codes.YELLOW_BG
 
 <h4>
 
@@ -633,9 +635,9 @@ YELLOW_BG: "\x1b[43m",
 
 </h4>
 
-### colors.codes.YELLOW_BG
-
 ---
+
+### colors.codes.BLUE_BG
 
 <h4>
 
@@ -645,9 +647,9 @@ BLUE_BG: "\x1b[44m",
 
 </h4>
 
-### colors.codes.BLUE_BG
-
 ---
+
+### colors.codes.MAGENTA_BG
 
 <h4>
 
@@ -657,9 +659,9 @@ MAGENTA_BG: "\x1b[45m",
 
 </h4>
 
-### colors.codes.MAGENTA_BG
-
 ---
+
+### colors.codes.CYAN_BG
 
 <h4>
 
@@ -669,9 +671,9 @@ CYAN_BG: "\x1b[46m",
 
 </h4>
 
-### colors.codes.CYAN_BG
-
 ---
+
+### colors.codes.WHITE_BG
 
 <h4>
 
@@ -681,9 +683,9 @@ WHITE_BG: "\x1b[47m",
 
 </h4>
 
-### colors.codes.WHITE_BG
-
 ---
+
+### colors.codes.BRIGHT_BLACK_BG
 
 <h4>
 
@@ -693,9 +695,9 @@ BRIGHT_BLACK_BG: "\x1b[100m",
 
 </h4>
 
-### colors.codes.BRIGHT_BLACK_BG
-
 ---
+
+### colors.codes.BRIGHT_RED_BG
 
 <h4>
 
@@ -705,9 +707,9 @@ BRIGHT_RED_BG: "\x1b[101m",
 
 </h4>
 
-### colors.codes.BRIGHT_RED_BG
-
 ---
+
+### colors.codes.BRIGHT_GREEN_BG
 
 <h4>
 
@@ -717,9 +719,9 @@ BRIGHT_GREEN_BG: "\x1b[102m",
 
 </h4>
 
-### colors.codes.BRIGHT_GREEN_BG
-
 ---
+
+### colors.codes.BRIGHT_YELLOW_BG
 
 <h4>
 
@@ -729,9 +731,9 @@ BRIGHT_YELLOW_BG: "\x1b[103m",
 
 </h4>
 
-### colors.codes.BRIGHT_YELLOW_BG
-
 ---
+
+### colors.codes.BRIGHT_BLUE_BG
 
 <h4>
 
@@ -741,9 +743,9 @@ BRIGHT_BLUE_BG: "\x1b[104m",
 
 </h4>
 
-### colors.codes.BRIGHT_BLUE_BG
-
 ---
+
+### colors.codes.BRIGHT_MAGENTA_BG
 
 <h4>
 
@@ -753,9 +755,9 @@ BRIGHT_MAGENTA_BG: "\x1b[105m",
 
 </h4>
 
-### colors.codes.BRIGHT_MAGENTA_BG
-
 ---
+
+### colors.codes.BRIGHT_CYAN_BG
 
 <h4>
 
@@ -765,9 +767,9 @@ BRIGHT_CYAN_BG: "\x1b[106m",
 
 </h4>
 
-### colors.codes.BRIGHT_CYAN_BG
-
 ---
+
+### colors.codes.BRIGHT_WHITE_BG
 
 <h4>
 
@@ -777,9 +779,9 @@ BRIGHT_WHITE_BG: "\x1b[107m",
 
 </h4>
 
-### colors.codes.BRIGHT_WHITE_BG
-
 ---
+
+### colors.codes.BOLD
 
 <h4>
 
@@ -789,9 +791,9 @@ BOLD: "\x1b[1m",
 
 </h4>
 
-### colors.codes.BOLD
-
 ---
+
+### colors.codes.DIM
 
 <h4>
 
@@ -801,9 +803,9 @@ DIM: "\x1b[2m",
 
 </h4>
 
-### colors.codes.DIM
-
 ---
+
+### colors.codes.UNDERLINE
 
 <h4>
 
@@ -812,8 +814,6 @@ UNDERLINE: "\x1b[4m",
 ```
 
 </h4>
-
-### colors.codes.UNDERLINE
 
 ```luau
   }

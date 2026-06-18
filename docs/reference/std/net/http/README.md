@@ -9,6 +9,8 @@ Send HTTP Requests.
 
 ---
 
+### http.get
+
 <h4>
 
 ```luau
@@ -16,8 +18,6 @@ function http.get(options: HttpRequestWithoutBody) -> HttpResponse,
 ```
 
 </h4>
-
-### http.get
 
 <details>
 
@@ -86,6 +86,8 @@ Throws an error when:
 
 ---
 
+### http.post
+
 <h4>
 
 ```luau
@@ -93,8 +95,6 @@ function http.post(options: HttpRequestWithBody) -> HttpResponse,
 ```
 
 </h4>
-
-### http.post
 
 <details>
 
@@ -144,6 +144,8 @@ Throws an error when:
 
 ---
 
+### http.request
+
 <h4>
 
 ```luau
@@ -151,8 +153,6 @@ function http.request(method: HttpMethod, options: HttpRequestWithoutBody | Http
 ```
 
 </h4>
-
-### http.request
 
 <details>
 
@@ -354,6 +354,8 @@ Configure how quickly a request times out.
 
 ---
 
+### RequestTimeout.send_request
+
 <h4>
 
 ```luau
@@ -362,11 +364,11 @@ Configure how quickly a request times out.
 
 </h4>
 
-#### RequestTimeout.send_request
-
  Max duration to send the request but not the request body.
 
 ---
+
+### RequestTimeout.send_body
 
 <h4>
 
@@ -376,11 +378,11 @@ Configure how quickly a request times out.
 
 </h4>
 
-#### RequestTimeout.send_body
-
  Max duration to send the request body.
 
 ---
+
+### RequestTimeout.receive_response
 
 <h4>
 
@@ -390,11 +392,11 @@ Configure how quickly a request times out.
 
 </h4>
 
-#### RequestTimeout.receive_response
-
  Max duration to wait for receiving the response headers but not the response body.
 
 ---
+
+### RequestTimeout.receive_body
 
 <h4>
 
@@ -403,8 +405,6 @@ Configure how quickly a request times out.
 ```
 
 </h4>
-
-#### RequestTimeout.receive_body
 
  Max duration to wait for receiving the response body.
 
@@ -438,6 +438,8 @@ export type HttpRequestWithoutBody = {
 
 ---
 
+### HttpRequestWithoutBody.url
+
 <h4>
 
 ```luau
@@ -446,11 +448,11 @@ export type HttpRequestWithoutBody = {
 
 </h4>
 
-#### HttpRequestWithoutBody.url
-
  The URI or URL you want to send the request to. For localhost, use `127.0.0.1:80` (example uses port 80)
 
 ---
+
+### HttpRequestWithoutBody.params
 
 <h4>
 
@@ -460,13 +462,13 @@ export type HttpRequestWithoutBody = {
 
 </h4>
 
-#### HttpRequestWithoutBody.params
-
 [HTTP query parameters](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL#parameters) to append to `url`.
 
 Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 
 ---
+
+### HttpRequestWithoutBody.headers
 
 <h4>
 
@@ -476,8 +478,6 @@ Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 
 </h4>
 
-#### HttpRequestWithoutBody.headers
-
 [HTTP headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers) to send with the request.
 
 Common headers include `Authorization`, `Accept`, and `User-Agent`.
@@ -485,6 +485,8 @@ Common headers include `Authorization`, `Accept`, and `User-Agent`.
 Header keys are case-insensitive as per the HTTP spec; values must be valid ASCII.
 
 ---
+
+### HttpRequestWithoutBody.timeout
 
 <h4>
 
@@ -494,11 +496,11 @@ Header keys are case-insensitive as per the HTTP spec; values must be valid ASCI
 
 </h4>
 
-#### HttpRequestWithoutBody.timeout
-
  Prevent your request from taking forever. Pass a `Duration` from `@std/time` to set a global timeout or a `RequestTimeout` for more granular control.
 
 ---
+
+### HttpRequestWithoutBody.max_body_size
 
 <h4>
 
@@ -508,11 +510,11 @@ Header keys are case-insensitive as per the HTTP spec; values must be valid ASCI
 
 </h4>
 
-#### HttpRequestWithoutBody.max_body_size
-
  Limits the size of the response body; defaults to 10MB. Use `@std/fs/filesize` to construct (`filesize.megabytes(50)`).
 
 ---
+
+### HttpRequestWithoutBody.max_redirects
 
 <h4>
 
@@ -521,8 +523,6 @@ Header keys are case-insensitive as per the HTTP spec; values must be valid ASCI
 ```
 
 </h4>
-
-#### HttpRequestWithoutBody.max_redirects
 
  Max number of redirects to redirect through before erroring out; defaults to 10. Pass 0 to not redirect anywhere and return the original response.
 
@@ -544,6 +544,8 @@ export type HttpRequestWithBody = {
 
 ---
 
+### HttpRequestWithBody.url
+
 <h4>
 
 ```luau
@@ -552,11 +554,11 @@ export type HttpRequestWithBody = {
 
 </h4>
 
-#### HttpRequestWithBody.url
-
  The URI or URL you want to send the request to. For localhost, use `127.0.0.1:80` (example uses port 80)
 
 ---
+
+### HttpRequestWithBody.body
 
 <h4>
 
@@ -566,14 +568,14 @@ export type HttpRequestWithBody = {
 
 </h4>
 
-#### HttpRequestWithBody.body
-
 The main content of your request. You can pass in a json-serializable table to send json, a string to send unchanged,
 or a buffer to send as arbitary/invalid utf-8.
 
 Note that strings have to be valid utf-8; if you need to pass invalid utf-8 here you must pass a buffer.
 
 ---
+
+### HttpRequestWithBody.params
 
 <h4>
 
@@ -583,13 +585,13 @@ Note that strings have to be valid utf-8; if you need to pass invalid utf-8 here
 
 </h4>
 
-#### HttpRequestWithBody.params
-
 [HTTP query parameters](https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL#parameters) to append to `url`.
 
 Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 
 ---
+
+### HttpRequestWithBody.headers
 
 <h4>
 
@@ -598,8 +600,6 @@ Key-value pairs are serialized and appended as `?key=value&key2=value2`.
 ```
 
 </h4>
-
-#### HttpRequestWithBody.headers
 
 <details>
 
@@ -618,6 +618,8 @@ To override this behavior, set a `content-type` header explicitly.
 
 ---
 
+### HttpRequestWithBody.timeout
+
 <h4>
 
 ```luau
@@ -626,11 +628,11 @@ To override this behavior, set a `content-type` header explicitly.
 
 </h4>
 
-#### HttpRequestWithBody.timeout
-
  Prevent your request from taking forever. Pass a `Duration` from `@std/time` to set a global timeout or a `RequestTimeout` for more granular control.
 
 ---
+
+### HttpRequestWithBody.max_body_size
 
 <h4>
 
@@ -640,11 +642,11 @@ To override this behavior, set a `content-type` header explicitly.
 
 </h4>
 
-#### HttpRequestWithBody.max_body_size
-
  Limits the size of the response body; defaults to 10MB. Use `@std/fs/filesize` to construct (`filesize.megabytes(50)`).
 
 ---
+
+### HttpRequestWithBody.max_redirects
 
 <h4>
 
@@ -653,8 +655,6 @@ To override this behavior, set a `content-type` header explicitly.
 ```
 
 </h4>
-
-#### HttpRequestWithBody.max_redirects
 
  Max number of redirects to redirect through before erroring out; defaults to 10. Pass 0 to not redirect anywhere and return the original response.
 
@@ -885,6 +885,8 @@ export type HttpResponse = {
 
 ---
 
+### HttpResponse.ok
+
 <h4>
 
 ```luau
@@ -893,11 +895,11 @@ export type HttpResponse = {
 
 </h4>
 
-#### HttpResponse.ok
-
  `true` if the response was successful (status code 200 -> 299), `false` if the response represents an unsuccessful status code.
 
 ---
+
+### HttpResponse.kind
 
 <h4>
 
@@ -907,11 +909,11 @@ export type HttpResponse = {
 
 </h4>
 
-#### HttpResponse.kind
-
  `"Ok"` if the response represents a successful status code (200 -> 299), `"Error"` if the response represents an unsuccessful status code.
 
 ---
+
+### HttpResponse.headers
 
 <h4>
 
@@ -921,9 +923,9 @@ export type HttpResponse = {
 
 </h4>
 
-#### HttpResponse.headers
-
 ---
+
+### HttpResponse.status
 
 <h4>
 
@@ -933,9 +935,9 @@ export type HttpResponse = {
 
 </h4>
 
-#### HttpResponse.status
-
 ---
+
+#### HttpResponse.status.code
 
 <h4>
 
@@ -945,9 +947,9 @@ export type HttpResponse = {
 
 </h4>
 
-##### HttpResponse.status.code
-
 ---
+
+#### HttpResponse.status.reason
 
 <h4>
 
@@ -957,8 +959,6 @@ export type HttpResponse = {
 
 </h4>
 
-##### HttpResponse.status.reason
-
  The canonical HTTP reason phase for the status code; such as "Not Found" for status code 404
 
 ```luau
@@ -966,6 +966,8 @@ export type HttpResponse = {
 ```
 
 ---
+
+### HttpResponse.body
 
 <h4>
 
@@ -975,11 +977,11 @@ export type HttpResponse = {
 
 </h4>
 
-#### HttpResponse.body
-
  The response's main contents; this can be any encoding, including UTF-8, arbitrary unreadable bytes, json, etc.
 
 ---
+
+### HttpResponse.content_type
 
 <h4>
 
@@ -988,8 +990,6 @@ export type HttpResponse = {
 ```
 
 </h4>
-
-#### HttpResponse.content_type
 
 <details>
 
@@ -1011,6 +1011,8 @@ This field is `nil` if the server didn't send a `content-type` header at all.
 
 ---
 
+#### HttpResponse.content_type.mime_type
+
 <h4>
 
 ```luau
@@ -1019,13 +1021,13 @@ This field is `nil` if the server didn't send a `content-type` header at all.
 
 </h4>
 
-##### HttpResponse.content_type.mime_type
-
  The MIME type of the response body — describes *what kind* of data it is,
  e.g. `"application/json"`, `"text/html"`, `"image/png"`.
  `nil` if the `content-type` header was present but had no MIME type.
 
 ---
+
+#### HttpResponse.content_type.charset
 
 <h4>
 
@@ -1034,8 +1036,6 @@ This field is `nil` if the server didn't send a `content-type` header at all.
 ```
 
 </h4>
-
-##### HttpResponse.content_type.charset
 
  The character encoding of the response body, e.g. `"utf-8"` or `"iso-8859-1"`.
  Only present for text-based MIME types; typically absent for binary types like `"image/png"`.
@@ -1046,6 +1046,8 @@ This field is `nil` if the server didn't send a `content-type` header at all.
 
 ---
 
+### HttpResponse.try_json
+
 <h4>
 
 ```luau
@@ -1053,8 +1055,6 @@ function HttpResponse.try_json<T>(self: HttpResponse) -> T?,
 ```
 
 </h4>
-
-#### HttpResponse.try_json
 
 <details>
 
@@ -1091,6 +1091,8 @@ end
 
 ---
 
+### HttpResponse.expect_json
+
 <h4>
 
 ```luau
@@ -1098,8 +1100,6 @@ function HttpResponse.expect_json<T>(self: HttpResponse) -> T,
 ```
 
 </h4>
-
-#### HttpResponse.expect_json
 
 <details>
 
@@ -1141,6 +1141,8 @@ The request timed out because you set `HttpRequestOptions.timeout`.
 
 ---
 
+### HttpTimeoutError.ok
+
 <h4>
 
 ```luau
@@ -1149,9 +1151,9 @@ The request timed out because you set `HttpRequestOptions.timeout`.
 
 </h4>
 
-#### HttpTimeoutError.ok
-
 ---
+
+### HttpTimeoutError.kind
 
 <h4>
 
@@ -1161,9 +1163,9 @@ The request timed out because you set `HttpRequestOptions.timeout`.
 
 </h4>
 
-#### HttpTimeoutError.kind
-
 ---
+
+### HttpTimeoutError.reason
 
 <h4>
 
@@ -1173,9 +1175,9 @@ The request timed out because you set `HttpRequestOptions.timeout`.
 
 </h4>
 
-#### HttpTimeoutError.reason
-
 ---
+
+### HttpTimeoutError.phase
 
 <h4>
 
@@ -1184,8 +1186,6 @@ The request timed out because you set `HttpRequestOptions.timeout`.
 ```
 
 </h4>
-
-#### HttpTimeoutError.phase
 
 ```luau
 }
@@ -1208,6 +1208,8 @@ receiving a proper response.
 
 ---
 
+### HttpIoError.ok
+
 <h4>
 
 ```luau
@@ -1216,9 +1218,9 @@ receiving a proper response.
 
 </h4>
 
-#### HttpIoError.ok
-
 ---
+
+### HttpIoError.kind
 
 <h4>
 
@@ -1228,9 +1230,9 @@ receiving a proper response.
 
 </h4>
 
-#### HttpIoError.kind
-
 ---
+
+### HttpIoError.reason
 
 <h4>
 
@@ -1239,8 +1241,6 @@ receiving a proper response.
 ```
 
 </h4>
-
-#### HttpIoError.reason
 
 ```luau
 }

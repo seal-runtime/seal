@@ -13,6 +13,8 @@ Fractional unit counts are accepted for all units larger than bytes — e.g. `fi
 
 ---
 
+### FileSizeLib.bytes
+
 <h4>
 
 ```luau
@@ -21,11 +23,11 @@ function FileSizeLib.bytes(count: number) -> FileSize,
 
 </h4>
 
-### FileSizeLib.bytes
-
  Constructs a `FileSize` representing `count` bytes. `count` must be a whole number.
 
 ---
+
+### FileSizeLib.kilobytes
 
 <h4>
 
@@ -35,11 +37,11 @@ function FileSizeLib.kilobytes(count: number) -> FileSize,
 
 </h4>
 
-### FileSizeLib.kilobytes
-
  Constructs a `FileSize` representing `count` kilobytes (1 KB = 1,024 bytes).
 
 ---
+
+### FileSizeLib.megabytes
 
 <h4>
 
@@ -49,11 +51,11 @@ function FileSizeLib.megabytes(count: number) -> FileSize,
 
 </h4>
 
-### FileSizeLib.megabytes
-
  Constructs a `FileSize` representing `count` megabytes (1 MB = 1,024 KB).
 
 ---
+
+### FileSizeLib.gigabytes
 
 <h4>
 
@@ -63,11 +65,11 @@ function FileSizeLib.gigabytes(count: number) -> FileSize,
 
 </h4>
 
-### FileSizeLib.gigabytes
-
  Constructs a `FileSize` representing `count` gigabytes (1 GB = 1,024 MB).
 
 ---
+
+### FileSizeLib.terabytes
 
 <h4>
 
@@ -76,8 +78,6 @@ function FileSizeLib.terabytes(count: number) -> FileSize,
 ```
 
 </h4>
-
-### FileSizeLib.terabytes
 
  Constructs a `FileSize` representing `count` terabytes (1 TB = 1,024 GB).
 

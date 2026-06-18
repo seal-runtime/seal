@@ -57,6 +57,8 @@ type SemverFields = {
 
 ---
 
+### SemverFields.major
+
 <h4>
 
 ```luau
@@ -65,9 +67,9 @@ type SemverFields = {
 
 </h4>
 
-#### SemverFields.major
-
 ---
+
+### SemverFields.minor
 
 <h4>
 
@@ -77,9 +79,9 @@ type SemverFields = {
 
 </h4>
 
-#### SemverFields.minor
-
 ---
+
+### SemverFields.patch
 
 <h4>
 
@@ -89,9 +91,9 @@ type SemverFields = {
 
 </h4>
 
-#### SemverFields.patch
-
 ---
+
+### SemverFields.metadata
 
 <h4>
 
@@ -101,9 +103,9 @@ type SemverFields = {
 
 </h4>
 
-#### SemverFields.metadata
-
 ---
+
+#### SemverFields.metadata.release_candidate
 
 <h4>
 
@@ -113,9 +115,9 @@ type SemverFields = {
 
 </h4>
 
-##### SemverFields.metadata.release_candidate
-
 ---
+
+#### SemverFields.metadata.release_candidate.tag
 
 <h4>
 
@@ -125,9 +127,9 @@ type SemverFields = {
 
 </h4>
 
-##### SemverFields.metadata.release_candidate.tag
-
 ---
+
+#### SemverFields.metadata.release_candidate.ver
 
 <h4>
 
@@ -137,13 +139,13 @@ type SemverFields = {
 
 </h4>
 
-##### SemverFields.metadata.release_candidate.ver
-
 ```luau
     }?,
 ```
 
 ---
+
+#### SemverFields.metadata.build
 
 <h4>
 
@@ -152,8 +154,6 @@ type SemverFields = {
 ```
 
 </h4>
-
-##### SemverFields.metadata.build
 
 ```luau
   }
@@ -165,18 +165,23 @@ type SemverFields = {
 
 ---
 
+#### semver.from
+
+<h4>
+
+```luau
 function semver.from(s: string): Semver
 ```
 
 </h4>
-
-##### semver.from
 
 ```luau
 }
 ```
 
 ---
+
+### Semver.satisfies
 
 <h4>
 
@@ -185,8 +190,6 @@ function Semver.satisfies(self: Semver, semver_range: string): boolean
 ```
 
 </h4>
-
-#### Semver.satisfies
 
 <details>
 
@@ -223,6 +226,8 @@ end
 
 ---
 
+### Semver.__eq
+
 <h4>
 
 ```luau
@@ -231,9 +236,9 @@ function Semver.__eq(self: Semver, other: Semver): boolean
 
 </h4>
 
-#### Semver.__eq
-
 ---
+
+### Semver.__lt
 
 <h4>
 
@@ -243,9 +248,9 @@ function Semver.__lt(self: Semver, other: Semver): boolean
 
 </h4>
 
-#### Semver.__lt
-
 ---
+
+### Semver.__le
 
 <h4>
 
@@ -255,9 +260,9 @@ function Semver.__le(self: Semver, other: Semver): boolean
 
 </h4>
 
-#### Semver.__le
-
 ---
+
+### Semver.__tostring
 
 <h4>
 
@@ -266,8 +271,6 @@ function Semver.__tostring(self: Semver): string
 ```
 
 </h4>
-
-#### Semver.__tostring
 
 ---
 

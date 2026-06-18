@@ -353,6 +353,15 @@ for _, library in libraries do
             push(`## {name}`)
         end
 
+        if api.is == "Property" or api.is == "Function" then
+            if is_nested_in_type then
+                local h = if type_depth >= 2 then "####" else "###"
+                push(`{h} {name}`)
+            else
+                push(`### {name}`)
+            end
+        end
+
         if #api.defs > 0 then
             local require_path =
                 string.match(defs, `^[%w_]+: typeof%(require%("([^"]+)"%)%),?$`) or
@@ -394,15 +403,6 @@ for _, library in libraries do
                 if api.is ~= "Enum" then
                     push("</h4>")
                 end
-            end
-        end
-
-        if api.is == "Property" or api.is == "Function" then
-            if is_nested_in_type then
-                local h = if type_depth >= 2 then "#####" else "####"
-                push(`{h} {name}`)
-            else
-                push(`### {name}`)
             end
         end
 

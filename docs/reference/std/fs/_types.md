@@ -7,6 +7,8 @@
 
 ---
 
+### TreeBuilder.inner
+
 <h4>
 
 ```luau
@@ -15,11 +17,11 @@ inner: DirectoryTree,
 
 </h4>
 
-### TreeBuilder.inner
-
  The `DirectoryTree` being constructed by the `TreeBuilder`.
 
 ---
+
+### TreeBuilder.with_file
 
 <h4>
 
@@ -29,11 +31,11 @@ function TreeBuilder.with_file(self: TreeBuilder, name: string, content: string)
 
 </h4>
 
-### TreeBuilder.with_file
-
  Add a file to the DirectoryTree by `name` with `content`
 
 ---
+
+### TreeBuilder.with_tree
 
 <h4>
 
@@ -42,8 +44,6 @@ function TreeBuilder.with_tree(self: TreeBuilder, name: string, builder: TreeBui
 ```
 
 </h4>
-
-### TreeBuilder.with_tree
 
 Add a new tree to the DirectoryTree; the second argument should be another `TreeBuilder` from `fs.tree()`
 
@@ -74,6 +74,8 @@ export type FileEntry = {
 
 ---
 
+### FileEntry.name
+
 <h4>
 
 ```luau
@@ -82,11 +84,11 @@ export type FileEntry = {
 
 </h4>
 
-#### FileEntry.name
-
  The name of the file; also called basename, filename, etc. Can also be obtained by calling `fs.path.child` on a path.
 
 ---
+
+### FileEntry.path
 
 <h4>
 
@@ -96,11 +98,11 @@ export type FileEntry = {
 
 </h4>
 
-#### FileEntry.path
-
  A filesystem path to the file; if the `FileEntry` was requested with an absolute path, then this path will be absolute, otherwise it'll be a relative path.
 
 ---
+
+### FileEntry.type
 
 <h4>
 
@@ -110,9 +112,9 @@ export type FileEntry = {
 
 </h4>
 
-#### FileEntry.type
-
 ---
+
+### FileEntry.read
 
 <h4>
 
@@ -121,8 +123,6 @@ function FileEntry.read(self: FileEntry) -> string,
 ```
 
 </h4>
-
-#### FileEntry.read
 
 <details>
 
@@ -144,6 +144,8 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
+### FileEntry.size
+
 <h4>
 
 ```luau
@@ -152,11 +154,11 @@ function FileEntry.size(self: FileEntry) -> number,
 
 </h4>
 
-#### FileEntry.size
-
  Returns the file's size (length) in bytes.
 
 ---
+
+### FileEntry.readlines
 
 <h4>
 
@@ -165,8 +167,6 @@ function FileEntry.readlines(self: FileEntry) -> () -> (number, string),
 ```
 
 </h4>
-
-#### FileEntry.readlines
 
 Iterate over the lines of the file without reading the whole file into memory.
 
@@ -188,6 +188,8 @@ end
 
 ---
 
+### FileEntry.readbytes
+
 <h4>
 
 ```luau
@@ -195,8 +197,6 @@ function FileEntry.readbytes(self: FileEntry, file_offset: number?, count: numbe
 ```
 
 </h4>
-
-#### FileEntry.readbytes
 
 <details>
 
@@ -228,6 +228,8 @@ This function blocks the current Luau VM. To use it in parallel, call it within 
 
 ---
 
+### FileEntry.append
+
 <h4>
 
 ```luau
@@ -235,8 +237,6 @@ function FileEntry.append(self: FileEntry, content: buffer | string) -> (),
 ```
 
 </h4>
-
-#### FileEntry.append
 
 <details>
 
@@ -256,6 +256,8 @@ Like `fs.writefile`, `content` does not have to be a valid utf-8 encoded string 
 
 ---
 
+### FileEntry.is_valid_utf8
+
 <h4>
 
 ```luau
@@ -264,9 +266,9 @@ function FileEntry.is_valid_utf8(self: FileEntry) -> boolean,
 
 </h4>
 
-#### FileEntry.is_valid_utf8
-
 ---
+
+### FileEntry.metadata
 
 <h4>
 
@@ -276,11 +278,11 @@ function FileEntry.metadata(self: FileEntry) -> FsMetadata,
 
 </h4>
 
-#### FileEntry.metadata
-
 Returns a `FsMetadata` table containing timestamps for creation, modified, and access times, as well as permissions (depends on your operating system)
 
 ---
+
+### FileEntry.copy_to
 
 <h4>
 
@@ -290,9 +292,9 @@ function FileEntry.copy_to(self: FileEntry, to: string) -> (),
 
 </h4>
 
-#### FileEntry.copy_to
-
 ---
+
+### FileEntry.move_to
 
 <h4>
 
@@ -302,9 +304,9 @@ function FileEntry.move_to(self: FileEntry, to: string) -> (),
 
 </h4>
 
-#### FileEntry.move_to
-
 ---
+
+### FileEntry.rename
 
 <h4>
 
@@ -314,9 +316,9 @@ function FileEntry.rename(self: FileEntry, name: string) -> (),
 
 </h4>
 
-#### FileEntry.rename
-
 ---
+
+### FileEntry.remove
 
 <h4>
 
@@ -325,8 +327,6 @@ function FileEntry.remove(self: FileEntry) -> (),
 ```
 
 </h4>
-
-#### FileEntry.remove
 
  Removes the file at `FileEntry.path`.
 
@@ -348,6 +348,8 @@ export type DirectoryEntry = {
 
 ---
 
+### DirectoryEntry.name
+
 <h4>
 
 ```luau
@@ -356,11 +358,11 @@ export type DirectoryEntry = {
 
 </h4>
 
-#### DirectoryEntry.name
-
  The name of the directory; also called basename, etc. Can also be obtained by calling `fs.path.child` on a path.
 
 ---
+
+### DirectoryEntry.path
 
 <h4>
 
@@ -370,12 +372,12 @@ export type DirectoryEntry = {
 
 </h4>
 
-#### DirectoryEntry.path
-
  A filesystem path to the directory; if the `DirectoryEntry` was requested with an absolute path, then this path will be absolute,
  otherwise it'll be a relative path.
 
 ---
+
+### DirectoryEntry.type
 
 <h4>
 
@@ -385,9 +387,9 @@ export type DirectoryEntry = {
 
 </h4>
 
-#### DirectoryEntry.type
-
 ---
+
+### DirectoryEntry.list
 
 <h4>
 
@@ -397,12 +399,12 @@ function DirectoryEntry.list(self: DirectoryEntry, recursive: boolean?, filter: 
 
 </h4>
 
-#### DirectoryEntry.list
-
  Returns an an array of basenames of the directory's entries; pass `true` as the second argument to list all files recursively.
  Pass a filter function to narrow the returned list (to search for specific file names, extensions, etc.)
 
 ---
+
+### DirectoryEntry.join
 
 <h4>
 
@@ -412,12 +414,12 @@ function DirectoryEntry.join(self: DirectoryEntry, ...string) -> string,
 
 </h4>
 
-#### DirectoryEntry.join
-
  Join the `DirectoryEntry`'s path with multiple paths in a cross-platform-compliant manner.
  Basically a wrapper around `fs.path.join(entry.path, a, b, c, ...)`
 
 ---
+
+### DirectoryEntry.find
 
 <h4>
 
@@ -427,9 +429,9 @@ function DirectoryEntry.find(self: DirectoryEntry, name: string, options: { foll
 
 </h4>
 
-#### DirectoryEntry.find
-
 ---
+
+### DirectoryEntry.entries
 
 <h4>
 
@@ -439,9 +441,9 @@ function DirectoryEntry.entries(self: DirectoryEntry) -> { [string]: Entry },
 
 </h4>
 
-#### DirectoryEntry.entries
-
 ---
+
+### DirectoryEntry.expect_file
 
 <h4>
 
@@ -451,11 +453,11 @@ function DirectoryEntry.expect_file(self: DirectoryEntry, name: string) -> FileE
 
 </h4>
 
-#### DirectoryEntry.expect_file
-
  Expect that the directory contains file `name`, returning its `FileEntry` or otherwise error.
 
 ---
+
+### DirectoryEntry.expect_dir
 
 <h4>
 
@@ -465,11 +467,11 @@ function DirectoryEntry.expect_dir(self: DirectoryEntry, name: string) -> Direct
 
 </h4>
 
-#### DirectoryEntry.expect_dir
-
  Expect that the directory contains directory `name`, returning its `DirectoryEntry` or otherwise error.
 
 ---
+
+### DirectoryEntry.add_file
 
 <h4>
 
@@ -478,8 +480,6 @@ function DirectoryEntry.add_file(self: DirectoryEntry, name: string, content: st
 ```
 
 </h4>
-
-#### DirectoryEntry.add_file
 
 <details>
 
@@ -504,6 +504,8 @@ local src = fs.dir.ensure("./src")
 
 ---
 
+### DirectoryEntry.add_tree
+
 <h4>
 
 ```luau
@@ -511,8 +513,6 @@ function DirectoryEntry.add_tree(self: DirectoryEntry, name: string, builder: Tr
 ```
 
 </h4>
-
-#### DirectoryEntry.add_tree
 
 <details>
 
@@ -538,6 +538,8 @@ local src = fs.dir.ensure("./src")
 
 ---
 
+### DirectoryEntry.metadata
+
 <h4>
 
 ```luau
@@ -546,11 +548,11 @@ function DirectoryEntry.metadata(self: DirectoryEntry) -> FsMetadata,
 
 </h4>
 
-#### DirectoryEntry.metadata
-
 Returns a `FsMetadata` table containing timestamps for creation, modified, and access times, as well as permissions (depends on your operating system)
 
 ---
+
+### DirectoryEntry.copy_to
 
 <h4>
 
@@ -560,9 +562,9 @@ function DirectoryEntry.copy_to(self: DirectoryEntry, to: string) -> (),
 
 </h4>
 
-#### DirectoryEntry.copy_to
-
 ---
+
+### DirectoryEntry.move_to
 
 <h4>
 
@@ -572,9 +574,9 @@ function DirectoryEntry.move_to(self: DirectoryEntry, to: string) -> (),
 
 </h4>
 
-#### DirectoryEntry.move_to
-
 ---
+
+### DirectoryEntry.rename
 
 <h4>
 
@@ -584,9 +586,9 @@ function DirectoryEntry.rename(self: DirectoryEntry, name: string) -> (),
 
 </h4>
 
-#### DirectoryEntry.rename
-
 ---
+
+### DirectoryEntry.remove
 
 <h4>
 
@@ -595,8 +597,6 @@ function DirectoryEntry.remove(self: DirectoryEntry) -> (),
 ```
 
 </h4>
-
-#### DirectoryEntry.remove
 
  Removes the directory at `DirectoryEntry.path`, alongside all its contents.
 
@@ -630,6 +630,8 @@ export type FsMetadata = {
 
 ---
 
+### FsMetadata.created_at
+
 <h4>
 
 ```luau
@@ -638,12 +640,12 @@ export type FsMetadata = {
 
 </h4>
 
-#### FsMetadata.created_at
-
  A UTC DateTime representing when the `Entry` was created.
  This field is optional because it might not be available on all platforms.
 
 ---
+
+### FsMetadata.modified_at
 
 <h4>
 
@@ -653,12 +655,12 @@ export type FsMetadata = {
 
 </h4>
 
-#### FsMetadata.modified_at
-
  A UTC DateTime representing when the `Entry` was last modified.
  This field is optional because it might not be available on all platforms.
 
 ---
+
+### FsMetadata.accessed_at
 
 <h4>
 
@@ -668,12 +670,12 @@ export type FsMetadata = {
 
 </h4>
 
-#### FsMetadata.accessed_at
-
  A UTC DateTime representing when the `Entry` was last accessed.
  This field is optional because it might not be available on all platforms.
 
 ---
+
+### FsMetadata.permissions
 
 <h4>
 
@@ -683,9 +685,9 @@ export type FsMetadata = {
 
 </h4>
 
-#### FsMetadata.permissions
-
 ---
+
+#### FsMetadata.permissions.readonly
 
 <h4>
 
@@ -695,11 +697,11 @@ export type FsMetadata = {
 
 </h4>
 
-##### FsMetadata.permissions.readonly
-
  Whether the `Entry` is read-only or not. Should be accessible on both Windows and Unix-like operating systems.
 
 ---
+
+#### FsMetadata.permissions.unix_mode
 
 <h4>
 
@@ -708,8 +710,6 @@ export type FsMetadata = {
 ```
 
 </h4>
-
-##### FsMetadata.permissions.unix_mode
 
  Represents the numeric Unix permission bits for the `Entry`, combining read, write, and execute permissions
  for owner, group, and others. This field is optional because it's not available on Windows.
@@ -736,6 +736,8 @@ export type FindResult = { -- can't make this type more accurate w/ unions bc it
 
 ---
 
+### FindResult.ok
+
 <h4>
 
 ```luau
@@ -744,11 +746,11 @@ export type FindResult = { -- can't make this type more accurate w/ unions bc it
 
 </h4>
 
-#### FindResult.ok
-
  `true` if the find operation succeeded ("File" | "Directory" | "Symlink"), otherwise `false` ("NotFound" | "PermissionDenied")
 
 ---
+
+### FindResult.path
 
 <h4>
 
@@ -758,9 +760,9 @@ export type FindResult = { -- can't make this type more accurate w/ unions bc it
 
 </h4>
 
-#### FindResult.path
-
 ---
+
+### FindResult.type
 
 <h4>
 
@@ -770,9 +772,9 @@ export type FindResult = { -- can't make this type more accurate w/ unions bc it
 
 </h4>
 
-#### FindResult.type
-
 ---
+
+### FindResult.exists
 
 <h4>
 
@@ -781,8 +783,6 @@ function FindResult.exists(self: FindResult) -> boolean,
 ```
 
 </h4>
-
-#### FindResult.exists
 
 Checks if `FindResult.path` exists on the filesystem.
 
@@ -800,6 +800,8 @@ end
 
 ---
 
+### FindResult.try_file
+
 <h4>
 
 ```luau
@@ -807,8 +809,6 @@ function FindResult.try_file(self: FindResult) -> FileEntry?,
 ```
 
 </h4>
-
-#### FindResult.try_file
 
 Attempt to create a `FileEntry` from the `FindResult`, returning it or `nil` if unsuccessful.
 
@@ -823,6 +823,8 @@ end
 
 ---
 
+### FindResult.try_dir
+
 <h4>
 
 ```luau
@@ -830,8 +832,6 @@ function FindResult.try_dir(self: FindResult) -> DirectoryEntry?,
 ```
 
 </h4>
-
-#### FindResult.try_dir
 
 Attempt to create a `DirectoryEntry` from the `FindResult`, returning it or `nil` if unsuccessful.
 
@@ -846,6 +846,8 @@ end
 
 ---
 
+### FindResult.unwrap_file
+
 <h4>
 
 ```luau
@@ -854,11 +856,11 @@ function FindResult.unwrap_file(self: FindResult) -> FileEntry,
 
 </h4>
 
-#### FindResult.unwrap_file
-
  Create a `FileEntry` from the `FindResult`, erroring if the file doesn't exist.
 
 ---
+
+### FindResult.unwrap_dir
 
 <h4>
 
@@ -867,8 +869,6 @@ function FindResult.unwrap_dir(self: FindResult) -> DirectoryEntry,
 ```
 
 </h4>
-
-#### FindResult.unwrap_dir
 
  Create a `DirectoryEntry` from the `FindResult`, erroring if the directory doesn't exist.
 
@@ -890,6 +890,8 @@ export type FileBuilder = {
 
 ---
 
+### FileBuilder.name
+
 <h4>
 
 ```luau
@@ -898,9 +900,9 @@ export type FileBuilder = {
 
 </h4>
 
-#### FileBuilder.name
-
 ---
+
+### FileBuilder.type
 
 <h4>
 
@@ -910,9 +912,9 @@ export type FileBuilder = {
 
 </h4>
 
-#### FileBuilder.type
-
 ---
+
+### FileBuilder.content
 
 <h4>
 
@@ -921,8 +923,6 @@ export type FileBuilder = {
 ```
 
 </h4>
-
-#### FileBuilder.content
 
 ```luau
 }
@@ -942,6 +942,8 @@ export type DirectoryBuilder = {
 
 ---
 
+### DirectoryBuilder.name
+
 <h4>
 
 ```luau
@@ -950,9 +952,9 @@ export type DirectoryBuilder = {
 
 </h4>
 
-#### DirectoryBuilder.name
-
 ---
+
+### DirectoryBuilder.type
 
 <h4>
 
@@ -962,9 +964,9 @@ export type DirectoryBuilder = {
 
 </h4>
 
-#### DirectoryBuilder.type
-
 ---
+
+### DirectoryBuilder.children
 
 <h4>
 
@@ -973,8 +975,6 @@ export type DirectoryBuilder = {
 ```
 
 </h4>
-
-#### DirectoryBuilder.children
 
 ```luau
 }

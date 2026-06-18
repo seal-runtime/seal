@@ -9,6 +9,8 @@ good for serving binary stuff in a digestable form for serving things on the int
 
 ---
 
+### base64.encode
+
 <h4>
 
 ```luau
@@ -17,9 +19,9 @@ function base64.encode(data: string | buffer) -> string,
 
 </h4>
 
-### base64.encode
-
 ---
+
+### base64.decode
 
 <h4>
 
@@ -29,9 +31,9 @@ function base64.decode(data: string) -> buffer,
 
 </h4>
 
-### base64.decode
-
 ---
+
+### base64.urlsafe
 
 <h4>
 
@@ -41,9 +43,9 @@ urlsafe: {
 
 </h4>
 
-### base64.urlsafe
-
 ---
+
+### base64.urlsafe.encode
 
 <h4>
 
@@ -53,9 +55,9 @@ function base64.urlsafe.encode(data: string | buffer) -> string,
 
 </h4>
 
-### base64.urlsafe.encode
-
 ---
+
+### base64.urlsafe.decode
 
 <h4>
 
@@ -64,8 +66,6 @@ function base64.urlsafe.decode(data: string) -> buffer
 ```
 
 </h4>
-
-### base64.urlsafe.decode
 
 ```luau
   }

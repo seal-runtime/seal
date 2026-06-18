@@ -9,6 +9,8 @@ Serialize YAML files.
 
 ---
 
+### yaml.encode
+
 <h4>
 
 ```luau
@@ -17,9 +19,9 @@ function yaml.encode(t: YamlValue) -> string,
 
 </h4>
 
-### yaml.encode
-
 ---
+
+### yaml.decode
 
 <h4>
 
@@ -29,9 +31,9 @@ function yaml.decode(toml_data: string) -> YamlValue,
 
 </h4>
 
-### yaml.decode
-
 ---
+
+### yaml.readfile
 
 <h4>
 
@@ -41,9 +43,9 @@ function yaml.readfile(path: string) -> YamlValue,
 
 </h4>
 
-### yaml.readfile
-
 ---
+
+### yaml.writefile
 
 <h4>
 
@@ -52,8 +54,6 @@ function yaml.writefile(path: string, content: YamlValue) -> (),
 ```
 
 </h4>
-
-### yaml.writefile
 
 ```luau
 }

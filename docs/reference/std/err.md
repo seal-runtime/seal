@@ -9,6 +9,8 @@
 
 ---
 
+### err.message
+
 <h4>
 
 ```luau
@@ -16,8 +18,6 @@ function err.message(string) -> error,
 ```
 
 </h4>
-
-### err.message
 
 <details>
 
@@ -49,6 +49,8 @@ end
 
 ---
 
+### err.wrap
+
 <h4>
 
 ```luau
@@ -57,13 +59,13 @@ function err.wrap(message: string) -> error,
 
 </h4>
 
-### err.wrap
-
 Wraps an error message with the stack traceback at the location this function was called.
 
 Unlike `err.message`, errors created with this function are red colored and contain their own error tracebacks.
 
 ---
+
+### err.format
 
 <h4>
 
@@ -73,11 +75,11 @@ function err.format(err: error) -> string,
 
 </h4>
 
-### err.format
-
  Prettifies an `error` from `pcall` or any of the error returning functions.
 
 ---
+
+### err.traceback
 
 <h4>
 
@@ -87,11 +89,11 @@ function err.traceback(message: string?, level: number?) -> string,
 
 </h4>
 
-### err.traceback
-
  Gets and formats the stack traceback at the current location.
 
 ---
+
+### err.throw
 
 <h4>
 
@@ -100,8 +102,6 @@ function err.throw(err: error) -> never,
 ```
 
 </h4>
-
-### err.throw
 
  Takes any error and throws it (causing an error).
 

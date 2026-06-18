@@ -7,6 +7,8 @@
 
 ---
 
+### cursor.position
+
 <h4>
 
 ```luau
@@ -15,11 +17,11 @@ function cursor.position() -> vector,
 
 </h4>
 
-### cursor.position
-
 Returns the current cursor position as a vector of `<column, row, 0>`.
 
 ---
+
+### cursor.show
 
 <h4>
 
@@ -28,8 +30,6 @@ function cursor.show() -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.show
 
 Creates a <kbd>ShowCursor</kbd> `TerminalAction`.
 
@@ -40,6 +40,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.hide
+
 <h4>
 
 ```luau
@@ -47,8 +49,6 @@ function cursor.hide() -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.hide
 
 Creates a <kbd>HideCursor</kbd> `TerminalAction`.
 
@@ -59,6 +59,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.style
+
 <h4>
 
 ```luau
@@ -66,8 +68,6 @@ function cursor.style(mode: CursorStyle) -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.style
 
 <details>
 
@@ -97,6 +97,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.save
+
 <h4>
 
 ```luau
@@ -104,8 +106,6 @@ function cursor.save() -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.save
 
 <details>
 
@@ -125,6 +125,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.restore
+
 <h4>
 
 ```luau
@@ -132,8 +134,6 @@ function cursor.restore() -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.restore
 
 <details>
 
@@ -151,6 +151,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.up
+
 <h4>
 
 ```luau
@@ -158,8 +160,6 @@ function cursor.up(r: number) -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.up
 
 Creates a <kbd>MoveUp</kbd> `TerminalAction`.
 
@@ -170,6 +170,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.down
+
 <h4>
 
 ```luau
@@ -177,8 +179,6 @@ function cursor.down(r: number) -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.down
 
 Creates a <kbd>MoveDown</kbd> `TerminalAction`.
 
@@ -189,6 +189,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.left
+
 <h4>
 
 ```luau
@@ -196,8 +198,6 @@ function cursor.left(c: number) -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.left
 
 Creates a <kbd>MoveLeft</kbd> `TerminalAction`.
 
@@ -208,6 +208,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.right
+
 <h4>
 
 ```luau
@@ -215,8 +217,6 @@ function cursor.right(c: number) -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.right
 
 Creates a <kbd>MoveRight</kbd> `TerminalAction`.
 
@@ -227,6 +227,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.to
+
 <h4>
 
 ```luau
@@ -234,8 +236,6 @@ to: CursorMoveToColumnsAndRows & CursorMoveToPositionVector,
 ```
 
 </h4>
-
-### cursor.to
 
 <details>
 
@@ -273,6 +273,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.column
+
 <h4>
 
 ```luau
@@ -280,8 +282,6 @@ function cursor.column(c: number) -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.column
 
 <details>
 
@@ -298,6 +298,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.row
+
 <h4>
 
 ```luau
@@ -305,8 +307,6 @@ function cursor.row(r: number) -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.row
 
 Creates a <kbd>MoveTo</kbd> `TerminalAction` that moves the cursor to a specific row.
 
@@ -317,6 +317,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.nextline
+
 <h4>
 
 ```luau
@@ -324,8 +326,6 @@ function cursor.nextline(n: number?) -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.nextline
 
 Creates a <kbd>NextLine</kbd> `TerminalAction`.
 
@@ -336,6 +336,8 @@ to queue and execute multiple commands, or call its `:execute()` method to direc
 
 ---
 
+### cursor.prevline
+
 <h4>
 
 ```luau
@@ -343,8 +345,6 @@ function cursor.prevline(n: number?) -> TerminalAction,
 ```
 
 </h4>
-
-### cursor.prevline
 
 Creates a <kbd>PreviousLine</kbd> `TerminalAction`.
 

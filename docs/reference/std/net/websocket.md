@@ -7,6 +7,8 @@
 
 ---
 
+### socket.connect
+
 <h4>
 
 ```luau
@@ -14,8 +16,6 @@ function socket.connect(url: string) -> Websocket,
 ```
 
 </h4>
-
-### socket.connect
 
 Connect to the WebSocket at `url` as a client, returning a `Websocket` handle.
 

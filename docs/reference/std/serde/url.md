@@ -7,6 +7,8 @@
 
 ---
 
+### url.encode
+
 <h4>
 
 ```luau
@@ -15,11 +17,11 @@ function url.encode(text: string) -> string,
 
 </h4>
 
-### url.encode
-
  Encodes `text` in urlsafe/percent encoding for use in urls.
 
 ---
+
+### url.decode
 
 <h4>
 
@@ -29,11 +31,11 @@ function url.decode(encoded: string) -> string,
 
 </h4>
 
-### url.decode
-
  Decodes the url/percent-encoded string.
 
 ---
+
+### url.binary
 
 <h4>
 
@@ -43,9 +45,9 @@ binary: {
 
 </h4>
 
-### url.binary
-
 ---
+
+### url.binary.encode
 
 <h4>
 
@@ -55,9 +57,9 @@ function url.binary.encode(data: string | buffer) -> string,
 
 </h4>
 
-### url.binary.encode
-
 ---
+
+### url.binary.decode
 
 <h4>
 
@@ -66,8 +68,6 @@ function url.binary.decode(encoded: string) -> buffer,
 ```
 
 </h4>
-
-### url.binary.decode
 
 ```luau
   }
