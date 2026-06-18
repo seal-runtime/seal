@@ -275,6 +275,8 @@ function ArgParser.commands(self: any, ...Command) -> Parsed,
  Parse more than one command; pass in `args.default(...)` and `args.command(...)` to
  generate commands.
 
+---
+
 ```luau
 } -- closes ArgParser
 ```
@@ -332,6 +334,8 @@ export type ProgramInfo = {
 </h4>
 
  put authors and/or repository link here
+
+---
 
 ```luau
 } -- closes ProgramInfo
@@ -410,6 +414,8 @@ function Command.aliases(self: Command, ...string) -> Command,
 </h4>
 
  Aliases for your command, like `seal r -> seal run`
+
+---
 
 ```luau
 } -- closes Command
@@ -499,6 +505,8 @@ function Parsed.help(self: Parsed) -> string,
 
 </h4>
 
+---
+
 ```luau
 } -- closes Parsed
 ```
@@ -562,6 +570,8 @@ export type ArgList = {
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes ArgList
@@ -716,6 +726,8 @@ function Positional.validate(self: Positional, validator: Validator) -> Position
 
 </h4>
 
+---
+
 ```luau
 } -- closes Positional
 ```
@@ -807,6 +819,8 @@ function Flag.default(self: Flag, boolean) -> Flag,
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes Flag
@@ -923,6 +937,8 @@ function Named.validate(self: Named, validator: Validator) -> Named,
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes Named

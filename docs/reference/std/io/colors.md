@@ -219,6 +219,8 @@ function colors.bold.white(text: string) -> string,
 
 </h4>
 
+---
+
 ```luau
   }, -- closes bold
 ```
@@ -270,6 +272,8 @@ function colors.style.underline(text: string) -> string,
 ```
 
 </h4>
+
+---
 
 ```luau
   }, -- closes style
@@ -814,6 +818,8 @@ codes: {
 ```
 
 </h4>
+
+---
 
 ```luau
   } -- closes codes

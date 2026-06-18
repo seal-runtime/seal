@@ -66,6 +66,8 @@ local dir = fs.tree()
     )
 ```
 
+---
+
 ```luau
 } -- closes TreeBuilder
 ```
@@ -340,6 +342,8 @@ function FileEntry.remove(self: FileEntry) -> (),
 
  Removes the file at `FileEntry.path`.
 
+---
+
 ```luau
 } -- closes FileEntry
 ```
@@ -610,6 +614,8 @@ function DirectoryEntry.remove(self: DirectoryEntry) -> (),
 
  Removes the directory at `DirectoryEntry.path`, alongside all its contents.
 
+---
+
 ```luau
 } -- closes DirectoryEntry
 ```
@@ -724,9 +730,13 @@ export type FsMetadata = {
  Represents the numeric Unix permission bits for the `Entry`, combining read, write, and execute permissions
  for owner, group, and others. This field is optional because it's not available on Windows.
 
+---
+
 ```luau
   } -- closes permissions
 ```
+
+---
 
 ```luau
 } -- closes FsMetadata
@@ -882,6 +892,8 @@ function FindResult.unwrap_dir(self: FindResult) -> DirectoryEntry,
 
  Create a `DirectoryEntry` from the `FindResult`, erroring if the directory doesn't exist.
 
+---
+
 ```luau
 } -- closes FindResult
 ```
@@ -934,6 +946,8 @@ export type FileBuilder = {
 
 </h4>
 
+---
+
 ```luau
 } -- closes FileBuilder
 ```
@@ -985,6 +999,8 @@ export type DirectoryBuilder = {
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes DirectoryBuilder

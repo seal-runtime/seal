@@ -69,6 +69,8 @@ function url.binary.decode(encoded: string) -> buffer,
 
 </h4>
 
+---
+
 ```luau
   } -- closes binary
 ```

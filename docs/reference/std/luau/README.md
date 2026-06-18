@@ -258,6 +258,8 @@ export type EvalOptions = {
 
  add additional globals to the environment, including functions and variables.
 
+---
+
 ```luau
 } -- closes EvalOptions
 ```
@@ -297,6 +299,8 @@ export type LuaurcAliases = {
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes LuaurcAliases

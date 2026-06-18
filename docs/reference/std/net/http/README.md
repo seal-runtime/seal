@@ -404,6 +404,8 @@ Configure how quickly a request times out.
 
  Max duration to wait for receiving the response body.
 
+---
+
 ```luau
 } -- closes RequestTimeout
 ```
@@ -521,6 +523,8 @@ Header keys are case-insensitive as per the HTTP spec; values must be valid ASCI
 </h4>
 
  Max number of redirects to redirect through before erroring out; defaults to 10. Pass 0 to not redirect anywhere and return the original response.
+
+---
 
 ```luau
 } -- closes HttpRequestWithoutBody
@@ -653,6 +657,8 @@ To override this behavior, set a `content-type` header explicitly.
 </h4>
 
  Max number of redirects to redirect through before erroring out; defaults to 10. Pass 0 to not redirect anywhere and return the original response.
+
+---
 
 ```luau
 } -- closes HttpRequestWithBody
@@ -957,6 +963,8 @@ export type HttpResponse = {
 
  The canonical HTTP reason phase for the status code; such as "Not Found" for status code 404
 
+---
+
 ```luau
   }, -- closes status
 ```
@@ -1035,6 +1043,8 @@ This field is `nil` if the server didn't send a `content-type` header at all.
 
  The character encoding of the response body, e.g. `"utf-8"` or `"iso-8859-1"`.
  Only present for text-based MIME types; typically absent for binary types like `"image/png"`.
+
+---
 
 ```luau
   }?, -- closes content_type
@@ -1117,6 +1127,8 @@ local data = http.get(options):expect_json<<ApiResponse>>()
 
 </details>
 
+---
+
 ```luau
 } -- closes HttpResponse
 ```
@@ -1183,6 +1195,8 @@ The request timed out because you set `HttpRequestOptions.timeout`.
 
 </h4>
 
+---
+
 ```luau
 } -- closes HttpTimeoutError
 ```
@@ -1237,6 +1251,8 @@ receiving a proper response.
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes HttpIoError

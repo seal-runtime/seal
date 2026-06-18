@@ -480,6 +480,7 @@ for _, library in libraries do
                 for _ in ancestor:gmatch("%.") do ancestor_depth += 1 end
                 local close_indent = string.rep("  ", ancestor_depth)
                 local short_name = ancestor:match("([^%.]+)$") or ancestor
+                push("---")
                 push("```luau", 0)
                 push(close_indent .. closing .. " -- closes " .. short_name, 0)
                 push("```", 2)
@@ -493,6 +494,7 @@ for _, library in libraries do
             for _ in api.name:gmatch("%.") do own_depth += 1 end
             local close_indent = string.rep("  ", own_depth)
             local short_name = api.name:match("([^%.]+)$") or api.name
+            push("---")
             push("```luau", 0)
             push(close_indent .. own_closing .. " -- closes " .. short_name, 0)
             push("```", 2)

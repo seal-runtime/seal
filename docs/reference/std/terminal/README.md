@@ -298,6 +298,8 @@ function terminal.rawmode.disable() -> (),
 
 Switches back to **cooked** mode.
 
+---
+
 ```luau
   }, -- closes rawmode
 ```
@@ -377,6 +379,8 @@ end
 
 </details>
 
+---
+
 ```luau
   }, -- closes interrupt
 ```
@@ -435,6 +439,8 @@ function terminal.capture.paste(enabled: boolean) -> (),
 
  Allows `Paste` events to be reported by `terminal.events()`.<br>
  Might not work correctly when multiple lines are copied.
+
+---
 
 ```luau
   }, -- closes capture
@@ -828,6 +834,8 @@ export type KeyModifiers = {
 
 </h4>
 
+---
+
 ```luau
 } -- closes KeyModifiers
 ```
@@ -870,6 +878,8 @@ export type ResizeEvent = {
 
  The new terminal size; a vector of `<columns, rows, 0>`; access via `size.x` (columns) and `size.y` (rows)
 
+---
+
 ```luau
 } -- closes ResizeEvent
 ```
@@ -898,6 +908,8 @@ export type FocusGained = {
 
 </h4>
 
+---
+
 ```luau
 } -- closes FocusGained
 ```
@@ -925,6 +937,8 @@ export type FocusLost = {
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes FocusLost
@@ -966,6 +980,8 @@ export type PasteEvent = {
 
 </h4>
 
+---
+
 ```luau
 } -- closes PasteEvent
 ```
@@ -996,6 +1012,8 @@ export type Empty = {
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes Empty
@@ -1088,6 +1106,8 @@ The spacebar key is `"Space"`.
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes KeyEvent
@@ -1876,6 +1896,8 @@ export type MouseEvent = {
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes MouseEvent

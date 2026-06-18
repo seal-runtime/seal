@@ -363,6 +363,8 @@ export type ServeRequest = {
 
 </h4>
 
+---
+
 ```luau
 } -- closes ServeRequest
 ```
@@ -475,6 +477,8 @@ export type ServeResponse = {
 
 </h4>
 
+---
+
 ```luau
 } -- closes ServeResponse
 ```
@@ -526,6 +530,8 @@ function ServeConfig.handler(ServeRequest) -> ServeResponse,
 ```
 
 </h4>
+
+---
 
 ```luau
 } -- closes ServeConfig
