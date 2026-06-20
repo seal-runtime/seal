@@ -67,7 +67,9 @@ pub fn setup_panic_hook() {
             .unwrap_or_else(|| "Unknown error running the custom panic hook, please report this to the manager (deviaze)".to_string());
 
         if let Some(location) = info.location() {
-            let payload_line = format!("{}[PANIC! IN THE SEAL INTERNALS]: {}{}{}{}", colors::BOLD_RED, colors::RESET, colors::YELLOW, payload, colors::RESET);
+            let nc = colors::are_disabled();
+            let (bold_red, yellow, red, reset) = if nc { ("", "", "", "") } else { (colors::BOLD_RED, colors::YELLOW, colors::RED, colors::RESET) };
+            let payload_line = format!("{}[PANIC! IN THE SEAL INTERNALS]: {}{}{}{}", bold_red, reset, yellow, payload, reset);
             let panic_top_line = format!("panic occurred at: [\"{}\"]:{}:{}", location.file(), location.line(), location.column());
             let rust_backtrace: Option<String> = if let Ok(var) = std::env::var("RUST_BACKTRACE") && !var.eq_ignore_ascii_case("0") {
                 Some(std::backtrace::Backtrace::capture().to_string())
@@ -76,14 +78,14 @@ pub fn setup_panic_hook() {
             };
 
             let mut stderr = std::io::stderr().lock();
-            
+
             let we_should_have_stderr_stream = crate::std_io::input::EXPECT_OUTPUT_STREAMS.stderr();
             if we_should_have_stderr_stream {
                 // we should have access to a sane stderr to print on so let's just report to it
                 let _ = writeln!(stderr, "{}\n{}", payload_line, panic_top_line);
                 let _ = writeln!(stderr,
                     "{}\nseal panicked. seal is not supposed to panic, so you've found a bug.\nPlease report it here: https://github.com/seal-runtime/seal/issues{}",
-                    colors::RED, colors::RESET
+                    red, reset
                 );
                 if let Some(ref bt) = rust_backtrace {
                     let _ = writeln!(stderr, "\nRUST BACKTRACE:\n{}", bt);
@@ -108,8 +110,10 @@ pub fn setup_panic_hook() {
 }
 
 pub fn display_error_and_exit(err: LuaError) -> ! {
+    let nc = colors::are_disabled();
+    let (bold_red, bold_yellow, reset) = if nc { ("", "", "") } else { (colors::BOLD_RED, colors::BOLD_YELLOW, colors::RESET) };
     let err = parse_traceback(err.to_string());
-    let error_message = format!("{}[ERR]{} {}", colors::BOLD_RED, colors::RESET, err);
+    let error_message = format!("{}[ERR]{} {}", bold_red, reset, err);
 
     let mut stderr = std::io::stderr().lock();
 
@@ -131,7 +135,7 @@ pub fn display_error_and_exit(err: LuaError) -> ! {
             crossterm::cursor::Show,
             crossterm::terminal::Clear(crossterm::terminal::ClearType::FromCursorDown),
         );
-        let warning_message = format!("{}[WARN]{} the program errored in terminal raw mode; switching back to cooked mode and returning control to the user.", colors::BOLD_YELLOW, colors::RESET);
+        let warning_message = format!("{}[WARN]{} the program errored in terminal raw mode; switching back to cooked mode and returning control to the user.", bold_yellow, reset);
         let _ = writeln!(stderr, "{}", warning_message);
     }
 
@@ -159,10 +163,12 @@ pub fn display_error_and_exit(err: LuaError) -> ! {
 
 #[macro_export]
 macro_rules! wrap_err {
-    ($msg:expr) => {
-        Err(LuaError::external(format!("{}{}{}", colors::RED, $msg, colors::RESET)))
-    };
-    ($msg:expr, $($arg:tt)*) => {
-        Err(LuaError::external(format!("{}{}{}", colors::RED, format!($msg, $($arg)*), colors::RESET)))
-    };
+    ($msg:expr) => {{
+        let msg = $msg.to_string();
+        Err(LuaError::external(if colors::are_disabled() { msg } else { format!("{}{}{}", colors::RED, msg, colors::RESET) }))
+    }};
+    ($msg:expr, $($arg:tt)*) => {{
+        let msg = format!($msg, $($arg)*);
+        Err(LuaError::external(if colors::are_disabled() { msg } else { format!("{}{}{}", colors::RED, msg, colors::RESET) }))
+    }};
 }

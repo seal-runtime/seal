@@ -4,8 +4,17 @@
 export type format = setmetatable<{
     --[=[
         Formats `item` in the same way as `print` or `pp`.
+
+        Pass `options` to change the behavior of the formatter.
+        If you want to change ALL print/format.pretty/etc. formatting
+        throughout seal, call `format.defaults`.
     ]=]
-    pretty: (item: unknown) -> string,
+    pretty: (item: unknown, options: FormatOptions?) -> string,
+    --[=[
+        Sets the default `FormatOptions` applied to all subsequent `print`, `format.pretty`, `format`, and `pp` calls.
+        Pass `nil` to revert to built-in defaults.
+    ]=]
+    defaults: (options: FormatOptions?) -> (),
     --[=[
         Like pretty printing but without colors.
     ]=]
@@ -23,7 +32,23 @@ export type format = setmetatable<{
     ]=]
     hexdump: (data: string | buffer) -> string,
 }, { 
-    __call: (self: any, item: unknown) -> string,
+    __call: (self: any, item: unknown, options: FormatOptions?) -> string,
 }>
+
+--- Customize how your output looks.
+export type FormatOptions = {
+    --- Table max depth.
+    max_depth: number?,
+    --- How many spaces to indent, defaults to 4
+    indent_spaces: number?,
+    --- Limit the number of elements printed in an array; defaults to 42
+    max_elements_in_array: number?,
+    --- Do you want to see `[1] = value`? Defaults to true
+    show_array_indices: boolean?,
+    --- Show `@metatable = ...` when a table has a metatable. Defaults to true
+    show_metatables: boolean?,
+    --- Show vertical guide lines at each indent level, colored by depth. Defaults to true when indent_spaces < 3
+    guidelines: boolean?,
+}
 
 return {} :: format

@@ -356,7 +356,16 @@ export type terminal = {
         end
         ```
     ]=]
-    execute: (...TerminalAction) -> ()
+    execute: (...TerminalAction) -> (),
+    --[=[
+        Queries the terminal for its background color via the OSC 11 escape sequence.
+
+        Returns a vector of `<r, g, b>` with each channel in the 0–255 range,
+        or `nil` if the terminal doesn't respond within 150ms or doesn't support the query.
+
+        Temporarily enables raw mode if not already active.
+    ]=]
+    background: () -> vector?
 }
 
 type ClearMode =

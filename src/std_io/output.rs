@@ -58,17 +58,11 @@ pub fn simple_print_and_return(luau: &Lua, multivalue: LuaMultiValue) -> LuaMult
 }
 
 pub fn pretty_print_and_return(luau: &Lua, multivalue: LuaMultiValue) -> LuaMultiResult {
-    let formatter = format::cached_formatter(luau)?;
-    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
-    
     let mut output = String::from("");
 
     for (index, value) in multivalue.iter().enumerate() {
-        let formatted = match format_pretty.call::<LuaValue>(value) {
-            Ok(LuaValue::String(text)) => text.to_string_lossy(),
-            Ok(other) => {
-                panic!("pp: format.pretty returned a non-string, got: {:?}", other);
-            },
+        let formatted = match format::pretty(luau, value.into_lua_multi(luau)?) {
+            Ok(text) => text,
             Err(err) => {
                 return wrap_err!("pp: error printing: {}", err);
             }
@@ -80,30 +74,25 @@ pub fn pretty_print_and_return(luau: &Lua, multivalue: LuaMultiValue) -> LuaMult
             output.push_str(", ");
         }
     }
-    
+
     puts!("{}", &output)?;
 
     Ok(multivalue)
 }
 
 pub fn pretty_print(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<()> {
-    let formatter = format::cached_formatter(luau)?;
-    let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
-
     let mut output = String::from("");
+    let values: Vec<LuaValue> = multivalue.drain(..).collect();
 
-    while let Some(value) = multivalue.pop_front() {
-        match format_pretty.call::<LuaString>(value) {
-            Ok(text) => {
-                let text = text.to_string_lossy();
-                output += &text;
-            },
+    for (index, value) in values.iter().enumerate() {
+        match format::pretty(luau, value.into_lua_multi(luau)?) {
+            Ok(text) => output += &text,
             Err(err) => {
                 return wrap_err!("print: error printing: {}", err);
             }
         };
-        if !multivalue.is_empty() {
-            output += ", ";
+        if index + 1 < values.len() {
+            output.push_str(", ");
         }
     }
     puts!("{}", &output)?;

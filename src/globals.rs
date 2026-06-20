@@ -10,7 +10,7 @@ pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let message = match multivalue.pop_front() {
         Some(LuaValue::String(s)) => s.to_string_lossy(),
         Some(LuaNil) | None => String::default(),
-        Some(other) => std_io::format::pretty(luau, other)?,
+        Some(other) => std_io::format::pretty(luau, other.into_lua_multi(luau)?)?,
     };
 
     let level = match multivalue.pop_front() {
@@ -31,7 +31,7 @@ pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 }
 
 pub fn warn(luau: &Lua, warn_value: LuaValue) -> LuaValueResult {
-    let formatted_text = std_io::format::pretty(luau, warn_value)?;
+    let formatted_text = std_io::format::pretty(luau, warn_value.into_lua_multi(luau)?)?;
     eputs!("{}[WARN]{} {}{}", colors::BOLD_YELLOW, colors::RESET, formatted_text, colors::RESET)?;
     Ok(LuaNil)
 }

@@ -32,14 +32,18 @@ local function parse_traceback(traceback: string): string
     local is_tty = terminal.tty()
     local pretty: boolean do
         local pretty_var = env.vars.get("SEAL_PRETTY_ERRORS")
-        local seal_no_colors = env.vars.get("SEAL_NO_COLORS")
+        local seal_colors = env.vars.get("SEAL_COLORS")
+        local no_color = env.vars.get("NO_COLOR")
 
-        if pretty_var and string.lower(pretty_var) == "true" then
+        if seal_colors ~= nil and string.lower(seal_colors) == "true" then
+            -- SEAL_COLORS=true explicitly opts in, overriding NO_COLOR
             pretty = true
-        elseif seal_no_colors and string.lower(seal_no_colors) == "true" then
+        elseif no_color ~= nil or (seal_colors ~= nil and string.lower(seal_colors) == "false") then
             local format = require("@std/io/format")
             traceback = format.uncolor(traceback)
             pretty = false
+        elseif pretty_var and string.lower(pretty_var) == "true" then
+            pretty = true
         elseif pretty_var and string.lower(pretty_var) == "false" then
             pretty = false
         else
@@ -52,9 +56,13 @@ local function parse_traceback(traceback: string): string
         :gsub("%s*%[C%]: in %?", "")
         :gsub(': in function <%[.+', ": in top level")
         :gsub(cwd :: string, ".")
+    local is_runtime_error = string.match(new_traceback, "runtime error: ") ~= nil
+    local is_error_error = string.match(new_traceback, "%[C%]: in function 'error'") ~= nil
+    local might_be_rust_error = string.match(new_traceback, "stack traceback.-%.rs") ~= nil
+
     if is_tty and pretty then
         local str = require("@std/str")
-        local colors = require("@std/colors")
+        local colors = require("@std/io/colors")
 
         -- syntax highlighting stuff
         local tokenmap: { [string]: (string) -> string } = {
@@ -164,14 +172,13 @@ local function parse_traceback(traceback: string): string
 
         -- new_traceback = new_traceback:gsub("stack traceback", colors.bold.yellow("stack traceback"))
         local lines = str.splitlines(new_traceback)
-        local is_runtime_error = false
-        local is_error_error = false
+        is_runtime_error = false
+        is_error_error = false
         local first_path: string?, first_line_number: string?
 
         local passed_stack_traceback = false
         local current_frame = 0
-        --- if a chunk name ends in *.rs we might have an issue in seal
-        local might_be_rust_error = false
+        might_be_rust_error = false
 
         for index, line in lines do
             if index == 1 then
@@ -230,21 +237,23 @@ local function parse_traceback(traceback: string): string
             return nil
         end)
 
-        if might_be_rust_error then
-            table.insert(lines, `\nError appears to have come from a {colors.red("Rust")} file; this might indicate a bad error message or bug in seal.\nConsider reporting this to {colors.blue("https://github.com/seal-runtime/seal/issues")}`)
-        end
-
-        if not is_runtime_error and not is_error_error then
-            local seal_need_help = env.vars.get("SEAL_NEED_HELP")
-            if seal_need_help == nil or (seal_need_help and string.lower(seal_need_help) == "true") then
-                table.insert(lines, `\nNeed help? {colors.style.dim("(set SEAL_NEED_HELP=FALSE to hide)")}\z
-                \n  Check the docs:   {colors.blue("https://github.com/seal-runtime/seal/tree/main/docs/reference")}\z
-                \n  Join the Discord: {colors.blue("https://discord.gg/3MJ37CFNWh")}`)
-            end
-        end
-
         if succ then
             new_traceback = table.concat(lines, "\n")
+        end
+    end
+
+    local colors = require("@std/io/colors")
+
+    if might_be_rust_error then
+        new_traceback ..= `\n\nError appears to have come from a {colors.red("Rust")} file; this might indicate a bad error message or bug in seal.\nConsider reporting this to {colors.blue("https://github.com/seal-runtime/seal/issues")}`
+    end
+
+    if not is_runtime_error and not is_error_error then
+        local seal_need_help = env.vars.get("SEAL_NEED_HELP")
+        if seal_need_help == nil or (seal_need_help and string.lower(seal_need_help) == "true") then
+            new_traceback ..= `\n\nNeed help? {colors.style.dim("(set SEAL_NEED_HELP=FALSE to hide)")}\z
+            \n  Check the docs:   {colors.blue("https://github.com/seal-runtime/seal/tree/main/docs/reference")}\z
+            \n  Join the Discord: {colors.blue("https://discord.gg/3MJ37CFNWh")}`
         end
     end
 

@@ -1,7 +1,11 @@
 use crate::prelude::*;
 use mluau::prelude::*;
 
+use std::sync::{LazyLock, RwLock};
 use regex::Regex;
+
+static DEFAULT_FORMAT_OPTIONS: LazyLock<RwLock<Option<FormatOptions>>> =
+    LazyLock::new(|| RwLock::new(None));
 
 pub fn process_debug_values(result: &mut String, value: &LuaValue, depth: usize) -> LuaResult<()> {
     let left_padding = " ".repeat(2 * depth);
@@ -94,8 +98,7 @@ pub fn simple(luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 pub fn strip_colors(input: &str) -> String {
-    #[allow(clippy::unwrap_used, reason = "this is a valid regex")]
-    let re_colors = Regex::new(r"\x1b\[[0-9;]*m").unwrap();
+    let re_colors = Regex::new(r"\x1b\[[0-9;]*m").expect("this is a valid regex");
     let without_colors = re_colors.replace_all(input, "");
     without_colors.to_string()
 }
@@ -113,16 +116,99 @@ fn uncolor(luau: &Lua, value: LuaValue) -> LuaValueResult {
     ))
 }
 
-pub fn pretty(luau: &Lua, value: LuaValue) -> LuaResult<String> {
+#[derive(Clone)]
+struct FormatOptions {
+    indent_spaces: Option<u32>,
+    max_depth: Option<u32>,
+    max_elements_in_array: Option<u32>,
+    show_array_indices: Option<bool>,
+    show_metatables: Option<bool>,
+    guidelines: Option<bool>,
+}
+impl FormatOptions {
+    fn from_value(value: &LuaValue, function_name: &'static str) -> LuaResult<Option<Self>> {
+        let t = match value {
+            LuaValue::Table(t) => t,
+            LuaNil => {
+                return Ok(None);
+            },
+            other => {
+                return wrap_err!("{}: expected options to be a FormatOptions table, got something else: {:?}", function_name, other);
+            }
+        };
+
+        fn check_number(t: &LuaTable, parameter_name: &'static str, function_name: &'static str) -> LuaResult<Option<u32>> {
+            let u = match t.raw_get(parameter_name)? {
+                LuaValue::Number(f) => float_to_u32(f, function_name, parameter_name)?,
+                LuaValue::Integer(i) => int_to_u32(i, function_name, parameter_name)?,
+                LuaNil => return Ok(None),
+                other => return wrap_err!("{}: expected {} to be a number, got: {:?}", function_name, parameter_name, other),
+            };
+            Ok(Some(u))
+        }
+
+        fn check_boolean(t: &LuaTable, parameter_name: &'static str, function_name: &'static str) -> LuaResult<Option<bool>> {
+            match t.raw_get(parameter_name)? {
+                LuaValue::Boolean(b) => Ok(Some(b)),
+                LuaNil => Ok(None),
+                other => wrap_err!("{}: expected {} to be a boolean or nil, got: {:?}", function_name, parameter_name, other),
+            }
+        }
+
+        let indent_spaces = check_number(t, "indent_spaces", function_name)?;
+        let max_depth = check_number(t, "max_depth", function_name)?;
+        let max_elements_in_array = check_number(t, "max_elements_in_array", function_name)?;
+        let show_array_indices = check_boolean(t, "show_array_indices", function_name)?;
+        let show_metatables = check_boolean(t, "show_metatables", function_name)?;
+        let guidelines = check_boolean(t, "guidelines", function_name)?;
+
+        Ok(Some(Self {
+            indent_spaces,
+            max_depth,
+            max_elements_in_array,
+            show_array_indices,
+            show_metatables,
+            guidelines,
+        }))
+    }
+}
+
+fn format_defaults(_luau: &Lua, value: LuaValue) -> LuaValueResult {
+    let options = FormatOptions::from_value(&value, "format.defaults")?;
+    let mut defaults = DEFAULT_FORMAT_OPTIONS.write().expect("writer should not panic");
+    *defaults = options;
+    Ok(LuaNil)
+}
+
+pub fn pretty(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
+    let function_name = "format.pretty(value: any, options: FormatOptions?)";
     let formatter = cached_formatter(luau)?;
     let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
-    let result = match format_pretty.call::<LuaString>(value) {
+    let Some(value) = multivalue.pop_front() else {
+        return wrap_err!("{} got nothing to format", function_name);
+    };
+
+    let options = if let Some(options) = multivalue.pop_front() {
+        FormatOptions::from_value(&options, function_name)?
+    } else {
+        DEFAULT_FORMAT_OPTIONS.read().expect("writer should not panic").clone()
+    };
+
+    let result = if let Some(options) = options {
+        let FormatOptions { indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines } = options;
+        format_pretty.call::<LuaString>((value, LuaNil, LuaNil, LuaNil, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines))
+    } else {
+        format_pretty.call::<LuaString>(value)
+    };
+
+    let formatted = match result {
         Ok(text) => text.to_string_lossy(),
         Err(err) => {
-            return wrap_err!("format: error formatting: {}", err);
+            return wrap_err!("{}: unable to format value due to err: {}", function_name, err);
         }
     };
-    Ok(result)
+
+    Ok(formatted)
 }
 
 pub fn hexdump(_luau: &Lua, value: LuaValue) -> LuaResult<String> {
@@ -138,20 +224,15 @@ pub fn hexdump(_luau: &Lua, value: LuaValue) -> LuaResult<String> {
 }
 
 pub fn __call_format(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
-    let function_name = "io.format(item: unknown)";
+    let function_name = "format(item: any, options: FormatOptions?)";
     pop_self(&mut multivalue, function_name)?;
-    let value = match multivalue.pop_front() {
-        Some(value) => value,
-        None => {
-            return wrap_err!("{} expected an item to format, got nothing at all (not even nil)", function_name);
-        }
-    };
-    pretty(luau, value)
+    pretty(luau, multivalue)
 }
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function("pretty", pretty)?
+        .with_function("defaults", format_defaults)?
         .with_function("simple", simple)?
         .with_function("debug", debug)?
         .with_function("uncolor", uncolor)?

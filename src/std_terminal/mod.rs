@@ -270,6 +270,79 @@ fn terminal_reset(_luau: &Lua, _value: LuaValue) -> LuaEmptyResult {
     Ok(())
 }
 
+pub fn terminal_background(_luau: &Lua, _: LuaValue) -> LuaResult<LuaValue> {
+    use std::io::{Read, Write};
+    use std::sync::mpsc;
+    use std::time::Duration;
+
+    let function_name = "colors.background()";
+    let was_raw = crossterm::terminal::is_raw_mode_enabled().unwrap_or(false);
+    if !was_raw && let Err(e) = crossterm::terminal::enable_raw_mode() {
+        return wrap_err!("{}: failed to enable raw mode: {}", function_name, e);
+    }
+
+    let query = b"\x1b]11;?\x1b\\";
+    if let Err(e) = std::io::stdout().write_all(query).and_then(|_| std::io::stdout().flush()) {
+        if !was_raw { let _ = crossterm::terminal::disable_raw_mode(); }
+        return wrap_err!("{}: failed to write OSC query: {}", function_name, e);
+    }
+
+    let (tx, rx) = mpsc::channel::<String>();
+    std::thread::spawn(move || {
+        let mut stdin = std::io::stdin();
+        let mut buf = [0u8; 64];
+        let mut response = String::new();
+        loop {
+            match stdin.read(&mut buf) {
+                Ok(0) | Err(_) => break,
+                Ok(n) => {
+                    response.push_str(&String::from_utf8_lossy(&buf[..n]));
+                    if response.contains('\x07') || response.contains("\x1b\\") {
+                        break;
+                    }
+                }
+            }
+        }
+        let _ = tx.send(response);
+    });
+
+    let response = rx.recv_timeout(Duration::from_millis(150)).ok();
+
+    if !was_raw {
+        let _ = crossterm::terminal::disable_raw_mode();
+    }
+
+    let Some(response) = response else {
+        return Ok(LuaNil);
+    };
+
+    // Response format: \x1b]11;rgb:RRRR/GGGG/BBBB\x1b\\ — channels are 16-bit hex; high byte = 0-255
+    let Some(rgb_part) = response.find("rgb:").map(|i| &response[i + 4..])
+        .and_then(|s| s.split(['\x07', '\\']).next())
+    else {
+        return Ok(LuaNil);
+    };
+
+    let channels: Vec<&str> = rgb_part.splitn(3, '/').collect();
+    if channels.len() != 3 {
+        return Ok(LuaNil);
+    }
+
+    let parse_channel = |hex: &str| -> Option<f32> {
+        u16::from_str_radix(&hex[..hex.len().min(4)], 16).ok().map(|v| (v >> 8) as f32)
+    };
+
+    let (Some(r), Some(g), Some(b)) = (
+        parse_channel(channels[0]),
+        parse_channel(channels[1]),
+        parse_channel(channels[2]),
+    ) else {
+        return Ok(LuaNil);
+    };
+
+    Ok(mluau::Value::Vector(mluau::Vector::new(r, g, b)))
+}
+
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function("tty", terminal_tty)?
@@ -284,6 +357,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("events", events::events)?
         .with_function("execute", terminal_execute)?
         .with_function("reset", terminal_reset)?
+        .with_function("background", terminal_background)?
         .with_value("capture", events::create_capture_table(luau)?)?
         .with_value("rawmode", TableBuilder::create(luau)?
             .with_function("enabled", terminal_rawmode_enabled)?

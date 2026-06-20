@@ -2,7 +2,62 @@
 
 use mluau::prelude::*;
 
+use std::sync::{LazyLock, Mutex};
+use std::time::{Duration, Instant};
+
 use crate::table_helpers::TableBuilder;
+
+// needed to let wrap_err! macro work in here
+use self as colors;
+
+struct NoColorCache {
+    value: bool,
+    last_checked: Instant,
+    runtime_override: Option<bool>,
+}
+
+static NO_COLOR_CACHE: LazyLock<Mutex<NoColorCache>> = LazyLock::new(|| {
+    Mutex::new(NoColorCache {
+        value: compute_no_color(),
+        last_checked: Instant::now(),
+        runtime_override: None,
+    })
+});
+
+fn compute_no_color() -> bool {
+    if let Ok(val) = std::env::var("SEAL_COLORS") {
+        let v = val.trim().to_ascii_lowercase();
+        if v == "true" || v == "1" || v == "yes" || v == "on" || v == "y" || v == "t" {
+            return false;
+        }
+        if v == "false" || v == "0" || v == "no" || v == "off" || v == "n" || v == "f" {
+            return true;
+        }
+    }
+    std::env::var("NO_COLOR").is_ok()
+}
+
+pub fn are_disabled() -> bool {
+    let mut cache = NO_COLOR_CACHE.lock().unwrap_or_else(|e| e.into_inner());
+    if let Some(forced) = cache.runtime_override {
+        return !forced;
+    }
+    if cache.last_checked.elapsed() > Duration::from_millis(150) {
+        cache.value = compute_no_color();
+        cache.last_checked = Instant::now();
+    }
+    cache.value
+}
+
+fn colors_override(_luau: &Lua, enabled: bool) -> LuaResult<()> {
+    let mut cache = NO_COLOR_CACHE.lock().unwrap_or_else(|e| e.into_inner());
+    cache.runtime_override = Some(enabled);
+    Ok(())
+}
+
+fn colors_enabled(_luau: &Lua, _: ()) -> LuaResult<bool> {
+    Ok(!are_disabled())
+}
 
 pub const RESET: &str = "\x1b[0m";
 pub const BLACK: &str = "\x1b[30m";
@@ -56,7 +111,26 @@ pub const UNDERLINE: &str = "\x1b[4m";
 
 type LuaValueResult = LuaResult<LuaValue>;
 
+fn rgb(luau: &Lua, (rgb_vec, text): (LuaVector, Option<String>)) -> LuaValueResult {
+    let function_name = "colors.rgb(rgb: vector, text: string?)";
+    if are_disabled() {
+        return Ok(LuaValue::String(luau.create_string(text.as_deref().unwrap_or(""))?));
+    }
+    let (r, g, b) = (rgb_vec.x(), rgb_vec.y(), rgb_vec.z());
+    if !(0.0..=255.0).contains(&r) || !(0.0..=255.0).contains(&g) || !(0.0..=255.0).contains(&b) {
+        return wrap_err!("{}: r, g, b must each be in the range 0-255, got: {}, {}, {}", function_name, r, g, b);
+    }
+    let code = format!("\x1b[38;2;{};{};{}m", r as u8, g as u8, b as u8);
+    match text.as_deref() {
+        Some(t) if !t.is_empty() => Ok(LuaValue::String(luau.create_string(&(code + t + RESET))?)),
+        _ => Ok(LuaValue::String(luau.create_string(&code)?)),
+    }
+}
+
 fn colorize(luau: &Lua, text: String, color_code: &str) -> LuaValueResult {
+    if are_disabled() {
+        return Ok(LuaValue::String(luau.create_string(&text)?));
+    }
     let colored_text = color_code.to_string() + &text + RESET;
     Ok(LuaValue::String(luau.create_string(&colored_text)?))
 }
@@ -125,16 +199,21 @@ fn colorize_bold_white(luau: &Lua, text: String) -> LuaValueResult {
     colorize(luau, text, BOLD_WHITE)
 }
 
+fn stylize(luau: &Lua, text: String, style_code: &str) -> LuaValueResult {
+    let styled = style_code.to_string() + &text + RESET;
+    Ok(LuaValue::String(luau.create_string(&styled)?))
+}
+
 fn style_bold(luau: &Lua, text: String) -> LuaValueResult {
-    colorize(luau, text, BOLD)
+    stylize(luau, text, BOLD)
 }
 
 fn style_dim(luau: &Lua, text: String) -> LuaValueResult {
-    colorize(luau, text, DIM)
+    stylize(luau, text, DIM)
 }
 
 fn style_underline(luau: &Lua, text: String) -> LuaValueResult {
-    colorize(luau, text, UNDERLINE)
+    stylize(luau, text, UNDERLINE)
 }
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
@@ -211,6 +290,9 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function("magenta", colorize_magenta)?
         .with_function("cyan", colorize_cyan)?
         .with_function("white", colorize_white)?
+        .with_function("rgb", rgb)?
+        .with_function("override", colors_override)?
+        .with_function("enabled", colors_enabled)?
         .with_value("bold", bold_colors)?
         .with_value("style", styles)?
         .with_value("codes", codes)?
