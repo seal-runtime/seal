@@ -78,11 +78,18 @@ local function get_aliases_by_luaurc(requiring_file_path: string): ({LuaurcAlias
 			}
 			if config.aliases then
 				for key, replacement in config.aliases do
+					local parent_path = fs.path.parent(current_path) or current_path
 					local absolutized_replacement =
 						if str.startswith(replacement, "./") then
 							fs.path.join(current_path, string.sub(replacement, 3))
 						elseif str.startswith(replacement, "~/") then
 							fs.path.join(fs.path.home(), string.sub(replacement, 3))
+						elseif str.startswith(replacement, "../") then
+							fs.path.join(parent_path, string.sub(replacement, 4))
+						elseif replacement == "." then
+							fs.path.join(current_path, string.sub(replacement, 2))
+						elseif replacement == ".." then
+							fs.path.join(current_path, string.sub(replacement, 3))
 						else
 							replacement
 					current_luaurc.aliases[key] = absolutized_replacement
