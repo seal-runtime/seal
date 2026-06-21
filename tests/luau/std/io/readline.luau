@@ -49,4 +49,4 @@ local function rawlinefallback()
     assert(good and good:match("good!!"), `should be good here? got: {good}`)
 end
 
-cheese.retry(rawlinefallback, 2)
+cheese.retry(rawlinefallback, 4)

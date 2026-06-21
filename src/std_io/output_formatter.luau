@@ -7,8 +7,10 @@
 ]]
 
 local mlua = require("@interop/mlua")
-local colors = require("@std/colors")
+local colors = require("@std/io/colors")
+local vars = require("@std/env/vars")
 local format = require("@std/io/format")
+local terminal = require("@std/terminal")
 
 local VECTOR_FOUR_WIDE_MODE = (function()
     local s, _ = pcall(function()
@@ -184,6 +186,88 @@ local BOLD_YELLOW = colors.codes.BOLD_YELLOW
 local BOLD = colors.codes.BOLD
 local DIM = colors.codes.DIM
 
+local TERM_PROGRAM = vars.get("TERM_PROGRAM")
+
+local is_tty = terminal.tty()
+local is_truecolor = (function()
+    local colorterm = vars.get("COLORTERM")
+    return colorterm == "truecolor" or colorterm == "24bit"
+end)()
+--- vscode terminal has some output bugs with emojis and similar
+local is_vscode_terminal = TERM_PROGRAM and string.lower(TERM_PROGRAM) == "vscode"
+
+-- Each entry is a (dr, dg, db) deviation from a neutral base to give the color its hue identity.
+-- The base luminance shifts so guide lines stay readable but muted against any background.
+local GUIDE_HUE_OFFSETS = {
+    vector.create(-25, 10, 10),  -- cyan
+    vector.create( 10, -25, 10),  -- magenta
+    vector.create(-25, -10, 35),  -- blue
+    vector.create( 20, 10, -35),  -- yellow
+    vector.create(-30, 15, -15),  -- green
+    vector.create( 20, -30, -30),  -- red
+}
+
+local function compute_guide_colors(): { string }
+    if not is_truecolor then
+        return { CYAN, MAGENTA, BLUE, YELLOW, GREEN, RED }
+    end
+    local bg = terminal.background()
+    local bg_lum = if bg then (0.299 * bg.x + 0.587 * bg.y + 0.114 * bg.z) / 255 else 0.12
+    local base = math.round(110 - 50 * bg_lum)
+    local result: { string } = {}
+    for _, offset in GUIDE_HUE_OFFSETS do
+        local r = math.clamp(base + offset.x, 0, 255)
+        local g = math.clamp(base + offset.y, 0, 255)
+        local b = math.clamp(base + offset.z, 0, 255)
+        table.insert(result, colors.rgb(vector.create(r, g, b)))
+    end
+    return result
+end
+
+local GUIDE_COLORS: { string } = compute_guide_colors()
+
+local colors_enabled_state: boolean = is_tty and vars.get("NO_COLOR") == nil
+
+local function apply_color_state(enabled: boolean)
+    if enabled then
+        RESET = colors.codes.RESET
+        BOLD_WHITE = colors.codes.BOLD_WHITE
+        RED = colors.codes.RED
+        BOLD_RED = colors.codes.BOLD_RED
+        CYAN = colors.codes.CYAN
+        MAGENTA = colors.codes.MAGENTA
+        BOLD_MAGENTA = colors.codes.BOLD_MAGENTA
+        BLUE = colors.codes.BLUE
+        BOLD_BLUE = colors.codes.BOLD_BLUE
+        GREEN = colors.codes.GREEN
+        YELLOW = colors.codes.YELLOW
+        BOLD_YELLOW = colors.codes.BOLD_YELLOW
+        BOLD = colors.codes.BOLD
+        DIM = colors.codes.DIM
+        GUIDE_COLORS = compute_guide_colors()
+    else
+        RESET = ""
+        BOLD_WHITE = ""
+        RED = ""
+        BOLD_RED = ""
+        CYAN = ""
+        MAGENTA = ""
+        BOLD_MAGENTA = ""
+        BLUE = ""
+        BOLD_BLUE = ""
+        GREEN = ""
+        YELLOW = ""
+        BOLD_YELLOW = ""
+        BOLD = ""
+        DIM = ""
+        GUIDE_COLORS = { "", "", "", "", "", "" }
+    end
+end
+
+if not colors_enabled_state then
+    apply_color_state(false)
+end
+
 local LEFT_BRACKET = DIM .. "[" .. RESET
 local RIGHT_BRACKET = DIM .. "]" .. RESET
 
@@ -192,7 +276,7 @@ local RIGHT_ANGLED = BOLD .. DIM .. ">" .. RESET
 
 local ID_CATCHER_PATTERN = "[.]*0x0*([%d%w]+)"
 
-local function stringify_simple_type(value: any): string
+local function stringify_simple_type(value: any, key_function_name: string?): string
     if type(value) == "number" then
         -- mlua Numbers are BOLD_BLUE and Integers are regular BLUE
         if mlua.isint(value) then
@@ -214,10 +298,19 @@ local function stringify_simple_type(value: any): string
             else "") 
             .. RED .. RIGHT_ANGLED .. RESET
     elseif type(value) == "function" then
+        -- function ids look like 0x562311bd6640, we bold the last 5 digits for ez identification
         local function_id = string.match(tostring(value), ID_CATCHER_PATTERN)
         local last_five = string.sub(function_id, #function_id - 4, # function_id)
         local first_part = string.sub(function_id, 1, #function_id - 5)
-        return BOLD_RED .. "function" .. RESET .. LEFT_ANGLED .. RED .. "0x" ..  first_part .. colors.bold.red(last_five) .. RESET .. RED .. RIGHT_ANGLED
+        -- apparently we can get the actual function name with debug.info if it was defined in luau
+        local function_name = (debug.info :: any)(value, "n")
+        if key_function_name and key_function_name == function_name then
+            function_name = ""
+        end
+        if #function_name > 0 then
+            function_name = " " .. function_name
+        end
+        return BOLD_RED .. "function" .. function_name .. RESET .. RED .. LEFT_ANGLED .. RED .. "0x" ..  first_part .. colors.bold.red(last_five) .. RESET .. RED .. RIGHT_ANGLED
     elseif type(value) == "buffer" then
         if buffer.len(value) > 512 then
             local buffer_id = string.match(tostring(value), ID_CATCHER_PATTERN)
@@ -341,6 +434,30 @@ local function sort_table_pairs(unsorted_pairs: { TablePair }): { TablePair }
     return sorted_pairs
 end
 
+local function indents(guidelines: boolean, depth: number, indent_spaces: number): (string, string)
+    local current_indent: string
+    local element_indent: string
+    if guidelines then
+        local parts: { string } = {}
+        -- truecolor colors already encode the desired muting; DIM would double-dim them
+        local dim = if is_truecolor then "" else DIM
+        for d = 0, depth - 1 do
+            local color = GUIDE_COLORS[(d % #GUIDE_COLORS) + 1]
+            local bar = if d % 2 == 0 then "┆" else "╎"
+            table.insert(parts, dim .. color .. bar .. RESET .. string.rep(" ", indent_spaces - 1))
+        end
+        current_indent = table.concat(parts)
+        local next_color = GUIDE_COLORS[(depth % #GUIDE_COLORS) + 1]
+        local next_bar = if depth % 2 == 0 then "┆" else "╎"
+        element_indent = current_indent .. dim .. next_color .. next_bar .. RESET .. string.rep(" ", indent_spaces - 1)
+    else
+        local one_indent = string.rep(" ", indent_spaces)
+        current_indent = string.rep(one_indent, depth)
+        element_indent = current_indent .. one_indent
+    end
+    return current_indent, element_indent
+end
+
 local function process_pretty_values(
     value: any,
     --- seen_tables' keys are tables since they get uniquely hashed, value is stringified path
@@ -348,12 +465,32 @@ local function process_pretty_values(
     --- recursion depth of table we're processing
     depth: number?, 
     --- used to put table paths in seen_tables
-    current_table_path: { any }?
+    current_table_path: { any }?,
+
+    -- config parameters
+
+    --- how many spaces, defaults to 4
+    indent_spaces: number?,
+    --- how deep inside a table before we say nope
+    max_depth: number?,
+    --- how many array elements to print before putting ..., defaults to 100 when not tty or everything
+    max_elements_in_array: number?,
+    show_array_indices: boolean?,
+    show_metatables: boolean?,
+    guidelines: boolean?
 ): string
     seen_tables = seen_tables or {}
-    local depth = depth or 0
+    depth = depth or 0
+    max_depth = if not is_tty then math.huge elseif max_depth then max_depth else 6
+    max_elements_in_array = if not is_tty then math.huge elseif max_elements_in_array then max_elements_in_array else 42
+    indent_spaces = indent_spaces or 4
+    show_array_indices = if show_array_indices == nil or show_array_indices == true then true else false
+    show_metatables = if show_metatables == nil or show_metatables == true then true else false
+    guidelines = if guidelines ~= nil then guidelines else indent_spaces < 3
+
+    local current_indent, element_indent = indents(guidelines, depth, indent_spaces)
+    
     local current_table_path: { any } = current_table_path or {}
-    local current_indent = string.rep("    ", depth)
     if type(value) == "table" then
         local value = value :: { [any]: any }
         local value_meta = getmetatable(value :: any) :: { [any]: any }?
@@ -363,8 +500,34 @@ local function process_pretty_values(
         -- we don't use __tostring for this because a __tostring implementation is not necessarily for displaying
         -- a user can call tostring(value) explicitly if they want that.
         if value_meta and value_meta.__display and typeof(value_meta.__display) == "function" then
-            value_meta = value_meta :: { __display: (self: any) -> unknown }
-            local success, custom_display = pcall(value_meta.__display, value)
+            value_meta = value_meta :: {
+                -- we want to allow downstream users to be able to customize how their data structure
+                -- gets formatted based upon current level of indent and relevant formatting config
+                __display: (
+                    self: any,
+                    current_indent: string,
+                    config: {
+                        max_depth: number,
+                        indent_spaces: number,
+                        max_elements_in_array: number,
+                        show_array_indices: boolean,
+                        show_metatables: boolean,
+                    }?
+                ) -> unknown
+            }
+            local success, custom_display = pcall(
+                value_meta.__display,
+                value,
+                current_indent,
+                {
+                    max_depth = max_depth,
+                    indent_spaces = indent_spaces,
+                    max_elements_in_array = max_elements_in_array,
+                    show_array_indices = show_array_indices,
+                    show_metatables = show_metatables,
+                    guidelines = guidelines,
+                }
+            )
             if success and typeof(custom_display) == "string" then
                 return custom_display
             end
@@ -377,7 +540,16 @@ local function process_pretty_values(
             table.insert(result, s)
         end
 
-        push("{\n")
+        local is_frozen = table.isfrozen(value)
+
+        push(
+            if is_frozen and is_tty then
+                "{❄️\n"
+            elseif is_frozen then
+                "{<frozen>\n"
+            else
+                "{\n"
+        )
 
         if depth == 0 then
             seen_tables[value] = BOLD_YELLOW .. "self" .. RESET -- track top level cyclic tables
@@ -387,13 +559,11 @@ local function process_pretty_values(
         local unsorted_pairs: { TablePair } = {}
         if value_meta then
             for k, v in pairs(value) do -- use pairs to avoid unexpectedly calling __call on tables w/ metatable
-                -- LUAU FIXME: table.insert horribly broken
-                (table.insert :: any)(unsorted_pairs, { key = k, val = v }) 
+                table.insert(unsorted_pairs, { key = k, val = v }) 
             end
         else
             for k, v in value do
-                -- LUAU FIXME: table.insert horribly broken
-                (table.insert :: any)(unsorted_pairs, { key = k, val = v }) 
+                table.insert(unsorted_pairs, { key = k, val = v }) 
             end
         end
 
@@ -402,137 +572,136 @@ local function process_pretty_values(
             return "{}" -- special case empty tables
         end
 
+        local array_elements_seen = 0
         for _, pair in sorted_pairs do
             local key, val = pair.key, pair.val
-            -- result ..= current_indent .. "    "
-            push(current_indent .. "    ")
+            push(element_indent)
 
             -- stringify keys
             local key_type = type(key)
             if key_type == "number" then
-                -- left pad array keys by prepending spaces in front of [
-                -- so the = signs are aligned
-                if #value > 10 and #value < 100 then
-                    if key < 10 then
-                        -- result ..= " "
-                        push(" ")
-                    end
-                elseif #value > 100 and #value < 1000 then
-                    if key < 10 then
-                        -- result ..= "  "
-                        push("  ")
-                    elseif key < 100 then
-                        -- result ..= " "
-                        push(" ")
-                    end
-                elseif #value > 1000 then
-                    if key < 10 then
-                        push("   ")
-                    elseif key < 100 then
-                        -- result ..= "  "
-                        push("  ")
-                    elseif key < 1000 then
-                        -- result ..= " "
-                        push(" ")
-                    end
+                array_elements_seen += 1
+                if array_elements_seen > max_elements_in_array then
+                    local omitted = #sorted_pairs - max_elements_in_array
+                    push(DIM .. `... ({omitted} values omitted)` .. RESET .. "\n")
+                    break
                 end
-                push(
-                    LEFT_BRACKET ..
-                    (if mlua.isint(key) then 
-                        BLUE .. tostring(key) .. RESET
-                    else 
-                        BOLD_BLUE .. tostring(key) .. RESET
-                    ) .. 
-                    RIGHT_BRACKET
-                )
+                if show_array_indices ~= false then
+                    -- left pad array keys by prepending spaces in front of [
+                    -- so the = signs are aligned
+                    if #value > 10 and #value < 100 then
+                        if key < 10 then
+                            push(" ")
+                        end
+                    elseif #value > 100 and #value < 1000 then
+                        if key < 10 then
+                            push("  ")
+                        elseif key < 100 then
+                            push(" ")
+                        end
+                    elseif #value > 1000 then
+                        if key < 10 then
+                            push("   ")
+                        elseif key < 100 then
+                            push("  ")
+                        elseif key < 1000 then
+                            push(" ")
+                        end
+                    end
+                    push(
+                        LEFT_BRACKET ..
+                        (if mlua.isint(key) then
+                            BLUE .. tostring(key) .. RESET
+                        else
+                            BOLD_BLUE .. tostring(key) .. RESET
+                        ) ..
+                        RIGHT_BRACKET
+                    )
+                end
             elseif key_type == "string" then
                 if string.match(key, IDENTIFIER_PATTERN) then
-                    -- result ..= key
                     push(key)
                 else
-                    -- result ..= LEFT_BRACKET .. GREEN .. '"' .. key .. '"' .. RESET .. RIGHT_BRACKET
                     push(LEFT_BRACKET .. GREEN .. '"' .. key .. '"' .. RESET .. RIGHT_BRACKET)
                 end
             elseif key_type == "table" then
                 local seen_name: string? = seen_tables[key]
                 if seen_name then
-                    -- result ..= LEFT_BRACKET .. seen_name .. RIGHT_BRACKET
                     push(LEFT_BRACKET .. seen_name .. RIGHT_BRACKET)
-                elseif depth + 1 > 6 then
+                elseif depth + 1 > max_depth then
                     local tableid = string.match(tostring(key), ID_CATCHER_PATTERN)
                     push(LEFT_BRACKET .. colors.cyan(`table<0x{tableid}>`) .. RIGHT_BRACKET)
                 else
-                    -- result ..= LEFT_BRACKET .. process_pretty_values(key, seen_tables, depth + 1, current_table_path) .. RIGHT_BRACKET
                     push(
-                        LEFT_BRACKET .. process_pretty_values(key, seen_tables, depth + 1, current_table_path) .. RIGHT_BRACKET
+                        LEFT_BRACKET .. process_pretty_values(key, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines) .. RIGHT_BRACKET
                     )
                 end
             else
-                -- result ..= LEFT_BRACKET .. process_pretty_values(key, seen_tables, depth + 1, current_table_path) .. RIGHT_BRACKET
                 push(
-                    LEFT_BRACKET .. process_pretty_values(key, seen_tables, depth + 1, current_table_path) .. RIGHT_BRACKET
+                    LEFT_BRACKET .. process_pretty_values(key, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines) .. RIGHT_BRACKET
                 )
             end
 
-            -- result ..= " = "
-            push(" = ")
+            if key_type ~= "number" or show_array_indices ~= false then
+                push(" = ")
+            end
 
             -- stringify values
             if type(val) == "table" then
                 local val = val :: { [any]: any }
                 local seen_name: string? = seen_tables[val]
                 if seen_name then
-                    -- result ..= seen_name
                     push(seen_name)
-                elseif depth + 1 > 6 then
+                elseif depth + 1 > max_depth then
                     if next(val) == nil then -- table is empty
-                        -- result ..= "{}"
                         push("{}")
                     else
-                        -- result ..= "{" .. colors.codes.BOLD_WHITE .. "..." .. RESET .. "}"
                         push("{" .. colors.codes.BOLD_WHITE .. "..." .. RESET .. "}")
                     end
                 else
                     -- push key to current_table_path before recursion
                     table.insert(current_table_path, key)
                     seen_tables[val] = stringify_table_path(current_table_path) -- tostring(key)
-                    -- result ..= process_pretty_values(val, seen_tables, depth + 1, current_table_path)
-                    push(process_pretty_values(val, seen_tables, depth + 1, current_table_path))
+                    push(process_pretty_values(val, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines))
                     -- pop key from current_table_path after recursion
                     table.remove(current_table_path, #current_table_path)
                 end
             elseif type(val) == "string" then -- don't recurse in extremely common case
                 if string.find(val, "\n") then
                     if #val < 42 then
-                        -- result ..= GREEN .. '"' .. string.gsub(val, "\n", "\\n") .. '"' .. RESET
                         push(GREEN .. '"' .. string.gsub(val, "\n", "\\n") .. '"' .. RESET)
                     else
-                        -- result ..= "(newlined string starts on next line) " ..  GREEN .. "\n" .. val .. RESET .. "\n(end newlined string)"
                         push("(newlined string starts on next line) " ..  GREEN .. "\n" .. val .. RESET .. "\n(end newlined string)")
                     end
                 else
-                    -- result ..= GREEN .. '"' .. val .. '"' .. RESET
                     push(GREEN .. '"' .. val .. '"' .. RESET)
                 end
             elseif type(val) == "number" or type(val) == "boolean" then
-                -- result ..= stringify_simple_type(val)
                 push(stringify_simple_type(val))
+            elseif type(val) == "function" and key_type == "string" then
+                -- pass table key in so we can skip displaying the function_name twice if key == debug.info(val)
+                push(stringify_simple_type(val, key))
             else
-                -- result ..= process_pretty_values(val, seen_tables, depth + 1, current_table_path)
-                push(process_pretty_values(val, seen_tables, depth + 1, current_table_path))
+                push(process_pretty_values(val, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines))
             end
             
-            -- result ..= DIM .. "," .. RESET .. "\n"
             push(DIM .. "," .. RESET .. "\n")
         end
-        if value_meta then
-            -- result ..= current_indent .. "    " .. RED .. "@metatable" .. RESET .. " = " .. process_pretty_values(value_meta, seen_tables, depth + 1, current_table_path) .. "\n"
+        if value_meta and show_metatables then
             push(
-                current_indent .. "    " .. RED .. "@metatable" .. RESET .. " = " .. process_pretty_values(value_meta, seen_tables, depth + 1, current_table_path) .. "\n"
+                element_indent .. RED .. "@metatable" .. RESET .. " = " .. process_pretty_values(value_meta, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines) .. "\n"
             )
         end
-        -- result ..= current_indent .. "}"
-        push(current_indent .. "}")
+        push(current_indent .. (
+            if is_frozen and is_tty and is_vscode_terminal then
+                "❄️ }" -- vscode rendering bug
+            elseif is_frozen and is_tty then
+                "❄️}"
+            elseif is_frozen then
+                "<frozen>}"
+            else
+                "}"
+        ))
         -- return result
         return table.concat(result, "")
     elseif type(value) == "string" and depth == 0 then -- calling print("hello world") shouldn't colorize
@@ -542,7 +711,20 @@ local function process_pretty_values(
     end
 end
 
+local function pretty(value: any, ...: any): string
+    local now_enabled = colors.enabled()
+    if now_enabled ~= colors_enabled_state then
+        colors_enabled_state = now_enabled
+        apply_color_state(now_enabled)
+        LEFT_BRACKET = DIM .. "[" .. RESET
+        RIGHT_BRACKET = DIM .. "]" .. RESET
+        LEFT_ANGLED = BOLD .. DIM .. "<" .. RESET
+        RIGHT_ANGLED = BOLD .. DIM .. ">" .. RESET
+    end
+    return process_pretty_values(value, ...)
+end
+
 return {
     simple = process_raw_values,
-    pretty = process_pretty_values,
+    pretty = pretty,
 }

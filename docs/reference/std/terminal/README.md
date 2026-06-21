@@ -623,7 +623,7 @@ This function is idempotent and safe to call multiple times.
 <h4>
 
 ```luau
-function terminal.execute(...TerminalAction) -> ()
+function terminal.execute(...TerminalAction) -> (),
 ```
 
 </h4>
@@ -681,6 +681,25 @@ end
 ```
 
 </details>
+
+---
+
+### terminal.background
+
+<h4>
+
+```luau
+function terminal.background() -> vector?
+```
+
+</h4>
+
+Queries the terminal for its background color via the OSC 11 escape sequence.
+
+Returns a vector of `<r, g, b>` with each channel in the 0–255 range,
+or `nil` if the terminal doesn't respond within 150ms or doesn't support the query.
+
+Temporarily enables raw mode if not already active.
 
 ---
 

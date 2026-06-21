@@ -7,6 +7,10 @@
 
 The `@std/io/colors` lib, because if your terminal output isn't colorized, is it even output?
 
+All colors functions respect the `NO_COLOR` specification, which means
+when the `NO_COLOR` environment variable is present (not just true), they
+return their arguments unchanged.
+
 Usage:
 
 ```luau
@@ -14,6 +18,50 @@ local colors = require("@std/io/colors")
 
 print(colors.blue("my blue text"))
 ```
+
+---
+
+### colors.rgb
+
+<h4>
+
+```luau
+function colors.rgb(rgb: vector, text: string?) -> string,
+```
+
+</h4>
+
+Colorizes `text` with the given truecolor `rgb` vector (`<r, g, b>`, each 0–255) and appends RESET.
+If `text` is omitted or `""`, returns just the raw escape code (no RESET) — useful for building
+composite strings manually.
+
+---
+
+### colors.override
+
+<h4>
+
+```luau
+function colors.override(enabled: boolean) -> (),
+```
+
+</h4>
+
+ Explicitly enable or disable colors (not styling). This overrides TTY and `NO_COLOR` checks.
+
+---
+
+### colors.enabled
+
+<h4>
+
+```luau
+function colors.enabled() -> boolean,
+```
+
+</h4>
+
+ Are colors enabled?
 
 ---
 

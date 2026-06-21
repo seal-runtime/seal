@@ -14,12 +14,31 @@ Format objects for pretty printing to stdout/stderr.
 <h4>
 
 ```luau
-function format.pretty(item: unknown) -> string,
+function format.pretty(item: unknown, options: FormatOptions?) -> string,
 ```
 
 </h4>
 
 Formats `item` in the same way as `print` or `pp`.
+
+Pass `options` to change the behavior of the formatter.
+If you want to change ALL print/format.pretty/etc. formatting
+throughout seal, call `format.defaults`.
+
+---
+
+### format.defaults
+
+<h4>
+
+```luau
+function format.defaults(options: FormatOptions?) -> (),
+```
+
+</h4>
+
+Sets the default `FormatOptions` applied to all subsequent `print`, `format.pretty`, `format`, and `pp` calls.
+Pass `nil` to revert to built-in defaults.
 
 ---
 
@@ -84,10 +103,114 @@ Returns a hexdump-formatted string of the provided string or buffer, similar to 
 <h4>
 
 ```luau
-function format.__call(self: any, item: unknown) -> string,
+function format.__call(self: any, item: unknown, options: FormatOptions?) -> string,
 ```
 
 </h4>
+
+---
+
+## `export type` FormatOptions
+
+<h4>
+
+```luau
+export type FormatOptions = {
+```
+
+</h4>
+
+ Customize how your output looks.
+
+---
+
+### FormatOptions.max_depth
+
+<h4>
+
+```luau
+  max_depth: number?,
+```
+
+</h4>
+
+ Table max depth.
+
+---
+
+### FormatOptions.indent_spaces
+
+<h4>
+
+```luau
+  indent_spaces: number?,
+```
+
+</h4>
+
+ How many spaces to indent, defaults to 4
+
+---
+
+### FormatOptions.max_elements_in_array
+
+<h4>
+
+```luau
+  max_elements_in_array: number?,
+```
+
+</h4>
+
+ Limit the number of elements printed in an array; defaults to 42
+
+---
+
+### FormatOptions.show_array_indices
+
+<h4>
+
+```luau
+  show_array_indices: boolean?,
+```
+
+</h4>
+
+ Do you want to see `[1] = value`? Defaults to true
+
+---
+
+### FormatOptions.show_metatables
+
+<h4>
+
+```luau
+  show_metatables: boolean?,
+```
+
+</h4>
+
+ Show `@metatable = ...` when a table has a metatable. Defaults to true
+
+---
+
+### FormatOptions.guidelines
+
+<h4>
+
+```luau
+  guidelines: boolean?,
+```
+
+</h4>
+
+ Show vertical guide lines at each indent level, colored by depth. Defaults to true when indent_spaces < 3
+
+---
+
+```luau
+} -- closes FormatOptions
+```
 
 ---
 
