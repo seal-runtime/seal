@@ -1,5 +1,37 @@
 # 0.9.0
 
+## Configurable colors and formatting
+
+*seal* now respects the [NO_COLOR](https://no-color.org/) specification.
+
+### New features in std/io/format
+
+Added `format.FormatOptions` which you can pass to `format.pretty` and `format()`; pass it to `format.defaults` to override the behavior of `print` and `pp`.
+
+These options now include these new features:
+
+- print guidelines (automatically enabled when indent < 3)
+- configurable number of spaces to indent over
+- enable/disable printing metatables
+- limit the amount of array elements shown
+- enable/disable array indices (if you only care about seeing the values)
+- max table depth after which the formatter stops recursing.
+
+General formatter improvements:
+
+- Formatter now prints function names when available and not equivalent to their table key value.
+- Formatter now prints snowflakes around frozen tables.
+
+### New features in std/terminal
+
+- `terminal.background` which gets the current background color of the terminal if supported. Might not be supported on all platforms/terminals.
+
+### Changes to std/io/colors
+
+- `colors.rgb` which allows generating arbitrary terminal colors.
+- `colors.override` enables or disables colors at runtime.
+- `colors.enabled` checks if colors are enabled or disabled for whatever reason (NO_COLOR/etc.)
+
 ## Implement `_RUNTIME` and `_LUAU` specification, modify `_VERSION`
 
 I implemented [Bottersnike's specification](https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf) so it's easier for portable code to branch on Luau runtimes.

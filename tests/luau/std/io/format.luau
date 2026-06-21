@@ -39,9 +39,10 @@ print(format.pretty(animals, {
 local depth_check = {
     {
         {
-            hi = animals
+            hi = table.freeze(animals)
         }, 
         cats = 4,
+        meow,
     }
 }
 colors.override(true)
