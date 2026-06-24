@@ -148,6 +148,10 @@ fn main() -> LuaResult<()> {
     err::setup_sigabrt_handler();
     err::setup_panic_hook(); // seal panic = seal bug; we shouldn't panic in normal operation
 
+    if mluau::Lua::set_fflag("LuauConst2", true).is_err() {
+        eputs!("[WARN] unable to enable Luau FFlag LuauConst2, was Luau updated and the flag removed?")?;
+    }
+
     let args: VecDeque<OsString> = env::args_os().collect();
     
     if let Err(err) = std_env::vars::initialize_dotenv() {
