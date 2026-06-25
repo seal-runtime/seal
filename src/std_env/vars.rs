@@ -258,8 +258,8 @@ fn vars_load(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("get", vars_get)?
-        .with_function("flag", vars_flag)?
+        .with_function_and_signature("get", vars_get, c"vars.get(key: string) -> string?")?
+        .with_function_and_signature("flag", vars_flag, c"vars.flag(name: string, default: boolean) -> boolean")?
         .with_function("validate", vars_validate)?
         .with_function("set", vars_set)?
         .with_function("unset", vars_unset)?

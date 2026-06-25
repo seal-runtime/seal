@@ -216,10 +216,10 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_value("args", luau_args)?
         .with_value("executable_path", executable_path)?
         .with_value("shell_path", get_current_shell())?
-        .with_function("getvar", env_environment_getvar)?
-        .with_function("setvar", env_environment_setvar)?
-        .with_function("removevar", env_environment_removevar)?
+        .with_function_and_signature("getvar", env_environment_getvar, c"env.getvar is deprecated, use env.vars.get instead")?
+        .with_function_and_signature("setvar", env_environment_setvar, c"env.setvar is deprecated, use env.vars.set instead")?
+        .with_function_and_signature("removevar", env_environment_removevar, c"env.removevar is deprecated, use env.vars.unset instead")?
         .with_value("vars", vars::create(luau)?)?
-        .with_function("cwd", env_cwd)?
+        .with_function_and_signature("cwd", env_cwd, c"env.cwd() -> string")?
         .build_readonly()
 }

@@ -14,7 +14,7 @@ Format objects for pretty printing to stdout/stderr.
 <h4>
 
 ```luau
-function format.pretty(item: unknown, options: FormatOptions?) -> string,
+function format.pretty(item: unknown, options: FormatOptions?, current_depth: number?) -> string,
 ```
 
 </h4>
@@ -103,7 +103,7 @@ Returns a hexdump-formatted string of the provided string or buffer, similar to 
 <h4>
 
 ```luau
-function format.__call(self: any, item: unknown, options: FormatOptions?) -> string,
+function format.__call(self: any, item: unknown, options: FormatOptions?, current_depth: number?) -> string,
 ```
 
 </h4>

@@ -186,15 +186,11 @@ local BOLD_YELLOW = colors.codes.BOLD_YELLOW
 local BOLD = colors.codes.BOLD
 local DIM = colors.codes.DIM
 
-local TERM_PROGRAM = vars.get("TERM_PROGRAM")
-
 local is_tty = terminal.tty()
 local is_truecolor = (function()
     local colorterm = vars.get("COLORTERM")
     return colorterm == "truecolor" or colorterm == "24bit"
 end)()
---- vscode terminal has some output bugs with emojis and similar
-local is_vscode_terminal = TERM_PROGRAM and string.lower(TERM_PROGRAM) == "vscode"
 
 -- Each entry is a (dr, dg, db) deviation from a neutral base to give the color its hue identity.
 -- The base luminance shifts so guide lines stay readable but muted against any background.
@@ -304,13 +300,21 @@ local function stringify_simple_type(value: any, key_function_name: string?): st
         local first_part = string.sub(function_id, 1, #function_id - 5)
         -- apparently we can get the actual function name with debug.info if it was defined in luau
         local function_name = (debug.info :: any)(value, "n")
+        local is_seal_fn_with_signature = false
         if key_function_name and key_function_name == function_name then
             function_name = ""
+        elseif string.find(function_name, ".", 1, true) then
+            -- it's probably a seal standard library function with a full signature, let's format it differently
+            is_seal_fn_with_signature = true
         end
         if #function_name > 0 then
             function_name = " " .. function_name
         end
-        return BOLD_RED .. "function" .. function_name .. RESET .. RED .. LEFT_ANGLED .. RED .. "0x" ..  first_part .. colors.bold.red(last_five) .. RESET .. RED .. RIGHT_ANGLED
+        if not is_seal_fn_with_signature then
+            return BOLD_RED .. "function" .. function_name .. RESET .. RED .. LEFT_ANGLED .. RED .. "0x" ..  first_part .. colors.bold.red(last_five) .. RESET .. RED .. RIGHT_ANGLED
+        else
+            return BOLD_RED .. "function" ..  BLUE .. function_name .. RESET
+        end
     elseif type(value) == "buffer" then
         if buffer.len(value) > 512 then
             local buffer_id = string.match(tostring(value), ID_CATCHER_PATTERN)
@@ -463,7 +467,7 @@ local function process_pretty_values(
     --- seen_tables' keys are tables since they get uniquely hashed, value is stringified path
     seen_tables: { [{ [any]: any }]: string? }?,
     --- recursion depth of table we're processing
-    depth: number?, 
+    depth: number?,
     --- used to put table paths in seen_tables
     current_table_path: { any }?,
 
@@ -477,7 +481,9 @@ local function process_pretty_values(
     max_elements_in_array: number?,
     show_array_indices: boolean?,
     show_metatables: boolean?,
-    guidelines: boolean?
+    guidelines: boolean?,
+    --- show the total item count at the opening brace, defaults to true when not tty
+    show_array_length: boolean?
 ): string
     seen_tables = seen_tables or {}
     depth = depth or 0
@@ -487,6 +493,7 @@ local function process_pretty_values(
     show_array_indices = if show_array_indices == nil or show_array_indices == true then true else false
     show_metatables = if show_metatables == nil or show_metatables == true then true else false
     guidelines = if guidelines ~= nil then guidelines else indent_spaces < 3
+    show_array_length = if show_array_length ~= nil then show_array_length else is_tty
 
     local current_indent, element_indent = indents(guidelines, depth, indent_spaces)
     
@@ -505,20 +512,21 @@ local function process_pretty_values(
                 -- gets formatted based upon current level of indent and relevant formatting config
                 __display: (
                     self: any,
-                    current_indent: string,
+                    depth: number,
                     config: {
                         max_depth: number,
                         indent_spaces: number,
                         max_elements_in_array: number,
                         show_array_indices: boolean,
                         show_metatables: boolean,
+                        show_array_length: boolean,
                     }?
                 ) -> unknown
             }
             local success, custom_display = pcall(
                 value_meta.__display,
                 value,
-                current_indent,
+                depth,
                 {
                     max_depth = max_depth,
                     indent_spaces = indent_spaces,
@@ -526,6 +534,7 @@ local function process_pretty_values(
                     show_array_indices = show_array_indices,
                     show_metatables = show_metatables,
                     guidelines = guidelines,
+                    show_array_length = show_array_length,
                 }
             )
             if success and typeof(custom_display) == "string" then
@@ -542,34 +551,37 @@ local function process_pretty_values(
 
         local is_frozen = table.isfrozen(value)
 
-        push(
-            if is_frozen and is_tty then
-                "{❄️\n"
-            elseif is_frozen then
-                "{<frozen>\n"
-            else
-                "{\n"
-        )
-
-        if depth == 0 then
-            seen_tables[value] = BOLD_YELLOW .. "self" .. RESET -- track top level cyclic tables
-        end
-
         -- pretty printed tables should be printed in numerical, then alphabetical order (if possible)
+        -- built before the opening brace so we can display the item count
         local unsorted_pairs: { TablePair } = {}
         if value_meta then
             for k, v in pairs(value) do -- use pairs to avoid unexpectedly calling __call on tables w/ metatable
-                table.insert(unsorted_pairs, { key = k, val = v }) 
+                table.insert(unsorted_pairs, { key = k, val = v })
             end
         else
             for k, v in value do
-                table.insert(unsorted_pairs, { key = k, val = v }) 
+                table.insert(unsorted_pairs, { key = k, val = v })
             end
         end
 
         local sorted_pairs: { TablePair } = sort_table_pairs(unsorted_pairs)
         if #sorted_pairs == 0 then
             return "{}" -- special case empty tables
+        end
+
+        local length_suffix = if show_array_length and #value > 0 then DIM .. ` ({#sorted_pairs})` .. RESET else ""
+
+        push(
+            if is_frozen and is_tty then
+                "{❄" .. length_suffix .. "\n"
+            elseif is_frozen then
+                "{<frozen>" .. length_suffix .. "\n"
+            else
+                "{" .. length_suffix .. "\n"
+        )
+
+        if depth == 0 then
+            seen_tables[value] = BOLD_YELLOW .. "self" .. RESET -- track top level cyclic tables
         end
 
         local array_elements_seen = 0
@@ -583,7 +595,7 @@ local function process_pretty_values(
                 array_elements_seen += 1
                 if array_elements_seen > max_elements_in_array then
                     local omitted = #sorted_pairs - max_elements_in_array
-                    push(DIM .. `... ({omitted} values omitted)` .. RESET .. "\n")
+                    push(DIM .. `[{omitted}…{#sorted_pairs}] omitted` .. RESET .. "\n")
                     break
                 end
                 if show_array_indices ~= false then
@@ -633,12 +645,12 @@ local function process_pretty_values(
                     push(LEFT_BRACKET .. colors.cyan(`table<0x{tableid}>`) .. RIGHT_BRACKET)
                 else
                     push(
-                        LEFT_BRACKET .. process_pretty_values(key, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines) .. RIGHT_BRACKET
+                        LEFT_BRACKET .. process_pretty_values(key, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length) .. RIGHT_BRACKET
                     )
                 end
             else
                 push(
-                    LEFT_BRACKET .. process_pretty_values(key, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines) .. RIGHT_BRACKET
+                    LEFT_BRACKET .. process_pretty_values(key, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length) .. RIGHT_BRACKET
                 )
             end
 
@@ -662,7 +674,7 @@ local function process_pretty_values(
                     -- push key to current_table_path before recursion
                     table.insert(current_table_path, key)
                     seen_tables[val] = stringify_table_path(current_table_path) -- tostring(key)
-                    push(process_pretty_values(val, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines))
+                    push(process_pretty_values(val, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length))
                     -- pop key from current_table_path after recursion
                     table.remove(current_table_path, #current_table_path)
                 end
@@ -682,21 +694,19 @@ local function process_pretty_values(
                 -- pass table key in so we can skip displaying the function_name twice if key == debug.info(val)
                 push(stringify_simple_type(val, key))
             else
-                push(process_pretty_values(val, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines))
+                push(process_pretty_values(val, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length))
             end
             
             push(DIM .. "," .. RESET .. "\n")
         end
         if value_meta and show_metatables then
             push(
-                element_indent .. RED .. "@metatable" .. RESET .. " = " .. process_pretty_values(value_meta, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines) .. "\n"
+                element_indent .. RED .. "@metatable" .. RESET .. " = " .. process_pretty_values(value_meta, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length) .. "\n"
             )
         end
         push(current_indent .. (
-            if is_frozen and is_tty and is_vscode_terminal then
-                "❄️ }" -- vscode rendering bug
-            elseif is_frozen and is_tty then
-                "❄️}"
+            if is_frozen and is_tty then
+                "}❄"
             elseif is_frozen then
                 "<frozen>}"
             else

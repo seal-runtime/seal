@@ -124,6 +124,7 @@ struct FormatOptions {
     show_array_indices: Option<bool>,
     show_metatables: Option<bool>,
     guidelines: Option<bool>,
+    show_array_length: Option<bool>,
 }
 impl FormatOptions {
     fn from_value(value: &LuaValue, function_name: &'static str) -> LuaResult<Option<Self>> {
@@ -161,6 +162,7 @@ impl FormatOptions {
         let show_array_indices = check_boolean(t, "show_array_indices", function_name)?;
         let show_metatables = check_boolean(t, "show_metatables", function_name)?;
         let guidelines = check_boolean(t, "guidelines", function_name)?;
+        let show_array_length = check_boolean(t, "show_array_length", function_name)?;
 
         Ok(Some(Self {
             indent_spaces,
@@ -169,6 +171,7 @@ impl FormatOptions {
             show_array_indices,
             show_metatables,
             guidelines,
+            show_array_length,
         }))
     }
 }
@@ -181,7 +184,7 @@ fn format_defaults(_luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 pub fn pretty(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
-    let function_name = "format.pretty(value: any, options: FormatOptions?)";
+    let function_name = "format.pretty(value: any, options: FormatOptions?, current_depth: number?)";
     let formatter = cached_formatter(luau)?;
     let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
     let Some(value) = multivalue.pop_front() else {
@@ -194,9 +197,18 @@ pub fn pretty(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
         DEFAULT_FORMAT_OPTIONS.read().expect("writer should not panic").clone()
     };
 
+    let current_depth: LuaValue = match multivalue.pop_front() {
+        Some(LuaValue::Number(f)) => float_to_usize(f, function_name, "current_depth")?.into_lua(luau)?,
+        Some(LuaValue::Integer(i)) => int_to_usize(i, function_name, "current_depth")?.into_lua(luau)?,
+        None => LuaNil,
+        other => {
+            return wrap_err!("{}: expected current_depth to be a number or nil/unspecified, got: {:?}", function_name, other);
+        }
+    };
+
     let result = if let Some(options) = options {
-        let FormatOptions { indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines } = options;
-        format_pretty.call::<LuaString>((value, LuaNil, LuaNil, LuaNil, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines))
+        let FormatOptions { indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length } = options;
+        format_pretty.call::<LuaString>((value, LuaNil, current_depth, LuaNil, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length))
     } else {
         format_pretty.call::<LuaString>(value)
     };

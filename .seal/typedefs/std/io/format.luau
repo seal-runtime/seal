@@ -9,7 +9,7 @@ export type format = setmetatable<{
         If you want to change ALL print/format.pretty/etc. formatting
         throughout seal, call `format.defaults`.
     ]=]
-    pretty: (item: unknown, options: FormatOptions?) -> string,
+    pretty: (item: unknown, options: FormatOptions?, current_depth: number?) -> string,
     --[=[
         Sets the default `FormatOptions` applied to all subsequent `print`, `format.pretty`, `format`, and `pp` calls.
         Pass `nil` to revert to built-in defaults.
@@ -32,7 +32,7 @@ export type format = setmetatable<{
     ]=]
     hexdump: (data: string | buffer) -> string,
 }, { 
-    __call: (self: any, item: unknown, options: FormatOptions?) -> string,
+    __call: (self: any, item: unknown, options: FormatOptions?, current_depth: number?) -> string,
 }>
 
 --- Customize how your output looks.
@@ -49,6 +49,8 @@ export type FormatOptions = {
     show_metatables: boolean?,
     --- Show vertical guide lines at each indent level, colored by depth. Defaults to true when indent_spaces < 3
     guidelines: boolean?,
+    --- Show the total number of items at the opening brace. Defaults to true when in a TTY
+    show_array_length: boolean?,
 }
 
 return {} :: format

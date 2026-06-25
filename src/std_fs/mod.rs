@@ -1037,7 +1037,8 @@ pub fn fs_watch(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     let std_fs = TableBuilder::create(luau)?
-        .with_function("readfile", fs_readfile)?
+        // .with_function("readfile", fs_readfile)?
+        .with_function_and_signature("readfile", fs_readfile, c"fs.readfile(path: string) -> string")?
         .with_function("readbytes", fs_readbytes)?
         .with_function("readlines", fs_readlines)?
         .with_function("writefile", fs_writefile)?
