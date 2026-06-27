@@ -71,26 +71,26 @@ fs.writefile("./README.md", table.concat(lines, "\n"))
 
 -- create a commit hook to automatically run this script every time a commit is made
 local hook_path = ".git/hooks/pre-commit"
-if not fs.path.exists(hook_path) then
-    local SCRIPT_SRC = str.unindent([[
-    #!/bin/sh
-    if command -v seal > /dev/null 2>&1; then
-        SEAL=seal
-    elif [ -x "./target/release/seal" ]; then
-        SEAL="./target/release/seal"
-    elif [ -x "./target/debug/seal" ]; then
-        SEAL="./target/debug/seal"
-    else
-        echo "warning: seal not found in PATH or ./target/, skipping handcrafted error message count update"
-        exit 0
-    fi
-    $SEAL examples/precommit_readme.luau
-    git add README.md
-    ]], "Spaces", 4)
-    
-    fs.writefile(hook_path, SCRIPT_SRC)
-    if env.os ~= "Windows" then
-        process.shell(`chmod +x {hook_path}`):unwrap()
-    end
-    print(`installed pre-commit hook at {hook_path}`)
+local SCRIPT_SRC = [[
+#!/bin/sh
+if command -v seal > /dev/null 2>&1; then
+    SEAL=seal
+elif [ -x "./target/release/seal" ]; then
+    SEAL="./target/release/seal"
+elif [ -x "./target/debug/seal" ]; then
+    SEAL="./target/debug/seal"
+else
+    echo "warning: seal not found in PATH or ./target/, skipping handcrafted error message update and reference regen"
+    exit 0
+fi
+$SEAL src/scripts/precommit.luau
+$SEAL docs/docscripts/reference.luau
+git add README.md
+git add docs/reference/*
+]]
+
+fs.writefile(hook_path, SCRIPT_SRC)
+if env.os ~= "Windows" then
+    process.shell(`chmod +x {hook_path}`):unwrap()
 end
+print(`installed/updated pre-commit hook at {hook_path}`)

@@ -79,7 +79,7 @@ fn zlib_decompress(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("compress", zlib_compress)?
-        .with_function("decompress", zlib_decompress)?
+        .with_function_and_signature("compress", zlib_compress, signatures::STD_SERDE_ZLIB_COMPRESS)?
+        .with_function_and_signature("decompress", zlib_decompress, signatures::STD_SERDE_ZLIB_DECOMPRESS)?
         .build_readonly()
 }

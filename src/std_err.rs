@@ -150,10 +150,10 @@ fn err_throw(_luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("message", err_message)?
-        .with_function("wrap", err_wrap)?
-        .with_function("format", err_format)?
-        .with_function("traceback", err_traceback)?
-        .with_function("throw", err_throw)?
+        .with_function_and_signature("message", err_message, signatures::STD_ERR_MESSAGE)?
+        .with_function_and_signature("wrap", err_wrap, signatures::STD_ERR_WRAP)?
+        .with_function_and_signature("format", err_format, signatures::STD_ERR_FORMAT)?
+        .with_function_and_signature("traceback", err_traceback, signatures::STD_ERR_TRACEBACK)?
+        .with_function_and_signature("throw", err_throw, signatures::STD_ERR_THROW)?
         .build_readonly()
 }

@@ -606,8 +606,8 @@ fn fs_treebuilder_with_tree(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaVal
 fn fs_tree(luau: &Lua, _value: LuaValue) -> LuaValueResult {
     ok_table(TableBuilder::create(luau)?
         .with_value("inner", luau.create_table()?)?
-        .with_function("with_file", fs_treebuilder_with_file)?
-        .with_function("with_tree", fs_treebuilder_with_tree)?
+        .with_function_and_signature("with_file", fs_treebuilder_with_file, signatures::STD_FS_TREE_BUILDER_WITH_FILE)?
+        .with_function_and_signature("with_tree", fs_treebuilder_with_tree, signatures::STD_FS_TREE_BUILDER_WITH_TREE)?
         .build_readonly()
     )
 }
@@ -1037,27 +1037,27 @@ pub fn fs_watch(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     let std_fs = TableBuilder::create(luau)?
-        .with_function("readfile", fs_readfile)?
-        .with_function("readbytes", fs_readbytes)?
-        .with_function("readlines", fs_readlines)?
-        .with_function("writefile", fs_writefile)?
-        .with_function("move", fs_move)?
-        .with_function("copy", fs_copy)?
-        .with_function("removefile", fs_removefile) ?
-        .with_function("listdir", fs_listdir)?
-        .with_function("makedir", fs_makedir)?
-        .with_function("readtree", fs_readtree)?
-        .with_function("tree", fs_tree)?
-        .with_function("writetree", fs_writetree)?
-        .with_function("removetree", fs_removetree)?
-        .with_function("entries", fs_entries)?
-        .with_function("find", fs_find)?
-        .with_function("exists", fs_exists)?
-        .with_function("watch", fs_watch)?
-        .with_function("is", fs_is)?
-        .with_function("symlink", fs_symlink)?
-        .with_function("unsymlink", fs_unsymlink)?
-        .with_function("readlink", fs_readlink)?
+        .with_function_and_signature("readfile", fs_readfile, signatures::STD_FS_READFILE)?
+        .with_function_and_signature("readbytes", fs_readbytes, signatures::STD_FS_READBYTES)?
+        .with_function_and_signature("readlines", fs_readlines, signatures::STD_FS_READLINES)?
+        .with_function_and_signature("writefile", fs_writefile, signatures::STD_FS_WRITEFILE)?
+        .with_function_and_signature("move", fs_move, signatures::STD_FS_MOVE)?
+        .with_function_and_signature("copy", fs_copy, signatures::STD_FS_COPY)?
+        .with_function_and_signature("removefile", fs_removefile, signatures::STD_FS_REMOVEFILE) ?
+        .with_function_and_signature("listdir", fs_listdir, signatures::STD_FS_LISTDIR)?
+        .with_function_and_signature("makedir", fs_makedir, signatures::STD_FS_MAKEDIR)?
+        .with_function_and_signature("readtree", fs_readtree, signatures::STD_FS_READTREE)?
+        .with_function_and_signature("tree", fs_tree, signatures::STD_FS_TREE)?
+        .with_function_and_signature("writetree", fs_writetree, signatures::STD_FS_WRITETREE)?
+        .with_function_and_signature("removetree", fs_removetree, signatures::STD_FS_REMOVETREE)?
+        .with_function_and_signature("entries", fs_entries, signatures::STD_FS_ENTRIES)?
+        .with_function_and_signature("find", fs_find, signatures::STD_FS_FIND)?
+        .with_function_and_signature("exists", fs_exists, c"fs.exists(path: string) -> boolean")?
+        .with_function_and_signature("watch", fs_watch, signatures::STD_FS_WATCH)?
+        .with_function_and_signature("is", fs_is, signatures::STD_FS_IS)?
+        .with_function_and_signature("symlink", fs_symlink, signatures::STD_FS_SYMLINK)?
+        .with_function_and_signature("unsymlink", fs_unsymlink, signatures::STD_FS_UNSYMLINK)?
+        .with_function_and_signature("readlink", fs_readlink, signatures::STD_FS_READLINK)?
         .with_value("path", pathlib::create(luau)?)?
         .with_value("file", filelib::create(luau)?)?
         .with_value("dir", dirlib::create(luau)?)?

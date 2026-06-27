@@ -258,12 +258,12 @@ fn vars_load(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("get", vars_get)?
-        .with_function("flag", vars_flag)?
-        .with_function("validate", vars_validate)?
-        .with_function("set", vars_set)?
-        .with_function("unset", vars_unset)?
-        .with_function("all", vars_all)?
-        .with_function("load", vars_load)?
+        .with_function_and_signature("get", vars_get, signatures::STD_ENV_VARS_GET)?
+        .with_function_and_signature("flag", vars_flag, signatures::STD_ENV_VARS_FLAG)?
+        .with_function_and_signature("validate", vars_validate, c"env.vars.validate<T>(key: string, f: (value: string?) -> T) -> T")?
+        .with_function_and_signature("set", vars_set, signatures::STD_ENV_VARS_SET)?
+        .with_function_and_signature("unset", vars_unset, signatures::STD_ENV_VARS_UNSET)?
+        .with_function_and_signature("all", vars_all, signatures::STD_ENV_VARS_ALL)?
+        .with_function_and_signature("load", vars_load, signatures::STD_ENV_VARS_LOAD)?
         .build_readonly()
 }

@@ -317,17 +317,17 @@ pub fn create(luau: &Lua, path: &str) -> LuaResult<LuaTable> {
         .with_value("name", base_name)?
         .with_value("path", original_path)?
         .with_value("type", "File")?
-        .with_function("size", file_filesize)?
-        .with_function("read", file_readfile)?
-        .with_function("readbytes", file_readbytes)?
-        .with_function("readlines", file_readlines)?
-        .with_function("is_valid_utf8", file_is_valid_utf8)?
-        .with_function("append", file_append)?
-        .with_function("metadata", entry::metadata)?
-        .with_function("copy_to", entry::copy_to)?
-		.with_function("move_to", entry::move_to)?
-		.with_function("rename", entry::rename)?
-		.with_function("remove", entry::remove)?
+        .with_function_and_signature("size", file_filesize, signatures::STD_FS_FILE_ENTRY_SIZE)?
+        .with_function_and_signature("read", file_readfile, signatures::STD_FS_FILE_ENTRY_READ)?
+        .with_function_and_signature("readbytes", file_readbytes, signatures::STD_FS_FILE_ENTRY_READBYTES)?
+        .with_function_and_signature("readlines", file_readlines, signatures::STD_FS_FILE_ENTRY_READLINES)?
+        .with_function_and_signature("is_valid_utf8", file_is_valid_utf8, signatures::STD_FS_FILE_ENTRY_IS_VALID_UTF8)?
+        .with_function_and_signature("append", file_append, signatures::STD_FS_FILE_ENTRY_APPEND)?
+        .with_function_and_signature("metadata", entry::metadata, signatures::STD_FS_FILE_ENTRY_METADATA)?
+        .with_function_and_signature("copy_to", entry::copy_to, signatures::STD_FS_FILE_ENTRY_COPY_TO)?
+		.with_function_and_signature("move_to", entry::move_to, signatures::STD_FS_FILE_ENTRY_MOVE_TO)?
+		.with_function_and_signature("rename", entry::rename, signatures::STD_FS_FILE_ENTRY_RENAME)?
+		.with_function_and_signature("remove", entry::remove, signatures::STD_FS_FILE_ENTRY_REMOVE)?
         // can't be readonly because :move_to modifies .path
         .build()
 }

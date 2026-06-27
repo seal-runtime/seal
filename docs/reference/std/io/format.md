@@ -14,7 +14,7 @@ Format objects for pretty printing to stdout/stderr.
 <h4>
 
 ```luau
-function format.pretty(item: unknown, options: FormatOptions?) -> string,
+function format.pretty(item: unknown, options: FormatOptions?, current_depth: number?) -> string,
 ```
 
 </h4>
@@ -103,7 +103,7 @@ Returns a hexdump-formatted string of the provided string or buffer, similar to 
 <h4>
 
 ```luau
-function format.__call(self: any, item: unknown, options: FormatOptions?) -> string,
+function format.__call(self: any, item: unknown, options: FormatOptions?, current_depth: number?) -> string,
 ```
 
 </h4>
@@ -205,6 +205,20 @@ export type FormatOptions = {
 </h4>
 
  Show vertical guide lines at each indent level, colored by depth. Defaults to true when indent_spaces < 3
+
+---
+
+### FormatOptions.show_array_length
+
+<h4>
+
+```luau
+  show_array_length: boolean?,
+```
+
+</h4>
+
+ Show the total number of items at the opening brace. Defaults to true when in a TTY
 
 ---
 

@@ -27,6 +27,8 @@
 use crate::{prelude::*, setup::SetupOptions};
 use mluau::prelude::*;
 
+pub mod signatures;
+
 use std::env;
 use std::ffi::OsString;
 use std::collections::VecDeque;
@@ -147,6 +149,10 @@ fn main() -> LuaResult<()> {
     // We intercept SIGABRT on *nix to prevent core dumps when seal is used as a child process
     err::setup_sigabrt_handler();
     err::setup_panic_hook(); // seal panic = seal bug; we shouldn't panic in normal operation
+
+    if mluau::Lua::set_fflag("LuauConst2", true).is_err() {
+        eputs!("[WARN] unable to enable Luau FFlag LuauConst2, was Luau updated and the flag removed?")?;
+    }
 
     let args: VecDeque<OsString> = env::args_os().collect();
     

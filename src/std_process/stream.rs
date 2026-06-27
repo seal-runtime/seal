@@ -807,7 +807,7 @@ impl Stream {
 
     pub fn create_handle(stream_cell: Rc<RefCell<Self>>, luau: &Lua) -> LuaResult<LuaTable> {
         TableBuilder::create(luau)?
-            .with_function("read_exact", {
+            .with_function_and_signature("read_exact", {
                 let stream_cell = Rc::clone(&stream_cell);
                 move | luau: &Lua, multivalue: LuaMultiValue | -> LuaValueResult {
                     let function_name = "ChildProcessStream:read_exact(count: number, timeout: number?)";
@@ -816,8 +816,8 @@ impl Stream {
                         Err(_) => wrap_err!("{}: stream already borrowed", function_name)
                     }
                 }
-            })?
-            .with_function("read", {
+            }, signatures::STD_PROCESS_CHILD_PROCESS_STREAM_READ_EXACT)?
+            .with_function_and_signature("read", {
                 let stream_cell = Rc::clone(&stream_cell);
                 move | luau: &Lua, multivalue: LuaMultiValue | -> LuaValueResult {
                     let function_name = "ChildProcessStream:read(count: number?, timeout: number?)";
@@ -826,8 +826,8 @@ impl Stream {
                         Err(_) => wrap_err!("{}: stream already borrowed", function_name)
                     }
                 }
-            })?
-            .with_function("read_to", {
+            }, signatures::STD_PROCESS_CHILD_PROCESS_STREAM_READ)?
+            .with_function_and_signature("read_to", {
                 let stream_cell = Rc::clone(&stream_cell);
                 move | luau: &Lua, multivalue: LuaMultiValue | -> LuaValueResult {
                     let function_name = "ChildProcessStream:read_to(term: string, inclusive: boolean?, timeout: number?)";
@@ -836,8 +836,8 @@ impl Stream {
                         Err(_) => wrap_err!("{}: stream already borrowed", function_name)
                     }
                 }
-            })?
-            .with_function("fill", {
+            }, signatures::STD_PROCESS_CHILD_PROCESS_STREAM_READ_TO)?
+            .with_function_and_signature("fill", {
                 let stream_cell = Rc::clone(&stream_cell);
                 move | luau: &Lua, multivalue: LuaMultiValue | -> LuaValueResult {
                     let function_name = "ChildProcessStream:fill(target: buffer, target_offset: number?, timeout: number?)";
@@ -846,8 +846,8 @@ impl Stream {
                         Err(_) => wrap_err!("{}: stream already borrowed", function_name)
                     }
                 }
-            })?
-            .with_function("fill_exact", {
+            }, signatures::STD_PROCESS_CHILD_PROCESS_STREAM_FILL)?
+            .with_function_and_signature("fill_exact", {
                 let stream_cell = Rc::clone(&stream_cell);
                 move | luau: &Lua, multivalue: LuaMultiValue | -> LuaValueResult {
                     let function_name = "ChildProcessStream:fill_exact(count: number, target: buffer, target_offset: number?, timeout: number?)";
@@ -856,8 +856,8 @@ impl Stream {
                         Err(_) => wrap_err!("{}: stream already borrowed", function_name)
                     }
                 }
-            })?
-            .with_function("lines", {
+            }, signatures::STD_PROCESS_CHILD_PROCESS_STREAM_FILL_EXACT)?
+            .with_function_and_signature("lines", {
                 let stream_cell = Rc::clone(&stream_cell);
                 move | luau: &Lua, multivalue: LuaMultiValue | -> LuaResult<LuaFunction> {
                     let function_name = "ChildProcessStream:lines()";
@@ -866,8 +866,8 @@ impl Stream {
                         Err(_) => wrap_err!("{}: stream already borrowed", function_name),
                     }
                 }
-            })?
-            .with_function("len", {
+            }, signatures::STD_PROCESS_CHILD_PROCESS_STREAM_LINES)?
+            .with_function_and_signature("len", {
                 let stream_cell = Rc::clone(&stream_cell);
                 move | _luau: &Lua, _value: LuaValue | -> LuaValueResult {
                     let function_name = "ChildProcessStream:len()";
@@ -878,8 +878,8 @@ impl Stream {
                         Err(_) => wrap_err!("{}: stream already borrowed", function_name),
                     }
                 }
-            })?
-            .with_function("capacity", {
+            }, signatures::STD_PROCESS_CHILD_PROCESS_STREAM_LEN)?
+            .with_function_and_signature("capacity", {
                 let stream_cell = Rc::clone(&stream_cell);
                 move | _luau: &Lua, _value: LuaValue | -> LuaValueResult {
                     let function_name = "ChildProcessStream:capacity()";
@@ -890,9 +890,9 @@ impl Stream {
                         Err(_) => wrap_err!("{}: stream already borrowed", function_name),
                     }
                 }
-            })?
+            }, signatures::STD_PROCESS_CHILD_PROCESS_STREAM_CAPACITY)?
             // users can't iterate and supply a timeout with generalized iteration
-            .with_function("iter", {
+            .with_function_and_signature("iter", {
                 let stream_cell = Rc::clone(&stream_cell);
                 move | luau: &Lua, multivalue: LuaMultiValue | -> LuaResult<LuaFunction> {
                     let function_name = "ChildProcessStream:iter(timeout: number?, write_delay_ms: number?)";
@@ -901,9 +901,9 @@ impl Stream {
                         Err(_) => wrap_err!("{}: stream already borrowed", function_name),
                     }
                 }
-            })?
+            }, signatures::STD_PROCESS_CHILD_PROCESS_STREAM_ITER)?
             .with_metatable(TableBuilder::create(luau)?
-                .with_function("__iter", {
+                .with_function_and_signature("__iter", {
                     let stream_cell = Rc::clone(&stream_cell);
                     move | luau: &Lua, multivalue: LuaMultiValue | -> LuaResult<LuaFunction> {
                         let function_name = "ChildProcessStream:__iter()";
@@ -912,7 +912,7 @@ impl Stream {
                             Err(_) => wrap_err!("{}: stream already borrowed", function_name),
                         }
                     }
-                })?
+                }, c"ChildProcessStream:__iter() -> () -> string")?
                 .build_readonly()?
             )?
             .build_readonly()

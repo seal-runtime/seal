@@ -360,6 +360,6 @@ fn websocket_connect(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResul
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("connect", websocket_connect)?
+        .with_function_and_signature("connect", websocket_connect, signatures::STD_NET_WEBSOCKET_CONNECT)?
         .build_readonly()
 }

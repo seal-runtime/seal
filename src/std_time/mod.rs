@@ -45,10 +45,10 @@ fn time_wait(_luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("wait", time_wait)?
+        .with_function_and_signature("wait", time_wait, signatures::STD_TIME_WAIT)?
         .with_value("datetime", datetime::create(luau)?)?
 
-        .with_function("years", |luau: &Lua, value: LuaValue| -> LuaValueResult {
+        .with_function_and_signature("years", |luau: &Lua, value: LuaValue| -> LuaValueResult {
             let function_name = "time.years(y: number)";
             let years = match value {
                 LuaValue::Number(f) => f,
@@ -58,10 +58,10 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeDuration::years(years)?.get_userdata(luau)
-        })?
+        }, signatures::STD_TIME_YEARS)?
 
 
-        .with_function("months", |luau: &Lua, value: LuaValue| -> LuaValueResult {
+        .with_function_and_signature("months", |luau: &Lua, value: LuaValue| -> LuaValueResult {
             let function_name = "time.months(m: number)";
             let months = match value {
                 LuaValue::Number(f) => f,
@@ -71,9 +71,9 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeDuration::months(months)?.get_userdata(luau)
-        })?
+        }, signatures::STD_TIME_MONTHS)?
 
-        .with_function("days", |luau: &Lua, value: LuaValue| -> LuaValueResult {
+        .with_function_and_signature("days", |luau: &Lua, value: LuaValue| -> LuaValueResult {
             let function_name = "time.days(d: number)";
             let days = match value {
                 LuaValue::Number(f) => f,
@@ -83,9 +83,9 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeDuration::days(days)?.get_userdata(luau)
-        })?
+        }, signatures::STD_TIME_DAYS)?
 
-        .with_function("hours", |luau: &Lua, value: LuaValue| -> LuaValueResult {
+        .with_function_and_signature("hours", |luau: &Lua, value: LuaValue| -> LuaValueResult {
             let function_name = "time.hours(h: number)";
             let hours = match value {
                 LuaValue::Number(f) => f,
@@ -95,9 +95,9 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeDuration::hours(hours)?.get_userdata(luau)
-        })?
+        }, signatures::STD_TIME_HOURS)?
 
-        .with_function("minutes", |luau: &Lua, value: LuaValue| -> LuaValueResult {
+        .with_function_and_signature("minutes", |luau: &Lua, value: LuaValue| -> LuaValueResult {
             let function_name = "time.minutes(m: number)";
             let minutes = match value {
                 LuaValue::Number(f) => f,
@@ -107,9 +107,9 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeDuration::minutes(minutes)?.get_userdata(luau)
-        })?
+        }, signatures::STD_TIME_MINUTES)?
 
-        .with_function("seconds", |luau: &Lua, value: LuaValue| -> LuaValueResult {
+        .with_function_and_signature("seconds", |luau: &Lua, value: LuaValue| -> LuaValueResult {
             let function_name = "time.seconds(s: number)";
             let seconds = match value {
                 LuaValue::Number(f) => f,
@@ -119,9 +119,9 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeDuration::seconds(seconds)?.get_userdata(luau)
-        })?
+        }, signatures::STD_TIME_SECONDS)?
 
-        .with_function("milliseconds", |luau: &Lua, value: LuaValue| -> LuaValueResult {
+        .with_function_and_signature("milliseconds", |luau: &Lua, value: LuaValue| -> LuaValueResult {
             let function_name = "time.milliseconds(ms: number)";
             let ms = match value {
                 LuaValue::Number(f) => f,
@@ -131,9 +131,9 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeDuration::milliseconds(ms)?.get_userdata(luau)
-        })?
+        }, signatures::STD_TIME_MILLISECONDS)?
 
-        .with_function("microseconds", |luau: &Lua, value: LuaValue| -> LuaValueResult {
+        .with_function_and_signature("microseconds", |luau: &Lua, value: LuaValue| -> LuaValueResult {
             let function_name = "time.microseconds(us: number)";
             let us = match value {
                 LuaValue::Number(f) => f,
@@ -143,9 +143,9 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeDuration::microseconds(us)?.get_userdata(luau)
-        })?
+        }, signatures::STD_TIME_MICROSECONDS)?
 
-        .with_function("nanoseconds", |luau: &Lua, value: LuaValue| -> LuaValueResult {
+        .with_function_and_signature("nanoseconds", |luau: &Lua, value: LuaValue| -> LuaValueResult {
             let function_name = "time.nanoseconds(ns: number)";
             let ns = match value {
                 LuaValue::Number(f) => f,
@@ -155,7 +155,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeDuration::nanoseconds(ns)?.get_userdata(luau)
-        })?
+        }, signatures::STD_TIME_NANOSECONDS)?
 
         .build_readonly()
 }

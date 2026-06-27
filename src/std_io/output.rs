@@ -252,11 +252,11 @@ pub fn output_ewriteln(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("clear", output_clear)?
-        .with_function("write", output_write)?
-        .with_function("writeln", output_writeln)?
-        .with_function("ewrite", output_ewrite)?
-        .with_function("ewriteln", output_ewriteln)?
+        .with_function_and_signature("clear", output_clear, signatures::STD_IO_OUTPUT_CLEAR)?
+        .with_function_and_signature("write", output_write, signatures::STD_IO_OUTPUT_WRITE)?
+        .with_function_and_signature("writeln", output_writeln, signatures::STD_IO_OUTPUT_WRITELN)?
+        .with_function_and_signature("ewrite", output_ewrite, signatures::STD_IO_OUTPUT_EWRITE)?
+        .with_function_and_signature("ewriteln", output_ewriteln, signatures::STD_IO_OUTPUT_EWRITELN)?
         .with_function("sprint", simple_print_and_return)?
         .build_readonly()
 }

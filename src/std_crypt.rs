@@ -1,6 +1,6 @@
 use std::num::NonZeroU32;
 
-use crate::{table_helpers::TableBuilder, LuaValueResult, colors};
+use crate::prelude::*;
 use base64::Engine;
 use mluau::prelude::*;
 
@@ -121,9 +121,9 @@ fn aes_decrypt(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 
 pub fn create_aes(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("generatekey", generate_aes_key)?
-        .with_function("encrypt", aes_encrypt)?
-        .with_function("decrypt", aes_decrypt)?
+        .with_function_and_signature("generatekey", generate_aes_key, signatures::STD_CRYPT_AES_GENERATEKEY)?
+        .with_function_and_signature("encrypt", aes_encrypt, signatures::STD_CRYPT_AES_ENCRYPT)?
+        .with_function_and_signature("decrypt", aes_decrypt, signatures::STD_CRYPT_AES_DECRYPT)?
         .build_readonly()
 }
 
@@ -246,9 +246,9 @@ fn rsa_decrypt(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 }
 pub fn create_rsa(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("generatekeys", generate_rsa_keys)?
-        .with_function("encrypt", rsa_encrypt)?
-        .with_function("decrypt", rsa_decrypt)?
+        .with_function_and_signature("generatekeys", generate_rsa_keys, signatures::STD_CRYPT_RSA_GENERATEKEYS)?
+        .with_function_and_signature("encrypt", rsa_encrypt, signatures::STD_CRYPT_RSA_ENCRYPT)?
+        .with_function_and_signature("decrypt", rsa_decrypt, signatures::STD_CRYPT_RSA_DECRYPT)?
         .build_readonly()
 }
 
@@ -277,7 +277,7 @@ fn hash_sha2_256(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create_hash(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("sha2", hash_sha2_256)?
+        .with_function_and_signature("sha2", hash_sha2_256, signatures::STD_CRYPT_HASH_SHA2)?
         .build_readonly()
 }
 
@@ -375,8 +375,8 @@ fn password_verify(_luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create_password(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("hash", password_hash)?
-        .with_function("verify", password_verify)?
+        .with_function_and_signature("hash", password_hash, signatures::STD_CRYPT_PASSWORD_HASH)?
+        .with_function_and_signature("verify", password_verify, signatures::STD_CRYPT_PASSWORD_VERIFY)?
         .build_readonly()
 }
 

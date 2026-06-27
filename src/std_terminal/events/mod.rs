@@ -358,16 +358,16 @@ fn interrupt_check(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub(super) fn create_interrupt_table(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("sigint", interrupt_sigint)?
-        .with_function("eof", interrupt_eof)?
-        .with_function("check", interrupt_check)?
+        .with_function_and_signature("sigint", interrupt_sigint, signatures::STD_TERMINAL_INTERRUPT_SIGINT)?
+        .with_function_and_signature("eof", interrupt_eof, signatures::STD_TERMINAL_INTERRUPT_EOF)?
+        .with_function_and_signature("check", interrupt_check, signatures::STD_TERMINAL_INTERRUPT_CHECK)?
         .build_readonly()
 }
 
 pub(super) fn create_capture_table(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("mouse", capture_mouse)?
-        .with_function("focus", capture_focus)?
-        .with_function("paste", capture_paste)?
+        .with_function_and_signature("mouse", capture_mouse, signatures::STD_TERMINAL_CAPTURE_MOUSE)?
+        .with_function_and_signature("focus", capture_focus, signatures::STD_TERMINAL_CAPTURE_FOCUS)?
+        .with_function_and_signature("paste", capture_paste, signatures::STD_TERMINAL_CAPTURE_PASTE)?
         .build_readonly()
 }

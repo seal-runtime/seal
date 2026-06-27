@@ -134,9 +134,9 @@ fn yaml_writefile(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("encode", encode)?
-        .with_function("decode", decode)?
-        .with_function("readfile", yaml_readfile)?
-        .with_function("writefile", yaml_writefile)?
+        .with_function_and_signature("encode", encode, signatures::STD_SERDE_YAML_ENCODE)?
+        .with_function_and_signature("decode", decode, signatures::STD_SERDE_YAML_DECODE)?
+        .with_function_and_signature("readfile", yaml_readfile, signatures::STD_SERDE_YAML_READFILE)?
+        .with_function_and_signature("writefile", yaml_writefile, signatures::STD_SERDE_YAML_WRITEFILE)?
         .build_readonly()
 }

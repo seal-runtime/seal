@@ -100,6 +100,22 @@ impl<'luau> TableBuilder<'luau> {
         self.with_value(key, LuaValue::Function(f))
     }
 
+    /**
+    Adds a new key-value pair to the table, with a function value.
+
+    This will overwrite any value that already exists.
+    */
+    pub fn with_function_and_signature<K, A, R, F>(self, key: K, func: F, sig: &'static std::ffi::CStr) -> LuaResult<Self>
+    where
+        K: IntoLua,
+        A: FromLuaMulti,
+        R: IntoLuaMulti,
+        F: Fn(&Lua, A) -> LuaResult<R> + 'static, //+ MaybeSend + 'static,
+    {
+        let f = self.luau.create_function_with_debug(func, Some(sig))?;
+        self.with_value(key, LuaValue::Function(f))
+    }
+
     pub fn with_function_mut<K, A, R, F>(self, key: K, func: F) -> LuaResult<Self>
     where
         K: IntoLua,

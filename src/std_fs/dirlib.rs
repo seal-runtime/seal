@@ -238,14 +238,14 @@ fn fs_dir_project(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("from", fs_dir_from)?
-        .with_function("build", fs_dir_build)?
-        .with_function("create", fs_dir_create)?
-        .with_function("ensure", fs_dir_ensure)?
-        .with_function("try_remove", fs_dir_try_remove)?
-        .with_function("cwd", fs_dir_cwd)?
-        .with_function("home", fs_dir_home)?
-        .with_function("project", fs_dir_project)?
+        .with_function_and_signature("from", fs_dir_from, signatures::STD_FS_DIR_FROM)?
+        .with_function_and_signature("build", fs_dir_build, signatures::STD_FS_DIR_BUILD)?
+        .with_function_and_signature("create", fs_dir_create, signatures::STD_FS_DIR_CREATE)?
+        .with_function_and_signature("ensure", fs_dir_ensure, signatures::STD_FS_DIR_ENSURE)?
+        .with_function_and_signature("try_remove", fs_dir_try_remove, signatures::STD_FS_DIR_TRY_REMOVE)?
+        .with_function_and_signature("cwd", fs_dir_cwd, signatures::STD_FS_DIR_CWD)?
+        .with_function_and_signature("home", fs_dir_home, signatures::STD_FS_DIR_HOME)?
+        .with_function_and_signature("project", fs_dir_project, signatures::STD_FS_DIR_PROJECT)?
         .with_metatable(TableBuilder::create(luau)?
             .with_function("__call", fs_dir_call)?
             .build_readonly()?

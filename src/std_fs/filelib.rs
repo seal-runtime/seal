@@ -407,13 +407,13 @@ fn fs_file_try_remove(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiResu
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("from", fs_file_from)?
-        .with_function("build", fs_file_build)?
-        .with_function("create", fs_file_create)?
-        .with_function("try_read", fs_file_try_read)?
-        .with_function("try_readbytes", fs_file_try_readbytes)?
-        .with_function("try_write", fs_file_try_write)?
-        .with_function("try_remove", fs_file_try_remove)?
+        .with_function_and_signature("from", fs_file_from, signatures::STD_FS_FILE_FROM)?
+        .with_function_and_signature("build", fs_file_build, signatures::STD_FS_FILE_BUILD)?
+        .with_function_and_signature("create", fs_file_create, signatures::STD_FS_FILE_CREATE)?
+        .with_function_and_signature("try_read", fs_file_try_read, signatures::STD_FS_FILE_TRY_READ)?
+        .with_function_and_signature("try_readbytes", fs_file_try_readbytes, signatures::STD_FS_FILE_TRY_READBYTES)?
+        .with_function_and_signature("try_write", fs_file_try_write, signatures::STD_FS_FILE_TRY_WRITE)?
+        .with_function_and_signature("try_remove", fs_file_try_remove, signatures::STD_FS_FILE_TRY_REMOVE)?
         .with_metatable(TableBuilder::create(luau)?
             .with_function("__call", fs_file_call)?
             .build_readonly()?

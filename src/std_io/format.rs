@@ -117,6 +117,7 @@ fn uncolor(luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 #[derive(Clone)]
+#[derive(Default)]
 struct FormatOptions {
     indent_spaces: Option<u32>,
     max_depth: Option<u32>,
@@ -124,6 +125,7 @@ struct FormatOptions {
     show_array_indices: Option<bool>,
     show_metatables: Option<bool>,
     guidelines: Option<bool>,
+    show_array_length: Option<bool>,
 }
 impl FormatOptions {
     fn from_value(value: &LuaValue, function_name: &'static str) -> LuaResult<Option<Self>> {
@@ -161,6 +163,7 @@ impl FormatOptions {
         let show_array_indices = check_boolean(t, "show_array_indices", function_name)?;
         let show_metatables = check_boolean(t, "show_metatables", function_name)?;
         let guidelines = check_boolean(t, "guidelines", function_name)?;
+        let show_array_length = check_boolean(t, "show_array_length", function_name)?;
 
         Ok(Some(Self {
             indent_spaces,
@@ -169,6 +172,7 @@ impl FormatOptions {
             show_array_indices,
             show_metatables,
             guidelines,
+            show_array_length,
         }))
     }
 }
@@ -181,7 +185,7 @@ fn format_defaults(_luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 pub fn pretty(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
-    let function_name = "format.pretty(value: any, options: FormatOptions?)";
+    let function_name = "format.pretty(value: any, options: FormatOptions?, current_depth: number?)";
     let formatter = cached_formatter(luau)?;
     let format_pretty: LuaFunction = formatter.raw_get("pretty")?;
     let Some(value) = multivalue.pop_front() else {
@@ -194,12 +198,37 @@ pub fn pretty(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
         DEFAULT_FORMAT_OPTIONS.read().expect("writer should not panic").clone()
     };
 
-    let result = if let Some(options) = options {
-        let FormatOptions { indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines } = options;
-        format_pretty.call::<LuaString>((value, LuaNil, LuaNil, LuaNil, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines))
-    } else {
-        format_pretty.call::<LuaString>(value)
+    let current_depth: LuaValue = match multivalue.pop_front() {
+        Some(LuaValue::Number(f)) => float_to_usize(f, function_name, "current_depth")?.into_lua(luau)?,
+        Some(LuaValue::Integer(i)) => int_to_usize(i, function_name, "current_depth")?.into_lua(luau)?,
+        None => LuaNil,
+        other => {
+            return wrap_err!("{}: expected current_depth to be a number or nil/unspecified, got: {:?}", function_name, other);
+        }
     };
+
+    let FormatOptions {
+        indent_spaces,
+        max_depth,
+        max_elements_in_array,
+        show_array_indices,
+        show_metatables,
+        guidelines,
+        show_array_length,
+    } = options.unwrap_or_default();
+    let result = format_pretty.call::<LuaString>((
+        value,            // value
+        LuaNil,           // seen_tables
+        current_depth,    // depth
+        LuaNil,           // current_table_path
+        indent_spaces,
+        max_depth,
+        max_elements_in_array,
+        show_array_indices,
+        show_metatables,
+        guidelines,
+        show_array_length,
+    ));
 
     let formatted = match result {
         Ok(text) => text.to_string_lossy(),
@@ -231,12 +260,12 @@ pub fn __call_format(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<Str
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("pretty", pretty)?
-        .with_function("defaults", format_defaults)?
-        .with_function("simple", simple)?
-        .with_function("debug", debug)?
-        .with_function("uncolor", uncolor)?
-        .with_function("hexdump", hexdump)?
+        .with_function_and_signature("pretty", pretty, signatures::STD_IO_FORMAT_PRETTY)?
+        .with_function_and_signature("defaults", format_defaults, signatures::STD_IO_FORMAT_DEFAULTS)?
+        .with_function_and_signature("simple", simple, signatures::STD_IO_FORMAT_SIMPLE)?
+        .with_function_and_signature("debug", debug, signatures::STD_IO_FORMAT_DEBUG)?
+        .with_function_and_signature("uncolor", uncolor, signatures::STD_IO_FORMAT_UNCOLOR)?
+        .with_function_and_signature("hexdump", hexdump, signatures::STD_IO_FORMAT_HEXDUMP)?
         .with_metatable(TableBuilder::create(luau)?
             .with_function("__call", __call_format)?
             .build_readonly()?

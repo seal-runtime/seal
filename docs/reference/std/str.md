@@ -471,7 +471,7 @@ This function counts by 'characters', whereas `str.graphemes` provides byte indi
 <h4>
 
 ```luau
-function str.graphemes(s: string): (...any) -> (number, string)
+function str.graphemes(s: string): () -> (number, string)
 ```
 
 </h4>

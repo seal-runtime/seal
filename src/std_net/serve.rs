@@ -297,6 +297,6 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("serve", server_serve)?
+        .with_function_and_signature("serve", server_serve, c"net.http.server.serve(config: ServeConfig)")?
         .build_readonly()
 }

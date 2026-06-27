@@ -210,13 +210,13 @@ fn json_array(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("encode", json_encode)?
-        .with_function("raw", json_raw_encode)?
-        .with_function("decode", json_decode)?
-        .with_function("readfile", json_readfile)?
-        .with_function("writefile", json_writefile)?
-        .with_function("writefile_raw", json_writefile_raw)?
-        .with_function("null", json_null)?
-        .with_function("array", json_array)?
+        .with_function_and_signature("encode", json_encode, signatures::STD_JSON_ENCODE)?
+        .with_function_and_signature("raw", json_raw_encode, signatures::STD_JSON_RAW)?
+        .with_function_and_signature("decode", json_decode, signatures::STD_JSON_DECODE)?
+        .with_function_and_signature("readfile", json_readfile, signatures::STD_JSON_READFILE)?
+        .with_function_and_signature("writefile", json_writefile, signatures::STD_JSON_WRITEFILE)?
+        .with_function_and_signature("writefile_raw", json_writefile_raw, signatures::STD_JSON_WRITEFILE_RAW)?
+        .with_function_and_signature("null", json_null, signatures::STD_JSON_NULL)?
+        .with_function_and_signature("array", json_array, signatures::STD_JSON_ARRAY)?
         .build_readonly()
 }

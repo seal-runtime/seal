@@ -72,7 +72,7 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
         globals::set_globals(&new_luau, options.chunk_name.clone())?;
         // must use globals.set() due to safeenv
         new_luau.globals().set("channel", TableBuilder::create(&new_luau)?
-            .with_function("read", {
+            .with_function_and_signature("read", {
                 let receiver = channels.parent_to_child.receiver.clone();
                 move | luau: &Lua, _value: LuaValue | -> LuaValueResult {
                     let function_name = "channel:read()";
@@ -81,8 +81,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                         None => Ok(LuaNil),
                     }
                 }
-            })?
-            .with_function("read_await", {
+            }, c"channel:read() -> string?")?
+            .with_function_and_signature("read_await", {
                 let receiver = channels.parent_to_child.receiver;
                 move | luau: &Lua, _value: LuaValue | -> LuaValueResult {
                     let function_name = "channel:read_await()";
@@ -91,8 +91,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                         Err(err) => Err(err)
                     }
                 }
-            })?
-            .with_function("readbytes", {
+            }, c"channel:read_await() -> string")?
+            .with_function_and_signature("readbytes", {
                 let receiver = channels.parent_to_child_bytes.receiver.clone();
                 move | luau: &Lua, _value: LuaValue | -> LuaValueResult {
                     let function_name = "channel:readbytes()";
@@ -101,8 +101,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                         None => Ok(LuaNil)
                     }
                 }
-            })?
-            .with_function("readbytes_await", {
+            }, c"channel:readbytes() -> buffer?")?
+            .with_function_and_signature("readbytes_await", {
                 let receiver = channels.parent_to_child_bytes.receiver;
                 move | luau: &Lua, _value: LuaValue | -> LuaValueResult {
                     let function_name = "channel:readbytes_await()";
@@ -111,8 +111,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                         Err(err) => Err(err)
                     }
                 }
-            })?
-            .with_function("send", {
+            }, c"channel:readbytes_await() -> buffer")?
+            .with_function_and_signature("send", {
                 let sender = channels.child_to_parent.sender.clone();
                 move | luau: &Lua, mut multivalue: LuaMultiValue | -> LuaEmptyResult {
                     let function_name = "channel:send(data: string | JsonSerializableTable)";
@@ -126,8 +126,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                     let data = serialize_data_for_transit(luau, value, function_name)?;
                     sender.send(data, function_name)
                 }
-            })?
-            .with_function("try_send", {
+            }, c"channel:send(data: string | JsonSerializableTable)")?
+            .with_function_and_signature("try_send", {
                 let sender = channels.child_to_parent.sender.clone();
                 move | luau: &Lua, mut multivalue: LuaMultiValue | -> LuaMultiResult {
                     let function_name = "channel:try_send(data: string | JsonSerializableTable)";
@@ -162,8 +162,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                         }
                     }
                 }
-            })?
-            .with_function("sendbytes", {
+            }, c"channel:try_send(data: string | JsonSerializableTable) -> (boolean, \"Sent\" | \"Disconnected\" | \"Full\")")?
+            .with_function_and_signature("sendbytes", {
                 let sender = channels.child_to_parent_bytes.sender.clone();
                 move | _luau: &Lua, mut multivalue: LuaMultiValue | -> LuaEmptyResult {
                     let function_name = "channel:sendbytes(data: buffer)";
@@ -179,8 +179,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                     };
                     sender.send(data, function_name)
                 }
-            })?
-            .with_function("try_sendbytes", {
+            }, c"channel:sendbytes(data: buffer)")?
+            .with_function_and_signature("try_sendbytes", {
                 let sender = channels.child_to_parent_bytes.sender;
                 move | luau: &Lua, mut multivalue: LuaMultiValue | -> LuaMultiResult {
                     let function_name = "channel:try_sendbytes(data: buffer)";
@@ -217,7 +217,7 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                         }
                     }
                 }
-            })?
+            }, c"channel:try_sendbytes(data: buffer) -> (boolean, \"Sent\" | \"Disconnected\" | \"Full\")")?
             .with_value("data", data)?
             .build_readonly()?
         )?;
@@ -242,7 +242,7 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
     let thread_handle = TableBuilder::create(luau)?
         .with_value("name", luau.create_string(options.name.clone())?)?
-        .with_function("join", {
+        .with_function_and_signature("join", {
             let thread_name = options.name.clone();
             move | _luau: &Lua, _value: LuaValue | -> LuaEmptyResult {
                 let function_name = "ThreadHandle:join()";
@@ -267,8 +267,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                 }
 
             }
-        })?
-        .with_function("read", {
+        }, signatures::STD_THREAD_THREAD_HANDLE_JOIN)?
+        .with_function_and_signature("read", {
             let receiver = channels.child_to_parent.receiver.clone();
             move | luau: &Lua, _value: LuaValue | -> LuaValueResult {
                 let function_name = "ThreadHandle:read()";
@@ -277,8 +277,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                     None => Ok(LuaNil),
                 }
             }
-        })?
-        .with_function("read_await", {
+        }, signatures::STD_THREAD_THREAD_HANDLE_READ)?
+        .with_function_and_signature("read_await", {
             let receiver = channels.child_to_parent.receiver;
             move | luau: &Lua, _value: LuaValue | -> LuaValueResult {
                 let function_name = "ThreadHandle:read_await()";
@@ -287,8 +287,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                     Err(err) => Err(err)
                 }
             }
-        })?
-        .with_function("readbytes", {
+        }, signatures::STD_THREAD_THREAD_HANDLE_READ_AWAIT)?
+        .with_function_and_signature("readbytes", {
             let receiver = channels.child_to_parent_bytes.receiver.clone();
             move | luau: &Lua, _value: LuaValue | -> LuaValueResult {
                 let function_name = "ThreadHandle:readbytes()";
@@ -297,8 +297,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                     None => Ok(LuaNil)
                 }
             }
-        })?
-        .with_function("readbytes_await", {
+        }, signatures::STD_THREAD_THREAD_HANDLE_READBYTES)?
+        .with_function_and_signature("readbytes_await", {
             let receiver = channels.child_to_parent_bytes.receiver;
             move | luau: &Lua, _value: LuaValue | -> LuaValueResult {
                 let function_name = "ThreadHandle:readbytes_await()";
@@ -307,8 +307,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                     Err(err) => Err(err)
                 }
             }
-        })?
-        .with_function("send", {
+        }, signatures::STD_THREAD_THREAD_HANDLE_READBYTES_AWAIT)?
+        .with_function_and_signature("send", {
             let sender = channels.parent_to_child.sender.clone();
             move | luau: &Lua, mut multivalue: LuaMultiValue | -> LuaEmptyResult {
                 let function_name = "ThreadHandle:send(data: string | JsonSerializableTable)";
@@ -322,8 +322,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                 let data = serialize_data_for_transit(luau, value, function_name)?;
                 sender.send(data, function_name)
             }
-        })?
-        .with_function("try_send", {
+        }, signatures::STD_THREAD_THREAD_HANDLE_SEND)?
+        .with_function_and_signature("try_send", {
             let sender = channels.parent_to_child.sender;
             move | luau: &Lua, mut multivalue: LuaMultiValue | -> LuaMultiResult {
                 let function_name = "ThreadHandle:try_send(data: string | JsonSerializableTable)";
@@ -358,8 +358,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                     }
                 }
             }
-        })?
-        .with_function("sendbytes", {
+        }, signatures::STD_THREAD_THREAD_HANDLE_TRY_SEND)?
+        .with_function_and_signature("sendbytes", {
             let sender = channels.parent_to_child_bytes.sender.clone();
             move | _luau: &Lua, mut multivalue: LuaMultiValue | -> LuaEmptyResult {
                 let function_name = "ThreadHandle:sendbytes(data: buffer)";
@@ -375,8 +375,8 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                 };
                 sender.send(bytes, function_name)
             }
-        })?
-        .with_function("try_sendbytes", {
+        }, signatures::STD_THREAD_THREAD_HANDLE_SENDBYTES)?
+        .with_function_and_signature("try_sendbytes", {
             let sender = channels.parent_to_child_bytes.sender;
             move | luau: &Lua, mut multivalue: LuaMultiValue | -> LuaMultiResult {
                 let function_name = "ThreadHandle:try_sendbytes(data: buffer)";
@@ -413,7 +413,7 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
                     }
                 }
             }
-        })?
+        }, signatures::STD_THREAD_THREAD_HANDLE_TRY_SENDBYTES)?
         .build_readonly();
 
     ok_table(thread_handle)
@@ -458,8 +458,8 @@ fn pop_self(multivalue: &mut LuaMultiValue, function_name: &'static str) -> LuaR
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("spawn", thread_spawn)?
-        .with_function("sleep", thread_sleep)?
-        .with_function("parallelism", thread_parallelism)?
+        .with_function_and_signature("spawn", thread_spawn, signatures::STD_THREAD_SPAWN)?
+        .with_function_and_signature("sleep", thread_sleep, signatures::STD_THREAD_SLEEP)?
+        .with_function_and_signature("parallelism", thread_parallelism, signatures::STD_THREAD_PARALLELISM)?
         .build_readonly()
 }

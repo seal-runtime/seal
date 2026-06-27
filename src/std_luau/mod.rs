@@ -278,10 +278,10 @@ fn luau_bundle(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("eval", luau_eval)?
-        .with_function("eval_unsafe", luau_eval_unsafe)?
-        .with_function("bytecode", luau_bytecode)?
-        .with_function("require_resolver", luau_require_resolver)?
-        .with_function("bundle", luau_bundle)?
+        .with_function_and_signature("eval", luau_eval, signatures::STD_LUAU_EVAL)?
+        .with_function_and_signature("eval_unsafe", luau_eval_unsafe, signatures::STD_LUAU_EVAL_UNSAFE)?
+        .with_function_and_signature("bytecode", luau_bytecode, signatures::STD_LUAU_BYTECODE)?
+        .with_function_and_signature("require_resolver", luau_require_resolver, signatures::STD_LUAU_REQUIRE_RESOLVER)?
+        .with_function_and_signature("bundle", luau_bundle, signatures::STD_LUAU_BUNDLE)?
         .build_readonly()
 }

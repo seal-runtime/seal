@@ -6,7 +6,7 @@ use mluau::AsChunk;
 pub const MAX_TABLE_SIZE: usize = 134_217_728;
 pub use crate::{
     std_io::colors as colors, wrap_err, table_helpers::TableBuilder,
-    put, puts, eput, eputs
+    put, puts, eput, eputs, signatures
 };
 
 /// Chunk of Luau code, either sourcecode (valid utf8) or bytecode (never valid utf8)

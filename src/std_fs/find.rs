@@ -197,11 +197,11 @@ pub fn find(luau: &Lua, mut multivalue: LuaMultiValue, function_name: &str) -> L
 
     let result = TableBuilder::create(luau)?
         .with_value("path", search_path.clone())?
-        .with_function("exists", fr_exists)?
-        .with_function("try_file", fr_try_file)?
-        .with_function("try_dir", fr_try_dir)?
-        .with_function("unwrap_file", fr_unwrap_file)?
-        .with_function("unwrap_dir", fr_unwrap_dir)?
+        .with_function_and_signature("exists", fr_exists, signatures::STD_FS_FIND_RESULT_EXISTS)?
+        .with_function_and_signature("try_file", fr_try_file, signatures::STD_FS_FIND_RESULT_TRY_FILE)?
+        .with_function_and_signature("try_dir", fr_try_dir, signatures::STD_FS_FIND_RESULT_TRY_DIR)?
+        .with_function_and_signature("unwrap_file", fr_unwrap_file, signatures::STD_FS_FIND_RESULT_UNWRAP_FILE)?
+        .with_function_and_signature("unwrap_dir", fr_unwrap_dir, signatures::STD_FS_FIND_RESULT_UNWRAP_DIR)?
         .build()?;
 
     if permission_denied {

@@ -240,21 +240,21 @@ fn cursor_prevline(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("position", cursor_position)?
-        .with_function("save", cursor_save)?
-        .with_function("restore", cursor_restore)?
-        .with_function("show", cursor_show)?
-        .with_function("hide", cursor_hide)?
-        .with_function("style", cursor_style)?
-        .with_function("up", cursor_up)?
-        .with_function("down", cursor_down)?
-        .with_function("left", cursor_left)?
-        .with_function("right", cursor_right)?
-        .with_function("to", cursor_to)?
-        .with_function("column", cursor_column)?
-        .with_function("row", cursor_row)?
-        .with_function("nextline", cursor_nextline)?
-        .with_function("prevline", cursor_prevline)?
+        .with_function_and_signature("position", cursor_position, signatures::STD_TERMINAL_CURSOR_POSITION)?
+        .with_function_and_signature("save", cursor_save, signatures::STD_TERMINAL_CURSOR_SAVE)?
+        .with_function_and_signature("restore", cursor_restore, signatures::STD_TERMINAL_CURSOR_RESTORE)?
+        .with_function_and_signature("show", cursor_show, signatures::STD_TERMINAL_CURSOR_SHOW)?
+        .with_function_and_signature("hide", cursor_hide, signatures::STD_TERMINAL_CURSOR_HIDE)?
+        .with_function_and_signature("style", cursor_style, signatures::STD_TERMINAL_CURSOR_STYLE)?
+        .with_function_and_signature("up", cursor_up, signatures::STD_TERMINAL_CURSOR_UP)?
+        .with_function_and_signature("down", cursor_down, signatures::STD_TERMINAL_CURSOR_DOWN)?
+        .with_function_and_signature("left", cursor_left, signatures::STD_TERMINAL_CURSOR_LEFT)?
+        .with_function_and_signature("right", cursor_right, signatures::STD_TERMINAL_CURSOR_RIGHT)?
+        .with_function_and_signature("to", cursor_to, c"terminal.cursor.to(column: number, row: number) -> TerminalAction")?
+        .with_function_and_signature("column", cursor_column, signatures::STD_TERMINAL_CURSOR_COLUMN)?
+        .with_function_and_signature("row", cursor_row, signatures::STD_TERMINAL_CURSOR_ROW)?
+        .with_function_and_signature("nextline", cursor_nextline, signatures::STD_TERMINAL_CURSOR_NEXTLINE)?
+        .with_function_and_signature("prevline", cursor_prevline, signatures::STD_TERMINAL_CURSOR_PREVLINE)?
         .build_readonly()
 
 }

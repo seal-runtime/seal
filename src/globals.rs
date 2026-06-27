@@ -60,9 +60,9 @@ pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
     globals.raw_set("_REQUIRE_CACHE", TableBuilder::create(luau)?.build()?)?;
     globals.raw_set("script", TableBuilder::create(luau)?
         .with_value("entry_path", entry_path.as_ref())?
-        .with_function("path", get_script_path)?
-        .with_function("parent", get_script_parent)?
-        .with_function("project", get_script_project)?
+        .with_function_and_signature("path", get_script_path, c"script:path() -> string")?
+        .with_function_and_signature("parent", get_script_parent, c"script:parent() -> string")?
+        .with_function_and_signature("project", get_script_project, c"script:project(n: number?) -> string")?
         .build_readonly()?
     )?;
 
