@@ -303,7 +303,7 @@ local function stringify_simple_type(value: any, key_function_name: string?): st
         local is_seal_fn_with_signature = false
         if key_function_name and key_function_name == function_name then
             function_name = ""
-        elseif string.find(function_name, ".", 1, true) then
+        elseif string.find(function_name, ".", 1, true) or string.find(function_name, ":", 1, true) then
             -- it's probably a seal standard library function with a full signature, let's format it differently
             is_seal_fn_with_signature = true
         end

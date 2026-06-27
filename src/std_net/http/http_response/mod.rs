@@ -98,10 +98,10 @@ impl HttpResponse {
             .with_value("status", status)?
             .with_value("body", luau.create_string(body)?)?
             .with_value("content_type", content_type)?
-            .with_function("expect_json", HttpResponse::expect_json)?
-            .with_function("try_json", HttpResponse::try_json)?
+            .with_function_and_signature("expect_json", HttpResponse::expect_json, signatures::STD_NET_HTTP_HTTP_RESPONSE_EXPECT_JSON)?
+            .with_function_and_signature("try_json", HttpResponse::try_json, signatures::STD_NET_HTTP_HTTP_RESPONSE_TRY_JSON)?
             .with_metatable(TableBuilder::create(luau)?
-                .with_function("__display", HttpResponse::display)?
+                .with_function_and_signature("__display", HttpResponse::display, c"HttpResponse:__display()")?
                 .build_readonly()?
             )?
             .build() // not readonly: allow  __display impl to be removed with setmetatable(response, nil)

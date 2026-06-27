@@ -115,8 +115,8 @@ pub fn http_request(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("get", http_get)?
-        .with_function("post", http_post)?
-        .with_function("request", http_request)?
+        .with_function_and_signature("get", http_get, signatures::STD_NET_HTTP_GET)?
+        .with_function_and_signature("post", http_post, signatures::STD_NET_HTTP_POST)?
+        .with_function_and_signature("request", http_request, signatures::STD_NET_HTTP_REQUEST)?
         .build_readonly()
 }

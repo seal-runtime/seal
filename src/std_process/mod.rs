@@ -112,7 +112,7 @@ fn create_run_result_table(luau: &Lua, output: Output) -> LuaValueResult {
         })?
         .with_value("stdout", luau.create_string(&stdout)?)?
         .with_value("stderr", luau.create_string(&stderr)?)?
-        .with_function("unwrap", {
+        .with_function_and_signature("unwrap", {
             move |luau: &Lua, _value: LuaMultiValue| -> LuaValueResult {
                 if ok {
                     let s = trim_end_or_return(&stdout);
@@ -122,8 +122,8 @@ fn create_run_result_table(luau: &Lua, output: Output) -> LuaValueResult {
                     wrap_err!("Attempt to :unwrap() a failed RunResult! Use :unwrap_or to specify a default value.\n  Process terminated with stderr:\n  {}", readable_stderr)
                 }
             }
-        })?
-        .with_function("unwrap_or", run_result_unwrap_or)?
+        }, signatures::STD_PROCESS_RUN_RESULT_UNWRAP)?
+        .with_function_and_signature("unwrap_or", run_result_unwrap_or, signatures::STD_PROCESS_RUN_RESULT_UNWRAP_OR)?
         .build_readonly();
 
     ok_table(run_result)
@@ -377,7 +377,7 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
             .with_value("stdout", stdout_handle.unwrap_or(LuaNil))?
             .with_value("stderr", stderr_handle.unwrap_or(LuaNil))?
             .with_value("stdin", stdin_handle.unwrap_or(LuaNil))?
-            .with_function("alive", {
+            .with_function_and_signature("alive", {
                 let child_cell = Rc::clone(&child_cell);
                 move |_luau: &Lua, _value: LuaValue| -> LuaValueResult {
                     let function_name = "ChildProcess:alive()";
@@ -392,10 +392,10 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
                             wrap_err!("{}: (heisenseal's child) cannot determine whether child (pid {}) is dead or alive due to err: {}", function_name, child_id, err)
                         }
                     }
-                    
+
                 }
-            })?
-            .with_function("kill", {
+            }, signatures::STD_PROCESS_CHILD_PROCESS_ALIVE)?
+            .with_function_and_signature("kill", {
                 let function_name = "ChildProcess:kill()";
                 let child_cell = Rc::clone(&child_cell);
                 move |_luau: &Lua, _value: LuaValue| -> LuaEmptyResult {
@@ -411,7 +411,7 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
                         }
                     }
                 }
-            })?
+            }, signatures::STD_PROCESS_CHILD_PROCESS_KILL)?
             .build_readonly()
     };
 
@@ -481,10 +481,10 @@ fn exit(luau: &Lua, exit_code: Option<LuaValue>) -> LuaResult<()> {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("run", process_run)?
-        .with_function("spawn", process_spawn)?
-        .with_function("shell", process_shell)?
-        .with_function("setexitcallback", set_exit_callback)?
-        .with_function("exit", exit)?
+        .with_function_and_signature("run", process_run, signatures::STD_PROCESS_RUN)?
+        .with_function_and_signature("spawn", process_spawn, signatures::STD_PROCESS_SPAWN)?
+        .with_function_and_signature("shell", process_shell, signatures::STD_PROCESS_SHELL)?
+        .with_function_and_signature("setexitcallback", set_exit_callback, c"process.setexitcallback(callback: (code: number) -> ())")?
+        .with_function_and_signature("exit", exit, signatures::STD_PROCESS_EXIT)?
         .build_readonly()
 }

@@ -5,7 +5,7 @@ use mluau::prelude::*;
 use std::sync::{LazyLock, Mutex};
 use std::time::{Duration, Instant};
 
-use crate::table_helpers::TableBuilder;
+use crate::{table_helpers::TableBuilder, signatures};
 
 // needed to let wrap_err! macro work in here
 use self as colors;
@@ -218,20 +218,20 @@ fn style_underline(luau: &Lua, text: String) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     let bold_colors = TableBuilder::create(luau)?
-        .with_function("black", colorize_bold_black)?
-        .with_function("red", colorize_bold_red)?
-        .with_function("green", colorize_bold_green)?
-        .with_function("yellow", colorize_bold_yellow)?
-        .with_function("blue", colorize_bold_blue)?
-        .with_function("magenta", colorize_bold_magenta)?
-        .with_function("cyan", colorize_bold_cyan)?
-        .with_function("white", colorize_bold_white)?
+        .with_function_and_signature("black", colorize_bold_black, signatures::STD_IO_COLORS_BOLD_BLACK)?
+        .with_function_and_signature("red", colorize_bold_red, signatures::STD_IO_COLORS_BOLD_RED)?
+        .with_function_and_signature("green", colorize_bold_green, signatures::STD_IO_COLORS_BOLD_GREEN)?
+        .with_function_and_signature("yellow", colorize_bold_yellow, signatures::STD_IO_COLORS_BOLD_YELLOW)?
+        .with_function_and_signature("blue", colorize_bold_blue, signatures::STD_IO_COLORS_BOLD_BLUE)?
+        .with_function_and_signature("magenta", colorize_bold_magenta, signatures::STD_IO_COLORS_BOLD_MAGENTA)?
+        .with_function_and_signature("cyan", colorize_bold_cyan, signatures::STD_IO_COLORS_BOLD_CYAN)?
+        .with_function_and_signature("white", colorize_bold_white, signatures::STD_IO_COLORS_BOLD_WHITE)?
         .build_readonly()?;
 
     let styles = TableBuilder::create(luau)?
-        .with_function("bold", style_bold)?
-        .with_function("dim", style_dim)?
-        .with_function("underline", style_underline)?
+        .with_function_and_signature("bold", style_bold, signatures::STD_IO_COLORS_STYLE_BOLD)?
+        .with_function_and_signature("dim", style_dim, signatures::STD_IO_COLORS_STYLE_DIM)?
+        .with_function_and_signature("underline", style_underline, signatures::STD_IO_COLORS_STYLE_UNDERLINE)?
         .build_readonly()?;
 
     let codes = TableBuilder::create(luau)?
@@ -282,17 +282,17 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .build_readonly()?;
 
     TableBuilder::create(luau)?
-        .with_function("black", colorize_black)?
-        .with_function("red", colorize_red)?
-        .with_function("green", colorize_green)?
-        .with_function("yellow", colorize_yellow)?
-        .with_function("blue", colorize_blue)?
-        .with_function("magenta", colorize_magenta)?
-        .with_function("cyan", colorize_cyan)?
-        .with_function("white", colorize_white)?
-        .with_function("rgb", rgb)?
-        .with_function("override", colors_override)?
-        .with_function("enabled", colors_enabled)?
+        .with_function_and_signature("black", colorize_black, signatures::STD_IO_COLORS_BLACK)?
+        .with_function_and_signature("red", colorize_red, signatures::STD_IO_COLORS_RED)?
+        .with_function_and_signature("green", colorize_green, signatures::STD_IO_COLORS_GREEN)?
+        .with_function_and_signature("yellow", colorize_yellow, signatures::STD_IO_COLORS_YELLOW)?
+        .with_function_and_signature("blue", colorize_blue, signatures::STD_IO_COLORS_BLUE)?
+        .with_function_and_signature("magenta", colorize_magenta, signatures::STD_IO_COLORS_MAGENTA)?
+        .with_function_and_signature("cyan", colorize_cyan, signatures::STD_IO_COLORS_CYAN)?
+        .with_function_and_signature("white", colorize_white, signatures::STD_IO_COLORS_WHITE)?
+        .with_function_and_signature("rgb", rgb, signatures::STD_IO_COLORS_RGB)?
+        .with_function_and_signature("override", colors_override, signatures::STD_IO_COLORS_OVERRIDE)?
+        .with_function_and_signature("enabled", colors_enabled, signatures::STD_IO_COLORS_ENABLED)?
         .with_value("bold", bold_colors)?
         .with_value("style", styles)?
         .with_value("codes", codes)?

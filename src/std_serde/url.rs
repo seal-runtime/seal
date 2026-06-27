@@ -64,11 +64,11 @@ fn url_binary_decode(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("encode", url_encode)?
-        .with_function("decode", url_decode)?
+        .with_function_and_signature("encode", url_encode, signatures::STD_SERDE_URL_ENCODE)?
+        .with_function_and_signature("decode", url_decode, signatures::STD_SERDE_URL_DECODE)?
         .with_value("binary", TableBuilder::create(luau)?
-            .with_function("encode", url_binary_encode)?
-            .with_function("decode", url_binary_decode)?
+            .with_function_and_signature("encode", url_binary_encode, signatures::STD_SERDE_URL_BINARY_ENCODE)?
+            .with_function_and_signature("decode", url_binary_decode, signatures::STD_SERDE_URL_BINARY_DECODE)?
             .build_readonly()?
         )?
         .build_readonly()

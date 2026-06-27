@@ -316,10 +316,10 @@ const PROMPT_DOT_LUAU_SRC: &str = include_str!("./prompt.luau");
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     let t = TableBuilder::create(luau)?
-        .with_function("text", prompt_text)?
-        .with_function("edit", prompt_edit)?
-        .with_function("password", prompt_password)?
-        .with_function("confirm", prompt_confirm)?
+        .with_function_and_signature("text", prompt_text, signatures::STD_IO_PROMPT_TEXT)?
+        .with_function_and_signature("edit", prompt_edit, signatures::STD_IO_PROMPT_EDIT)?
+        .with_function_and_signature("password", prompt_password, signatures::STD_IO_PROMPT_PASSWORD)?
+        .with_function_and_signature("confirm", prompt_confirm, signatures::STD_IO_PROMPT_CONFIRM)?
         .build()?;
 
     let chunk = Chunk::Src(PROMPT_DOT_LUAU_SRC.to_owned());

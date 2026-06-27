@@ -67,15 +67,15 @@ fn urlsafe_decode(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 fn create_urlsafe(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("encode", urlsafe_encode)?
-        .with_function("decode", urlsafe_decode)?
+        .with_function_and_signature("encode", urlsafe_encode, signatures::STD_SERDE_BASE64_URLSAFE_ENCODE)?
+        .with_function_and_signature("decode", urlsafe_decode, signatures::STD_SERDE_BASE64_URLSAFE_DECODE)?
         .build_readonly()
 }
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("encode", encode)?
-        .with_function("decode", decode)?
+        .with_function_and_signature("encode", encode, signatures::STD_SERDE_BASE64_ENCODE)?
+        .with_function_and_signature("decode", decode, signatures::STD_SERDE_BASE64_DECODE)?
         .with_value("urlsafe", create_urlsafe(luau)?)?
         .build_readonly()
 }

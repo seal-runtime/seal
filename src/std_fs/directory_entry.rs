@@ -354,19 +354,19 @@ pub fn create(luau: &Lua, path: &str) -> LuaResult<LuaTable> {
         .with_value("name", base_name)?
         .with_value("path", original_path)?
         .with_value("type", "Directory")?
-        .with_function("list", dir_list)?
-        .with_function("join", dir_join)?
-        .with_function("entries", dir_entries)?
-        .with_function("add_file", dir_add_file)?
-        .with_function("add_tree", dir_add_tree)?
-        .with_function("find", dir_find)?
-        .with_function("expect_file", dir_expect_file)?
-        .with_function("expect_dir", dir_expect_dir)?
-        .with_function("metadata", entry::metadata)?
-        .with_function("copy_to", entry::copy_to)?
-        .with_function("move_to", entry::move_to)?
-        .with_function("rename", entry::rename)?
-        .with_function("remove", entry::remove)?
+        .with_function_and_signature("list", dir_list, signatures::STD_FS_DIRECTORY_ENTRY_LIST)?
+        .with_function_and_signature("join", dir_join, signatures::STD_FS_DIRECTORY_ENTRY_JOIN)?
+        .with_function_and_signature("entries", dir_entries, signatures::STD_FS_DIRECTORY_ENTRY_ENTRIES)?
+        .with_function_and_signature("add_file", dir_add_file, signatures::STD_FS_DIRECTORY_ENTRY_ADD_FILE)?
+        .with_function_and_signature("add_tree", dir_add_tree, signatures::STD_FS_DIRECTORY_ENTRY_ADD_TREE)?
+        .with_function_and_signature("find", dir_find, signatures::STD_FS_DIRECTORY_ENTRY_FIND)?
+        .with_function_and_signature("expect_file", dir_expect_file, signatures::STD_FS_DIRECTORY_ENTRY_EXPECT_FILE)?
+        .with_function_and_signature("expect_dir", dir_expect_dir, signatures::STD_FS_DIRECTORY_ENTRY_EXPECT_DIR)?
+        .with_function_and_signature("metadata", entry::metadata, signatures::STD_FS_DIRECTORY_ENTRY_METADATA)?
+        .with_function_and_signature("copy_to", entry::copy_to, signatures::STD_FS_DIRECTORY_ENTRY_COPY_TO)?
+        .with_function_and_signature("move_to", entry::move_to, signatures::STD_FS_DIRECTORY_ENTRY_MOVE_TO)?
+        .with_function_and_signature("rename", entry::rename, signatures::STD_FS_DIRECTORY_ENTRY_RENAME)?
+        .with_function_and_signature("remove", entry::remove, signatures::STD_FS_DIRECTORY_ENTRY_REMOVE)?
         // can't be readonly as :move_to modifies .path
         .build()
 }

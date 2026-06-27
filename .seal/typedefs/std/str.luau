@@ -394,7 +394,7 @@ end
     - Sometimes simple characters directly to the right of emojis don't render when printed (example "🦭")
     - Some Hindi graphemes (like हा) don't render properly in terminals :(
 ]=]
-function str.graphemes(s: string): (...any) -> (number, string)
+function str.graphemes(s: string): () -> (number, string)
     return nil :: any
 end
 

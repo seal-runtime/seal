@@ -220,6 +220,6 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function_and_signature("setvar", env_environment_setvar, c"env.setvar is deprecated, use env.vars.set instead")?
         .with_function_and_signature("removevar", env_environment_removevar, c"env.removevar is deprecated, use env.vars.unset instead")?
         .with_value("vars", vars::create(luau)?)?
-        .with_function_and_signature("cwd", env_cwd, c"env.cwd() -> string")?
+        .with_function_and_signature("cwd", env_cwd, signatures::STD_ENV_CWD)?
         .build_readonly()
 }

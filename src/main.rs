@@ -27,6 +27,8 @@
 use crate::{prelude::*, setup::SetupOptions};
 use mluau::prelude::*;
 
+pub mod signatures;
+
 use std::env;
 use std::ffi::OsString;
 use std::collections::VecDeque;

@@ -183,7 +183,7 @@ fn zstd_decompress(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("compress", zstd_compress)?
-        .with_function("decompress", zstd_decompress)?
+        .with_function_and_signature("compress", zstd_compress, signatures::STD_SERDE_ZSTD_COMPRESS)?
+        .with_function_and_signature("decompress", zstd_decompress, signatures::STD_SERDE_ZSTD_DECOMPRESS)?
         .build_readonly()
 }

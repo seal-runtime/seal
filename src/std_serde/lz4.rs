@@ -63,7 +63,7 @@ fn lz4_decompress(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("compress", lz4_compress)?
-        .with_function("decompress", lz4_decompress)?
+        .with_function_and_signature("compress", lz4_compress, signatures::STD_SERDE_LZ4_COMPRESS)?
+        .with_function_and_signature("decompress", lz4_decompress, signatures::STD_SERDE_LZ4_DECOMPRESS)?
         .build_readonly()
 }

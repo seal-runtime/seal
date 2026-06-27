@@ -1,0 +1,3 @@
+I vendored this library in from https://github.com/vantoanvh/LuauParser
+
+very good up to date parser very surprising find

@@ -310,10 +310,10 @@ fn str_graphemes(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("split", str_split)?
-        .with_function("splitaround", str_splitaround)?
-        .with_function("splitbefore", str_splitbefore)?
-        .with_function("splitafter", str_splitafter)?
-        .with_function("graphemes", str_graphemes)?
+        .with_function_and_signature("split", str_split, signatures::STD_STR_SPLIT)?
+        .with_function_and_signature("splitaround", str_splitaround, signatures::STD_STR_SPLITAROUND)?
+        .with_function_and_signature("splitbefore", str_splitbefore, signatures::STD_STR_SPLITBEFORE)?
+        .with_function_and_signature("splitafter", str_splitafter, signatures::STD_STR_SPLITAFTER)?
+        .with_function_and_signature("graphemes", str_graphemes, signatures::STD_STR_GRAPHEMES)?
         .build_readonly()
 }

@@ -243,11 +243,11 @@ fn input_interrupt(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("get", input_get)?
-        .with_function("readline", input_readline)?
-        .with_function("editline", input_editline)?
-        .with_function("rawline", input_rawline)?
-        .with_function("read", input_read)?
-        .with_function("interrupt", input_interrupt)?
+        .with_function_and_signature("get", input_get, c"io.input.get is deprecated, use io.prompt.text OR io.input.readline OR io.input.rawline instead")?
+        .with_function_and_signature("readline", input_readline, signatures::STD_IO_INPUT_READLINE)?
+        .with_function_and_signature("editline", input_editline, signatures::STD_IO_INPUT_EDITLINE)?
+        .with_function_and_signature("rawline", input_rawline, signatures::STD_IO_INPUT_RAWLINE)?
+        .with_function_and_signature("read", input_read, signatures::STD_IO_INPUT_READ)?
+        .with_function_and_signature("interrupt", input_interrupt, signatures::STD_IO_INPUT_INTERRUPT)?
         .build_readonly()
 }

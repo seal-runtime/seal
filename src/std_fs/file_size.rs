@@ -237,10 +237,10 @@ fn filesize_terabytes(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("bytes", filesize_bytes)?
-        .with_function("kilobytes", filesize_kilobytes)?
-        .with_function("megabytes", filesize_megabytes)?
-        .with_function("gigabytes", filesize_gigabytes)?
-        .with_function("terabytes", filesize_terabytes)?
+        .with_function_and_signature("bytes", filesize_bytes, signatures::STD_FS_FILESIZE_BYTES)?
+        .with_function_and_signature("kilobytes", filesize_kilobytes, signatures::STD_FS_FILESIZE_KILOBYTES)?
+        .with_function_and_signature("megabytes", filesize_megabytes, signatures::STD_FS_FILESIZE_MEGABYTES)?
+        .with_function_and_signature("gigabytes", filesize_gigabytes, signatures::STD_FS_FILESIZE_GIGABYTES)?
+        .with_function_and_signature("terabytes", filesize_terabytes, signatures::STD_FS_FILESIZE_TERABYTES)?
         .build_readonly()
 }

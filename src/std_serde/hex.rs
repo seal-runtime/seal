@@ -33,7 +33,7 @@ fn decode(luau: &Lua, value: LuaValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("encode", encode)?
-        .with_function("decode", decode)?
+        .with_function_and_signature("encode", encode, signatures::STD_SERDE_HEX_ENCODE)?
+        .with_function_and_signature("decode", decode, signatures::STD_SERDE_HEX_DECODE)?
         .build_readonly()
 }

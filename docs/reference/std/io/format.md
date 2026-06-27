@@ -208,6 +208,20 @@ export type FormatOptions = {
 
 ---
 
+### FormatOptions.show_array_length
+
+<h4>
+
+```luau
+  show_array_length: boolean?,
+```
+
+</h4>
+
+ Show the total number of items at the opening brace. Defaults to true when in a TTY
+
+---
+
 ```luau
 } -- closes FormatOptions
 ```

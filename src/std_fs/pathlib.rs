@@ -362,15 +362,15 @@ fn fs_path_project(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult 
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("join", fs_path_join)?
-        .with_function("exists", super::fs_exists)?
-        .with_function("normalize", fs_path_normalize)?
-        .with_function("canonicalize", fs_path_canonicalize)?
-        .with_function("absolutize", fs_path_absolutize)?
-        .with_function("parent", fs_path_parent)?
-        .with_function("child", fs_path_child)?
-        .with_function("home", fs_path_home)?
-        .with_function("cwd", fs_path_cwd)?
-        .with_function("project", fs_path_project)?
+        .with_function_and_signature("join", fs_path_join, signatures::STD_FS_PATH_JOIN)?
+        .with_function_and_signature("exists", super::fs_exists, signatures::STD_FS_PATH_EXISTS)?
+        .with_function_and_signature("normalize", fs_path_normalize, signatures::STD_FS_PATH_NORMALIZE)?
+        .with_function_and_signature("canonicalize", fs_path_canonicalize, signatures::STD_FS_PATH_CANONICALIZE)?
+        .with_function_and_signature("absolutize", fs_path_absolutize, signatures::STD_FS_PATH_ABSOLUTIZE)?
+        .with_function_and_signature("parent", fs_path_parent, signatures::STD_FS_PATH_PARENT)?
+        .with_function_and_signature("child", fs_path_child, signatures::STD_FS_PATH_CHILD)?
+        .with_function_and_signature("home", fs_path_home, signatures::STD_FS_PATH_HOME)?
+        .with_function_and_signature("cwd", fs_path_cwd, signatures::STD_FS_PATH_CWD)?
+        .with_function_and_signature("project", fs_path_project, signatures::STD_FS_PATH_PROJECT)?
         .build_readonly()
 }

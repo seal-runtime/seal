@@ -275,6 +275,10 @@ pub fn terminal_background(_luau: &Lua, _: LuaValue) -> LuaResult<LuaValue> {
     use std::sync::mpsc;
     use std::time::Duration;
 
+    if atty::isnt(atty::Stream::Stdout) {
+        return Ok(LuaNil);
+    }
+
     let function_name = "colors.background()";
     let was_raw = crossterm::terminal::is_raw_mode_enabled().unwrap_or(false);
     if !was_raw && let Err(e) = crossterm::terminal::enable_raw_mode() {
@@ -345,24 +349,24 @@ pub fn terminal_background(_luau: &Lua, _: LuaValue) -> LuaResult<LuaValue> {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("tty", terminal_tty)?
-        .with_function("size", terminal_size)?
+        .with_function_and_signature("tty", terminal_tty, signatures::STD_TERMINAL_TTY)?
+        .with_function_and_signature("size", terminal_size, signatures::STD_TERMINAL_SIZE)?
         .with_value("interrupt", events::create_interrupt_table(luau)?)?
-        .with_function("write", terminal_write)?
-        .with_function("title", terminal_title)?
-        .with_function("clear", terminal_clear)?
-        .with_function("linewrap", terminal_linewrap)?
-        .with_function("scroll", terminal_scroll)?
-        .with_function("switch", terminal_switch)?
-        .with_function("events", events::events)?
-        .with_function("execute", terminal_execute)?
-        .with_function("reset", terminal_reset)?
-        .with_function("background", terminal_background)?
+        .with_function_and_signature("write", terminal_write, signatures::STD_TERMINAL_WRITE)?
+        .with_function_and_signature("title", terminal_title, signatures::STD_TERMINAL_TITLE)?
+        .with_function_and_signature("clear", terminal_clear, signatures::STD_TERMINAL_CLEAR)?
+        .with_function_and_signature("linewrap", terminal_linewrap, signatures::STD_TERMINAL_LINEWRAP)?
+        .with_function_and_signature("scroll", terminal_scroll, signatures::STD_TERMINAL_SCROLL)?
+        .with_function_and_signature("switch", terminal_switch, signatures::STD_TERMINAL_SWITCH)?
+        .with_function_and_signature("events", events::events, signatures::STD_TERMINAL_EVENTS)?
+        .with_function_and_signature("execute", terminal_execute, signatures::STD_TERMINAL_EXECUTE)?
+        .with_function_and_signature("reset", terminal_reset, signatures::STD_TERMINAL_RESET)?
+        .with_function_and_signature("background", terminal_background, signatures::STD_TERMINAL_BACKGROUND)?
         .with_value("capture", events::create_capture_table(luau)?)?
         .with_value("rawmode", TableBuilder::create(luau)?
-            .with_function("enabled", terminal_rawmode_enabled)?
-            .with_function("enable", terminal_rawmode_enable)?
-            .with_function("disable", terminal_rawmode_disable)?
+            .with_function_and_signature("enabled", terminal_rawmode_enabled, signatures::STD_TERMINAL_RAWMODE_ENABLED)?
+            .with_function_and_signature("enable", terminal_rawmode_enable, signatures::STD_TERMINAL_RAWMODE_ENABLE)?
+            .with_function_and_signature("disable", terminal_rawmode_disable, signatures::STD_TERMINAL_RAWMODE_DISABLE)?
             .build_readonly()?
         )?
         .with_value("cursor", cursor::create(luau)?)?

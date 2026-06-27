@@ -98,10 +98,10 @@ fn toml_writefile(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult 
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("encode", encode)?
-        .with_function("decode", decode)?
-        .with_function("writefile", toml_writefile)?
-        .with_function("readfile", toml_readfile)?
+        .with_function_and_signature("encode", encode, signatures::STD_SERDE_TOML_ENCODE)?
+        .with_function_and_signature("decode", decode, signatures::STD_SERDE_TOML_DECODE)?
+        .with_function_and_signature("writefile", toml_writefile, signatures::STD_SERDE_TOML_WRITEFILE)?
+        .with_function_and_signature("readfile", toml_readfile, signatures::STD_SERDE_TOML_READFILE)?
         .build_readonly()
 }
 

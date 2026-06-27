@@ -453,9 +453,9 @@ fn datetime_from(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("now", datetime_now)?
-        .with_function("parse", datetime_parse)?
-        .with_function("from", datetime_from)?
+        .with_function_and_signature("now", datetime_now, signatures::STD_TIME_DATETIME_NOW)?
+        .with_function_and_signature("parse", datetime_parse, signatures::STD_TIME_DATETIME_PARSE)?
+        .with_function_and_signature("from", datetime_from, signatures::STD_TIME_DATETIME_FROM)?
         .with_value("common_formats", TableBuilder::create(luau)?
             .with_value("ISO_8601", "%Y-%m-%d %H:%M")?
             .with_value("RFC_2822", "%a, %d %b %Y %H:%M:%S %z")?
@@ -473,7 +473,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
             .with_value("AMERICAN_FULL_DATE_TIME", "%A, %B %d, %Y %I:%M:%S %p")?
             .build_readonly()?
         )?
-        .with_function("years", | luau: &Lua, mut multivalue: LuaMultiValue | -> LuaValueResult {
+        .with_function_and_signature("years", | luau: &Lua, mut multivalue: LuaMultiValue | -> LuaValueResult {
             let function_name = "datetime.years(years: number)";
             let months = match multivalue.pop_front() {
                 Some(LuaValue::Number(f)) => f as i64,
@@ -498,8 +498,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeSpan::years(months, relative_to).get_userdata(luau)
-        })?
-        .with_function("months", | luau: &Lua, mut multivalue: LuaMultiValue | -> LuaValueResult {
+        }, signatures::STD_TIME_DATETIME_YEARS)?
+        .with_function_and_signature("months", | luau: &Lua, mut multivalue: LuaMultiValue | -> LuaValueResult {
             let function_name = "time.months(months: number)";
             let months = match multivalue.pop_front() {
                 Some(LuaValue::Number(f)) => f as i64,
@@ -524,8 +524,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeSpan::months(months, relative_to).get_userdata(luau)
-        })?
-        .with_function("days", | luau: &Lua, value: LuaValue | -> LuaValueResult {
+        }, signatures::STD_TIME_DATETIME_MONTHS)?
+        .with_function_and_signature("days", | luau: &Lua, value: LuaValue | -> LuaValueResult {
             let function_name = "time.days(d: number)";
             let days = match value {
                 LuaValue::Number(f) => f as i64,
@@ -535,8 +535,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeSpan::days(days).get_userdata(luau)
-        })?
-        .with_function("hours", | luau: &Lua, value: LuaValue | -> LuaValueResult {
+        }, signatures::STD_TIME_DATETIME_DAYS)?
+        .with_function_and_signature("hours", | luau: &Lua, value: LuaValue | -> LuaValueResult {
             let function_name = "time.hours(hours: number)";
             let days = match value {
                 LuaValue::Number(f) => f as i64,
@@ -546,8 +546,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeSpan::hours(days).get_userdata(luau)
-        })?
-        .with_function("minutes", | luau: &Lua, value: LuaValue | -> LuaValueResult {
+        }, signatures::STD_TIME_DATETIME_HOURS)?
+        .with_function_and_signature("minutes", | luau: &Lua, value: LuaValue | -> LuaValueResult {
             let function_name = "time.minutes(minutes: number)";
             let days = match value {
                 LuaValue::Number(f) => f as i64,
@@ -557,8 +557,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeSpan::minutes(days).get_userdata(luau)
-        })?
-        .with_function("seconds", | luau: &Lua, value: LuaValue | -> LuaValueResult {
+        }, signatures::STD_TIME_DATETIME_MINUTES)?
+        .with_function_and_signature("seconds", | luau: &Lua, value: LuaValue | -> LuaValueResult {
             let function_name = "time.seconds(seconds: number)";
             let days = match value {
                 LuaValue::Number(f) => f as i64,
@@ -568,6 +568,6 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
                 }
             };
             TimeSpan::seconds(days).get_userdata(luau)
-        })?
+        }, signatures::STD_TIME_DATETIME_SECONDS)?
         .build_readonly()
 }
