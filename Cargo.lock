@@ -557,9 +557,6 @@ checksum = "dea2df4cf52843e0452895c455a1a2cfbb842a1e7329671acf418fdc53ed4c59"
 name = "extern-example"
 version = "0.1.0"
 dependencies = [
- "bstr",
- "libc",
- "libloading",
  "sealbindings",
  "uuid",
 ]
@@ -1886,6 +1883,7 @@ dependencies = [
 [[package]]
 name = "sealbindings"
 version = "0.1.0"
+source = "git+https://github.com/seal-runtime/sealbindings#7f8214307fe18c91f66fda80112599b6e6e265e4"
 dependencies = [
  "bstr",
 ]
