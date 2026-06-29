@@ -1886,7 +1886,9 @@ dependencies = [
 [[package]]
 name = "sealbindings"
 version = "0.1.0"
-source = "git+https://github.com/seal-runtime/sealbindings#7554dfb72a6b3b92d8a47ca40083d7235900560d"
+dependencies = [
+ "bstr",
+]
 
 [[package]]
 name = "security-framework"

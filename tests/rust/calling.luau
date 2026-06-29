@@ -27,9 +27,12 @@ if env.os == "Linux" then
         uuid: {
             new_v4: (mode: "urn" | "simple" | "braced") -> string
         },
-        see_duration: (d: Duration) -> (),
+        kaboom: (b: boolean) -> string | never,
+        how_long: (d: Duration) -> string,
     }
 
+    print(simple.kaboom(false))
+    
     local urn = simple.uuid.new_v4("urn")
     print(urn)
     local function huh()
@@ -46,5 +49,13 @@ if env.os == "Linux" then
     end
     huh()
 
-    simple.see_duration(time.seconds(420))
+    simple.how_long(time.seconds(4))
+
+    -- hmm what happens if you pcall a function that panics in a dynamic library
+    -- (it doesn't work)
+    -- local s, f = pcall(function()
+    --     simple.kaboom(true)
+    --     return nil
+    -- end)
+
 end

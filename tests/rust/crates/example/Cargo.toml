@@ -9,7 +9,9 @@ crate-type = ["cdylib"]
 
 [dependencies]
 # we need to bind to seal's specific version of the C stack API
-seal = { git = "https://github.com/seal-runtime/sealbindings", package = "sealbindings" }
+# seal = { git = "https://github.com/seal-runtime/sealbindings", package = "sealbindings" }
+# seal = { path = "/home/deviaze/Repositories/sealbindings", package = "sealbindings" }
+sealbindings = { path = "/home/deviaze/Repositories/sealbindings" }
 libloading = "0.9.0"
 libc = "0.2"
 bstr = "1.12.1"

@@ -33,7 +33,7 @@ It can surreptitiously replace your shell and single-use Python scripts with Lua
 - *seal* projects are more scalable than shell scripts.
 - Built in terminal manipulation for TUIs.
 - Powerful multithreading.
-- <!-- Start-Precommit-Marker-1 -->1096<!-- End-Precommit-Marker-1 --> handcrafted error messages.
+- <!-- Start-Precommit-Marker-1 -->1101<!-- End-Precommit-Marker-1 --> handcrafted error messages.
 
 ## Install
 

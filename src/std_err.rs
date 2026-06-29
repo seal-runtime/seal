@@ -8,6 +8,7 @@ pub struct WrappedError {
 }
 
 impl WrappedError {
+    pub fn message(&self) -> &str { &self.message }
     pub fn from_message(message: String) -> Self {
         Self {
             message,
@@ -48,7 +49,17 @@ impl LuaUserData for WrappedError {
 }
 
 pub fn ecall(luau: &Lua, f: LuaFunction) -> LuaValueResult {
-    let result = luau.create_function(move |_: &Lua, multivalue: LuaMultiValue| {
+    // Propagate the inner function's debug name to the wrapper so it shows in
+    // seal's print/pp output and Luau stack traces. Leaking is intentional —
+    // registered functions live for the lifetime of the runtime anyway.
+    let debugname: Option<&'static std::ffi::CStr> = match f.info().name {
+        Some(name) => match std::ffi::CString::new(name) {
+            Ok(cstr) => Some(Box::leak(cstr.into_boxed_c_str())),
+            Err(_) => None,
+        },
+        None => None,
+    };
+    let result = luau.create_function_with_debug(move |_: &Lua, multivalue: LuaMultiValue| {
         let result = f.call::<LuaMultiValue>(multivalue)?;
         if !result.is_empty()
             && let Some(front) = result.front()
@@ -66,7 +77,7 @@ pub fn ecall(luau: &Lua, f: LuaFunction) -> LuaValueResult {
             }
         }
         Ok(result)
-    })?;
+    }, debugname)?;
     Ok(LuaValue::Function(result))
 }
 
@@ -81,7 +92,7 @@ fn err_message(luau: &Lua, value: LuaValue) -> LuaValueResult {
     WrappedError::from_message(message).get_userdata(luau)
 }
 
-fn err_wrap(luau: &Lua, value: LuaValue) -> LuaValueResult {
+pub fn err_wrap(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "err.wrap(message: string)";
     let message = match value {
         LuaValue::String(message) => {
@@ -148,6 +159,47 @@ fn err_throw(_luau: &Lua, value: LuaValue) -> LuaValueResult {
     Err(LuaError::external(formatted))
 }
 
+pub fn err_extract(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    let function_name = "err.extract(err: error)";
+
+    let (message, traceback) = match value {
+        LuaValue::UserData(ud) if let Ok(err) = ud.borrow::<WrappedError>() => {
+            let message = err.message.clone();
+            let traceback = err.traceback.clone();
+
+            (message, traceback)
+        },
+        LuaValue::UserData(ud) => {
+            // this sucks but mluau and seal have other userdatas with typeof(ud) == "error" and not WrappedError
+            let Ok(metatable) = ud.metatable() else {
+                return wrap_err!("{}: passed error is actually a dynamic userdata not an error", function_name);
+            };
+
+            let Some(typ) = metatable.get::<Option<LuaString>>("__type")? else {
+                return wrap_err!("{}: passed err is not an error because it doesn't have __type", function_name);
+            };
+
+            if typ.as_bytes().eq_ignore_ascii_case(b"error") {
+                // this should be the stringified representation of the message
+                let stringified = ud.to_string()?;
+
+                (stringified, None)
+            } else {
+                return wrap_err!("{}: err is not an error, got: {:?}", function_name, ud);
+            }
+        },
+        other => {
+            return wrap_err!("{}: expected 'err' to be an error (userdata), got: {:?}", function_name, other);
+        }
+    };
+
+    ok_table(TableBuilder::create(luau)?
+        .with_value("message", message)?
+        .with_value("traceback", traceback)?
+        .build_readonly()
+    )
+}
+
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function_and_signature("message", err_message, signatures::STD_ERR_MESSAGE)?
@@ -155,5 +207,6 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function_and_signature("format", err_format, signatures::STD_ERR_FORMAT)?
         .with_function_and_signature("traceback", err_traceback, signatures::STD_ERR_TRACEBACK)?
         .with_function_and_signature("throw", err_throw, signatures::STD_ERR_THROW)?
+        .with_function_and_signature("extract", err_extract, signatures::STD_ERR_EXTRACT)?
         .build_readonly()
 }
