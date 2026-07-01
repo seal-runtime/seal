@@ -29,6 +29,7 @@ if env.os == "Linux" then
         },
         kaboom: (b: boolean) -> string | never,
         how_long: (d: Duration) -> string,
+        shift_me: (i: integer, delta: number) -> integer,
     }
 
     print(simple.kaboom(false))
@@ -49,7 +50,13 @@ if env.os == "Linux" then
     end
     huh()
 
-    simple.how_long(time.seconds(4))
+    const long = simple.how_long(time.seconds(4))
+    print(long)
+
+    local shifted = simple.shift_me(1i, -30)
+    local new = pp(integer.add(shifted, 1i))
+
+    assert(new == 1073741825i, "integer should shift and add lol")
 
     -- hmm what happens if you pcall a function that panics in a dynamic library
     -- (it doesn't work)

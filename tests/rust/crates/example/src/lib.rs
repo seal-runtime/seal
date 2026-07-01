@@ -61,6 +61,46 @@ extern "C-unwind" fn uuid_new_v4(state: *mut LuauState) -> c_int {
     1
 }
 
+extern "C-unwind" fn shift_me(state: *mut LuauState) -> c_int {
+    let function_name = "simple.shift_me(i: integer, delta: number)";
+
+    let _sg = state.stack_returns_or_errs(1);
+    
+    // -2 integer -1 delta
+    let integer_to_shift = match state.to_seal(-2) {
+        SealValue::Integer(i) => i,
+        SealValue::Number(f) => {
+            return state.push_wrapped_error(format!("{}: i should be an integer, not a number (got: {:?})", function_name, f));
+        },
+        other => {
+            return state.push_wrapped_error(format!("{}: expected i to be integer, got: {:?}", function_name, other));
+        }
+    };
+
+    let delta = match state.to_seal(-1) {
+        SealValue::Number(f) => f.trunc() as i32,
+        SealValue::Integer(i) => i as i32,
+        other => {
+            return state.push_wrapped_error(format!("{}: expected delta to be a number, got: {:?}", function_name, other));
+        }
+    };
+
+    let shifted = if delta.is_negative() {
+        integer_to_shift.checked_shl(delta.unsigned_abs())
+    } else {
+        integer_to_shift.checked_shr(delta.unsigned_abs())
+    };
+
+    if let Some(shifted) = shifted {
+        state.push_integer64(shifted);
+    } else {
+        state.push_nil();
+    }
+
+    // let shifted = integer_to_shift.shi
+    1
+}
+
 extern "C-unwind" fn say_hi(state: *mut LuauState) -> c_int {
     let _sg = state.stack_returns_none_or_errs();
 
@@ -181,7 +221,7 @@ pub unsafe extern "C-unwind" fn seal_open_extern(
             // stack: [ lib ]
             state.set_wrapped_function(c"kaboom", kaboom, c"<unsafe> simple.kaboom(b: boolean) -> string | never");
             state.set_wrapped_function(c"how_long", how_long, c"simple.how_long(time: Duration) -> string");
-
+            state.set_wrapped_function(c"shift_me", shift_me, c"simple.shift_me(i: integer, delta: number) -> integer");
             // stack: [ lib ]
             1
         })

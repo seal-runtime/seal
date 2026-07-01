@@ -1882,8 +1882,8 @@ dependencies = [
 
 [[package]]
 name = "sealbindings"
-version = "0.1.0"
-source = "git+https://github.com/seal-runtime/sealbindings#7f8214307fe18c91f66fda80112599b6e6e265e4"
+version = "0.3.0"
+source = "git+https://github.com/seal-runtime/sealbindings#366160e3d3894f6d8c6c8f05c568e3908a849517"
 dependencies = [
  "bstr",
 ]

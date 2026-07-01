@@ -111,6 +111,7 @@ pub struct LuauApi {
     pub lua_pushnumber: unsafe extern "C-unwind" fn(state: *mut lua_State, n: lua_Number),
     pub lua_pushinteger: unsafe extern "C-unwind" fn(state: *mut lua_State, n: c_int),
     pub lua_pushunsigned: unsafe extern "C-unwind" fn(state: *mut lua_State, n: lua_Unsigned),
+    pub lua_pushinteger64: unsafe extern "C-unwind" fn(state: *mut lua_State, n: lua_Integer),
     pub lua_pushvector: unsafe extern "C-unwind" fn(
         state: *mut lua_State,
         x: c_float,
@@ -395,6 +396,7 @@ pub struct LuauApi {
     //
     pub lua_tonumber: unsafe extern "C-unwind" fn(state: *mut lua_State, idx: c_int) -> lua_Number,
     pub lua_tointeger: unsafe extern "C-unwind" fn(state: *mut lua_State, idx: c_int) -> c_int,
+    pub lua_tointeger64: unsafe extern "C-unwind" fn (state: *mut lua_State, idx: c_int) -> lua_Integer,
     pub lua_tounsigned: unsafe extern "C-unwind" fn(state: *mut lua_State, i: c_int) -> lua_Unsigned,
     pub lua_pop: unsafe extern "C-unwind" fn(state: *mut lua_State, n: c_int),
     pub lua_newtable: unsafe extern "C-unwind" fn(state: *mut lua_State),
@@ -408,6 +410,7 @@ pub struct LuauApi {
     pub lua_isvector: unsafe extern "C-unwind" fn(state: *mut lua_State, n: c_int) -> c_int,
     pub lua_isthread: unsafe extern "C-unwind" fn(state: *mut lua_State, n: c_int) -> c_int,
     pub lua_isbuffer: unsafe extern "C-unwind" fn(state: *mut lua_State, n: c_int) -> c_int,
+    pub lua_isinteger64: unsafe extern "C-unwind" fn(state: *mut lua_State, idx: c_int) -> c_int,
     pub lua_isnone: unsafe extern "C-unwind" fn(state: *mut lua_State, n: c_int) -> c_int,
     pub lua_isnoneornil: unsafe extern "C-unwind" fn(state: *mut lua_State, n: c_int) -> c_int,
     pub lua_pushliteral: unsafe extern "C-unwind" fn(state: *mut lua_State, s: *const c_char),
@@ -770,14 +773,10 @@ pub unsafe extern "C-unwind" fn get() -> *const LuauApi {
         lua_pushnumber,
         lua_pushinteger: lua_pushinteger_,
         lua_pushunsigned,
+        lua_pushinteger64,
         lua_pushvector,
         lua_pushlstring: lua_pushlstring_,
         lua_pushstring: lua_pushstring_,
-        // lua_pushfstring: lua_pushfstring as unsafe extern "C-unwind" fn(
-        //     *mut lua_State,
-        //     *const c_char,
-        //     ...
-        // ) -> *const c_char,
         lua_pushcclosurek,
         lua_pushboolean,
         lua_pushthread,
@@ -880,6 +879,7 @@ pub unsafe extern "C-unwind" fn get() -> *const LuauApi {
         // Inline helpers
         lua_tonumber: lua_tonumber_wrap,
         lua_tointeger: lua_tointeger_wrap,
+        lua_tointeger64: lua_tointeger64_wrap,
         lua_tounsigned: lua_tounsigned_wrap,
         lua_pop: lua_pop_wrap,
         lua_newtable: lua_newtable_wrap,
@@ -893,6 +893,7 @@ pub unsafe extern "C-unwind" fn get() -> *const LuauApi {
         lua_isvector: lua_isvector_wrap,
         lua_isthread: lua_isthread_wrap,
         lua_isbuffer: lua_isbuffer_wrap,
+        lua_isinteger64: lua_isinteger64_wrap,
         lua_isnone: lua_isnone_wrap,
         lua_isnoneornil: lua_isnoneornil_wrap,
         lua_pushliteral: lua_pushliteral_wrap,
@@ -1002,6 +1003,10 @@ unsafe extern "C-unwind" fn lua_tointeger_wrap(state: *mut lua_State, idx: c_int
     unsafe { lua_tointeger_(state, idx) }
 }
 
+unsafe extern "C-unwind" fn lua_tointeger64_wrap(state: *mut lua_State, idx: c_int) -> lua_Integer {
+    unsafe { lua_tointeger64(state, idx) }
+}
+
 unsafe extern "C-unwind" fn lua_tounsigned_wrap(state: *mut lua_State, i: c_int) -> lua_Unsigned {
     unsafe { lua_tounsigned(state, i) }
 }
@@ -1053,6 +1058,10 @@ unsafe extern "C-unwind" fn lua_isthread_wrap(state: *mut lua_State, n: c_int) -
 
 unsafe extern "C-unwind" fn lua_isbuffer_wrap(state: *mut lua_State, n: c_int) -> c_int {
     unsafe { lua_isbuffer(state, n) }
+}
+
+unsafe extern "C-unwind" fn lua_isinteger64_wrap(state: *mut lua_State, idx: c_int) -> c_int {
+    unsafe { lua_isinteger64(state, idx) }
 }
 
 unsafe extern "C-unwind" fn lua_isnone_wrap(state: *mut lua_State, n: c_int) -> c_int {

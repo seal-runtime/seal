@@ -180,19 +180,29 @@ local function parse_traceback(traceback: string): string
         local current_frame = 0
         might_be_rust_error = false
 
+        local bad_error_messages: { [string]: string } = {
+            ["%) on integer"] = ") on integer\nLuau in its infinite wisdom forbids integer arithmetic, use the integer library instead",
+            ["Assigned expression must be a variable or a field"] = "Attempt to reassign a const value"
+        }
+
         for index, line in lines do
             if index == 1 then
+                for bad, better in bad_error_messages do
+                    line = string.gsub(line, bad, better)
+                end
+                lines[index] = line
                 is_runtime_error = string.match(line, "runtime error: ") ~= nil
                 if is_runtime_error then
+                    local fixed_line: string
                     local path, line_number = string.match(line, `%["([%w%s%p]+)"%]:(%d+)`)
                     if path and line_number then
                         first_path = path
                         first_line_number = line_number
-                        local fixed_line = line
+                        fixed_line = line
                             -- :gsub("runtime error:", "")
                             :gsub(`[%s]+%["[%w%s%p]+"%]:%d+:[%s]+`, " ")
-                        lines[index] = fixed_line
                     end
+                    lines[index] = fixed_line
                 else
                     -- some seal stdlib error messages are pretty long, let's try giving them newlines
                     if #line > 100 then
