@@ -1011,7 +1011,7 @@ export type ChildProcessStream = setmetatable<{
 <h4>
 
 ```luau
-function ChildProcessStream.read(self: ChildProcessStream, count: number?, timeout: number?) -> string?,
+function ChildProcessStream.read(self: ChildProcessStream, count: number?, timeout: (Duration | number)?) -> string?,
 ```
 
 </h4>
@@ -1069,7 +1069,7 @@ local current_data = child.stdout:read(nil, 0.0)
 <h4>
 
 ```luau
-function ChildProcessStream.read_exact(self: ChildProcessStream, count: number, timeout: number?) -> string?,
+function ChildProcessStream.read_exact(self: ChildProcessStream, count: number, timeout: (Duration | number)?) -> string?,
 ```
 
 </h4>
@@ -1129,7 +1129,7 @@ end
 <h4>
 
 ```luau
-function ChildProcessStream.read_to(self: ChildProcessStream, term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?,
+function ChildProcessStream.read_to(self: ChildProcessStream, term: string, inclusive: boolean?, timeout: (Duration | number)?, allow_partial: boolean?) -> string?,
 ```
 
 </h4>
@@ -1166,7 +1166,7 @@ Blocks the current VM until `term` is found, `timeout` seconds elapse, or the re
 <h4>
 
 ```luau
-function ChildProcessStream.fill(self: ChildProcessStream, target: buffer, target_offset: number?, timeout: number?) -> number,
+function ChildProcessStream.fill(self: ChildProcessStream, target: buffer, target_offset: number?, timeout: (Duration | number)?) -> number,
 ```
 
 </h4>
@@ -1212,7 +1212,7 @@ end
 <h4>
 
 ```luau
-function ChildProcessStream.fill_exact(self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean,
+function ChildProcessStream.fill_exact(self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: (Duration | number)?) -> boolean,
 ```
 
 </h4>
@@ -1276,7 +1276,7 @@ function ChildProcessStream.capacity(self: ChildProcessStream) -> number,
 <h4>
 
 ```luau
-function ChildProcessStream.lines(self: ChildProcessStream, timeout: number?) -> (() -> string),
+function ChildProcessStream.lines(self: ChildProcessStream, timeout: (Duration | number)?) -> (() -> string),
 ```
 
 </h4>
@@ -1334,7 +1334,7 @@ end
 <h4>
 
 ```luau
-function ChildProcessStream.iter(self: ChildProcessStream, timeout: number?, write_delay_ms: number?) -> () -> string,
+function ChildProcessStream.iter(self: ChildProcessStream, timeout: (Duration | number)?, write_delay_ms: number?) -> () -> string,
 ```
 
 </h4>
