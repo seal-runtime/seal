@@ -60,3 +60,20 @@ local pretty = format(t)
 dp(pretty)
 local debuggable = format.debug(t)
 print(debuggable)
+
+colors.override(true)
+
+local withmeta = setmetatable({ isacat = true }, {
+    __tostring = function(self)
+        return "meow"
+    end
+})
+
+local other = setmetatable({meower = 2}, {
+    __tostring = function(self)
+        return "meower2"
+    end
+})
+
+local t2 = { [withmeta] = { [other] = "hehe" } }
+print(t2)

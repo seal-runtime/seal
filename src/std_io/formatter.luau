@@ -304,7 +304,8 @@ local function stringify_simple_type(value: any, key_function_name: string?): st
         local function_id = string.match(tostring(value), ID_CATCHER_PATTERN)
         local last_five = string.sub(function_id, #function_id - 4, # function_id)
         local first_part = string.sub(function_id, 1, #function_id - 5)
-        -- apparently we can get the actual function name with debug.info if it was defined in luau
+        -- apparently we can get the actual function name with debug.info if it was defined in luau or rust/c functions with debugnames
+        -- debug.info returns "" not nil if function has no debug info
         local function_name = (debug.info :: any)(value, "n")
         local is_seal_fn_with_signature = false
         if key_function_name and key_function_name == function_name then
@@ -346,19 +347,27 @@ local function stringify_simple_type(value: any, key_function_name: string?): st
         local thread_id = string.match(tostring(value), ID_CATCHER_PATTERN)
         return "corothread" .. LEFT_ANGLED .. "0x" .. thread_id .. RIGHT_ANGLED
     elseif type(value) == "table" then -- treat a table as a simple value
-        local table_id = string.match(tostring(value), ID_CATCHER_PATTERN)
-        local last_five = string.sub(table_id, #table_id - 4, # table_id)
-        local first_part = string.sub(table_id, 1, #table_id - 5)
-        return BOLD_WHITE .. "table" .. RESET .. LEFT_ANGLED .. "0x" .. first_part .. BOLD_WHITE .. last_five .. RESET .. RIGHT_ANGLED
+        local tostringed = tostring(value)
+        local table_id = string.match(tostringed, ID_CATCHER_PATTERN)
+        if table_id then
+            local last_five = string.sub(table_id, #table_id - 4, #table_id)
+            local first_part = string.sub(table_id, 1, #table_id - 5)
+            return BOLD_WHITE .. "table" .. RESET .. LEFT_ANGLED .. "0x" .. first_part .. BOLD_WHITE .. last_five .. RESET .. RIGHT_ANGLED
+        else
+            return tostringed
+        end
     elseif type(value) == "userdata" then
-        local userdata_id = string.match(tostring(value), ID_CATCHER_PATTERN)
+        local tostringed = tostring(value)
+        local userdata_id: string? = string.match(tostringed, ID_CATCHER_PATTERN)
         local typeof_userdata = typeof(value)
-        if userdata_id == "0" then -- mluau's json null uses address 0x0000000000000000 which gets caught as "0"
+        if userdata_id and userdata_id == "0" then -- mluau's json null uses address 0x0000000000000000 which gets caught as "0"
             return colors.bold.red("null")
         elseif typeof_userdata ~= "userdata" then -- userdatas with custom names (__type)
-            return colors.bold.magenta(tostring(value)) -- we most likely have a custom tostring implementation for it
-        else
+            return colors.bold.magenta(tostringed) -- we most likely have a custom tostring implementation for it
+        elseif userdata_id then
             return BOLD_MAGENTA .. "userdata" .. RESET .. LEFT_ANGLED .. "0x" .. userdata_id .. RIGHT_ANGLED
+        else
+            return colors.bold.magenta(tostringed)
         end
     elseif type(value) == INTEGER_TYPE then -- bypass incorret TypeError
         return ORANGE .. tostring(value) .. RESET
@@ -429,7 +438,16 @@ local function sort_table_pairs(unsorted_pairs: { TablePair }): { TablePair }
         end
         table.sort(string_pairs, function(a: TablePair, b: TablePair)
             local a_byte, b_byte = string.byte(a.key), string.byte(b.key)
-            return a_byte < b_byte
+            -- string.byte can return 0 values, which isn't documented in hover docs or return type
+            if a_byte and b_byte then
+                return a_byte < b_byte
+            elseif a_byte and not b_byte then
+                return false
+            elseif b_byte and not a_byte then
+                return true
+            else
+                return false
+            end
         end)
     end
 
@@ -649,7 +667,8 @@ local function process_pretty_values(
                 if seen_name then
                     push(LEFT_BRACKET .. seen_name .. RIGHT_BRACKET)
                 elseif depth + 1 > max_depth then
-                    local tableid = string.match(tostring(key), ID_CATCHER_PATTERN)
+                    local tostringed = tostring(key)
+                    local tableid = string.match(tostringed, ID_CATCHER_PATTERN) or tostringed
                     push(LEFT_BRACKET .. colors.cyan(`table<0x{tableid}>`) .. RIGHT_BRACKET)
                 else
                     push(
