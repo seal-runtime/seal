@@ -3,7 +3,7 @@
   "aliases": {
     "std": "./.seal/typedefs/std/",
     "interop": "./.seal/typedefs/interop/",
-    "output_formatter": "./src/std_io/output_formatter",
+    "formatter": "./src/std_io/formatter",
     "extra": "./.seal/extra/",
     "tests": "./tests/",
     "data": "./tests/data/",

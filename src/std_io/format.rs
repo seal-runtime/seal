@@ -65,16 +65,16 @@ fn debug(luau: &Lua, stuff: LuaMultiValue) -> LuaResult<LuaString> {
     luau.create_string(&result)
 }
 
-const OUTPUT_FORMATTER_SRC: &str = include_str!("./output_formatter.luau");
+const FORMATTER_SRC: &str = include_str!("./formatter.luau");
 
 pub fn cached_formatter(luau: &Lua) -> LuaResult<LuaTable> {
     let f = luau.named_registry_value::<Option<LuaTable>>("format.formatter")?;
     if let Some(resolve) = f {
         Ok(resolve)
     } else {
-        let chunk = Chunk::Src(OUTPUT_FORMATTER_SRC.to_owned());
-        let LuaValue::Table(formatter) = luau.load(chunk).eval()? else {
-            panic!("output_formatter.luau didnt return table??");
+        let chunk = Chunk::Src(FORMATTER_SRC.to_owned());
+        let LuaValue::Table(formatter) = luau.load(chunk).set_name("@std/io/formatter.luau").eval()? else {
+            panic!("formatter.luau didnt return table??");
         };
 
         luau.set_named_registry_value("format.formatter", &formatter)?;
