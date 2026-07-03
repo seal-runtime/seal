@@ -10,6 +10,10 @@ use atty::Stream::{Stdout, Stderr};
 
 use std::io::{self, BufRead, Read, Write};
 use std::sync::OnceLock;
+use std::time::{Duration, Instant};
+
+use crate::std_fs::file_size::FileSize;
+use crate::std_time::duration::TimeDuration;
 
 #[derive(Debug)]
 pub struct ExpectSaneOutputStream {
@@ -209,17 +213,259 @@ pub fn input_editline(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResu
     ok_string(line, luau)
 }
 
-fn input_read(luau: &Lua, _: ()) -> LuaValueResult {
-    let function_name = "input.read()";
-    let mut buffy: Vec<u8> = Vec::new();
-    if let Err(err) = io::stdin().read_to_end(&mut buffy) {
-        return wrap_err!("{}: unable to read from stdin to EOF or fill buffer: {}", function_name, err);
+/// Parsed options for `input.read`; see `InputReadOptions::from_value` for how they're pulled out
+/// of the Luau `{ bytes: (number | FileSize)?, timeout: Duration? }` table.
+struct InputReadOptions {
+    /// Maximum number of bytes to read before returning; `None` means read until EOF.
+    max_bytes: Option<u64>,
+    /// How long to wait for input before returning; `None` means block indefinitely.
+    timeout: Option<Duration>,
+}
+
+impl InputReadOptions {
+    /// Reads the options table out of the Luau value passed to `input.read`. A missing/nil value
+    /// means "no options" (read everything, block indefinitely).
+    fn from_value(value: LuaValue, function_name: &'static str) -> LuaResult<Self> {
+        match value {
+            LuaNil => Ok(Self { max_bytes: None, timeout: None }),
+            LuaValue::Table(options) => Ok(Self {
+                max_bytes: Self::parse_bytes(options.raw_get("bytes")?, function_name)?,
+                timeout: Self::parse_timeout(options.raw_get("timeout")?, function_name)?,
+            }),
+            other => {
+                wrap_err!("{}: expected options to be a table or nil, got: {:?}", function_name, other)
+            }
+        }
     }
-    if buffy.is_empty() {
-        Ok(LuaNil)
+
+    /// Parses the `bytes` option (a plain number or a FileSize) into a max byte count.
+    fn parse_bytes(value: LuaValue, function_name: &'static str) -> LuaResult<Option<u64>> {
+        match value {
+            LuaNil => Ok(None),
+            LuaValue::Integer(i) => Ok(Some(int_to_u64(i, function_name, "options.bytes")?)),
+            LuaValue::Number(f) => Ok(Some(float_to_u64(f, function_name, "options.bytes")?)),
+            LuaValue::UserData(ud) if let Ok(file_size) = ud.borrow::<FileSize>() => {
+                Ok(Some(file_size.as_bytes()))
+            },
+            LuaValue::UserData(ud) => {
+                let type_name = ud.type_name()?.unwrap_or("userdata (missing __type metafield)".to_string());
+                wrap_err!("{}: expected options.bytes to be a number or FileSize (from @std/fs/filesize), got a different kind of userdata: {}", function_name, type_name)
+            },
+            other => {
+                wrap_err!("{}: expected options.bytes to be a number, FileSize, or nil, got: {:?}", function_name, other)
+            }
+        }
+    }
+
+    /// Parses the `timeout` option (a Duration userdata) into a std Duration.
+    fn parse_timeout(value: LuaValue, function_name: &'static str) -> LuaResult<Option<Duration>> {
+        match value {
+            LuaNil => Ok(None),
+            LuaValue::UserData(ud) if let Ok(duration) = ud.borrow::<TimeDuration>() => {
+                let timeout = (*duration).inner; // SignedDuration is Copy, no drop worries
+                if !timeout.is_positive() {
+                    return wrap_err!("{}: options.timeout must be a positive Duration, got: {:#?}", function_name, timeout);
+                }
+                Ok(Some(timeout.unsigned_abs()))
+            },
+            LuaValue::UserData(ud) => {
+                let type_name = ud.type_name()?.unwrap_or("userdata (missing __type metafield)".to_string());
+                wrap_err!("{}: expected options.timeout to be a Duration (from @std/time), got a different kind of userdata: {}", function_name, type_name)
+            },
+            LuaValue::Number(_) | LuaValue::Integer(_) => {
+                wrap_err!("{}: options.timeout should be a Duration (from @std/time), not a plain number", function_name)
+            },
+            other => {
+                wrap_err!("{}: expected options.timeout to be a Duration or nil, got: {:?}", function_name, other)
+            }
+        }
+    }
+}
+
+/// Blocking read with no timeout: consume stdin until EOF, or until `max_bytes` have been read.
+/// Returns the bytes read plus whether reading stopped before EOF (i.e. because the byte limit was
+/// reached and there may be more to read).
+fn read_stdin_blocking(max_bytes: Option<u64>) -> io::Result<(Vec<u8>, bool)> {
+    let stdin = io::stdin();
+    let mut lock = stdin.lock();
+    match max_bytes {
+        None => {
+            let mut buf: Vec<u8> = Vec::new();
+            lock.read_to_end(&mut buf)?;
+            Ok((buf, false))
+        },
+        Some(max) => {
+            let mut buf: Vec<u8> = Vec::new();
+            let mut chunk = [0u8; 8192];
+            while (buf.len() as u64) < max {
+                let remaining = (max - buf.len() as u64).min(chunk.len() as u64) as usize;
+                let n = lock.read(&mut chunk[..remaining])?;
+                if n == 0 {
+                    return Ok((buf, false)); // EOF before hitting the limit
+                }
+                buf.extend_from_slice(&chunk[..n]);
+            }
+            Ok((buf, true)) // hit the byte limit with the stream possibly still open
+        }
+    }
+}
+
+/// Unix timeout path: use `poll(2)` to wait for input up to the deadline while reading straight
+/// from stdin's file descriptor, so we never leave a blocked reader thread behind.
+#[cfg(unix)]
+fn read_stdin_until_deadline(max_bytes: Option<u64>, deadline: Instant) -> io::Result<(Vec<u8>, bool)> {
+    use std::os::unix::io::AsRawFd;
+
+    let fd = io::stdin().as_raw_fd();
+    let mut buf: Vec<u8> = Vec::new();
+    let mut chunk = [0u8; 8192];
+
+    loop {
+        let to_read = match max_bytes {
+            Some(max) => {
+                let already = buf.len() as u64;
+                if already >= max {
+                    return Ok((buf, true));
+                }
+                (max - already).min(chunk.len() as u64) as usize
+            },
+            None => chunk.len(),
+        };
+
+        let now = Instant::now();
+        if now >= deadline {
+            return Ok((buf, true)); // timed out with the stream still open
+        }
+        let remaining_ms = (deadline - now).as_millis().min(i32::MAX as u128) as i32;
+        let mut pfd = libc::pollfd { fd, events: libc::POLLIN, revents: 0 };
+        // SAFETY: `pfd` is a single valid, mutable pollfd we own for the duration of the call, and
+        // we pass a matching count of 1; `fd` is stdin's descriptor, valid for as long as this
+        // process owns stdin. poll only reads/writes through the pointer during the call.
+        let ret = unsafe { libc::poll(&mut pfd, 1, remaining_ms) };
+        if ret < 0 {
+            let err = io::Error::last_os_error();
+            if err.kind() == io::ErrorKind::Interrupted {
+                continue; // interrupted by a signal, retry
+            }
+            return Err(err);
+        }
+        if ret == 0 {
+            return Ok((buf, true)); // poll timed out
+        }
+
+        // SAFETY: `chunk` is a stack buffer of `chunk.len()` bytes and `to_read <= chunk.len()`
+        // (clamped above), so the pointer is valid and writable for `to_read` bytes for the whole
+        // call; `fd` is stdin's descriptor, valid for as long as this process owns stdin.
+        let n = unsafe { libc::read(fd, chunk.as_mut_ptr() as *mut libc::c_void, to_read) };
+        if n < 0 {
+            let err = io::Error::last_os_error();
+            if err.kind() == io::ErrorKind::Interrupted {
+                continue;
+            }
+            return Err(err);
+        }
+        if n == 0 {
+            return Ok((buf, false)); // EOF
+        }
+        buf.extend_from_slice(&chunk[..n as usize]);
+    }
+}
+
+/// Non-unix timeout path: read stdin on a background thread and collect chunks with a deadline.
+/// Mirrors the OSC-query reader in `std_terminal`; if the timeout elapses we return what we have
+/// and leave the reader thread to finish on its own.
+#[cfg(not(unix))]
+fn read_stdin_until_deadline(max_bytes: Option<u64>, deadline: Instant) -> io::Result<(Vec<u8>, bool)> {
+    use std::sync::mpsc::{self, RecvTimeoutError};
+
+    enum ReadMsg {
+        Chunk(Vec<u8>),
+        Eof,
+        LimitReached,
+        Err(io::Error),
+    }
+
+    let (tx, rx) = mpsc::channel::<ReadMsg>();
+    std::thread::spawn(move || {
+        let stdin = io::stdin();
+        let mut lock = stdin.lock();
+        let mut chunk = [0u8; 8192];
+        let mut total: u64 = 0;
+        loop {
+            let to_read = match max_bytes {
+                Some(max) => {
+                    if total >= max {
+                        let _ = tx.send(ReadMsg::LimitReached);
+                        return;
+                    }
+                    (max - total).min(chunk.len() as u64) as usize
+                },
+                None => chunk.len(),
+            };
+            match lock.read(&mut chunk[..to_read]) {
+                Ok(0) => {
+                    let _ = tx.send(ReadMsg::Eof);
+                    return;
+                },
+                Ok(n) => {
+                    total += n as u64;
+                    if tx.send(ReadMsg::Chunk(chunk[..n].to_vec())).is_err() {
+                        return; // receiver hung up (we timed out); stop reading
+                    }
+                },
+                Err(err) => {
+                    let _ = tx.send(ReadMsg::Err(err));
+                    return;
+                }
+            }
+        }
+    });
+
+    let mut buf: Vec<u8> = Vec::new();
+    loop {
+        let now = Instant::now();
+        if now >= deadline {
+            return Ok((buf, true));
+        }
+        match rx.recv_timeout(deadline - now) {
+            Ok(ReadMsg::Chunk(c)) => buf.extend_from_slice(&c),
+            Ok(ReadMsg::Eof) => return Ok((buf, false)),
+            Ok(ReadMsg::LimitReached) => return Ok((buf, true)),
+            Ok(ReadMsg::Err(err)) => return Err(err),
+            Err(RecvTimeoutError::Timeout) => return Ok((buf, true)),
+            Err(RecvTimeoutError::Disconnected) => return Ok((buf, false)),
+        }
+    }
+}
+
+/// Reads from stdin, stopping at EOF, at `max_bytes` (if set), or once `timeout` (if set) elapses.
+/// Returns the bytes read plus whether reading stopped before EOF (there may be more to read).
+fn read_from_stdin(max_bytes: Option<u64>, timeout: Option<Duration>) -> io::Result<(Vec<u8>, bool)> {
+    match timeout {
+        None => read_stdin_blocking(max_bytes),
+        Some(timeout) => read_stdin_until_deadline(max_bytes, Instant::now() + timeout),
+    }
+}
+
+fn input_read(luau: &Lua, options: LuaValue) -> LuaResult<(LuaValue, bool)> {
+    let function_name = "input.read(options: { bytes: (number | FileSize)?, timeout: Duration? }?)";
+
+    let options = InputReadOptions::from_value(options, function_name)?;
+
+    let (buffy, more_to_read) = match read_from_stdin(options.max_bytes, options.timeout) {
+        Ok(result) => result,
+        Err(err) => {
+            return wrap_err!("{}: unable to read from stdin: {}", function_name, err);
+        }
+    };
+
+    let value = if buffy.is_empty() {
+        LuaNil
     } else {
-        ok_string(buffy, luau)
-    }
+        LuaValue::String(luau.create_string(&buffy)?)
+    };
+    
+    Ok((value, more_to_read))
 }
 
 fn input_interrupt(luau: &Lua, value: LuaValue) -> LuaValueResult {

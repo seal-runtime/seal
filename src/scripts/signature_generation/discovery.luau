@@ -310,13 +310,23 @@ local function extract_fn_sigs(typedef_path: string, is_method: boolean, type_na
     end
 
     -- Fallback: typedef files using `function module_var.fn_name(...)` style
-    -- (e.g. str.luau, io/input.luau) where type aliases produce nothing.
-    if next(fns) == nil and module_var_hint then
+    -- (e.g. str.luau, io/input.luau) where type aliases produce no real function signatures.
+    -- Non-function type aliases (like an `InputReadOptions` options table) leave only "<complex>"
+    -- entries behind, so check for actual extracted functions rather than an empty table.
+    local has_extracted_fn = false
+    for _, sig in fns do
+        if sig ~= "<complex>" then
+            has_extracted_fn = true
+            break
+        end
+    end
+    if not has_extracted_fn and module_var_hint then
         for _, stat in result.root.body do
             if stat.kind ~= "StatFunction" then continue end
             local stat_name_expr = (stat :: any).name :: any
             if not stat_name_expr or stat_name_expr.kind ~= "ExprIndexName" then continue end
             local fn_name = stat_name_expr.index :: string
+            if string.sub(fn_name, 1, 2) == "__" then continue end  -- skip metamethods, like the alias path
             local base_expr = stat_name_expr.expr :: any
             local base_name: string
             if base_expr.kind == "ExprGlobal" then
@@ -329,6 +339,11 @@ local function extract_fn_sigs(typedef_path: string, is_method: boolean, type_na
             if base_name ~= module_var_hint then continue end
 
             local func = (stat :: any).func :: any
+
+            -- Skip `function module.foo(self, ...)` methods — those belong to the module's instance
+            -- type (e.g. `Semver:satisfies`), not the module library itself.
+            local first_arg = (func.args :: { any })[1]
+            if first_arg and (first_arg :: any).name == "self" then continue end
 
             local gen_str = ""
             local generics = func.generics :: { any }

@@ -220,7 +220,7 @@ pub const STD_IO_INPUT_EDITLINE: &std::ffi::CStr = c"io.input.editline(prompt: s
 pub const STD_IO_INPUT_GET: &std::ffi::CStr = c"io.input.get(raw_prompt: string) -> string";
 pub const STD_IO_INPUT_INTERRUPT: &std::ffi::CStr = c"io.input.interrupt(key: \"CtrlC\" | \"CtrlD\") -> interrupt";
 pub const STD_IO_INPUT_RAWLINE: &std::ffi::CStr = c"io.input.rawline(prompt: string?) -> string";
-pub const STD_IO_INPUT_READ: &std::ffi::CStr = c"io.input.read() -> string";
+pub const STD_IO_INPUT_READ: &std::ffi::CStr = c"io.input.read(options: InputReadOptions?) -> (string?, boolean)";
 pub const STD_IO_INPUT_READLINE: &std::ffi::CStr = c"io.input.readline(prompt: string) -> string | interrupt | error";
 
 // io.output
@@ -298,6 +298,10 @@ pub const STD_PROCESS_CHILD_PROCESS_KILL: &std::ffi::CStr = c"ChildProcess:kill(
 // PipedChild
 pub const STD_PROCESS_PIPED_CHILD_ALIVE: &std::ffi::CStr = c"PipedChild:alive() -> boolean";
 pub const STD_PROCESS_PIPED_CHILD_KILL: &std::ffi::CStr = c"PipedChild:kill()";
+
+// semver
+pub const STD_SEMVER_DEFAULT: &std::ffi::CStr = c"semver.default() -> Semver";
+pub const STD_SEMVER_FROM: &std::ffi::CStr = c"semver.from(s: string) -> Semver";
 
 // serde.base64
 pub const STD_SERDE_BASE64_DECODE: &std::ffi::CStr = c"serde.base64.decode(data: string) -> buffer";
