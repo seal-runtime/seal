@@ -282,14 +282,14 @@ pub const STD_PROCESS_RUN_RESULT_UNWRAP_OR: &std::ffi::CStr = c"RunResult:unwrap
 
 // ChildProcessStream
 pub const STD_PROCESS_CHILD_PROCESS_STREAM_CAPACITY: &std::ffi::CStr = c"ChildProcessStream:capacity() -> number";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_FILL: &std::ffi::CStr = c"ChildProcessStream:fill(target: buffer, target_offset: number?, timeout: number?) -> number";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_FILL_EXACT: &std::ffi::CStr = c"ChildProcessStream:fill_exact(count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_ITER: &std::ffi::CStr = c"ChildProcessStream:iter(timeout: number?, write_delay_ms: number?) -> () -> string";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_FILL: &std::ffi::CStr = c"ChildProcessStream:fill(target: buffer, target_offset: number?, timeout: Duration | number?) -> number";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_FILL_EXACT: &std::ffi::CStr = c"ChildProcessStream:fill_exact(count: number, target: buffer, target_offset: number?, timeout: Duration | number?) -> boolean";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_ITER: &std::ffi::CStr = c"ChildProcessStream:iter(timeout: Duration | number?, write_delay_ms: number?) -> () -> string";
 pub const STD_PROCESS_CHILD_PROCESS_STREAM_LEN: &std::ffi::CStr = c"ChildProcessStream:len() -> number";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_LINES: &std::ffi::CStr = c"ChildProcessStream:lines(timeout: number?) -> () -> string";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ: &std::ffi::CStr = c"ChildProcessStream:read(count: number?, timeout: number?) -> string?";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ_EXACT: &std::ffi::CStr = c"ChildProcessStream:read_exact(count: number, timeout: number?) -> string?";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ_TO: &std::ffi::CStr = c"ChildProcessStream:read_to(term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_LINES: &std::ffi::CStr = c"ChildProcessStream:lines(timeout: Duration | number?) -> () -> string";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ: &std::ffi::CStr = c"ChildProcessStream:read(count: number?, timeout: Duration | number?) -> string?";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ_EXACT: &std::ffi::CStr = c"ChildProcessStream:read_exact(count: number, timeout: Duration | number?) -> string?";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ_TO: &std::ffi::CStr = c"ChildProcessStream:read_to(term: string, inclusive: boolean?, timeout: Duration | number?, allow_partial: boolean?) -> string?";
 
 // ChildProcess
 pub const STD_PROCESS_CHILD_PROCESS_ALIVE: &std::ffi::CStr = c"ChildProcess:alive() -> boolean";
