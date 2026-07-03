@@ -373,7 +373,7 @@ export type SpawnOptions = {
 --- Represents the stdout and stderr streams of a `ChildProcess`, both ran in parallel threads
 --- and streamed for nonblocking behavior.
 export type ChildProcessStream = setmetatable<{
-    --> stream:read(count: number?, timeout: number?): string?
+    --> stream:read(count: number?, timeout: (Duration | number)?): string?
     --[=[
         Reads up to `count` bytes from the stream for up to `timeout` seconds, retrying while the stream remains empty.
 
@@ -410,8 +410,8 @@ export type ChildProcessStream = setmetatable<{
         local current_data = child.stdout:read(nil, 0.0)
         ```
     ]=]
-    read: (self: ChildProcessStream, count: number?, timeout: number?) -> string?,
-    --> stream:read_exact(count: number, timeout: number?): string?
+    read: (self: ChildProcessStream, count: number?, timeout: (Duration | number)?) -> string?,
+    --> stream:read_exact(count: number, timeout: (Duration | number)?): string?
     --[=[
         Reads exactly `count` bytes from the stream, retrying until `count` bytes are available or `timeout` seconds elapse.
 
@@ -455,8 +455,8 @@ export type ChildProcessStream = setmetatable<{
         end
         ```
     ]=]
-    read_exact: (self: ChildProcessStream, count: number, timeout: number?) -> string?,
-    --> stream:read_to(term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?): string?
+    read_exact: (self: ChildProcessStream, count: number, timeout: (Duration | number)?) -> string?,
+    --> stream:read_to(term: string, inclusive: boolean?, timeout: (Duration | number)?, allow_partial: boolean?): string?
     --[=[
         Keep reading from the stream until search `term` is encountered. This is especially useful if you're trying to read line-by-line,
         or until a specific delimiter is encountered.
@@ -477,8 +477,8 @@ export type ChildProcessStream = setmetatable<{
 
         Blocks the current VM until `term` is found, `timeout` seconds elapse, or the reader thread exits.
     ]=]
-    read_to: (self: ChildProcessStream, term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?,
-    --> stream:fill(target: buffer, target_offset: number?, timeout: number?): number
+    read_to: (self: ChildProcessStream, term: string, inclusive: boolean?, timeout: (Duration | number)?, allow_partial: boolean?) -> string?,
+    --> stream:fill(target: buffer, target_offset: number?, timeout: (Duration | number)?): number
     --[=[
         Fill the `target` buffer with as many bytes as possible from the stream. Retries until the stream is nonempty or `timeout` seconds elapse.
     
@@ -508,8 +508,8 @@ export type ChildProcessStream = setmetatable<{
         end
         ```
     ]=]
-    fill: (self: ChildProcessStream, target: buffer, target_offset: number?, timeout: number?) -> number,
-    --> stream:fill_exact(count: number, target: buffer, target_offset: number?, timeout: number?): boolean
+    fill: (self: ChildProcessStream, target: buffer, target_offset: number?, timeout: (Duration | number)?) -> number,
+    --> stream:fill_exact(count: number, target: buffer, target_offset: number?, timeout: (Duration | number)?): boolean
     --[=[
         Read exactly `count` bytes into the `target` buffer at `target_offset`, retrying until `count` bytes are available or `timeout` seconds elapse.
 
@@ -529,14 +529,14 @@ export type ChildProcessStream = setmetatable<{
 
         Pass a `timeout` of `0` seconds to prevent this function from blocking!
     ]=]
-    fill_exact: (self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean,
+    fill_exact: (self: ChildProcessStream, count: number, target: buffer, target_offset: number?, timeout: (Duration | number)?) -> boolean,
     --> stream:len(): number
     --- Returns the current length/size of the stream's inner buffer.
     len: (self: ChildProcessStream) -> number,
     --> stream:capacity(): number
     --- Returns the maximum capacity of the stream's inner buffer.
     capacity: (self: ChildProcessStream) -> number,
-    --> for line in stream:lines(timeout: number?)
+    --> for line in stream:lines(timeout: (Duration | number)?)
     --[=[
         Iterate over the lines in the stream, blocking the current VM (Rust Thread) until all lines are read or the timeout has been reached.
 
@@ -578,8 +578,8 @@ export type ChildProcessStream = setmetatable<{
         end
         ```
     ]=]
-    lines: (self: ChildProcessStream, timeout: number?) -> (() -> string),
-    --> for message in stream:iter(timeout: number?, write_delay_ms: number?)
+    lines: (self: ChildProcessStream, timeout: (Duration | number)?) -> (() -> string),
+    --> for message in stream:iter(timeout: (Duration | number)?, write_delay_ms: number?)
     --[=[
         Iterate over the stream with more granular options:
 
@@ -592,7 +592,7 @@ export type ChildProcessStream = setmetatable<{
 
         This function does *not* strip preceding '\r's and trailing '\n's (unlike `:lines()` and generalized iteration).
     ]=]
-    iter: (self: ChildProcessStream, timeout: number?, write_delay_ms: number?) -> () -> string,
+    iter: (self: ChildProcessStream, timeout: (Duration | number)?, write_delay_ms: number?) -> () -> string,
 }, {
     --> for line in stream
     --[=[

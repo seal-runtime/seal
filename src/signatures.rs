@@ -220,7 +220,7 @@ pub const STD_IO_INPUT_EDITLINE: &std::ffi::CStr = c"io.input.editline(prompt: s
 pub const STD_IO_INPUT_GET: &std::ffi::CStr = c"io.input.get(raw_prompt: string) -> string";
 pub const STD_IO_INPUT_INTERRUPT: &std::ffi::CStr = c"io.input.interrupt(key: \"CtrlC\" | \"CtrlD\") -> interrupt";
 pub const STD_IO_INPUT_RAWLINE: &std::ffi::CStr = c"io.input.rawline(prompt: string?) -> string";
-pub const STD_IO_INPUT_READ: &std::ffi::CStr = c"io.input.read() -> string";
+pub const STD_IO_INPUT_READ: &std::ffi::CStr = c"io.input.read(options: InputReadOptions?) -> (string?, boolean)";
 pub const STD_IO_INPUT_READLINE: &std::ffi::CStr = c"io.input.readline(prompt: string) -> string | interrupt | error";
 
 // io.output
@@ -282,14 +282,14 @@ pub const STD_PROCESS_RUN_RESULT_UNWRAP_OR: &std::ffi::CStr = c"RunResult:unwrap
 
 // ChildProcessStream
 pub const STD_PROCESS_CHILD_PROCESS_STREAM_CAPACITY: &std::ffi::CStr = c"ChildProcessStream:capacity() -> number";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_FILL: &std::ffi::CStr = c"ChildProcessStream:fill(target: buffer, target_offset: number?, timeout: number?) -> number";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_FILL_EXACT: &std::ffi::CStr = c"ChildProcessStream:fill_exact(count: number, target: buffer, target_offset: number?, timeout: number?) -> boolean";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_ITER: &std::ffi::CStr = c"ChildProcessStream:iter(timeout: number?, write_delay_ms: number?) -> () -> string";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_FILL: &std::ffi::CStr = c"ChildProcessStream:fill(target: buffer, target_offset: number?, timeout: Duration | number?) -> number";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_FILL_EXACT: &std::ffi::CStr = c"ChildProcessStream:fill_exact(count: number, target: buffer, target_offset: number?, timeout: Duration | number?) -> boolean";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_ITER: &std::ffi::CStr = c"ChildProcessStream:iter(timeout: Duration | number?, write_delay_ms: number?) -> () -> string";
 pub const STD_PROCESS_CHILD_PROCESS_STREAM_LEN: &std::ffi::CStr = c"ChildProcessStream:len() -> number";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_LINES: &std::ffi::CStr = c"ChildProcessStream:lines(timeout: number?) -> () -> string";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ: &std::ffi::CStr = c"ChildProcessStream:read(count: number?, timeout: number?) -> string?";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ_EXACT: &std::ffi::CStr = c"ChildProcessStream:read_exact(count: number, timeout: number?) -> string?";
-pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ_TO: &std::ffi::CStr = c"ChildProcessStream:read_to(term: string, inclusive: boolean?, timeout: number?, allow_partial: boolean?) -> string?";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_LINES: &std::ffi::CStr = c"ChildProcessStream:lines(timeout: Duration | number?) -> () -> string";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ: &std::ffi::CStr = c"ChildProcessStream:read(count: number?, timeout: Duration | number?) -> string?";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ_EXACT: &std::ffi::CStr = c"ChildProcessStream:read_exact(count: number, timeout: Duration | number?) -> string?";
+pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ_TO: &std::ffi::CStr = c"ChildProcessStream:read_to(term: string, inclusive: boolean?, timeout: Duration | number?, allow_partial: boolean?) -> string?";
 
 // ChildProcess
 pub const STD_PROCESS_CHILD_PROCESS_ALIVE: &std::ffi::CStr = c"ChildProcess:alive() -> boolean";
@@ -298,6 +298,10 @@ pub const STD_PROCESS_CHILD_PROCESS_KILL: &std::ffi::CStr = c"ChildProcess:kill(
 // PipedChild
 pub const STD_PROCESS_PIPED_CHILD_ALIVE: &std::ffi::CStr = c"PipedChild:alive() -> boolean";
 pub const STD_PROCESS_PIPED_CHILD_KILL: &std::ffi::CStr = c"PipedChild:kill()";
+
+// semver
+pub const STD_SEMVER_DEFAULT: &std::ffi::CStr = c"semver.default() -> Semver";
+pub const STD_SEMVER_FROM: &std::ffi::CStr = c"semver.from(s: string) -> Semver";
 
 // serde.base64
 pub const STD_SERDE_BASE64_DECODE: &std::ffi::CStr = c"serde.base64.decode(data: string) -> buffer";

@@ -10,6 +10,45 @@ use std::collections::VecDeque;
 
 use mluau::prelude::*;
 
+use crate::std_time::duration::TimeDuration;
+
+/// Parses a `timeout` argument that may be a number (in seconds) or a `Duration` (from `@std/time`)
+/// into an optional std Duration. A nil/absent value means no timeout (`None`).
+fn parse_timeout_value(value: Option<LuaValue>, function_name: &'static str) -> LuaResult<Option<Duration>> {
+    let seconds = match value {
+        Some(LuaValue::Number(f)) => f,
+        Some(LuaValue::Integer(i)) => i as f64,
+        Some(LuaValue::UserData(ud)) if let Ok(duration) = ud.borrow::<TimeDuration>() => {
+            let inner = duration.inner; // SignedDuration is Copy
+            if inner.is_negative() {
+                return wrap_err!("{}: timeout can't be negative! got: {:#?}", function_name, inner);
+            }
+            return Ok(Some(inner.unsigned_abs()));
+        },
+        Some(LuaValue::UserData(ud)) => {
+            let type_name = ud.type_name()?.unwrap_or("userdata (missing __type metafield)".to_string());
+            return wrap_err!("{} expected timeout to be a number (in seconds), a Duration (from @std/time), or nil, got a different kind of userdata: {}", function_name, type_name);
+        },
+        Some(LuaNil) | None => {
+            return Ok(None);
+        },
+        Some(other) => {
+            return wrap_err!("{} expected timeout to be a number (in seconds), a Duration (from @std/time), or nil, got: {:?}", function_name, other);
+        }
+    };
+
+    if seconds.is_nan() || seconds.is_infinite() {
+        wrap_err!("{}: timeout can't be NaN nor infinite!", function_name)
+    } else if seconds < 0.0 {
+        wrap_err!("{}: timeout can't be negative! got: {:?}", function_name, seconds)
+    } else {
+        match Duration::try_from_secs_f64(seconds) {
+            Ok(duration) => Ok(Some(duration)),
+            Err(err) => wrap_err!("{}: error creating Duration from timeout: {}", function_name, err),
+        }
+    }
+}
+
 pub enum StreamType {
     Stdout,
     Stderr,
@@ -155,30 +194,7 @@ impl Stream {
     }
 
     fn pop_timeout(&self, mut multivalue: LuaMultiValue, function_name: &'static str) -> LuaResult<Option<Duration>> {
-        let f = match multivalue.pop_front() {
-            Some(LuaValue::Number(f)) => f,
-            Some(LuaValue::Integer(i)) => i as f64,
-            Some(LuaNil) | None => {
-                return Ok(None);
-            },
-            Some(other) => {
-                return wrap_err!("{} expected timeout to be a number or nil, got: {:?}", function_name, other);
-            }
-        };
-
-        if f.is_nan() || f.is_infinite() {
-            wrap_err!("{}: timeout can't be NaN nor infinite!", function_name)
-        } else if f < 0.0 {
-            wrap_err!("{}: timeout can't be negative! got: {:?}", function_name, f)
-        } else {
-            let duration = match Duration::try_from_secs_f64(f) {
-                Ok(duration) => duration,
-                Err(err) => {
-                    return wrap_err!("{}: error creating Duration from timeout: {}", function_name, err);
-                }
-            };
-            Ok(Some(duration))
-        }
+        parse_timeout_value(multivalue.pop_front(), function_name)
     }
 
     pub fn read_exact(&mut self, luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
@@ -329,14 +345,7 @@ impl Stream {
             }
         };
 
-        let timeout = match multivalue.pop_front() {
-            Some(LuaValue::Integer(i)) => Some(Duration::from_secs_f64(i as f64)),
-            Some(LuaValue::Number(f)) => Some(Duration::from_secs_f64(f)),
-            Some(LuaNil) | None => None,
-            Some(other) => {
-                return wrap_err!("{} expected timeout to be a number (in seconds) or nil, got: {:?}", function_name, other);
-            }
-        };
+        let timeout = parse_timeout_value(multivalue.pop_front(), function_name)?;
 
         let start_time = if timeout.is_some() {
             Some(Instant::now())
@@ -640,24 +649,8 @@ impl Stream {
         self.alive(function_name)?;
         pop_self(&mut multivalue, function_name)?;
 
-        let timeout = {
-            let timeout = match multivalue.pop_front() {
-                Some(LuaValue::Integer(i)) => Some(i as f64),
-                Some(LuaValue::Number(f)) => Some(f),
-                Some(LuaNil) | None => None,
-                Some(other) => {
-                    return wrap_err!("{} expected timeout to be a number or nil, got: {:?}", function_name, other);
-                }
-            };
-
-            if let Some(timeout) = timeout && timeout.is_nan() {
-                return wrap_err!("{}: timeout is unexpectedly NaN 💀", function_name)
-            } else if let Some(timeout) = timeout && timeout.is_sign_negative() {
-                return wrap_err!("{}: timeout should be positive (got: {})", function_name, timeout);
-            } else {
-                timeout
-            }
-        };
+        // as_secs_f64 so the iterator closure can compare against elapsed seconds below
+        let timeout = parse_timeout_value(multivalue.pop_front(), function_name)?.map(|d| d.as_secs_f64());
 
         let timeout_start_time = if timeout.is_some() {
             Some(Instant::now())
@@ -716,24 +709,8 @@ impl Stream {
         self.alive(function_name)?;
         pop_self(&mut multivalue, function_name)?;
 
-        let timeout = {
-            let timeout = match multivalue.pop_front() {
-                Some(LuaValue::Integer(i)) => Some(i as f64),
-                Some(LuaValue::Number(f)) => Some(f),
-                Some(LuaNil) | None => None,
-                Some(other) => {
-                    return wrap_err!("{} expected timeout to be a number or nil, got: {:?}", function_name, other);
-                }
-            };
-
-            if let Some(timeout) = timeout && timeout.is_nan() {
-                return wrap_err!("{}: timeout is unexpectedly NaN 💀", function_name)
-            } else if let Some(timeout) = timeout && timeout.is_sign_negative() {
-                return wrap_err!("{}: timeout should be positive (got: {})", function_name, timeout);
-            } else {
-                timeout
-            }
-        };
+        // as_secs_f64 so the iterator closure can compare against elapsed seconds below
+        let timeout = parse_timeout_value(multivalue.pop_front(), function_name)?.map(|d| d.as_secs_f64());
 
         let timeout_start_time = if timeout.is_some() {
             Some(Instant::now())
