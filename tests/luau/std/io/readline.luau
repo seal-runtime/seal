@@ -17,12 +17,12 @@ local function runsealwithprompt(prompt: string)
     local dir = fs.dir.ensure(fs.path.join(fs.path.home(), "Downloads"))
     local path = dir:join("promptsrc.luau")
     fs.writefile(path, src)
-    time.wait(0.125)
+    time.wait(0.25)
     local child = process.spawn {
         program = env.executable_path,
         args = { path }
     }
-    time.wait(0.125)
+    time.wait(0.25)
     fs.file.try_remove(path)
     return child
 end
@@ -30,8 +30,9 @@ end
 local function rawlinefallback()
     local child = runsealwithprompt("how are you?: ")
     assert(child.stdout ~= nil and child.stderr ~= nil and child.stdin ~= nil, "everything is piped")
-    
-    while time.wait(0.12) and child:alive() do
+
+    local poll = time.milliseconds(120)
+    while time.wait(poll) and child:alive() do
         local res = child.stdout:read(nil, 0)
         if res and res == "how are you?: " then
             child.stdin:write("good!!\n")
