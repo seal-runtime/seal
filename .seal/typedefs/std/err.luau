@@ -37,6 +37,12 @@ export type err = {
     ---
     --- If the error already has stack traceback information, throwing the error causes two stack tracebacks to appear (one from the error itself, and a new one because we're causing an error).
     throw: (err: error) -> never,
+    --- Takes a seal or mluau error and extracts the error message and traceback information.
+    --- There may not be any traceback info for runtime errors that don't come from seal standard library functions.
+    extract: (err: error) -> {
+        message: string,
+        traceback: string?,
+    }
 }
 
 export type Result<T> = T | error

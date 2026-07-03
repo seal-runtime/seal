@@ -275,7 +275,7 @@ pub fn terminal_background(_luau: &Lua, _: LuaValue) -> LuaResult<LuaValue> {
     use std::sync::mpsc;
     use std::time::Duration;
 
-    if atty::isnt(atty::Stream::Stdout) {
+    if atty::isnt(atty::Stream::Stdout) || atty::isnt(atty::Stream::Stdin) {
         return Ok(LuaNil);
     }
 

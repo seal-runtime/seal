@@ -186,6 +186,8 @@ local BOLD_YELLOW = colors.codes.BOLD_YELLOW
 local BOLD = colors.codes.BOLD
 local DIM = colors.codes.DIM
 
+local ORANGE = colors.rgb(vector.create(255, 165, 0))
+
 local is_tty = terminal.tty()
 local is_truecolor = (function()
     local colorterm = vars.get("COLORTERM")
@@ -241,6 +243,7 @@ local function apply_color_state(enabled: boolean)
         BOLD = colors.codes.BOLD
         DIM = colors.codes.DIM
         GUIDE_COLORS = compute_guide_colors()
+        ORANGE = colors.rgb(vector.create(255, 165, 0))
     else
         RESET = ""
         BOLD_WHITE = ""
@@ -257,6 +260,7 @@ local function apply_color_state(enabled: boolean)
         BOLD = ""
         DIM = ""
         GUIDE_COLORS = { "", "", "", "", "", "" }
+        ORANGE = ""
     end
 end
 
@@ -270,7 +274,9 @@ local RIGHT_BRACKET = DIM .. "]" .. RESET
 local LEFT_ANGLED = BOLD .. DIM .. "<" .. RESET
 local RIGHT_ANGLED = BOLD .. DIM .. ">" .. RESET
 
-local ID_CATCHER_PATTERN = "[.]*0x0*([%d%w]+)"
+const ID_CATCHER_PATTERN = "[.]*0x0*([%d%w]+)"
+-- bypass incorrect typeerror
+const INTEGER_TYPE = "integer"
 
 local function stringify_simple_type(value: any, key_function_name: string?): string
     if type(value) == "number" then
@@ -363,6 +369,8 @@ local function stringify_simple_type(value: any, key_function_name: string?): st
         else
             return colors.bold.magenta(tostringed)
         end
+    elseif type(value) == INTEGER_TYPE then -- bypass incorret TypeError
+        return ORANGE .. tostring(value) .. RESET
     else
         return tostring(value)
     end

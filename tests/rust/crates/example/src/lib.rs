@@ -1,138 +1,177 @@
-use std::ffi::{CStr, CString, c_int, c_char};
-use bstr::{BStr, BString};
+use std::{ffi::c_int, fmt};
+
+use sealbindings::{StateExt, LuauState, SealValue};
 use uuid::Uuid;
 
-use seal::{ffi, push_wrapped_error, push_wrapped_c_function};
-
-/// Checks if the function argument `arg` (by argument index) is a Luau string.
-/// If it is, returns it as a BString (cloning the passed data), otherwise throws a runtime error.
-/// # Safety
-/// - Luau state must be non-null
-pub unsafe fn args_expect_string(state: *mut ffi::lua_State, arg: c_int) -> BString {
-    let mut len = 0_usize;
-    let ptr = unsafe { ffi::luaL_checklstring(state, arg, &mut len) };
-    // SAFETY: clones bytes of passed string so we don't free bytes owned by Luau
-    let bytes = unsafe { std::slice::from_raw_parts(ptr as *const u8, len) }.to_owned();
-    BString::new(bytes)
+enum UuidV4Representation {
+    Simple,
+    Urn,
+    Braced,
 }
+impl UuidV4Representation {
+    fn from_value(value: SealValue, function_name: &'static str) -> Result<Self, String> {
+        let which = match value {
+            SealValue::String(rep) => {
+                if rep.eq_ignore_ascii_case(b"simple") {
+                    Self::Simple
+                } else if rep.eq_ignore_ascii_case(b"urn") {
+                    Self::Urn
+                } else if rep.eq_ignore_ascii_case(b"braced") {
+                    Self::Braced
+                } else {
+                    return Err(format!("{}: expected representation to be a string simple, urn, or braced, got: {}", function_name, rep));
+                }
+            },
+            other => {
+                return Err(format!("{}: expected representation to be a string, got: {:?}", function_name, other));
+            }
+        };
 
-pub trait BStringFromPtr {
-    /// Takes a pointer to a Luau/C string (owned by Luau),
-    /// clones the relevant bytes and returns a BString (owned by Rust).
-    /// This avoids us from freeing bytes owned by Luau.
-    /// # Safety
-    /// - ptr must be interpretable as CStr
-    unsafe fn clone_from_ptr(ptr: *const c_char) -> BString;
+        Ok(which)
+    }
 }
-impl BStringFromPtr for BString {
-    unsafe fn clone_from_ptr(ptr: *const c_char) -> BString {
-        // need to cstr it first cus NUL
-        let cstr = unsafe { CStr::from_ptr(ptr) };
-        // ensure we clone and not borrow; we do NOT want to free bytes owned by Luau
-        BString::from(cstr.to_bytes().to_owned())
+impl fmt::Display for UuidV4Representation {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let uuid = Uuid::new_v4();
+        let rep = match self {
+            Self::Simple => format!("{}", uuid.as_simple()),
+            Self::Braced => format!("{}", uuid.as_braced()),
+            Self::Urn => format!("{}", uuid.as_urn()),
+        };
+        f.write_str(&rep)?;
+        Ok(())
     }
 }
 
-#[allow(unused, reason = "only needed for debugging")]
-/// # Safety
-/// - state must be a non-null pointer to a lua_State
-/// - `idx` must be on the luau stack
-unsafe fn type_of(state: *mut ffi::lua_State, idx: c_int) -> BString {
-    let ptr = unsafe { ffi::luaL_typename(state, idx) };
-    unsafe { BString::clone_from_ptr(ptr) }
+extern "C-unwind" fn uuid_new_v4(state: *mut LuauState) -> c_int {
+    let function_name = "uuid.new_v4(representation: string)";
+
+    let _stack_guard = state.stack_returns(1);
+
+    let value = state.to_seal(-1);
+    let representation = match UuidV4Representation::from_value(value, function_name) {
+        Ok(rep) => rep,
+        Err(err) => {
+            return state.push_wrapped_error(err);
+        }
+    };
+
+    state.push_str(representation.to_string());
+
+    1
 }
 
-/// # Safety
-/// - Luau state must be non-null
-/// - stack space
-/// - expects to be passed a string on the luau stack
-pub unsafe extern "C-unwind" fn uuid_new_v4(state: *mut ffi::lua_State) -> c_int {
-    let uuid = Uuid::new_v4();
+extern "C-unwind" fn shift_me(state: *mut LuauState) -> c_int {
+    let function_name = "simple.shift_me(i: integer, delta: number)";
 
-    let s = unsafe { args_expect_string(state, 1) };
-    let representation = if s.eq_ignore_ascii_case(b"simple") {
-        Some(format!("{}", uuid.simple()))
-    } else if s.eq_ignore_ascii_case(b"urn") {
-        Some(format!("{}", uuid.as_urn()))
-    } else if s.eq_ignore_ascii_case(b"braced") {
-        Some(format!("{}", uuid.as_braced()))
+    let _sg = state.stack_returns_or_errs(1);
+    
+    // -2 integer -1 delta
+    let integer_to_shift = match state.to_seal(-2) {
+        SealValue::Integer(i) => i,
+        SealValue::Number(f) => {
+            return state.push_wrapped_error(format!("{}: i should be an integer, not a number (got: {:?})", function_name, f));
+        },
+        other => {
+            return state.push_wrapped_error(format!("{}: expected i to be integer, got: {:?}", function_name, other));
+        }
+    };
+
+    let delta = match state.to_seal(-1) {
+        SealValue::Number(f) => f.trunc() as i32,
+        SealValue::Integer(i) => i as i32,
+        other => {
+            return state.push_wrapped_error(format!("{}: expected delta to be a number, got: {:?}", function_name, other));
+        }
+    };
+
+    let shifted = if delta.is_negative() {
+        integer_to_shift.checked_shl(delta.unsigned_abs())
     } else {
-        push_wrapped_error(state, &format!("uuid.new_v4: expected 'mode' to be \"simple\" or \"urn\" or \"braced\", got {:?}", s));
-        None
+        integer_to_shift.checked_shr(delta.unsigned_abs())
+    };
+
+    if let Some(shifted) = shifted {
+        state.push_integer64(shifted);
+    } else {
+        state.push_nil();
+    }
+
+    // let shifted = integer_to_shift.shi
+    1
+}
+
+extern "C-unwind" fn say_hi(state: *mut LuauState) -> c_int {
+    let _sg = state.stack_returns_none_or_errs();
+
+    let name = match state.to_seal(-1) {
+        SealValue::String(s) => {
+            s.to_string()
+        },
+        other => {
+            return state.push_wrapped_error(format!("say_hi expected string, got: {:?}", other));
+        }
     };
     
-    if let Some(representation) = representation {
-        let Ok(cstring) = CString::new(representation) else {
-            push_wrapped_error(state, "can't convert the string you passed into a CString (why NUL bytes hmm?)");
-            return 1;
-        };
-        unsafe {
-            ffi::lua_pushstring(state, cstring.as_ptr());
+    println!("Hi {} from the dynamic library :3", name);
+
+    0
+}
+
+extern "C-unwind" fn how_long(state: *mut LuauState) -> c_int {
+    let _sg = state.stack_returns_or_errs(1);
+
+    let time = match state.to_seal(-1) {
+        SealValue::UserData { type_name, .. } => {
+            if let Some(ref name) = type_name && name.eq_ignore_ascii_case(b"duration") {
+                // lua_getfield works on userdatas
+                // SAFETY: we know stack idx -1 is a userdata
+                let tag = unsafe { state.get_field(-1, c"seconds") };
+                if tag != sealbindings::ffi::LUA_TNUMBER() {
+                    return state.push_wrapped_error("Duration.seconds should be a number... what did you pass?");
+                }
+
+                // SAFETY: Duration.seconds put a number onto stack
+                let f = unsafe { state.to_number(-1) };
+
+                // state.to_number doesn't pop; we should remove Duration.seconds
+                // SAFETY: Duration.seconds put one value onto stack, we are allowed to pop the value
+                unsafe { state.pop(1) };
+                f
+            } else {
+                return state.push_wrapped_error(format!("got unexpected userdata type: {:?}", type_name));
+            }
+        },
+        other => {
+            return state.push_wrapped_error(format!("expected time to be a duration, got: {:?}", other));
         }
-    }
-
-    1
-}
-
-/// Constructs the 'uuid' sub-library
-/// # Safety
-/// - Luau state must be non-null
-pub unsafe extern "C-unwind" fn uuid(state: *mut ffi::lua_State) -> c_int {
-    unsafe {
-        ffi::lua_createtable(state, 0, 1);
-
-        push_wrapped_c_function(state, uuid_new_v4);
-        ffi::lua_setfield(state, -2, c"new_v4".as_ptr());
-    }
-    1
-}
-
-/// All this does is take a Duration userdata from seal and print duration:display()
-/// # Safety
-/// - Luau state must be non-null
-/// - Check stack space
-pub unsafe extern "C-unwind" fn takes_a_duration(state: *mut ffi::lua_State) -> c_int {
-    unsafe { ffi::luaL_checkstack(state, 3, c"not enough stack slots to handle datetime stuff bruv".as_ptr()) };
-
-    // ensure user actually passed a "Duration"
-    let ptr = unsafe { ffi::luaL_typename(state, -1) };
-    let b = unsafe { BString::clone_from_ptr(ptr) };
-    if !b.eq_ignore_ascii_case(b"Duration") {
-        push_wrapped_error(state, &format!("dur: expected d to be a Duration, got: {}", b));
-        return 1;
-    }
-
-    let s = unsafe {
-        // grab duration.display method (getfield follows metamethod __index)
-        ffi::lua_getfield(state, -1, c"display".as_ptr());
-        // put duration back onto the stack
-        ffi::lua_pushvalue(state, -2);
-        // [display fn, duration]
-        // lua_call expects args to be between it and the function to call
-        // self is 1 argument
-        ffi::lua_call(state, 1, 1);
-        let ptr = ffi::lua_tostring(state, -1);
-        BString::clone_from_ptr(ptr)
     };
 
-    println!("{}", s);
-    0
+    if time > 10.0 {
+        state.push_str("wow that's a lot of time");
+    } else if time.is_sign_negative() && time < 0.0 {
+        state.push_str("wow negative time i see");
+    } else {
+        state.push_str("not very long eh");
+    }
+
+    1
 }
 
-/// # Safety
-/// check luau stack usage
-pub unsafe extern "C-unwind" fn say_hi(state: *mut ffi::lua_State) -> c_int {
-    unsafe {
-        let mut len = 0_usize;
-        let s = ffi::luaL_checklstring(state, 1, &mut len);
-
-        // bytes in the string are owned by Luau, do NOT free them
-        let bytes = std::slice::from_raw_parts(s as *const u8, len);
-        let s = BStr::new(bytes);
-        
-        println!("hi {}", s);
+// example of what happens if you panic in a properly wrapped seal extern
+// right now we get "Rust cannot catch foreign exceptions" but at least
+// the panic handler catches it and says where the panic came from
+// importantly, seal itself doesn't panic
+unsafe extern "C-unwind" fn kaboom(state: *mut LuauState) -> c_int {
+    match state.to_seal(-1) {
+        SealValue::Boolean(should) if should => {
+            panic!("kaboom");
+        },
+        _other => {
+            state.push_str("everything ok");
+        }
     }
-    0
+    1
 }
 
 /// The entrypoint to an extern library/plugin for the seal runtime.
@@ -150,29 +189,41 @@ pub unsafe extern "C-unwind" fn say_hi(state: *mut ffi::lua_State) -> c_int {
 ///   In Rust, use `std::mem::ManuallyDrop` to keep a libloading Library alive for longer than the function call.
 /// - This function must call `sealbindings::initialize()` immediately.
 #[unsafe(no_mangle)]
-pub unsafe extern "C-unwind" fn seal_open_extern(state: *mut ffi::lua_State, ptr: *const seal::LuauApi) -> c_int {
+pub unsafe extern "C-unwind" fn seal_open_extern(
+    state: *mut sealbindings::LuauState,
+    api: *const sealbindings::LuauApi,
+) -> c_int {
+    // SAFETY: seal passes a valid pointer to a lua_State (LuauState) as well as its own C API.
+    // the caller is responsible for passing valid pointers.
     unsafe {
-        seal::initialize(ptr);
+        sealbindings::initialize(state, api, |state| {
+            // prevents us from accidentally returning too few or too many values on luau stack
+            let _stack_guard = state.stack_returns(1);
 
-        // libary return table
-        ffi::lua_createtable(state, 0, 1);
+            state.create_table(0, 4);
+            state.set_wrapped_function(c"hi", say_hi, c"simple.hi(name: string)");
 
-        // put function hi in library return table
-        ffi::lua_pushcfunction(state, say_hi);
-        ffi::lua_setfield(state, -2, c"hi".as_ptr());
+            // stack: [ lib ]
 
-        // we need to call the c function uuid to put the uuid table on the stack
-        ffi::lua_pushcfunction(state, uuid);
-        // pops the c function, calls it, puts its results on Luau stack
-        ffi::lua_call(state, 0, 1);
+            // create uuid table for sublib
+            state.create_table(0, 1);
+            // stack: [ uuid table, lib ]
 
-        // now we have [library, uuid] left on the stack
-        ffi::lua_setfield(state, -2, c"uuid".as_ptr());
+            state.set_wrapped_function(
+                c"new_v4", 
+                uuid_new_v4, 
+                c"simple.uuid.new_v4(representation: \"Simple\" | \"Urn\" | \"Braced\") -> string"
+            );
 
-        ffi::lua_pushcfunction(state, takes_a_duration);
-        ffi::lua_setfield(state, -2, c"see_duration".as_ptr());
+            // set lib.uuid = uuid table
+            state.set_field(-2, c"uuid");
 
-        // library table left on stack
+            // stack: [ lib ]
+            state.set_wrapped_function(c"kaboom", kaboom, c"<unsafe> simple.kaboom(b: boolean) -> string | never");
+            state.set_wrapped_function(c"how_long", how_long, c"simple.how_long(time: Duration) -> string");
+            state.set_wrapped_function(c"shift_me", shift_me, c"simple.shift_me(i: integer, delta: number) -> integer");
+            // stack: [ lib ]
+            1
+        })
     }
-    1
 }

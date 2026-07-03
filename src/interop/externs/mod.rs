@@ -24,6 +24,20 @@ type SealOpenExtern = unsafe extern "C-unwind" fn(*mut lua_State, *const ffi_api
 pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
     let function_name = "<unsafe> extern.load(path: string)";
 
+    // @std/err's err.wrap and err.extract are useful to extern libs, we need to pin them in registry
+    let err_wrap = luau.create_function_with_debug(
+        crate::std_err::err_wrap,
+        Some(signatures::STD_ERR_WRAP),
+    )?;
+
+    let err_extract = luau.create_function_with_debug(
+        crate::std_err::err_extract,
+        Some(signatures::STD_ERR_EXTRACT),
+    )?;
+
+    luau.set_named_registry_value("@std/err:wrap", err_wrap)?;
+    luau.set_named_registry_value("@std/err:extract", err_extract)?;
+
     let library_path = Path::new(&path);
 
     // SAFETY: ensure we do NOT drop the loaded library, otherwise calling functions
@@ -40,7 +54,7 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
 
     // resolve symbol to seal_open_extern in dynamic library
     let seal_open_extern: libloading::Symbol<SealOpenExtern> = unsafe {
-        match library.get(b"seal_open_extern") {
+        match library.get(c"seal_open_extern") {
             Ok(symbol) => symbol,
             Err(err) => {
                 return wrap_err!("{}: can't find symbol 'seal_open_extern' in library at '{}' due to reason {}", function_name, &path, err);
@@ -49,10 +63,11 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
     };
 
     let mut error_message: Option<String> = None;
+
     // SAFETY:
     // should always push 1 value to Luau stack
     // Caller in Luau is responsible for safety of loaded external library/plugin.
-    let v: LuaValue = unsafe {
+    let returned_value: LuaValue = unsafe {
         luau.exec_raw::<LuaValue>((), |state| {
             // number elements on the luau stack before calling seal_open_extern
             let before = ffi::lua_gettop(state);
@@ -81,11 +96,20 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
         return wrap_err!("{}: unable to load library at '{}' due to err: {}", function_name, &path, error_message);
     }
 
-    Ok(v)
+    // if the last value on the stack is a seal WrappedError we know that the library
+    // errored at runtime during initialization or panicked during initialization and
+    // was caught by sealbindings::initialize
+    if let LuaValue::UserData(ref ud) = returned_value
+        && let Ok(err) = ud.borrow::<crate::std_err::WrappedError>()
+    {
+        return wrap_err!("{}: dynamic library at '{}' errored during initialization:\n{}", function_name, &path, err.message());
+    }
+
+    Ok(returned_value)
 }
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
-        .with_function("load", extern_load)?
+        .with_function_and_signature("load", extern_load, c"<unsafe> extern.load(path: string) -> unknown")?
         .build_readonly()
 }
