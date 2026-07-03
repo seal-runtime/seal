@@ -322,19 +322,21 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
                             }
                         };
     
-                        let mut stdin = match stdin_cell_write.try_borrow_mut() {
-                            Ok(mut cell) => match cell.take() {
-                                Some(stdin) => stdin,
-                                None => {
-                                    return wrap_err!("{}: attempt to write to closed stdin", function_name);
-                                }
-                            },
+                        let mut cell = match stdin_cell_write.try_borrow_mut() {
+                            Ok(cell) => cell,
                             Err(_) => {
                                 unreachable!("{}: stdin already borrowed; this shouldn't happen as Luau VM is single threaded and multithreaded code should never touch this???", function_name);
                             }
                         };
-    
-                        match stdin.write_all(&data_to_write) {
+                        // borrow stdin in place (don't take() it) so it stays open for subsequent writes
+                        let stdin = match cell.as_mut() {
+                            Some(stdin) => stdin,
+                            None => {
+                                return wrap_err!("{}: attempt to write to closed stdin", function_name);
+                            }
+                        };
+
+                        match stdin.write_all(&data_to_write).and_then(|_| stdin.flush()) {
                             Ok(_) => Ok(LuaNil),
                             Err(err) => {
                                 std_err::WrappedError::from_message(format!("{} can't write to stdin due to err: {}", function_name, err)).get_userdata(luau)
