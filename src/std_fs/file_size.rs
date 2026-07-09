@@ -71,6 +71,74 @@ impl LuaUserData for FileSize {
                 }
             }
         });
+        methods.add_meta_method(LuaMetaMethod::Mul, |luau, this, other: LuaValue| {
+            let function_name = "FileSize.__mul";
+            match other {
+                LuaValue::UserData(ud) if let Ok(other) = ud.borrow::<FileSize>() => {
+                    match this.inner_bytes.checked_mul(other.inner_bytes) {
+                        Some(bytes) => FileSize::from_bytes(bytes).into_userdata(luau),
+                        None => wrap_err!("{}: multiplication would overflow", function_name),
+                    }
+                }
+                LuaValue::Integer(i) => {
+                    let factor = int_to_u64(i, function_name, "factor")?;
+                    match this.inner_bytes.checked_mul(factor) {
+                        Some(bytes) => FileSize::from_bytes(bytes).into_userdata(luau),
+                        None => wrap_err!("{}: multiplication would overflow", function_name),
+                    }
+                }
+                LuaValue::Number(f) => {
+                    let bytes = float_scaled_to_bytes(f, this.inner_bytes, function_name, "factor")?;
+                    FileSize::from_bytes(bytes).into_userdata(luau)
+                }
+                LuaValue::UserData(ud) => {
+                    wrap_err!("{}: expected another FileSize or a number to multiply, got an unexpected userdata type {:?}", function_name, ud)
+                }
+                other => {
+                    wrap_err!("{}: expected another FileSize or a number to multiply, got {:?}", function_name, other)
+                }
+            }
+        });
+        methods.add_meta_method(LuaMetaMethod::Div, |luau, this, other: LuaValue| {
+            let function_name = "FileSize.__div";
+            match other {
+                LuaValue::UserData(ud) if let Ok(other) = ud.borrow::<FileSize>() => {
+                    if other.inner_bytes == 0 {
+                        return wrap_err!("{}: cannot divide by a zero-byte FileSize", function_name);
+                    }
+                    FileSize::from_bytes(this.inner_bytes / other.inner_bytes).into_userdata(luau)
+                }
+                LuaValue::Integer(i) => {
+                    let divisor = int_to_u64(i, function_name, "divisor")?;
+                    if divisor == 0 {
+                        return wrap_err!("{}: cannot divide by zero", function_name);
+                    }
+                    FileSize::from_bytes(this.inner_bytes / divisor).into_userdata(luau)
+                }
+                LuaValue::Number(f) => {
+                    if f == 0.0 {
+                        return wrap_err!("{}: cannot divide by zero", function_name);
+                    } else if f.is_nan() || f.is_infinite() {
+                        return wrap_err!("{}: divisor cannot be NaN nor infinite", function_name);
+                    } else if f.is_sign_negative() {
+                        return wrap_err!("{}: divisor cannot be negative (got: {})", function_name, f);
+                    }
+                    let scaled = this.inner_bytes as f64 / f;
+                    if scaled > u64::MAX as f64 {
+                        return wrap_err!("{}: result is too large to fit in a FileSize", function_name);
+                    }
+                    // SAFETY: checked nan/infinite/negative/size above
+                    let bytes = unsafe { scaled.trunc().to_int_unchecked() };
+                    FileSize::from_bytes(bytes).into_userdata(luau)
+                }
+                LuaValue::UserData(ud) => {
+                    wrap_err!("{}: expected another FileSize or a number to divide by, got an unexpected userdata type {:?}", function_name, ud)
+                }
+                other => {
+                    wrap_err!("{}: expected another FileSize or a number to divide by, got {:?}", function_name, other)
+                }
+            }
+        });
         methods.add_meta_method(LuaMetaMethod::Lt, |_luau, this, other: LuaValue| {
             let function_name = "FileSize.__lt";
             match other {

@@ -102,8 +102,8 @@ end
 --[=[
     Represents the size of data in bytes, but in a more human-readable way with convenient constructors.
 
-    Use the `@std/fs/filesize` library to construct `FileSize`s. This type may be added, subtracted, and compared
-    using all standard comparison operators.
+    Use the `@std/fs/filesize` library to construct `FileSize`s. This type may be added, subtracted, multiplied, divided, and compared
+    using all standard comparison operators. Multiplication and division accept either another `FileSize` or a `number`.
 
     This type internally stores bytes as `u64`, therefore the largest size this type
     can represent is `u64::MAX` (~16 exabytes)
@@ -111,6 +111,8 @@ end
 declare extern type FileSize with
     function __add(self, other: FileSize): FileSize
     function __sub(self, other: FileSize): FileSize
+    function __mul(self, other: FileSize | number): FileSize
+    function __div(self, other: FileSize | number): FileSize
     function __eq(self, other: FileSize): boolean
     function __lt(self, other: FileSize): boolean
     function __le(self, other: FileSize): boolean
@@ -294,6 +296,8 @@ declare extern type Duration with
     function abs(self): Duration
     function __add(self, other: Duration): Duration
     function __sub(self, other: Duration): Duration
+    function __mul(self, other: Duration | number): Duration
+    function __div(self, other: Duration | number): Duration
     function __eq(self, other: Duration): boolean
     function __lt(self, other: Duration): boolean
     function __le(self, other: Duration): boolean
