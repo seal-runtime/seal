@@ -359,6 +359,8 @@ pub const STD_SERDE_ZSTD_DECOMPRESS: &std::ffi::CStr = c"serde.zstd.decompress(c
 
 // str
 pub const STD_STR_CHARS: &std::ffi::CStr = c"str.chars(s: string) -> () -> (number, string)";
+pub const STD_STR_CONVERT: &std::ffi::CStr = c"str.convert(s: string | buffer, to: Encoding, from: Encoding?) -> string";
+pub const STD_STR_ENCODING: &std::ffi::CStr = c"str.encoding(s: string | buffer) -> Encoding";
 pub const STD_STR_ENDS: &std::ffi::CStr = c"str.ends(s: string, ...: string) -> boolean";
 pub const STD_STR_ENDSWITH: &std::ffi::CStr = c"str.endswith(s: string, suffix: string) -> boolean";
 pub const STD_STR_ESCAPE: &std::ffi::CStr = c"str.escape(s: string) -> string";

@@ -307,6 +307,31 @@ end
 
 str.graphemes = str_internal.graphemes :: (s: string) -> (...any) -> (number, string)
 
+export type Encoding = "Utf8" | "Utf8Bom" | "Utf16LE" | "Utf16LEBom" | "Utf16BE" | "Utf16BEBom" | "Binary"
+
+--[=[
+    Detects the encoding of arbitrary bytes `s` (string or buffer), returning one of:
+    - `"Utf8"` / `"Utf8Bom"`
+    - `"Utf16LE"` / `"Utf16LEBom"`
+    - `"Utf16BE"` / `"Utf16BEBom"`
+    - `"Binary"`, if `s` doesn't look like valid text in any of the above encodings
+
+    See `str.convert` to convert `s` into a different encoding.
+]=]
+str.encoding = str_internal.encoding :: (s: string | buffer) -> Encoding
+
+--[=[
+    Converts `s` (string or buffer) from its `from` encoding (auto-detected via `str.encoding` if not given)
+    into `to`, returning a string of the converted bytes.
+
+    ## Usage
+    ```luau
+    local utf16 = str.convert("hi seals 🦭", "Utf16LEBom")
+    local back = str.convert(utf16, "Utf8")
+    ```
+]=]
+str.convert = str_internal.convert :: (s: string | buffer, to: Encoding, from: Encoding?) -> string
+
 -- -- stylua: ignore
 -- local utf8_combining_marks: { [number]: boolean } = {
 --     [0x0300] = true, [0x0301] = true, [0x0302] = true, [0x0303] = true, [0x0304] = true, [0x0305] = true,

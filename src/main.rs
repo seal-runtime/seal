@@ -52,7 +52,7 @@ mod std_io;
 mod std_terminal;
 mod std_net;
 mod std_serde;
-mod std_str_internal;
+mod std_str;
 mod std_thread;
 mod std_luau;
 mod std_err;

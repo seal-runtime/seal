@@ -5,20 +5,6 @@
 
 `local str = require("@std/str")`
 
-### str.startswith
-
-<h4>
-
-```luau
-function str.startswith(s: string, prefix: string): boolean
-```
-
-</h4>
-
-<details>
-
-<summary> See the docs </summary
-
 Features ergonomic methods like `str.startwith`, `str.trimfront/trimback`, etc.
 
 This library features utf-8-aware string handling, including easy access to splitting utf-8 strings,
@@ -27,8 +13,6 @@ iterating over the graphemes of a string, etc.
 Unlike many seal standard libraries, inputs to `str` library functions don't necessarily have
 to be valid utf-8 encoded strings.
  check if a string starts with `prefix`
-
-</details>
 
 ---
 
@@ -499,6 +483,61 @@ end
 - Some Hindi graphemes (like हा) don't render properly in terminals :(
 
 </details>
+
+---
+
+## `export type` Encoding
+
+<h4>
+
+```luau
+export type Encoding = "Utf8" | "Utf8Bom" | "Utf16LE" | "Utf16LEBom" | "Utf16BE" | "Utf16BEBom" | "Binary"
+```
+
+</h4>
+
+---
+
+### Encoding.str.encoding
+
+<h4>
+
+```luau
+function Encoding.str.encoding(s: string | buffer): Encoding
+```
+
+</h4>
+
+Detects the encoding of arbitrary bytes `s` (string or buffer), returning one of:
+
+- `"Utf8"` / `"Utf8Bom"`
+- `"Utf16LE"` / `"Utf16LEBom"`
+- `"Utf16BE"` / `"Utf16BEBom"`
+- `"Binary"`, if `s` doesn't look like valid text in any of the above encodings
+
+See `str.convert` to convert `s` into a different encoding.
+
+---
+
+### Encoding.str.convert
+
+<h4>
+
+```luau
+function Encoding.str.convert(s: string | buffer, to: Encoding, from: Encoding?): string
+```
+
+</h4>
+
+Converts `s` (string or buffer) from its `from` encoding (auto-detected via `str.encoding` if not given)
+into `to`, returning a string of the converted bytes.
+
+## Usage
+
+```luau
+local utf16 = str.convert("hi seals 🦭", "Utf16LEBom")
+local back = str.convert(utf16, "Utf8")
+```
 
 ---
 

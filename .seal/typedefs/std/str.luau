@@ -398,4 +398,33 @@ function str.graphemes(s: string): () -> (number, string)
     return nil :: any
 end
 
+export type Encoding = "Utf8" | "Utf8Bom" | "Utf16LE" | "Utf16LEBom" | "Utf16BE" | "Utf16BEBom" | "Binary"
+
+--[=[
+    Detects the encoding of arbitrary bytes `s` (string or buffer), returning one of:
+    - `"Utf8"` / `"Utf8Bom"`
+    - `"Utf16LE"` / `"Utf16LEBom"`
+    - `"Utf16BE"` / `"Utf16BEBom"`
+    - `"Binary"`, if `s` doesn't look like valid text in any of the above encodings
+
+    See `str.convert` to convert `s` into a different encoding.
+]=]
+function str.encoding(s: string | buffer): Encoding
+    return nil :: any
+end
+
+--[=[
+    Converts `s` (string or buffer) from its `from` encoding (auto-detected via `str.encoding` if not given)
+    into `to`, returning a string of the converted bytes.
+
+    ## Usage
+    ```luau
+    local utf16 = str.convert("hi seals 🦭", "Utf16LEBom")
+    local back = str.convert(utf16, "Utf8")
+    ```
+]=]
+function str.convert(s: string | buffer, to: Encoding, from: Encoding?): string
+    return nil :: any
+end
+
 return str
