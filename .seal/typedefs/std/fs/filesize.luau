@@ -3,7 +3,7 @@
 
     Fractional unit counts are accepted for all units larger than bytes — e.g. `filesize.gigabytes(1.2)` gives you 1.2 GB expressed as bytes.
 
-    `FileSize`s may be compared with all comparison operators and added and subtracted.
+    `FileSize`s may be compared with all comparison operators, added, subtracted, multiplied, and divided. Multiplication and division accept either another `FileSize` or a `number`.
 ]=]
 export type FileSizeLib = {
     --- Constructs a `FileSize` representing `count` bytes. `count` must be a whole number.
