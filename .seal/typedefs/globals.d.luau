@@ -99,6 +99,40 @@ declare extern type interrupt with
     code: "CtrlC" | "CtrlD"
 end
 
+declare ArchiveEntry: DirectoryInArchive | FileInArchive
+
+declare extern type DirectoryInArchive with
+    path: string
+    function list(self): { string }
+    function entries(self): { any }
+    function get(self, name: string): any?
+    function extract(self, path: string): ()
+end
+
+declare extern type FileInArchive with
+    path: string
+    function size(self): FileSize
+    function read(self): string
+    function readbytes(self, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?): buffer
+    function replace(self, new: string | buffer): ()
+    --- Writes the file to disk.
+    function write(self, path: string): ()
+end
+
+declare extern type Archive with
+    format:
+        | "zip"
+        | "tar"
+        | "tar.gz"
+        | "tar.bz2"
+        | "tar.xz"
+        | "tar.zst"
+        | "tar.lz4"
+        | "7z"
+    function entries(self): { any }
+    
+end
+
 --[=[
     Represents the size of data in bytes, but in a more human-readable way with convenient constructors.
 

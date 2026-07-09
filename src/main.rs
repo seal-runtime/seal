@@ -144,15 +144,20 @@ impl SealCommand {
     // rest of the SealCommand impl defined at the bottom of main.rs
 }
 
+fn set_fflags(flags: [&'static str; 4]) -> LuaResult<()> {
+    for flag in flags {
+        if mluau::Lua::set_fflag(flag, true).is_err() {
+            eputs!("[WARN] unable to enable Luau FFlag '{}'; was Luau updated and the flag removed?", flag)?;
+        }
+    }
+    Ok(())
+}
+
 
 fn main() -> LuaResult<()> {
     // We intercept SIGABRT on *nix to prevent core dumps when seal is used as a child process
     err::setup_sigabrt_handler();
     err::setup_panic_hook(); // seal panic = seal bug; we shouldn't panic in normal operation
-
-    if mluau::Lua::set_fflag("LuauConst2", true).is_err() {
-        eputs!("[WARN] unable to enable Luau FFlag LuauConst2, was Luau updated and the flag removed?")?;
-    }
 
     let args: VecDeque<OsString> = env::args_os().collect();
     
@@ -161,6 +166,13 @@ fn main() -> LuaResult<()> {
     }
 
     crate::std_io::input::EXPECT_OUTPUT_STREAMS.initialize_and_check();
+
+    set_fflags([
+        "LuauConst2",
+        "DebugLuauUserDefinedClassesRuntime",
+        "DebugLuauUserDefinedClasses",
+        "LuauExportValueSyntax"
+    ])?;
 
     let command = match SealCommand::parse(args) {
         Ok(command) => command,

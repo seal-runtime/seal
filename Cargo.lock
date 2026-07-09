@@ -1105,7 +1105,6 @@ dependencies = [
 [[package]]
 name = "mlua-sys"
 version = "0.9.0"
-source = "git+https://github.com/mluau/mluau.git#5754ee3474d957b065d02751879d76c00aa96c9b"
 dependencies = [
  "cc",
  "cfg-if",
@@ -1116,7 +1115,6 @@ dependencies = [
 [[package]]
 name = "mluau"
 version = "0.11.5"
-source = "git+https://github.com/mluau/mluau.git#5754ee3474d957b065d02751879d76c00aa96c9b"
 dependencies = [
  "bstr",
  "either",

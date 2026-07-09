@@ -7,11 +7,15 @@ edition = "2024"
 # mluau is our custom mlua fork with a greater focus on luau and luau ecosystem
 # support, maintained by Midnight Frost and myself (mostly him).
 [target.'cfg(not(target_os = "android"))'.dependencies]
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-jit", "serialize", "error-send"] }
+# mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-jit", "serialize", "error-send"] }
+# TEMP: testing local fix-classes branch
+mluau = { path = "../mluau", features = ["luau", "luau-jit", "serialize", "error-send", "luau-classes" ] }
 
 [target.'cfg(target_os = "android")'.dependencies]
 # luau jit (ncg) compilation is not available on android
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send"] }
+# mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send"] }
+# TEMP: testing local fix-classes branch
+mluau = { path = "../mluau", features = ["luau", "serialize", "error-send", "luau-classes"] }
 
 [dependencies]
 regex = "1.11.1"
