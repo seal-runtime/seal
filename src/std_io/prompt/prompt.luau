@@ -193,7 +193,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
         else
             vector.create(1, #options)
 
-    local normalized_message_length = str.width(format.uncolor(message))
+    local normalized_message_length = str.width(message)
 
     local top_position = cursor.position()
     local top_update_position = top_position + vector.create(normalized_message_length + 1, 0)
@@ -233,11 +233,9 @@ function prompt.pick(message: string, options: { string }, default: number?): er
 
         local current_size = terminal.size()
         local current_option = options[selected]
-        local uncolored_current_option = format.uncolor(current_option)
-        local uncolored_message = format.uncolor(message)
 
-        local space_available_for_message = current_size.x - str.width(uncolored_current_option) - 1
-        local message_line_horizontal_width = str.width(uncolored_message) + str.width(uncolored_current_option) + 1
+        local space_available_for_message = current_size.x - str.width(current_option) - 1
+        local message_line_horizontal_width = str.width(message) + str.width(current_option) + 1
 
         local message_truncated_if_needed = 
             if message_line_horizontal_width > current_size.x then
@@ -246,7 +244,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
                 message
         
         -- adjust the place where the current option is visible dynamically based upon the size of the message
-        top_update_position = vector.create(str.width(format.uncolor(message_truncated_if_needed)) + 1, top_update_position.y)
+        top_update_position = vector.create(str.width(message_truncated_if_needed) + 1, top_update_position.y)
         local help_message =
             if current_size.x > 99 then
                 "Scroll, use arrow keys, or type a number to pick an option; double-click or press enter to select."
@@ -278,7 +276,7 @@ function prompt.pick(message: string, options: { string }, default: number?): er
                 else
                     ""
             -- make sure whole option text stays on same line
-            local option_line_width = #tostring(option_index) + 4 + str.width(format.uncolor(option))
+            local option_line_width = #tostring(option_index) + 4 + str.width(option)
             if option_line_width > current_size.x then
                 option = truncate_string_middling_to_size(option, current_size.x - 6)
             end
@@ -316,8 +314,8 @@ function prompt.pick(message: string, options: { string }, default: number?): er
             )
         end
         -- now jump to top right to update the currently selected option
-        local space_for_current_option = current_size.x - (str.width(format.uncolor(message_truncated_if_needed)) + 4)
-        if str.width(uncolored_current_option) > space_for_current_option then
+        local space_for_current_option = current_size.x - (str.width(message_truncated_if_needed) + 4)
+        if str.width(current_option) > space_for_current_option then
             current_option = truncate_string_middling_to_size(current_option, space_for_current_option)
         end
         push(

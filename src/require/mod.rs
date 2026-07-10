@@ -107,8 +107,8 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std/crypt/hash" => ok_table(std_crypt::create_hash(luau)),
         "@std/crypt/password" => ok_table(std_crypt::create_password(luau)),
 
-        "@internal/str" => ok_table(std_str_internal::create(luau)),
-        "@std/str" => ok_table(load_std_str(luau)),
+        "@internal/str" => ok_table(std_str::create_internal(luau)),
+        "@std/str" => ok_table(std_str::create(luau)),
 
         "@std/semver" => ok_table(load_std_semver(luau)),
 
@@ -121,7 +121,7 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std" => {
             ok_table(TableBuilder::create(luau)?
                 .with_value("fs", std_fs::create(luau)?)?
-                .with_value("str", load_std_str(luau)?)?
+                .with_value("str", std_str::create(luau)?)?
                 .with_value("semver", load_std_semver(luau)?)?
                 .with_value("env", std_env::create(luau)?)?
                 .with_value("io", std_io::create(luau)?)?
@@ -153,12 +153,6 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
             wrap_err!("program required an unexpected standard library: {}", other)
         }
     }
-}
-
-const STD_STR_SRC: &str = include_str!("../std_str.luau");
-fn load_std_str(luau: &Lua) -> LuaResult<LuaTable> {
-    let chunk = Chunk::Src(STD_STR_SRC.to_owned());
-    luau.load(chunk).set_name("std/str").eval::<LuaTable>()
 }
 
 const STD_SEMVER_SRC: &str = include_str!("../std_semver.luau");

@@ -8,6 +8,14 @@
 
     This library features utf-8-aware string handling, including easy access to splitting utf-8 strings,
     iterating over the graphemes of a string, etc.
+
+    Unlike many seal standard libraries, inputs to `str` library functions don't necessarily have
+    to be valid utf-8 encoded strings; functions like `str.split`/`str.graphemes` won't error on invalid
+    utf-8, but grapheme-aware results only make sense for utf-8 text.
+    
+    Other encodings (utf-16, a utf-8 bom, etc.) won't cause str.split or str.graphemes to
+    to error out, but they won't produce meaningful results either — use
+    `str.convert` to normalize to plain utf-8 first if you're not sure what encoding you have.
 ]=]
 local str = {}
 
@@ -115,19 +123,6 @@ function str.unindent(s: string, whitespace_type: "Tabs" | "Spaces", count: numb
     return table.concat(result, sep)
 end
 
---- splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
---- without an extra empty string, etc.
-function str.splitlines(s: string, trim_trailing_whitespace: boolean?): { string }
-    trim_trailing_whitespace = trim_trailing_whitespace ~= false -- handle true and nil
-    local splitted = str.split(s, "\n", "\r\n")
-    if trim_trailing_whitespace then
-        for i, sp in splitted do
-            splitted[i] = str.trimback(sp)
-        end
-    end
-    return splitted
-end
-
 --- returns the utf-8 length if `s` is utf-8 or the regular string length #
 function str.len(s: string): number
     local utf8_len = utf8.len(s)
@@ -136,6 +131,14 @@ function str.len(s: string): number
     else
         return #s
     end
+end
+
+-- inlined equivalent of format.uncolor's ansi-stripping regex (\x1b\[[0-9;]*m). str.width is a hot
+-- path for TUI code, so this avoids requiring @std/io/format (which would also risk a circular
+-- import, since formatter.luau pulls in @std/terminal) just to make one cross-module namecall.
+-- this local function itself gets inlined by the luau compiler, so there's no call overhead either
+local function strip_ansi_colors(s: string): string
+    return (string.gsub(s, "\27%[[%d;]*m", ""))
 end
 
 --[=[
@@ -182,6 +185,7 @@ end
     ```
 ]=]
 function str.width(s: string): number
+    s = strip_ansi_colors(s)
     local length = str.len(s)
 
     for _, grapheme in str.graphemes(s) do
@@ -214,6 +218,16 @@ function str.leftpad(s: string, width: number, pad: string?): string
     local padding_needed = width - #s
     if padding_needed > 0 then
         return string.rep(pad, padding_needed) .. s
+    end
+    return s
+end
+
+--- right pads `s` to make it at least `width` characters long, using `pad` as the padding character.
+function str.rightpad(s: string, width: number, pad: string?): string
+    pad = pad or " "
+    local padding_needed = width - #s
+    if padding_needed > 0 then
+        return s .. string.rep(pad, padding_needed)
     end
     return s
 end
@@ -287,6 +301,17 @@ str.splitbefore = str_internal.splitbefore :: (s: string, separators: string, ..
 str.splitafter = str_internal.splitafter :: (s: string, separators: string, ...string) -> { string }
 
 --[=[
+    Splits `s` by newlines, correctly handling carriage returns and trimming trailing whitespace
+    (both by default). Empty lines are preserved - a leading empty line or an empty line between
+    two others both show up as `""` in the result.
+
+    The one exception is the string's final, unterminated remainder: if trimming reduces it to `""`,
+    it's dropped by default (so `str.splitlines("a\n")` is `{"a"}`, not `{"a", ""}`). Pass
+    `include_terminator = true` to keep that trailing `""` instead.
+]=]
+str.splitlines = str_internal.splitlines :: (s: string, trim_trailing_whitespace: boolean?, include_terminator: boolean?) -> { string }
+
+--[=[
     Iterate over the human-readable characters (graphemes) of a string
 
     this function counts by 'characters', whereas `str.graphemes` provides byte indices for `string.sub`
@@ -306,6 +331,77 @@ function str.chars(s: string): (...any) -> (number, string)
 end
 
 str.graphemes = str_internal.graphemes :: (s: string) -> (...any) -> (number, string)
+
+export type Encoding = "Utf8" | "Utf8Bom" | "Utf16LE" | "Utf16LEBom" | "Utf16BE" | "Utf16BEBom" | "Binary"
+
+--[=[
+    Detects the encoding of arbitrary bytes `s` (string or buffer), returning one of:
+    - `"Utf8"` / `"Utf8Bom"`
+    - `"Utf16LE"` / `"Utf16LEBom"`
+    - `"Utf16BE"` / `"Utf16BEBom"`
+    - `"Binary"`, if `s` doesn't look like valid text in any of the above encodings
+
+    See `str.convert` to convert `s` into a different encoding.
+]=]
+str.encoding = str_internal.encoding :: (s: string | buffer) -> Encoding
+
+--[=[
+    Converts `s` (string or buffer) from its `from` encoding (auto-detected via `str.encoding` if not given)
+    into `to`, returning a string of the converted bytes.
+
+    ## Usage
+    ```luau
+    local utf16 = str.convert("hi seals 🦭", "Utf16LEBom")
+    local back = str.convert(utf16, "Utf8")
+    ```
+]=]
+str.convert = str_internal.convert :: (s: string | buffer, to: Encoding, from: Encoding?) -> string
+
+--[=[
+    Replaces non-overlapping, literal (not pattern) occurrences of `old` in `s` with `new`.
+
+    `start_index`/`end_index` follow `string.sub`'s indexing (1-indexed, negative counts from the
+    end) and restrict which portion of `s` is searched - content outside that range is left
+    untouched even if `old` occurs there. `max_replacements` caps how many occurrences get replaced
+    (unlimited if omitted).
+
+    ## Usage
+    ```luau
+    str.replace("the cat sat on the mat", "at", "og") --> "the cog sog on the mog"
+    str.replace("aaaa", "a", "b", 2) --> "bbaa"
+    ```
+]=]
+str.replace = str_internal.replace :: (s: string, old: string, new: string, max_replacements: number?, start_index: number?, end_index: number?) -> string
+
+--- Reverses `s` by unicode grapheme, unlike luau's own `string.reverse` (which operates byte by
+--- byte and corrupts multi-byte utf-8 content).
+str.reverse = str_internal.reverse :: (s: string) -> string
+
+--[=[
+    Splits `s` on `sep` starting from the front, stopping after `max` splits (default `1`) - the
+    remainder (everything after the last split) becomes the final element as-is, even if `sep`
+    occurs again within it. Like python's `str.split(sep, maxsplit)`.
+
+    ## Usage
+    ```luau
+    str.splitfront("a,b,c,d", ",") --> {"a", "b,c,d"}
+    str.splitfront("a,b,c,d", ",", 2) --> {"a", "b", "c,d"}
+    ```
+]=]
+str.splitfront = str_internal.splitfront :: (s: string, sep: string, max: number?) -> { string }
+
+--[=[
+    Splits `s` on `sep` starting from the back, stopping after `max` splits (default `1`) - the
+    remainder (everything before the first split) becomes the first element as-is, even if `sep`
+    occurs again within it. Like python's `str.rsplit(sep, maxsplit)`.
+
+    ## Usage
+    ```luau
+    str.splitback("a,b,c,d", ",") --> {"a,b,c", "d"}
+    str.splitback("a,b,c,d", ",", 2) --> {"a,b", "c", "d"}
+    ```
+]=]
+str.splitback = str_internal.splitback :: (s: string, sep: string, max: number?) -> { string }
 
 -- -- stylua: ignore
 -- local utf8_combining_marks: { [number]: boolean } = {

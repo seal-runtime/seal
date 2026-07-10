@@ -3,7 +3,10 @@ use std::borrow::Cow;
 use mluau::prelude::*;
 use mluau::AsChunk;
 
-pub const MAX_TABLE_SIZE: usize = 134_217_728;
+/// luau's actual limit: array/hash parts of a table can each hold at most `1 << MAXBITS` entries,
+/// where MAXBITS is 26 (see luau/VM/src/ltable.cpp); exceeding this aborts the process, so this
+/// constant must never be looser than luau's real MAXSIZE
+pub const MAX_TABLE_SIZE: usize = 1 << 26;
 pub use crate::{
     std_io::colors as colors, wrap_err, table_helpers::TableBuilder,
     put, puts, eput, eputs, signatures

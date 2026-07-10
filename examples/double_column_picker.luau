@@ -6,7 +6,6 @@ local process = require("@std/process")
 local terminal = require("@std/terminal")
 local cursor = require("@std/terminal/cursor")
 local colors = require("@std/io/colors")
-local format = require("@std/io/format")
 local str = require("@std/str")
 local time = require("@std/time")
 
@@ -52,17 +51,13 @@ local function pick_double_columns(message: string, items: { ColumnItem }): Sele
         return divider_col() + 2
     end
 
-    --- always make sure to handle unicode non ascii graphemes properly
-    local function display_width(text: string): number
-        return str.width(format.uncolor(text))
-    end
-
     --- Trims `text` to fit within `max_width` display columns, appending `…` if truncated.
+    --- str.width already handles unicode graphemes and strips ansi color codes internally.
     local function truncate(text: string, max_width: number): string
-        if display_width(text) <= max_width then return text end
+        if str.width(text) <= max_width then return text end
         local result = ""
         for _, grapheme in str.split(text) do
-            if display_width(result .. grapheme) > max_width - 1 then break end
+            if str.width(result .. grapheme) > max_width - 1 then break end
             result ..= grapheme
         end
         return result .. "…"

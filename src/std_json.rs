@@ -2,7 +2,7 @@ use std::fs;
 
 use mluau::prelude::*;
 use crate::prelude::*;
-use crate::std_fs::{self, entry::wrap_io_read_errors_empty, validate_path};
+use crate::std_fs::{entry::{wrap_io_read_errors, wrap_io_read_errors_empty}, validate_path};
 use serde_json_lenient as serde_json;
 
 pub struct EncodeOptions {
@@ -105,8 +105,11 @@ pub fn json_raw_encode(_luau: &Lua, table: LuaValue) -> LuaResult<String> {
     }
 }
 
-pub fn json_decode(luau: &Lua, json: String) -> LuaValueResult {
-    let json_value: serde_json::Value = match serde_json::from_str(&json) {
+/// rust-internal entry point for decoding json: takes `&str` (borrowed, no alloc for callers who already
+/// have their json as a `&str`/`String`) rather than `json_decode`'s owned `String`, which only exists
+/// because that's what Luau calling `json.decode` gets bound to
+pub fn decode(luau: &Lua, json: &str) -> LuaValueResult {
+    let json_value: serde_json::Value = match serde_json::from_str(json) {
         Ok(json) => json,
         Err(err) => {
             return wrap_err!("json: unable to decode json. serde_json error: {}", err.to_string());
@@ -123,9 +126,30 @@ pub fn json_decode(luau: &Lua, json: String) -> LuaValueResult {
     Ok(luau_value)
 }
 
+pub fn json_decode(luau: &Lua, json: String) -> LuaValueResult {
+    decode(luau, &json)
+}
+
 fn json_readfile(luau: &Lua, file_path: LuaValue) -> LuaValueResult {
-    let file_content = std_fs::fs_readfile(luau, file_path)?;
-    json_decode(luau, file_content.to_string()?)
+    let function_name = "json.readfile(path: string)";
+    let path = match file_path {
+        LuaValue::String(path) => validate_path(&path, function_name)?,
+        other => {
+            return wrap_err!("{} expected path to be a string, got: {:?}", function_name, other);
+        }
+    };
+
+    let bytes = match fs::read(&path) {
+        Ok(bytes) => bytes,
+        Err(err) => {
+            return wrap_io_read_errors(err, function_name, &path);
+        }
+    };
+
+    // files can be utf-8, utf-16 (with or without a bom), etc; json.decode assumes utf-8 for speed,
+    // but readfile reads arbitrary files off disk so it's worth the encoding detection here
+    let utf8 = crate::std_str::bytes_to_utf8(&bytes, function_name)?;
+    decode(luau, &utf8)
 }
 
 fn json_writefile(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
