@@ -222,6 +222,16 @@ function str.leftpad(s: string, width: number, pad: string?): string
     return s
 end
 
+--- right pads `s` to make it at least `width` characters long, using `pad` as the padding character.
+function str.rightpad(s: string, width: number, pad: string?): string
+    pad = pad or " "
+    local padding_needed = width - #s
+    if padding_needed > 0 then
+        return s .. string.rep(pad, padding_needed)
+    end
+    return s
+end
+
 --- escapes special characters like `\n`, `\t`, `\\` for easier debugging
 function str.escape(s: string): string
     return (string.gsub(s, "[\\\n\t\r]", {
@@ -346,6 +356,52 @@ str.encoding = str_internal.encoding :: (s: string | buffer) -> Encoding
     ```
 ]=]
 str.convert = str_internal.convert :: (s: string | buffer, to: Encoding, from: Encoding?) -> string
+
+--[=[
+    Replaces non-overlapping, literal (not pattern) occurrences of `old` in `s` with `new`.
+
+    `start_index`/`end_index` follow `string.sub`'s indexing (1-indexed, negative counts from the
+    end) and restrict which portion of `s` is searched - content outside that range is left
+    untouched even if `old` occurs there. `max_replacements` caps how many occurrences get replaced
+    (unlimited if omitted).
+
+    ## Usage
+    ```luau
+    str.replace("the cat sat on the mat", "at", "og") --> "the cog sog on the mog"
+    str.replace("aaaa", "a", "b", 2) --> "bbaa"
+    ```
+]=]
+str.replace = str_internal.replace :: (s: string, old: string, new: string, max_replacements: number?, start_index: number?, end_index: number?) -> string
+
+--- Reverses `s` by unicode grapheme, unlike luau's own `string.reverse` (which operates byte by
+--- byte and corrupts multi-byte utf-8 content).
+str.reverse = str_internal.reverse :: (s: string) -> string
+
+--[=[
+    Splits `s` on `sep` starting from the front, stopping after `max` splits (default `1`) - the
+    remainder (everything after the last split) becomes the final element as-is, even if `sep`
+    occurs again within it. Like python's `str.split(sep, maxsplit)`.
+
+    ## Usage
+    ```luau
+    str.splitfront("a,b,c,d", ",") --> {"a", "b,c,d"}
+    str.splitfront("a,b,c,d", ",", 2) --> {"a", "b", "c,d"}
+    ```
+]=]
+str.splitfront = str_internal.splitfront :: (s: string, sep: string, max: number?) -> { string }
+
+--[=[
+    Splits `s` on `sep` starting from the back, stopping after `max` splits (default `1`) - the
+    remainder (everything before the first split) becomes the first element as-is, even if `sep`
+    occurs again within it. Like python's `str.rsplit(sep, maxsplit)`.
+
+    ## Usage
+    ```luau
+    str.splitback("a,b,c,d", ",") --> {"a,b,c", "d"}
+    str.splitback("a,b,c,d", ",", 2) --> {"a,b", "c", "d"}
+    ```
+]=]
+str.splitback = str_internal.splitback :: (s: string, sep: string, max: number?) -> { string }
 
 -- -- stylua: ignore
 -- local utf8_combining_marks: { [number]: boolean } = {

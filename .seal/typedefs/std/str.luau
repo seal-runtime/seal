@@ -104,7 +104,7 @@ end
 
 --[=[
     Splits string `s` into an array of lines, correctly handling LF and CRLF (`\n` and `\r\n`),
-    and by default, trims any whitespace left at the end of the string after splitting.
+    optionally trimming any whitespace left at the end of the string after splitting.
 
     By default, `trim_trailing_whitespace` defaults to `true` and `include_terminator` defaults to `false`.
 
@@ -121,7 +121,7 @@ function str.splitlines(s: string, trim_trailing_whitespace: boolean?, include_t
     return nil :: any
 end
 
---- returns the utf-8 length if `s` is utf-8 or the regular string length #
+--- returns the utf-8 length if `s` is utf-8 or the regular string length # otherwise
 function str.len(s: string): number
     -- local utf8_len = utf8.len(s)
     -- if utf8_len then
@@ -189,6 +189,35 @@ function str.leftpad(s: string, width: number, pad: string?): string
     --     return string.rep(pad, padding_needed) .. s
     -- end
     -- return s
+    return nil :: any
+end
+
+--- right pads `s` to make it at least `width` characters long, using `pad` as the padding character.
+function str.rightpad(s: string, width: number, pad: string?): string
+    return nil :: any
+end
+
+--[=[
+    Replaces non-overlapping, literal (not pattern) occurrences of `old` in `s` with `new`.
+
+    `start_index`/`end_index` follow `string.sub`'s indexing (1-indexed, negative counts from the
+    end) and restrict which portion of `s` is searched - content outside that range is left
+    untouched even if `old` occurs there. `max_replacements` caps how many occurrences get replaced
+    (unlimited if omitted).
+
+    ## Usage
+    ```luau
+    str.replace("the cat sat on the mat", "at", "og") --> "the cog sog on the mog"
+    str.replace("aaaa", "a", "b", 2) --> "bbaa"
+    ```
+]=]
+function str.replace(s: string, old: string, new: string, max_replacements: number?, start_index: number?, end_index: number?): string
+    return nil :: any
+end
+
+--- Reverses `s` by unicode grapheme, unlike luau's own `string.reverse` (which operates byte by
+--- byte and corrupts multi-byte utf-8 content).
+function str.reverse(s: string): string
     return nil :: any
 end
 
@@ -356,9 +385,41 @@ function str.splitafter(s: string, seps: string, ...: string): { string }
 end
 
 --[=[
+    Splits `s` on `sep` starting from the front, stopping after `max` splits (default `1`) - the
+    remainder (everything after the last split) becomes the final element as-is, even if `sep`
+    occurs again within it. Like python's `str.split(sep, maxsplit)`.
+
+    ## Usage
+    ```luau
+    str.splitfront("a,b,c,d", ",") --> {"a", "b,c,d"}
+    str.splitfront("a,b,c,d", ",", 2) --> {"a", "b", "c,d"}
+    ```
+]=]
+function str.splitfront(s: string, sep: string, max: number?): { string }
+    return nil :: any
+end
+
+--[=[
+    Splits `s` on `sep` starting from the back, stopping after `max` splits (default `1`) - the
+    remainder (everything before the first split) becomes the first element as-is, even if `sep`
+    occurs again within it. Like python's `str.rsplit(sep, maxsplit)`.
+
+    ## Usage
+    ```luau
+    str.splitback("a,b,c,d", ",") --> {"a,b,c", "d"}
+    str.splitback("a,b,c,d", ",", 2) --> {"a,b", "c", "d"}
+    ```
+]=]
+function str.splitback(s: string, sep: string, max: number?): { string }
+    return nil :: any
+end
+
+--[=[
     Iterate over the human-readable characters (graphemes) of a string
 
-    This function counts by 'characters', whereas `str.graphemes` provides byte indices for `string.sub`/`str.slice`
+    This function counts by character position (1st grapheme, 2nd grapheme, etc.), which is what
+    `str.slice` expects - not a byte offset. Use `str.graphemes` instead if you need byte offsets
+    for `string.sub`.
 ]=]
 function str.chars(s: string): (...any) -> (number, string)
     -- local current_index = 0
@@ -376,7 +437,8 @@ function str.chars(s: string): (...any) -> (number, string)
 end
 
 --[=[
-    Iterate over the utf-8 graphemes of `s` with indices useful for `str.slice` or `string.sub`
+    Iterate over the utf-8 graphemes of `s`, yielding byte offsets useful for `string.sub` (not
+    `str.slice`, which expects character positions - see `str.chars` for that instead).
 
     ## Usage
     ```luau

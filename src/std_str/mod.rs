@@ -319,6 +319,106 @@ fn str_splitafter(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     Ok(LuaValue::Table(result))
 }
 
+/// pops (s, sep, max) off `multivalue` for str.splitfront/str.splitback, validating along the way.
+/// `max` defaults to 1 if omitted (matching str.split with no cap would just duplicate str.split)
+fn pop_splitfront_back_args(multivalue: &mut LuaMultiValue, function_name: &'static str) -> LuaResult<(Vec<u8>, Vec<u8>, usize)> {
+    let s_bytes = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s.as_bytes().to_owned(),
+        Some(other) => {
+            return wrap_err!("{} expected s to be a string, got: {:?}", function_name, other);
+        },
+        None => {
+            return wrap_err!("{} expected a string s, but was incorrectly called with zero arguments", function_name);
+        }
+    };
+
+    let sep_bytes = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s.as_bytes().to_owned(),
+        Some(other) => {
+            return wrap_err!("{} expected sep to be a string, got: {:?}", function_name, other);
+        },
+        None => {
+            return wrap_err!("{} expected a sep string to split on", function_name);
+        }
+    };
+    if sep_bytes.is_empty() {
+        return wrap_err!("{} expected sep to be a non-empty string", function_name);
+    }
+
+    let max = match multivalue.pop_front() {
+        Some(LuaNil) | None => 1,
+        Some(LuaValue::Integer(n)) => int_to_usize(n, function_name, "max")?,
+        Some(LuaValue::Number(n)) => float_to_usize(n, function_name, "max")?,
+        Some(other) => {
+            return wrap_err!("{} expected max to be a number or nil, got: {:?}", function_name, other);
+        }
+    };
+
+    Ok((s_bytes, sep_bytes, max))
+}
+
+/// splits `s` on `sep` starting from the front, stopping after `max` splits (default 1) - the
+/// remainder (everything after the last split) becomes the final element as-is, even if `sep`
+/// occurs again within it. like python's `str.split(sep, maxsplit)`
+fn str_splitfront(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    let function_name = "str.splitfront(s: string, sep: string, max: number?)";
+    let (s_bytes, sep_bytes, max) = pop_splitfront_back_args(&mut multivalue, function_name)?;
+
+    let finder = memchr::memmem::Finder::new(&sep_bytes);
+    let mut slices: Vec<&[u8]> = Vec::new();
+    let mut prev = 0usize;
+    let mut splits_done = 0usize;
+    for start in finder.find_iter(&s_bytes) {
+        if splits_done >= max {
+            break;
+        }
+        let slice = &s_bytes[prev..start];
+        if !slice.is_empty() {
+            slices.push(slice);
+        }
+        prev = start + sep_bytes.len();
+        splits_done += 1;
+    }
+    let remainder = &s_bytes[prev..];
+    if !remainder.is_empty() {
+        slices.push(remainder);
+    }
+
+    ok_table(build_table_from_slices(luau, slices))
+}
+
+/// splits `s` on `sep` starting from the back, stopping after `max` splits (default 1) - the
+/// remainder (everything before the first split) becomes the first element as-is, even if `sep`
+/// occurs again within it. like python's `str.rsplit(sep, maxsplit)`
+fn str_splitback(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    let function_name = "str.splitback(s: string, sep: string, max: number?)";
+    let (s_bytes, sep_bytes, max) = pop_splitfront_back_args(&mut multivalue, function_name)?;
+
+    let finder = memchr::memmem::Finder::new(&sep_bytes);
+    let all_matches: Vec<usize> = finder.find_iter(&s_bytes).collect();
+    let splits_to_take = max.min(all_matches.len());
+    let taken = &all_matches[all_matches.len() - splits_to_take..];
+
+    let mut slices: Vec<&[u8]> = Vec::new();
+    let mut prev = 0usize;
+    for (i, &start) in taken.iter().enumerate() {
+        // the very first taken match absorbs everything before it, including any earlier
+        // (non-taken) separator occurrences, since that's the "remainder" for this direction
+        let piece_start = if i == 0 { 0 } else { prev };
+        let slice = &s_bytes[piece_start..start];
+        if !slice.is_empty() {
+            slices.push(slice);
+        }
+        prev = start + sep_bytes.len();
+    }
+    let remainder = &s_bytes[prev..];
+    if !remainder.is_empty() {
+        slices.push(remainder);
+    }
+
+    ok_table(build_table_from_slices(luau, slices))
+}
+
 fn is_trailing_trim_byte(b: u8) -> bool {
     matches!(b, b' ' | b'\t' | 0x0B | 0x0C | b'\r')
 }
@@ -704,6 +804,141 @@ fn str_convert(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     ok_string(converted, luau)
 }
 
+/// mirrors luau's own `string.sub` index semantics: positive counts from the start (1-indexed),
+/// negative counts from the end (-1 = last byte), and everything is clamped into a valid range.
+/// see lua's `str_sub`/`posrelat` in lstrlib.c, which this is a direct port of
+fn posrelat(pos: i64, len: usize) -> i64 {
+    if pos >= 0 {
+        pos
+    } else if (-pos) as usize > len {
+        0
+    } else {
+        len as i64 - (-pos) + 1
+    }
+}
+
+/// resolves a `string.sub`-style (start, end) pair into a clamped, 0-indexed, exclusive-end byte
+/// range `[lo, hi)`. returns `(0, 0)` (empty range) if start ends up past end, same as `string.sub`
+/// returning `""` in that case
+fn resolve_sub_range(start: i64, end: i64, len: usize) -> (usize, usize) {
+    let mut start = posrelat(start, len);
+    let mut end = posrelat(end, len);
+    if start < 1 {
+        start = 1;
+    }
+    if end > len as i64 {
+        end = len as i64;
+    }
+    if start > end { (0, 0) } else { ((start - 1) as usize, end as usize) }
+}
+
+fn pop_optional_index(multivalue: &mut LuaMultiValue, function_name: &'static str, parameter_name: &'static str, default: i64) -> LuaResult<i64> {
+    match multivalue.pop_front() {
+        Some(LuaNil) | None => Ok(default),
+        Some(LuaValue::Integer(n)) => Ok(n),
+        Some(LuaValue::Number(n)) => Ok(n as i64),
+        Some(other) => {
+            wrap_err!("{}: expected {} to be a number or nil, got: {:?}", function_name, parameter_name, other)
+        }
+    }
+}
+
+/// replaces non-overlapping, literal (not pattern) occurrences of `old` in `s` with `new`,
+/// using memchr's SIMD-accelerated substring search - operates on raw bytes, so this works
+/// regardless of whether `s` is valid utf-8. `start_index`/`end_index` (string.sub-style, 1-indexed,
+/// negative-from-end) restrict which portion of `s` is searched; content outside that range is left
+/// untouched even if `old` occurs there. `max_replacements` caps how many occurrences get replaced
+fn str_replace(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    let function_name = "str.replace(s: string, old: string, new: string, max_replacements: number?, start_index: number?, end_index: number?)";
+    let s_bytes = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s.as_bytes().to_owned(),
+        Some(other) => {
+            return wrap_err!("{} expected s to be a string, got: {:?}", function_name, other);
+        },
+        None => {
+            return wrap_err!("{} expected a string s, but was incorrectly called with zero arguments", function_name);
+        }
+    };
+
+    let old_bytes = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s.as_bytes().to_owned(),
+        Some(other) => {
+            return wrap_err!("{} expected old to be a string, got: {:?}", function_name, other);
+        },
+        None => {
+            return wrap_err!("{} expected an old string to search for", function_name);
+        }
+    };
+    if old_bytes.is_empty() {
+        return wrap_err!("{} expected old to be a non-empty string", function_name);
+    }
+
+    let new_bytes = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s.as_bytes().to_owned(),
+        Some(other) => {
+            return wrap_err!("{} expected new to be a string, got: {:?}", function_name, other);
+        },
+        None => {
+            return wrap_err!("{} expected a new string to replace occurrences of old with", function_name);
+        }
+    };
+
+    let max_replacements = match multivalue.pop_front() {
+        Some(LuaNil) | None => usize::MAX,
+        Some(LuaValue::Integer(n)) => int_to_usize(n, function_name, "max_replacements")?,
+        Some(LuaValue::Number(n)) => float_to_usize(n, function_name, "max_replacements")?,
+        Some(other) => {
+            return wrap_err!("{} expected max_replacements to be a number or nil, got: {:?}", function_name, other);
+        }
+    };
+
+    let start_index = pop_optional_index(&mut multivalue, function_name, "start_index", 1)?;
+    let end_index = pop_optional_index(&mut multivalue, function_name, "end_index", -1)?;
+    let (lo, hi) = resolve_sub_range(start_index, end_index, s_bytes.len());
+
+    let finder = memchr::memmem::Finder::new(&old_bytes);
+    let mut result = Vec::with_capacity(s_bytes.len());
+    result.extend_from_slice(&s_bytes[..lo]);
+
+    let mut last_end = lo;
+    let mut replacements_made = 0usize;
+    if lo < hi {
+        for match_start_in_range in finder.find_iter(&s_bytes[lo..hi]) {
+            if replacements_made >= max_replacements {
+                break;
+            }
+            let match_start = lo + match_start_in_range;
+            result.extend_from_slice(&s_bytes[last_end..match_start]);
+            result.extend_from_slice(&new_bytes);
+            last_end = match_start + old_bytes.len();
+            replacements_made += 1;
+        }
+    }
+    result.extend_from_slice(&s_bytes[last_end..]);
+
+    ok_string(result, luau)
+}
+
+/// reverses `s` by unicode grapheme (not byte, unlike luau's own `string.reverse`, which would
+/// corrupt multi-byte utf-8 content); falls back to a raw byte reversal for non-utf-8 input,
+/// matching the rest of str's "don't error on arbitrary bytes" convention
+fn str_reverse(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    let function_name = "str.reverse(s: string)";
+    let s_bytes = match value {
+        LuaValue::String(s) => s.as_bytes().to_owned(),
+        other => {
+            return wrap_err!("{} expected s to be a string, got: {:?}", function_name, other);
+        }
+    };
+
+    let reversed: Vec<u8> = match std::str::from_utf8(&s_bytes) {
+        Ok(s) => s.graphemes(true).rev().flat_map(|grapheme| grapheme.bytes()).collect(),
+        Err(_) => s_bytes.iter().rev().copied().collect(),
+    };
+
+    ok_string(reversed, luau)
+}
+
 /// rust-implemented functions that str.luau pulls in via `require("@internal/str")`;
 /// kept behind the @internal alias (like @internal/setup) instead of luau module top-level `...`,
 /// since the latter is reserved by luau for the frozen cross-module-inlining export table
@@ -717,6 +952,10 @@ pub fn create_internal(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function_and_signature("graphemes", str_graphemes, signatures::STD_STR_GRAPHEMES)?
         .with_function_and_signature("encoding", str_encoding, signatures::STD_STR_ENCODING)?
         .with_function_and_signature("convert", str_convert, signatures::STD_STR_CONVERT)?
+        .with_function_and_signature("replace", str_replace, signatures::STD_STR_REPLACE)?
+        .with_function_and_signature("reverse", str_reverse, signatures::STD_STR_REVERSE)?
+        .with_function_and_signature("splitfront", str_splitfront, signatures::STD_STR_SPLITFRONT)?
+        .with_function_and_signature("splitback", str_splitback, signatures::STD_STR_SPLITBACK)?
         .build_readonly()
 }
 
