@@ -133,6 +133,14 @@ function str.len(s: string): number
     end
 end
 
+-- inlined equivalent of format.uncolor's ansi-stripping regex (\x1b\[[0-9;]*m). str.width is a hot
+-- path for TUI code, so this avoids requiring @std/io/format (which would also risk a circular
+-- import, since formatter.luau pulls in @std/terminal) just to make one cross-module namecall.
+-- this local function itself gets inlined by the luau compiler, so there's no call overhead either
+local function strip_ansi_colors(s: string): string
+    return (string.gsub(s, "\27%[[%d;]*m", ""))
+end
+
 --[=[
     `str.width` estimates the number of monospace space characters required to correctly format/pad a utf8-encoded string.
 
@@ -177,6 +185,7 @@ end
     ```
 ]=]
 function str.width(s: string): number
+    s = strip_ansi_colors(s)
     local length = str.len(s)
 
     for _, grapheme in str.graphemes(s) do
@@ -281,9 +290,16 @@ str.splitbefore = str_internal.splitbefore :: (s: string, separators: string, ..
 
 str.splitafter = str_internal.splitafter :: (s: string, separators: string, ...string) -> { string }
 
---- splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
---- without an extra empty string, etc.
-str.splitlines = str_internal.splitlines :: (s: string, trim_trailing_whitespace: boolean?) -> { string }
+--[=[
+    Splits `s` by newlines, correctly handling carriage returns and trimming trailing whitespace
+    (both by default). Empty lines are preserved - a leading empty line or an empty line between
+    two others both show up as `""` in the result.
+
+    The one exception is the string's final, unterminated remainder: if trimming reduces it to `""`,
+    it's dropped by default (so `str.splitlines("a\n")` is `{"a"}`, not `{"a", ""}`). Pass
+    `include_terminator = true` to keep that trailing `""` instead.
+]=]
+str.splitlines = str_internal.splitlines :: (s: string, trim_trailing_whitespace: boolean?, include_terminator: boolean?) -> { string }
 
 --[=[
     Iterate over the human-readable characters (graphemes) of a string

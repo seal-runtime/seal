@@ -1,4 +1,5 @@
 local str = require("@std/str")
+local colors = require("@std/io/colors")
 
 local daleki_obriyi_lyrics = [[
 	"Далекі Обрії" by Ignea
@@ -138,3 +139,32 @@ local function splitafterheaders()
 end
 
 splitafterheaders()
+
+--- str.width should strip ansi color/style codes before measuring, since TUI code needs
+--- accurate display width for colorized text (see std_io/prompt/prompt.luau and examples/double_column_picker.luau)
+local function widthignorescolors()
+	local plain = "Hello"
+	assert(str.width(plain) == 5, "plain width should be 5")
+
+	assert(str.width(colors.red(plain)) == 5, "red should not affect width")
+	assert(str.width(colors.bold.blue(plain)) == 5, "bold+blue should not affect width")
+	assert(str.width(colors.style.bold(plain)) == 5, "bold style should not affect width")
+	assert(str.width(colors.style.dim(plain)) == 5, "dim style should not affect width")
+	assert(str.width(colors.style.underline(plain)) == 5, "underline style should not affect width")
+	assert(str.width(colors.rgb(vector.create(255, 100, 50), plain)) == 5, "truecolor rgb should not affect width")
+
+	local nested = colors.style.bold(colors.style.underline(colors.red(plain)))
+	assert(str.width(nested) == 5, "nested styles should not affect width")
+
+	local bg_and_reset = colors.codes.RED_BG .. plain .. colors.codes.RESET
+	assert(str.width(bg_and_reset) == 5, "raw background code + reset should not affect width")
+end
+
+widthignorescolors()
+
+local function widthhandlesnonasciiwithcolors()
+	local wide = colors.bold.green("田中良")
+	assert(str.width(wide) == 6, `expected width 6 (2 per cjk char), got {str.width(wide)}`)
+end
+
+widthhandlesnonasciiwithcolors()

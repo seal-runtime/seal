@@ -75,6 +75,10 @@ enum SplitMode {
     Around,
     Before,
     After,
+    /// like Default, but never drops an empty segment between two matches (only used by
+    /// str.splitlines' non-utf-8 fallback; str.split's own Default mode must keep dropping
+    /// empty splits, so this can't just be folded into Default)
+    Lines,
 }
 
 fn split_separators(
@@ -188,6 +192,12 @@ fn collect_slices_from_matches<'a>(
                     if !slice.is_empty() {
                         slices.push(slice);
                     }
+                }
+                prev_index = mat_end;
+            }
+            SplitMode::Lines => {
+                if mat_start >= prev_index {
+                    slices.push(&s_bytes[prev_index..mat_start]); // pushed even if empty
                 }
                 prev_index = mat_end;
             }
@@ -313,14 +323,14 @@ fn is_trailing_trim_byte(b: u8) -> bool {
     matches!(b, b' ' | b'\t' | 0x0B | 0x0C | b'\r')
 }
 
-/// splits `s` into lines the same way `str.split(s, "\n", "\r\n")` followed by a per-line trimback
-/// would: splits on '\n', treating an immediately-preceding '\r' as part of the line terminator
-/// (matching how aho-corasick's leftmost-first semantics already resolve "\r\n" vs "\n" when both
-/// are passed to str.split - "\r\n" always starts one byte earlier, so it always wins when present,
-/// regardless of argument order). optionally trims further trailing whitespace, and - importantly -
-/// keeps lines that trim down to "" as empty-string entries, while excluding lines that were already
-/// empty before any trimming (e.g. from consecutive "\n"s), matching the original implementation
-fn splitlines_str(s: &str, trim_trailing_whitespace: bool) -> Vec<&str> {
+/// Splits `s` into lines based on the following rules:
+/// - every `\n` or `\r\n` is a line separator (technically, every '\r' in front of an '\n' counts as part of the separator)
+/// - We split around line separators, trim trailing whitespace if requested,
+///   and preserve any empty lines in between other lines.
+/// - If `s`'s final line is nothing but a trailing line separator (so the last element of the
+///   result would otherwise be an empty string), we exclude that element by default, unless
+///   `include_terminator` is true, in which case we keep it - regardless of `trim_trailing_whitespace`.
+fn splitlines_str(s: &str, trim_trailing_whitespace: bool, include_terminator: bool) -> Vec<&str> {
     let bytes = s.as_bytes();
     let len = bytes.len();
     let mut lines = Vec::with_capacity(len / 20 + 1);
@@ -336,7 +346,14 @@ fn splitlines_str(s: &str, trim_trailing_whitespace: bool) -> Vec<&str> {
             raw_end -= 1;
         }
 
-        if raw_end > start {
+        // a delimiter always closes off a line (even an empty one). the final, delimiter-less
+        // chunk after the last "\n" only counts as a line if it's got raw content, or if
+        // `include_terminator` says to keep it anyway (reflecting that a terminator was there,
+        // even if trimming would otherwise erase all evidence of it) - independent of whether
+        // trimming is even requested at all
+        let should_push = nl.is_some() || raw_end > start || include_terminator;
+
+        if should_push {
             let mut end = raw_end;
             if trim_trailing_whitespace {
                 while end > start && is_trailing_trim_byte(bytes[end - 1]) {
@@ -361,7 +378,7 @@ fn splitlines_str(s: &str, trim_trailing_whitespace: bool) -> Vec<&str> {
 }
 
 fn str_splitlines(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
-    let function_name = "str.splitlines(s: string, trim_trailing_whitespace: boolean?)";
+    let function_name = "str.splitlines(s: string, trim_trailing_whitespace: boolean?, include_terminator: boolean?)";
     let s_bytes = match multivalue.pop_front() {
         Some(LuaValue::String(s)) => {
             s.as_bytes().to_owned()
@@ -382,9 +399,17 @@ fn str_splitlines(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
         }
     };
 
+    let include_terminator = match multivalue.pop_front() {
+        Some(LuaValue::Boolean(b)) => b,
+        Some(LuaNil) | None => false,
+        Some(other) => {
+            return wrap_err!("{} expected include_terminator to be a boolean or nil, got: {:?}", function_name, other);
+        }
+    };
+
     let result = match std::str::from_utf8(&s_bytes) {
         Ok(s_str) => {
-            let lines = splitlines_str(s_str, trim_trailing_whitespace);
+            let lines = splitlines_str(s_str, trim_trailing_whitespace, include_terminator);
             luau.create_sequence_from(lines)?
         },
         Err(_) => {
@@ -394,7 +419,15 @@ fn str_splitlines(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
                 LuaValue::String(luau.create_string("\n")?),
                 LuaValue::String(luau.create_string("\r\n")?),
             ]);
-            let mut slices = split_separators_slices(&s_bytes, multivalue, function_name, SplitMode::Default)?;
+            let mut slices = split_separators_slices(&s_bytes, multivalue, function_name, SplitMode::Lines)?;
+            // split_separators_slices/collect_slices_from_matches already only pushes an
+            // unterminated tail when it has raw content, matching include_terminator=false.
+            // when include_terminator is true and s_bytes ends exactly at a real terminator
+            // (no raw tail was pushed at all), add the trailing "" back in - independent of
+            // trim_trailing_whitespace, matching splitlines_str's utf-8 behavior
+            if include_terminator && s_bytes.ends_with(b"\n") {
+                slices.push(&[]);
+            }
             if trim_trailing_whitespace {
                 for slice in &mut slices {
                     *slice = trim_trailing_bytes(slice);
