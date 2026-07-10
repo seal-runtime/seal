@@ -1865,6 +1865,7 @@ dependencies = [
  "libc",
  "libloading",
  "lz4_flex",
+ "memchr",
  "mluau",
  "notify",
  "petname",

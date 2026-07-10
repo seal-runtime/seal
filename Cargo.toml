@@ -50,6 +50,8 @@ simple_crypt = "0.2.3"
 unicode-segmentation = "1.12.0"
 # used for very fast string pattern searches (str.split*)
 aho-corasick = "1.1.3"
+# already pulled in transitively by aho-corasick; used directly for the single-byte-separator fast path
+memchr = "2.8.2"
 # necessary to loop over graphemes without storing the whole string into memory,
 # unicode-segmentation's iterators are literally allergic to being stored in a struct
 unicode_reader = "1.0.2"

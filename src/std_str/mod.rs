@@ -7,28 +7,67 @@ use unicode_reader::Graphemes;
 use mluau::prelude::*;
 use crate::prelude::*;
 
-fn split_graphemes(luau: &Lua, s_bytes: &[u8]) -> LuaResult<LuaTable> {
-    // we want to assume most graphemes are normal ascii but some could be multibyte, and we want to error on the side
-    // of not preallocating more than we need, so 3/4th of the byte len is a good compromise
-    let good_prealloc_guess = std::cmp::min(s_bytes.len() * 3 / 4, MAX_TABLE_SIZE); // exceeding max table size causes abort
-    let result = luau.create_table_with_capacity(good_prealloc_guess, 0)?;
-    // check if whole string is valid utf-8
-    if let Ok(s_str) = std::str::from_utf8(s_bytes) {
-        for grapheme in s_str.graphemes(true) {
-            result.raw_push(luau.create_string(grapheme)?)?;
-        }
+/// bytes-per-split divisor grows with sqrt(len) past `SPLIT_SCALE_THRESHOLD`, so the guess grows sublinearly
+/// rather than linearly with input size. this is for separator-style splits (comma, newline, etc): real-world
+/// large inputs (multi-gb files, etc) almost always have much longer average records than small snippets do,
+/// so assuming a constant split density at any scale wildly overestimates for huge inputs.
+///
+/// this only sizes an intermediate rust `Vec` now (see `build_table_from_slices`), not the luau table
+/// directly, so a bad guess just costs a `Vec` reallocation or two, never an abort - but a decent guess
+/// still avoids needless reallocation churn for the common case
+const SPLIT_SCALE_THRESHOLD: usize = 1 << 16; // 64 KiB
+const SPLIT_PREALLOC_CAP: usize = 1 << 20;
+
+fn separator_split_prealloc_guess(len: usize, base_divisor: f64) -> usize {
+    let divisor = if len <= SPLIT_SCALE_THRESHOLD {
+        base_divisor
     } else {
-        // uh oh we have a mix of graphemes and invalid utf8
-        for chunk in s_bytes.utf8_chunks() {
-            for grapheme in chunk.valid().graphemes(true) {
-                result.raw_push(luau.create_string(grapheme)?)?;
-            }
-            if !chunk.invalid().is_empty() {
-                result.raw_push(luau.create_string(chunk.invalid())?)?;
+        base_divisor * ((len / SPLIT_SCALE_THRESHOLD) as f64).sqrt()
+    };
+    let guess = (len as f64 / divisor) as usize;
+    guess.min(SPLIT_PREALLOC_CAP)
+}
+
+/// converts a list of byte slices into a luau array table via `create_sequence_from` (one lock,
+/// one stack guard for the whole batch) instead of pushing one-by-one; `&str` gets the fastest path,
+/// `BString` (non-utf-8 fallback) still beats the old per-item raw_push+create_string loop
+fn build_table_from_slices(luau: &Lua, slices: Vec<&[u8]>) -> LuaResult<LuaTable> {
+    let mut strs = Vec::with_capacity(slices.len());
+    for slice in &slices {
+        match std::str::from_utf8(slice) {
+            Ok(s) => strs.push(s),
+            Err(_) => {
+                let bstrings: Vec<mluau::BString> = slices.into_iter().map(mluau::BString::from).collect();
+                return luau.create_sequence_from(bstrings);
             }
         }
     }
-    Ok(result)
+    luau.create_sequence_from(strs)
+}
+
+fn split_graphemes(luau: &Lua, s_bytes: &[u8]) -> LuaResult<LuaTable> {
+    // check if whole string is valid utf-8
+    if let Ok(s_str) = std::str::from_utf8(s_bytes) {
+        // fast path: every grapheme is already a valid &str, so hand the whole vec straight to
+        // create_sequence_from instead of build_table_from_slices (which would just redundantly
+        // re-validate utf-8 we already know holds for every single grapheme)
+        let graphemes: Vec<&str> = s_str.graphemes(true).collect();
+        return luau.create_sequence_from(graphemes);
+    }
+
+    // uh oh we have a mix of graphemes and invalid utf8; this is rare/edge-case data, so we don't
+    // bother distinguishing valid/invalid chunks here - build_table_from_slices figures out that
+    // at least one chunk isn't valid utf-8 and falls back to the slow path on its own
+    let mut slices: Vec<&[u8]> = Vec::new();
+    for chunk in s_bytes.utf8_chunks() {
+        for grapheme in chunk.valid().graphemes(true) {
+            slices.push(grapheme.as_bytes());
+        }
+        if !chunk.invalid().is_empty() {
+            slices.push(chunk.invalid());
+        }
+    }
+    build_table_from_slices(luau, slices)
 }
 
 enum SplitMode {
@@ -45,6 +84,19 @@ fn split_separators(
     function_name: &'static str,
     mode: SplitMode
 ) -> LuaResult<LuaTable> {
+    let slices = split_separators_slices(s_bytes, multivalue, function_name, mode)?;
+    build_table_from_slices(luau, slices)
+}
+
+/// the byte-slice-producing half of `split_separators`, split out so callers that need to
+/// post-process the pieces (like str.splitlines' non-utf-8 fallback trimming each line) can do so
+/// before ever touching the luau vm, instead of patching table entries one-by-one afterwards
+fn split_separators_slices<'a>(
+    s_bytes: &'a [u8],
+    multivalue: LuaMultiValue,
+    function_name: &'static str,
+    mode: SplitMode,
+) -> LuaResult<Vec<&'a [u8]>> {
     let mut separators = Vec::new();
     for (index, value) in multivalue.iter().enumerate() {
         match value {
@@ -56,36 +108,57 @@ fn split_separators(
             }
         }
     }
+
     // if we're splitting by separators, it's probably a comma, \n, or something else
     // we likely won't have as many results as we would when splitting by graphemes, so we preallocate less
-    let good_prealloc_guess = s_bytes.len() / 6;
-    let result = create_table_with_capacity(luau, good_prealloc_guess, 0)?;
-    let ac =  match AhoCorasick::new(separators) {
+    let good_prealloc_guess = separator_split_prealloc_guess(s_bytes.len(), 6.0);
+
+    // fast path: a single single-byte separator (by far the most common case: "\n", ",", etc)
+    // needs no automaton at all - memchr's vectorized byte scan is dramatically faster than even
+    // aho-corasick's DFA for this (measured ~7x on a 175mb/5m-line input)
+    if let [sep] = separators.as_slice()
+        && let [sep_byte] = sep.as_slice()
+    {
+        let matches = memchr::memchr_iter(*sep_byte, s_bytes).map(|i| (i, i + 1));
+        return Ok(collect_slices_from_matches(s_bytes, matches, &mode, good_prealloc_guess));
+    }
+
+    let ac = match AhoCorasick::new(separators) {
         Ok(ac) => ac,
         Err(err) => {
             return wrap_err!("{}: can't initialize AhoCorasick matcher (with separators) due to err: {}", function_name, err);
         }
     };
-
-    let ac_iterator =  match ac.try_find_iter(s_bytes) {
+    let ac_iterator = match ac.try_find_iter(s_bytes) {
         Ok(iterator) => iterator,
         Err(err) => {
             return wrap_err!("{}: can't generate AhoCorasick iterator due to err: {}", function_name, err);
         }
     };
+    let matches = ac_iterator.map(|mat| (mat.start(), mat.end()));
+    Ok(collect_slices_from_matches(s_bytes, matches, &mode, good_prealloc_guess))
+}
+
+/// shared by both the memchr fast path and the general aho-corasick path: turns a stream of
+/// (match_start, match_end) byte offsets into the actual slices `str.split`/etc should return,
+/// according to `mode`
+fn collect_slices_from_matches<'a>(
+    s_bytes: &'a [u8],
+    matches: impl Iterator<Item = (usize, usize)>,
+    mode: &SplitMode,
+    good_prealloc_guess: usize,
+) -> Vec<&'a [u8]> {
+    let mut slices: Vec<&[u8]> = Vec::with_capacity(good_prealloc_guess);
 
     let mut prev_index = 0;
     let mut last_match_end = None;
-    for mat in ac_iterator {
-        let mat_start = mat.start();
-        let mat_end = mat.end();
-
+    for (mat_start, mat_end) in matches {
         match mode {
             SplitMode::Default => {
                 if mat_start >= prev_index {
                     let slice = &s_bytes[prev_index..mat_start];
                     if !slice.is_empty() {
-                        result.raw_push(luau.create_string(slice)?)?;
+                        slices.push(slice);
                     }
                 }
                 prev_index = mat_end;
@@ -94,18 +167,16 @@ fn split_separators(
                 if mat_start >= prev_index {
                     let slice = &s_bytes[prev_index..mat_start];
                     if !slice.is_empty() {
-                        result.raw_push(luau.create_string(slice)?)?;
+                        slices.push(slice);
                     }
                 }
-                let sep = &s_bytes[mat_start..mat_end];
-                result.raw_push(luau.create_string(sep)?)?;
+                slices.push(&s_bytes[mat_start..mat_end]);
                 prev_index = mat_end;
             }
             SplitMode::Before => {
                 if mat_start > prev_index {
                     // push the chunk before start of the separator
-                    let chunk = &s_bytes[prev_index..mat_start];
-                    result.raw_push(luau.create_string(chunk)?)?;
+                    slices.push(&s_bytes[prev_index..mat_start]);
                 }
 
                 // start subsequent chunk at the separator
@@ -115,20 +186,20 @@ fn split_separators(
                 if mat_start >= prev_index {
                     let slice = &s_bytes[prev_index..mat_end]; // include separator
                     if !slice.is_empty() {
-                        result.raw_push(luau.create_string(slice)?)?;
+                        slices.push(slice);
                     }
                 }
                 prev_index = mat_end;
             }
         }
 
-        last_match_end = Some((mat.start(), mat.end()));
+        last_match_end = Some((mat_start, mat_end));
     }
 
     let s_len = s_bytes.len();
     if prev_index < s_len {
         // final element excluded (between last match and end of string) so let's push it manually
-        result.raw_push(luau.create_string(&s_bytes[prev_index..s_len])?)?;
+        slices.push(&s_bytes[prev_index..s_len]);
     }
 
     // if mode is SplitMode::Before and the string ends with a matched separator,
@@ -137,11 +208,10 @@ fn split_separators(
         && let Some((start, end)) = last_match_end
         && end == s_len
     {
-        let sep = &s_bytes[start..end];
-        result.raw_push(luau.create_string(sep)?)?;
+        slices.push(&s_bytes[start..end]);
     }
 
-    Ok(result)
+    slices
 }
 
 
@@ -237,6 +307,111 @@ fn str_splitafter(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
         split_separators(luau, &s_bytes, multivalue, function_name, SplitMode::After)?
     };
     Ok(LuaValue::Table(result))
+}
+
+fn is_trailing_trim_byte(b: u8) -> bool {
+    matches!(b, b' ' | b'\t' | 0x0B | 0x0C | b'\r')
+}
+
+/// splits `s` into lines the same way `str.split(s, "\n", "\r\n")` followed by a per-line trimback
+/// would: splits on '\n', treating an immediately-preceding '\r' as part of the line terminator
+/// (matching how aho-corasick's leftmost-first semantics already resolve "\r\n" vs "\n" when both
+/// are passed to str.split - "\r\n" always starts one byte earlier, so it always wins when present,
+/// regardless of argument order). optionally trims further trailing whitespace, and - importantly -
+/// keeps lines that trim down to "" as empty-string entries, while excluding lines that were already
+/// empty before any trimming (e.g. from consecutive "\n"s), matching the original implementation
+fn splitlines_str(s: &str, trim_trailing_whitespace: bool) -> Vec<&str> {
+    let bytes = s.as_bytes();
+    let len = bytes.len();
+    let mut lines = Vec::with_capacity(len / 20 + 1);
+    let mut start = 0usize;
+
+    loop {
+        let nl = memchr::memchr(b'\n', &bytes[start..]).map(|i| start + i);
+        let mut raw_end = nl.unwrap_or(len);
+
+        // a "\r" immediately before this "\n" is part of the line terminator, not the line itself,
+        // regardless of `trim_trailing_whitespace`
+        if nl.is_some() && raw_end > start && bytes[raw_end - 1] == b'\r' {
+            raw_end -= 1;
+        }
+
+        if raw_end > start {
+            let mut end = raw_end;
+            if trim_trailing_whitespace {
+                while end > start && is_trailing_trim_byte(bytes[end - 1]) {
+                    end -= 1;
+                }
+            }
+            // s[start..end] is safe (not unsafe from_utf8_unchecked) because both start and end
+            // always land on a byte that's either 0, len, or immediately after '\n'/a trimmed
+            // single-byte ascii whitespace char - never mid-codepoint - and rust's str indexing
+            // cheaply asserts that (a boundary check, not a full utf-8 content re-scan) rather
+            // than silently doing the wrong thing if this reasoning is ever somehow wrong
+            lines.push(&s[start..end]);
+        }
+
+        match nl {
+            Some(i) => start = i + 1,
+            None => break,
+        }
+    }
+
+    lines
+}
+
+fn str_splitlines(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    let function_name = "str.splitlines(s: string, trim_trailing_whitespace: boolean?)";
+    let s_bytes = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => {
+            s.as_bytes().to_owned()
+        },
+        Some(other) => {
+            return wrap_err!("{} expected s to be a string, got: {:?}", function_name, other);
+        }
+        None => {
+            return wrap_err!("{} expected a string s, but was incorrectly called with zero arguments", function_name);
+        }
+    };
+
+    let trim_trailing_whitespace = match multivalue.pop_front() {
+        Some(LuaValue::Boolean(b)) => b,
+        Some(LuaNil) | None => true,
+        Some(other) => {
+            return wrap_err!("{} expected trim_trailing_whitespace to be a boolean or nil, got: {:?}", function_name, other);
+        }
+    };
+
+    let result = match std::str::from_utf8(&s_bytes) {
+        Ok(s_str) => {
+            let lines = splitlines_str(s_str, trim_trailing_whitespace);
+            luau.create_sequence_from(lines)?
+        },
+        Err(_) => {
+            // rare/edge-case: not valid utf-8. fall back to the general (slower) byte-oriented
+            // path: split on "\n"/"\r\n" via aho-corasick, trim each piece, then build the table once
+            let multivalue = LuaMultiValue::from_vec(vec![
+                LuaValue::String(luau.create_string("\n")?),
+                LuaValue::String(luau.create_string("\r\n")?),
+            ]);
+            let mut slices = split_separators_slices(&s_bytes, multivalue, function_name, SplitMode::Default)?;
+            if trim_trailing_whitespace {
+                for slice in &mut slices {
+                    *slice = trim_trailing_bytes(slice);
+                }
+            }
+            build_table_from_slices(luau, slices)?
+        }
+    };
+    Ok(LuaValue::Table(result))
+}
+
+fn trim_trailing_bytes(bytes: &[u8]) -> &[u8] {
+    let mut end = bytes.len();
+    while end > 0 && is_trailing_trim_byte(bytes[end - 1]) {
+        end -= 1;
+    }
+    &bytes[..end]
 }
 
 type GraphemePair = Option<(usize, String)>;
@@ -395,6 +570,21 @@ fn detect_encoding(bytes: &[u8]) -> Encoding {
     looks_like_bare_utf16(bytes).unwrap_or(Encoding::Binary)
 }
 
+/// detects `bytes`' encoding and returns it as utf-8, only allocating/converting when `bytes` isn't
+/// already plain utf-8; used by things like json.readfile so reading a utf-16 (bom'd or not) file just works
+pub(crate) fn bytes_to_utf8<'a>(bytes: &'a [u8], function_name: &'static str) -> LuaResult<std::borrow::Cow<'a, str>> {
+    match detect_encoding(bytes) {
+        Encoding::Utf8 => match std::str::from_utf8(bytes) {
+            Ok(s) => Ok(std::borrow::Cow::Borrowed(s)),
+            Err(_) => unreachable!("detect_encoding already validated this is utf-8"),
+        },
+        Encoding::Binary => {
+            wrap_err!("{}: content doesn't look like valid text in any supported encoding (utf-8, utf-16 with or without a bom)", function_name)
+        },
+        from => Ok(std::borrow::Cow::Owned(decode_bytes(bytes, from, function_name)?)),
+    }
+}
+
 fn str_encoding(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "str.encoding(s: string | buffer)";
     let encoding = match &value {
@@ -490,6 +680,7 @@ pub fn create_internal(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function_and_signature("splitaround", str_splitaround, signatures::STD_STR_SPLITAROUND)?
         .with_function_and_signature("splitbefore", str_splitbefore, signatures::STD_STR_SPLITBEFORE)?
         .with_function_and_signature("splitafter", str_splitafter, signatures::STD_STR_SPLITAFTER)?
+        .with_function_and_signature("splitlines", str_splitlines, signatures::STD_STR_SPLITLINES)?
         .with_function_and_signature("graphemes", str_graphemes, signatures::STD_STR_GRAPHEMES)?
         .with_function_and_signature("encoding", str_encoding, signatures::STD_STR_ENCODING)?
         .with_function_and_signature("convert", str_convert, signatures::STD_STR_CONVERT)?

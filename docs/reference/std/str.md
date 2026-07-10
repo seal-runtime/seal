@@ -5,13 +5,23 @@
 
 `local str = require("@std/str")`
 
-Features ergonomic methods like `str.startwith`, `str.trimfront/trimback`, etc.
+*seal*'s string extension library. This adds back functions that usually are
+methods or just builtins in other languages, including:
 
-This library features utf-8-aware string handling, including easy access to splitting utf-8 strings,
-iterating over the graphemes of a string, etc.
+- ergonomic methods such as `str.startswith`, `str.trimfront/trimback`, etc.,
+- utf-8 aware string handling for visible string length/width/padding,
+- splitting and iterating over unicode graphemes,
+- encoding and changing the encoding of strings from utf-16 to utf-8 and back,
+- string escaping and unescaping,
+- and more.
 
-Unlike many seal standard libraries, inputs to `str` library functions don't necessarily have
-to be valid utf-8 encoded strings.
+Unlike many seal standard libraries, inputs to `str` library functions don't
+necessarily have to be valid utf-8 encoded strings; many operate just fine on
+arbitrary bytes or even buffers.
+
+Some graphemes-aware functions, such as `str.split` in graphemes mode and `str.graphemes`,
+will only operate properly on valid utf-8 without BOM (use `str.convert` to normalize your input),
+but should not error out when given arbitrary bytes.
  check if a string starts with `prefix`
 
 ---
@@ -68,9 +78,11 @@ function str.trimfront(s: string, ...: string): string
 
 </h4>
 
- trims any of the provided strings/characters from the front of the string `s`
+ trims any of the provided strings/characters/patterns from the front of the string `s`
+ or trims whitespace if no patterns are specified.
 
- if no strings provided as ..., `str.trimfront` will trim whitespace (" ", "\n", etc.)
+ Patterns are Luau string patterns passed to `string.gsub`, make sure to escape with
+ `%` if needed.
 
 ---
 
@@ -85,8 +97,10 @@ function str.trimback(s: string, ...: string): string
 </h4>
 
  trims any of the provided strings/characters/patterns from the back of the string `s`
+ or trims whitespace if no patterns are specified.
 
- if no strings provided as ..., `str.trimback` will trim whitespace (" ", "\n", etc.)
+ Patterns are Luau string patterns passed to `string.gsub`, make sure to escape with
+ `%` if needed.
 
 ---
 
@@ -100,9 +114,11 @@ function str.trim(s: string, ...: string): string
 
 </h4>
 
- trims one or many strings/characters/patterns from both front and back of string `s`
+ trims any of the provided strings/characters/patterns from the front and back
+ of the string `s` or trims whitespace if no patterns are specified.
 
- if no strings provided to `...`, then default is whitespace
+ Patterns are Luau string patterns passed to `string.gsub`, make sure to escape with
+ `%` if needed.
 
 ---
 

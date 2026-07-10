@@ -8,6 +8,14 @@
 
     This library features utf-8-aware string handling, including easy access to splitting utf-8 strings,
     iterating over the graphemes of a string, etc.
+
+    Unlike many seal standard libraries, inputs to `str` library functions don't necessarily have
+    to be valid utf-8 encoded strings; functions like `str.split`/`str.graphemes` won't error on invalid
+    utf-8, but grapheme-aware results only make sense for utf-8 text.
+    
+    Other encodings (utf-16, a utf-8 bom, etc.) won't cause str.split or str.graphemes to
+    to error out, but they won't produce meaningful results either — use
+    `str.convert` to normalize to plain utf-8 first if you're not sure what encoding you have.
 ]=]
 local str = {}
 
@@ -113,19 +121,6 @@ function str.unindent(s: string, whitespace_type: "Tabs" | "Spaces", count: numb
     end
 
     return table.concat(result, sep)
-end
-
---- splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
---- without an extra empty string, etc.
-function str.splitlines(s: string, trim_trailing_whitespace: boolean?): { string }
-    trim_trailing_whitespace = trim_trailing_whitespace ~= false -- handle true and nil
-    local splitted = str.split(s, "\n", "\r\n")
-    if trim_trailing_whitespace then
-        for i, sp in splitted do
-            splitted[i] = str.trimback(sp)
-        end
-    end
-    return splitted
 end
 
 --- returns the utf-8 length if `s` is utf-8 or the regular string length #
@@ -285,6 +280,10 @@ str.splitaround = str_internal.splitaround :: (s: string, separators: string, ..
 str.splitbefore = str_internal.splitbefore :: (s: string, separators: string, ...string) -> { string }
 
 str.splitafter = str_internal.splitafter :: (s: string, separators: string, ...string) -> { string }
+
+--- splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
+--- without an extra empty string, etc.
+str.splitlines = str_internal.splitlines :: (s: string, trim_trailing_whitespace: boolean?) -> { string }
 
 --[=[
     Iterate over the human-readable characters (graphemes) of a string

@@ -1,11 +1,20 @@
 --[=[
-    Features ergonomic methods like `str.startwith`, `str.trimfront/trimback`, etc.
+    *seal*'s string extension library. This adds back functions that usually are
+    methods or just builtins in other languages, including:
+    - ergonomic methods such as `str.startswith`, `str.trimfront/trimback`, etc., 
+    - utf-8 aware string handling for visible string length/width/padding,
+    - splitting and iterating over unicode graphemes, 
+    - encoding and changing the encoding of strings from utf-16 to utf-8 and back,
+    - string escaping and unescaping,
+    - and more.
 
-    This library features utf-8-aware string handling, including easy access to splitting utf-8 strings,
-    iterating over the graphemes of a string, etc.
+    Unlike many seal standard libraries, inputs to `str` library functions don't
+    necessarily have to be valid utf-8 encoded strings; many operate just fine on
+    arbitrary bytes or even buffers.
 
-    Unlike many seal standard libraries, inputs to `str` library functions don't necessarily have
-    to be valid utf-8 encoded strings.
+    Some graphemes-aware functions, such as `str.split` in graphemes mode and `str.graphemes`, 
+    will only operate properly on valid utf-8 without BOM (use `str.convert` to normalize your input), 
+    but should not error out when given arbitrary bytes.
 ]=]
 local str = {}
 
@@ -40,9 +49,11 @@ function str.ends(s: string, ...: string): boolean
     return false
 end
 
---- trims any of the provided strings/characters from the front of the string `s`
+--- trims any of the provided strings/characters/patterns from the front of the string `s` 
+--- or trims whitespace if no patterns are specified.
 ---
---- if no strings provided as ..., `str.trimfront` will trim whitespace (" ", "\n", etc.)
+--- Patterns are Luau string patterns passed to `string.gsub`, make sure to escape with
+--- `%` if needed.
 function str.trimfront(s: string, ...: string): string
     -- local patterns = {...}
     -- if #patterns == 0 then
@@ -59,9 +70,12 @@ function str.trimfront(s: string, ...: string): string
     return nil :: any
 end
 
---- trims any of the provided strings/characters/patterns from the back of the string `s`
+
+--- trims any of the provided strings/characters/patterns from the back of the string `s` 
+--- or trims whitespace if no patterns are specified.
 ---
---- if no strings provided as ..., `str.trimback` will trim whitespace (" ", "\n", etc.)
+--- Patterns are Luau string patterns passed to `string.gsub`, make sure to escape with
+--- `%` if needed.
 function str.trimback(s: string, ...: string): string
     -- local patterns = {...}
     -- if #patterns == 0 then
@@ -78,9 +92,11 @@ function str.trimback(s: string, ...: string): string
     return nil :: any
 end
 
---- trims one or many strings/characters/patterns from both front and back of string `s`
+--- trims any of the provided strings/characters/patterns from the front and back
+--- of the string `s` or trims whitespace if no patterns are specified.
 ---
---- if no strings provided to `...`, then default is whitespace
+--- Patterns are Luau string patterns passed to `string.gsub`, make sure to escape with
+--- `%` if needed.
 function str.trim(s: string, ...: string): string
     -- return str.trimback(str.trimfront(s, ...), ...)
     return nil :: any
@@ -89,15 +105,6 @@ end
 --- splits `s` by newlines, correctly handling carriage returns, trimming trailing whitespace,
 --- without an extra empty string, etc.
 function str.splitlines(s: string, trim_trailing_whitespace: boolean?): { string }
-    -- trim_trailing_whitespace = trim_trailing_whitespace ~= false -- handle true and nil
-    -- local lines = {}
-    -- for line in string.gmatch(s, "[^\r\n]+") do
-    --     if trim_trailing_whitespace then
-    --         line = string.gsub(line, "%s*$", "")
-    --     end
-    --     table.insert(lines, line)
-    -- end
-    -- return lines
     return nil :: any
 end
 

@@ -92,14 +92,14 @@ impl LuaUserData for WebsocketMessage {
         methods.add_method_mut("try_json", |luau, it, _: LuaValue| {
             let function_name = "WebSocketMessage:expect_json()";
             let text = match &it.inner {
-                Message::Text(text) => text.to_string(),
+                Message::Text(text) => text.as_str(),
                 other => {
                     let error_message = format!("{}: expected Message::Text, got: {:?}", function_name, other);
                     return WrappedError::with_traceback(error_message, luau)?.get_userdata(luau);
                 }
             };
 
-            let decoded = match crate::std_json::json_decode(luau, text) {
+            let decoded = match crate::std_json::decode(luau, text) {
                 Ok(decoded) => decoded,
                 Err(err) => {
                     let error_message = format!("{}: decoding error: {}", function_name, err);
@@ -112,13 +112,13 @@ impl LuaUserData for WebsocketMessage {
         methods.add_method_mut("expect_json", |luau, it, _: LuaValue| {
             let function_name = "WebSocketMessage:expect_json()";
             let text = match &it.inner {
-                Message::Text(text) => text.to_string(),
+                Message::Text(text) => text.as_str(),
                 other => {
                     return wrap_err!("{}: message is not Message::Text (got: {:?})", function_name, other);
                 }
             };
 
-            let decoded = match crate::std_json::json_decode(luau, text) {
+            let decoded = match crate::std_json::decode(luau, text) {
                 Ok(decoded) => decoded,
                 Err(err) => {
                     return wrap_err!("{}: decode error: {}", function_name, err);
