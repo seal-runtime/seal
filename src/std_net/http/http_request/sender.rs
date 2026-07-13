@@ -23,6 +23,9 @@ macro_rules! configure_config_builder {
                 .tls_config(
                     ureq::tls::TlsConfig::builder()
                         .provider(ureq::tls::TlsProvider::NativeTls)
+                        // use the OS trust store (schannel/Windows, system OpenSSL/Linux) instead of
+                        // TlsConfig's default RootCerts::WebPki, which disables platform roots entirely
+                        .root_certs(ureq::tls::RootCerts::PlatformVerifier)
                         .build()
                 );
 
