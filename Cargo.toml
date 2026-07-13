@@ -18,7 +18,7 @@ regex = "1.11.1"
 # needed for seal setup (really useful!)
 include_dir = { version = "0.7.4" }
 # only decent non-tokio non-async simple http request lib
-ureq = { version = "3.0.11", features = ["json", "rustls", "gzip"] }
+ureq = { version = "3.0.11", default-features = false, features = ["json", "native-tls", "gzip"] }
 # faster than std::mpsc, needed for @std/thread
 crossbeam-channel = { version = "0.5.15" }
 # serde_json blows up when reading jsonc so we use lenient instead
