@@ -19,7 +19,15 @@ macro_rules! configure_config_builder {
         {
             let mut configuring = $builder
                 .config()
-                .http_status_as_error(false);
+                .http_status_as_error(false)
+                .tls_config(
+                    ureq::tls::TlsConfig::builder()
+                        .provider(ureq::tls::TlsProvider::NativeTls)
+                        // use the OS trust store (schannel/Windows, system OpenSSL/Linux) instead of
+                        // TlsConfig's default RootCerts::WebPki, which disables platform roots entirely
+                        .root_certs(ureq::tls::RootCerts::PlatformVerifier)
+                        .build()
+                );
 
             if let Some(max_redirects) = $max_redirects {
                 configuring = configuring.max_redirects(max_redirects);
