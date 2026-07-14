@@ -22,7 +22,7 @@ export type ArchiveOptions = {
 <h4>
 
 ```luau
-  max_file_size: FileSize,
+  max_file_size: FileSize?,
 ```
 
 </h4>
@@ -34,7 +34,31 @@ export type ArchiveOptions = {
 <h4>
 
 ```luau
-  max_total_size: FileSize,
+  max_total_size: FileSize?,
+```
+
+</h4>
+
+---
+
+### ArchiveOptions.allow_symlinks
+
+<h4>
+
+```luau
+  allow_symlinks: boolean?,
+```
+
+</h4>
+
+---
+
+### ArchiveOptions.allow_unsafe_path_traversals
+
+<h4>
+
+```luau
+  allow_unsafe_path_traversals: boolean?,
 ```
 
 </h4>

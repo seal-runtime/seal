@@ -1,13 +1,19 @@
 use crate::prelude::*;
 use mluau::prelude::*;
 
-const KILOBYTE: u64 = 1_024;
-const MEGABYTE: u64 = 1_024 * KILOBYTE;
-const GIGABYTE: u64 = 1_024 * MEGABYTE;
-const TERABYTE: u64 = 1_024 * GIGABYTE;
+pub const KILOBYTE: u64 = 1_024;
+pub const MEGABYTE: u64 = 1_024 * KILOBYTE;
+pub const GIGABYTE: u64 = 1_024 * MEGABYTE;
+pub const TERABYTE: u64 = 1_024 * GIGABYTE;
 
+#[derive(Clone)]
 pub struct FileSize {
     inner_bytes: u64,
+}
+impl std::fmt::Display for FileSize {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.display())
+    }
 }
 impl FileSize {
     pub fn from_bytes(count: u64) -> Self {
@@ -155,6 +161,12 @@ impl LuaUserData for FileSize {
         methods.add_method("as_terabytes", |_luau, this, _: ()| {
             Ok(LuaValue::Number(this.inner_bytes as f64 / TERABYTE as f64))
         });
+    }
+}
+
+impl Borrowable for FileSize {
+    fn type_name() -> &'static str {
+        "FileSize"
     }
 }
 

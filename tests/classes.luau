@@ -1,6 +1,4 @@
-local fs = require("@std/fs")
 local http = require("@std/net/http")
-local str = require("@std/str")
 
 local m = require("./exportable")
 

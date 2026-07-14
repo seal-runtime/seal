@@ -1,4 +1,4 @@
-class MidnightFrost
+export class MidnightFrost
     public cool: boolean
     function new()
         return MidnightFrost { cool = true }

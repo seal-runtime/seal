@@ -12,19 +12,31 @@
 <h4>
 
 ```luau
-function zip.extract(path: string, destination: string, options: ArchiveOptions) -> (),
+function zip.extract(path: string, destination: string, options: ArchiveOptions?) -> (),
 ```
 
 </h4>
 
 ---
 
-### zip.read
+### zip.readfile
 
 <h4>
 
 ```luau
-function zip.read(path: string, options: ArchiveOptions) -> Archive,
+function zip.readfile(path: string, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### zip.writefile
+
+<h4>
+
+```luau
+function zip.writefile(path: string, archive: Archive, options: ArchiveOptions?) -> (),
 ```
 
 </h4>
@@ -36,7 +48,7 @@ function zip.read(path: string, options: ArchiveOptions) -> Archive,
 <h4>
 
 ```luau
-function zip.load(bytes: buffer, options: ArchiveOptions) -> Archive,
+function zip.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
 ```
 
 </h4>

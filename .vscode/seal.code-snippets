@@ -57,5 +57,10 @@
     "scope": "rust",
     "prefix": "rerr",
     "body": "return wrap_err!(\"{}: $0\", function_name);"
+  },
+  "function name": {
+    "scope": "rust",
+    "prefix": "fnnamep",
+    "body": "function_name: &'static str"
   }
 }

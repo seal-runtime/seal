@@ -1,9 +1,12 @@
 local _types = require("@self/_types")
 
 export type zip = {
-    extract: (path: string, destination: string, options: ArchiveOptions) -> (),
-    read: (path: string, options: ArchiveOptions) -> Archive,
-    load: (bytes: buffer, options: ArchiveOptions) -> Archive,
+    extract: (path: string, destination: string, options: ArchiveOptions?) -> (),
+    readfile: (path: string, options: ArchiveOptions?) -> Archive,
+    writefile: (path: string, archive: Archive, options: ArchiveOptions?) -> (),
+    load: (bytes: buffer, options: ArchiveOptions?) -> Archive,
 }
 
 export type ArchiveOptions = _types.ArchiveOptions
+
+return {} :: zip

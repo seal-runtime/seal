@@ -99,38 +99,51 @@ declare extern type interrupt with
     code: "CtrlC" | "CtrlD"
 end
 
-declare ArchiveEntry: DirectoryInArchive | FileInArchive
+type ArchiveFile = {
+    type: "File",
+    path: string,
+    content: string,
+}
+type ArchiveDirectory = {
+    type: "Directory",
+    path: string,
+}
+type ArchiveSymlink = {
+    type: "Symlink",
+    path: string,
+    target: string,
+}
 
-declare extern type DirectoryInArchive with
-    path: string
-    function list(self): { string }
-    function entries(self): { any }
-    function get(self, name: string): any?
-    function extract(self, path: string): ()
-end
+type ArchiveEntry = 
+    | ArchiveFile
+    | ArchiveDirectory
+    | ArchiveSymlink
 
-declare extern type FileInArchive with
-    path: string
-    function size(self): FileSize
-    function read(self): string
-    function readbytes(self, file_offset: number?, count: number?, target_buffer: buffer?, buffer_offset: number?): buffer
-    function replace(self, new: string | buffer): ()
-    --- Writes the file to disk.
-    function write(self, path: string): ()
-end
+type ArchiveFormat =
+    | "Zip"
+    | "Tar"
+    | "TarGz"
+    | "TarBz2"
+    | "TarXz"
+    | "TarZst"
+    | "TarLz4"
+    | "7z"
 
 declare extern type Archive with
-    format:
-        | "zip"
-        | "tar"
-        | "tar.gz"
-        | "tar.bz2"
-        | "tar.xz"
-        | "tar.zst"
-        | "tar.lz4"
-        | "7z"
-    function entries(self): { any }
-    
+    function entries(self): { ArchiveEntry }
+    function paths(self): { string }
+    --[=[
+        If `path_or_index` is a string, gets the *first* entry with that path, or `nil` if the entry
+        doesn't exist.
+
+        If `path_or_index` is a number, gets the entry at the specified index in the archive, or `nil`
+        if an entry doesn't exist at that index.
+    ]=]
+    function read(self, path_or_index: string | number): string?
+    function write(self, index: number, entry: ArchiveEntry)
+    function add(self, entry: ArchiveEntry, ...: ArchiveEntry)
+    function remove(self, index: number)
+    function serialize(self, format: ArchiveFormat): buffer
 end
 
 --[=[

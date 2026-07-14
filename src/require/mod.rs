@@ -101,6 +101,9 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std/net/request" => ok_function_multi_returns_value(std_net::http::http_request, luau),
         "@std/net/websocket" => ok_table(std_net::websocket::create(luau)),
 
+        "@std/archive" => ok_table(std_archive::create(luau)),
+        "@std/archive/zip" => ok_table(std_archive::zip::create(luau)),
+
         "@std/crypt" => ok_table(std_crypt::create(luau)),
         "@std/crypt/aes" => ok_table(std_crypt::create_aes(luau)),
         "@std/crypt/rsa" => ok_table(std_crypt::create_rsa(luau)),

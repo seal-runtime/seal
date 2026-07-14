@@ -60,6 +60,7 @@ mod sealconfig;
 mod setup;
 mod compile;
 mod std_args;
+mod std_archive;
 
 use err::display_error_and_exit;
 use sealconfig::SealConfig;

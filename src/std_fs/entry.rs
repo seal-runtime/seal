@@ -48,10 +48,15 @@ pub fn wrap_io_read_errors<P: AsRef<Path>>(err: std::io::Error, function_name: &
 pub fn wrap_io_read_errors_empty<P: AsRef<Path>>(err: std::io::Error, function_name: &str, path: P) -> LuaEmptyResult {
     let path = path.as_ref().to_string_lossy(); // make sure it implements Display
     match err.kind() {
-        io::ErrorKind::NotFound =>
-            wrap_err!("{}: File/directory not found: '{}'", function_name, path),
-        io::ErrorKind::PermissionDenied =>
-            wrap_err!("{}: Permission denied: '{}'", function_name, path),
+        io::ErrorKind::NotFound => {
+            wrap_err!("{}: File/directory not found: '{}'", function_name, path)
+        },
+        io::ErrorKind::PermissionDenied => {
+            wrap_err!("{}: Permission denied: '{}'", function_name, path)
+        },
+        io::ErrorKind::IsADirectory => {
+            wrap_err!("{}: Expected a file but got a directory: {}", function_name, path)
+        }
         _other => {
             wrap_err!("{}: Error on path: '{}': {}", function_name, path, err)
         }

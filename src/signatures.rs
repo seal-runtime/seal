@@ -6,6 +6,12 @@
 
 #![allow(dead_code)]
 
+// archive.zip
+pub const STD_ARCHIVE_ZIP_EXTRACT: &std::ffi::CStr = c"archive.zip.extract(path: string, destination: string, options: ArchiveOptions?)";
+pub const STD_ARCHIVE_ZIP_LOAD: &std::ffi::CStr = c"archive.zip.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_ZIP_READFILE: &std::ffi::CStr = c"archive.zip.readfile(path: string, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_ZIP_WRITEFILE: &std::ffi::CStr = c"archive.zip.writefile(path: string, archive: Archive, options: ArchiveOptions?)";
+
 // args
 pub const STD_ARGS_COMMAND: &std::ffi::CStr = c"args.command(name: string, help: string) -> Command";
 pub const STD_ARGS_DEFAULT: &std::ffi::CStr = c"args.default() -> Command";
