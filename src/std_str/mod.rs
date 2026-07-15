@@ -367,8 +367,7 @@ fn str_splitfront(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let finder = memchr::memmem::Finder::new(&sep_bytes);
     let mut slices: Vec<&[u8]> = Vec::new();
     let mut prev = 0usize;
-    let mut splits_done = 0usize;
-    for start in finder.find_iter(&s_bytes) {
+    for (splits_done, start) in finder.find_iter(&s_bytes).enumerate() {
         if splits_done >= max {
             break;
         }
@@ -377,7 +376,6 @@ fn str_splitfront(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
             slices.push(slice);
         }
         prev = start + sep_bytes.len();
-        splits_done += 1;
     }
     let remainder = &s_bytes[prev..];
     if !remainder.is_empty() {
