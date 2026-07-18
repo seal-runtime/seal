@@ -48,6 +48,12 @@ impl LuaUserData for WrappedError {
     }
 }
 
+impl Borrowable for WrappedError {
+    fn type_name() -> &'static str {
+        "error"
+    }
+}
+
 pub fn ecall(luau: &Lua, f: LuaFunction) -> LuaValueResult {
     // Propagate the inner function's debug name to the wrapper so it shows in
     // seal's print/pp output and Luau stack traces. Leaking is intentional —

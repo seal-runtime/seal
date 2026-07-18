@@ -5,12 +5,14 @@
 
 `local archive = require("@std/archive")`
 
-## `export type` archive
+---
+
+### archive.create
 
 <h4>
 
 ```luau
-export type archive = {
+function archive.create(cats: string) -> Archive
 ```
 
 </h4>

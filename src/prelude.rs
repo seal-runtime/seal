@@ -276,7 +276,6 @@ pub fn create_table_with_capacity(luau: &Lua, n_array: usize, n_records: usize) 
     unsafe { luau.create_table_with_capacity(n_array, n_records) }
 }
 
-
 pub struct UserDataTypeName {
     inner: Option<String>
 }
@@ -298,7 +297,7 @@ pub trait Borrowable {
 
     /// Borrows of Self type or gives type name for error message if it can't
     fn borrowed(ud: LuaAnyUserData) -> Result<LuaUserDataRef<Self>, UserDataTypeName>
-        where Self: LuaUserData + Clone
+        where Self: LuaUserData
     {
         if let Ok(got_it) = ud.borrow::<Self>() {
             Ok(got_it)
