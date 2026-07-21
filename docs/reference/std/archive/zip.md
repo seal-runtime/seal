@@ -55,9 +55,27 @@ function zip.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
 
 ---
 
+### zip.create
+
+<h4>
+
+```luau
+function zip.create() -> Archive,
+```
+
+</h4>
+
+---
+
 ## `export type` ArchiveOptions
 
 See [ArchiveOptions in @std/archive/zip/_types](/docs/reference/std/archive/zip/_types.md#export-type-archiveoptions)
+
+---
+
+## `export type` ArchiveFormat
+
+See [ArchiveFormat in @std/archive/zip/_types](/docs/reference/std/archive/zip/_types.md#export-type-archiveformat)
 
 ---
 

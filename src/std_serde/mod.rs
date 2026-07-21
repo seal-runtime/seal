@@ -8,17 +8,22 @@ pub mod yaml;
 pub mod lz4;
 pub mod zstd;
 pub mod gzip;
+pub mod xz;
+pub mod bz2;
 pub mod zlib;
 pub mod url;
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_value("base64", base64::create(luau)?)?
+        .with_value("bz2", bz2::create(luau)?)?
+        .with_value("gzip", gzip::create(luau)?)?
         .with_value("json", crate::std_json::create(luau)?)?
         .with_value("hex", hex::create(luau)?)?
         .with_value("lz4", lz4::create(luau)?)?
         .with_value("zstd", zstd::create(luau)?)?
         .with_value("zlib", zlib::create(luau)?)?
         .with_value("url", url::create(luau)?)?
+        .with_value("xz", xz::create(luau)?)?
         .build_readonly()
 }

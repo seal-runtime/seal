@@ -1,4 +1,4 @@
-use archive::ArchiveEntry;
+use archive::{ArchiveEntry, ArchiveFormat};
 use mluau::prelude::*;
 use crate::prelude::*;
 
@@ -76,4 +76,63 @@ pub(super) fn from_value(value: &LuaValue) -> LuaResult<ArchiveEntry> {
     };
 
     Ok(entry)
+}
+
+pub(super) fn to_table(entry: &ArchiveEntry, luau: &Lua) -> LuaResult<LuaTable> {
+    match entry {
+        ArchiveEntry::Directory { path } => {
+            TableBuilder::create(luau)?
+                .with_value("type", "Directory")?
+                .with_value("path", path.to_owned())?
+                .build()
+        },
+        ArchiveEntry::File { path, data } => {
+            TableBuilder::create(luau)?
+                .with_value("type", "File")?
+                .with_value("path", path.to_owned())?
+                .with_value("content", ok_string(data, luau)?)?
+                .build()
+        },
+        ArchiveEntry::Symlink { path, target } => {
+            TableBuilder::create(luau)?
+                .with_value("type", "Symlink")?
+                .with_value("path", path.to_owned())?
+                .with_value("target", target.to_owned())?
+                .build()
+        }
+    }
+}
+
+pub(super) fn archive_format_from_str(f: &str, function_name: &'static str) -> LuaResult<ArchiveFormat> {
+    let formats = [
+        ("zip", ArchiveFormat::Zip),
+        ("tar", ArchiveFormat::Tar),
+        ("ar", ArchiveFormat::Ar),
+        ("deb", ArchiveFormat::Deb),
+        ("targz", ArchiveFormat::TarGz),
+        ("tar.gz", ArchiveFormat::TarGz),
+        ("tarbz2", ArchiveFormat::TarBz2),
+        ("tar.bz2", ArchiveFormat::TarBz2),
+        ("tarxz", ArchiveFormat::TarXz),
+        ("tar.xz", ArchiveFormat::TarXz),
+        ("tarzst", ArchiveFormat::TarZst),
+        ("tar.zst", ArchiveFormat::TarZst),
+        ("tarlz4", ArchiveFormat::TarLz4),
+        ("tar.lz4", ArchiveFormat::TarLz4),
+        ("gz", ArchiveFormat::Gz),
+        ("bz2", ArchiveFormat::Bz2),
+        ("xz", ArchiveFormat::Xz),
+        ("lz4", ArchiveFormat::Lz4),
+        ("zst", ArchiveFormat::Zst),
+        ("sevenz", ArchiveFormat::SevenZ),
+        ("7z", ArchiveFormat::SevenZ),
+    ];
+
+    for (tag, format) in formats {
+        if f.eq_ignore_ascii_case(tag) {
+            return Ok(format);
+        }
+    }
+
+    wrap_err!("{}: format '{}' is not one of the archive/single-file formats that we expected", function_name, f)
 }

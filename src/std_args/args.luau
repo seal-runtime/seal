@@ -817,7 +817,7 @@ function Parsed.help(self: Parsed): string
     )
 end
 
-ParsedImpl.get = ecall(Parsed.get)
+ParsedImpl.get = ecall(Parsed.get :: any) -- LUAU FIXME: regression here T | error smth
 ParsedImpl.expect = ecall(Parsed.expect)
 ParsedImpl.help = ecall(Parsed.help)
 

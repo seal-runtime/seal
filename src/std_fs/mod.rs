@@ -802,7 +802,7 @@ use std::os::unix;
 #[cfg(windows)]
 use std::os::windows;
 
-pub fn fs_symlink(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> {
+pub fn fs_symlink(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> {
     let function_name = "fs.symlink(target: string, link: string)";
     let target = match multivalue.pop_front() {
         Some(LuaValue::String(s)) => validate_path(&s, function_name)?,
@@ -823,7 +823,15 @@ pub fn fs_symlink(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> 
         }
     };
 
-    match fs::symlink_metadata(&link) {
+    match create_symlink(&link, &target, function_name) {
+        Ok(_) => Ok(true),
+        Err(err) => Err(err),
+    }
+    
+}
+
+pub fn create_symlink(link: &str, target: &str, function_name: &'static str) -> LuaEmptyResult {
+    match fs::symlink_metadata(link) {
         Ok(metadata) if metadata.is_file() => {
             return wrap_err!("{}: can't make symlink at '{}' because there's already a file at that location", function_name, &link);
         },
@@ -831,8 +839,7 @@ pub fn fs_symlink(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> 
             return wrap_err!("{}: can't make symlink at '{}' because there's already a directory at that location", function_name, &link);
         },
         Ok(metadata) if metadata.is_symlink() => {
-            match fs_unsymlink(luau, link.clone()) {
-                Ok(b) if b => (),
+            match remove_symlink(link, function_name) {
                 Ok(_) => (),
                 Err(err) => {
                     return wrap_err!("{}: unable to remove existing symlink at '{}' due to err: {}", function_name, &link, err);
@@ -855,8 +862,8 @@ pub fn fs_symlink(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> 
 
     #[cfg(unix)]
     {
-        match unix::fs::symlink(&target, &link) {
-            Ok(_) => Ok(true),
+        match unix::fs::symlink(target, link) {
+            Ok(_) => Ok(()),
             Err(err) => {
                 wrap_err!("{}: error making symlink: {}", function_name, err)
             }
@@ -874,14 +881,14 @@ pub fn fs_symlink(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> 
 
         if target_metadata.is_dir() {
             match windows::fs::symlink_dir(&target, &link) {
-                Ok(_) => Ok(true),
+                Ok(_) => Ok(()),
                 Err(err) => {
                     wrap_err!("{}: unable to symlink directory due to err: {}", function_name, err)
                 }
             }
         } else {
             match windows::fs::symlink_file(&target, &link) {
-                Ok(_) => Ok(true),
+                Ok(_) => Ok(()),
                 Err(err) => {
                     wrap_err!("{}: unable to symlink file due to err: {}", function_name, err)
                 }
@@ -892,8 +899,14 @@ pub fn fs_symlink(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<bool> 
 
 pub fn fs_unsymlink(_luau: &Lua, link: String) -> LuaResult<bool> {
     let function_name = "fs.unsymlink(link: string)";
+    match remove_symlink(&link, function_name) {
+        Ok(_) => Ok(true),
+        Err(err) => Err(err),
+    }
+}
 
-    let metadata = fs::symlink_metadata(&link);
+pub fn remove_symlink(link: &str, function_name: &'static str) -> LuaEmptyResult {
+    let metadata = fs::symlink_metadata(link);
 
     match &metadata {
         Ok(metadata) if metadata.is_symlink() => (),
@@ -922,8 +935,8 @@ pub fn fs_unsymlink(_luau: &Lua, link: String) -> LuaResult<bool> {
     #[cfg(unix)]
     {
         // on linux/unix, fs::remove_file is used to remove symlinks
-        match fs::remove_file(&link) {
-            Ok(_) => Ok(true),
+        match fs::remove_file(link) {
+            Ok(_) => Ok(()),
             Err(err) => {
                 wrap_err!("{}: error removing symlink: {}", function_name, err)
             }
@@ -943,14 +956,14 @@ pub fn fs_unsymlink(_luau: &Lua, link: String) -> LuaResult<bool> {
 
         if file_type.is_symlink_file() {
             match fs::remove_file(&link) {
-                Ok(_) => Ok(true),
+                Ok(_) => Ok(()),
                 Err(err) => {
                     wrap_err!("{}: unable to remove file symlink at '{}' due to err: {}", function_name, &link, err)
                 }
             }
         } else if file_type.is_symlink_dir() {
             match fs::remove_dir(&link) { // fs::remove_dir is what the symlink crate uses for removing Windows symlinks so we'll use it here
-                Ok(_) => Ok(true),
+                Ok(_) => Ok(()),
                 Err(err) => {
                     wrap_err!("{}: unable to remove directory symlink at '{}' due to err: {}", function_name, &link, err)
                 }

@@ -85,6 +85,9 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
 
         "@std/serde" => ok_table(std_serde::create(luau)),
         "@std/serde/base64" => ok_table(std_serde::base64::create(luau)),
+        "@std/serde/gzip" => ok_table(std_serde::gzip::create(luau)),
+        "@std/serde/xz" => ok_table(std_serde::xz::create(luau)),
+        "@std/serde/bz2" => ok_table(std_serde::bz2::create(luau)),
         "@std/serde/toml" => ok_table(std_serde::toml::create(luau)),
         "@std/serde/yaml" => ok_table(std_serde::yaml::create(luau)),
         "@std/serde/json" => ok_table(std_json::create(luau)),
@@ -102,7 +105,11 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
         "@std/net/websocket" => ok_table(std_net::websocket::create(luau)),
 
         "@std/archive" => ok_table(std_archive::create(luau)),
-        "@std/archive/zip" => ok_table(std_archive::zip::create(luau)),
+        "@std/archive/zip" => ok_table(std_archive::libraries::Zip::create(luau)),
+        "@std/archive/tar" => ok_table(std_archive::libraries::Tar::create(luau)),
+        "@std/archive/ar" => ok_table(std_archive::libraries::Ar::create(luau)),
+        "@std/archive/deb" => ok_table(std_archive::libraries::Deb::create(luau)),
+        "@std/archive/sevenz" => ok_table(std_archive::libraries::Sevenz::create(luau)),
 
         "@std/crypt" => ok_table(std_crypt::create(luau)),
         "@std/crypt/aes" => ok_table(std_crypt::create_aes(luau)),
@@ -141,6 +148,7 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
                 .with_value("luau", std_luau::create(luau)?)?
                 .with_value("args", std_args::create(luau)?)?
                 .with_value("terminal", std_terminal::create(luau)?)?
+                .with_value("archive", std_archive::create(luau)?)?
                 .build_readonly()
             )
         },

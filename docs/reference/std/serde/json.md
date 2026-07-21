@@ -99,7 +99,7 @@ function json.writefile_raw(path: string, data: JsonData) -> (),
 <h4>
 
 ```luau
-function json.null() -> any,
+function json.null() -> null,
 ```
 
 </h4>

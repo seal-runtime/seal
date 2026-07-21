@@ -6,7 +6,74 @@
 
 #![allow(dead_code)]
 
+// archive.ar
+pub const STD_ARCHIVE_AR_CREATE: &std::ffi::CStr = c"archive.ar.create() -> Archive";
+pub const STD_ARCHIVE_AR_EXTRACT: &std::ffi::CStr = c"archive.ar.extract(path: string, destination: string, options: ArchiveOptions?)";
+pub const STD_ARCHIVE_AR_LOAD: &std::ffi::CStr = c"archive.ar.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_AR_READFILE: &std::ffi::CStr = c"archive.ar.readfile(path: string, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_AR_WRITEFILE: &std::ffi::CStr = c"archive.ar.writefile(path: string, archive: Archive, options: ArchiveOptions?)";
+
+// archive.deb
+pub const STD_ARCHIVE_DEB_CREATE: &std::ffi::CStr = c"archive.deb.create() -> Archive";
+pub const STD_ARCHIVE_DEB_EXTRACT: &std::ffi::CStr = c"archive.deb.extract(path: string, destination: string, options: ArchiveOptions?)";
+pub const STD_ARCHIVE_DEB_LOAD: &std::ffi::CStr = c"archive.deb.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_DEB_READFILE: &std::ffi::CStr = c"archive.deb.readfile(path: string, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_DEB_WRITEFILE: &std::ffi::CStr = c"archive.deb.writefile(path: string, archive: Archive, options: ArchiveOptions?)";
+
+// archive
+pub const STD_ARCHIVE_CREATE: &std::ffi::CStr = c"archive.create() -> Archive";
+
+// archive.sevenz
+pub const STD_ARCHIVE_SEVENZ_CREATE: &std::ffi::CStr = c"archive.sevenz.create() -> Archive";
+pub const STD_ARCHIVE_SEVENZ_EXTRACT: &std::ffi::CStr = c"archive.sevenz.extract(path: string, destination: string, options: ArchiveOptions?)";
+pub const STD_ARCHIVE_SEVENZ_LOAD: &std::ffi::CStr = c"archive.sevenz.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_SEVENZ_READFILE: &std::ffi::CStr = c"archive.sevenz.readfile(path: string, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_SEVENZ_WRITEFILE: &std::ffi::CStr = c"archive.sevenz.writefile(path: string, archive: Archive, options: ArchiveOptions?)";
+
+// archive.tar.gz
+pub const STD_ARCHIVE_TAR_GZ_CREATE: &std::ffi::CStr = c"archive.tar.gz.create() -> Archive";
+pub const STD_ARCHIVE_TAR_GZ_EXTRACT: &std::ffi::CStr = c"archive.tar.gz.extract(path: string, destination: string, options: ArchiveOptions?)";
+pub const STD_ARCHIVE_TAR_GZ_LOAD: &std::ffi::CStr = c"archive.tar.gz.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_GZ_READFILE: &std::ffi::CStr = c"archive.tar.gz.readfile(path: string, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_GZ_WRITEFILE: &std::ffi::CStr = c"archive.tar.gz.writefile(path: string, archive: Archive, options: ArchiveOptions?)";
+
+// archive.tar.uncompressed
+pub const STD_ARCHIVE_TAR_UNCOMPRESSED_CREATE: &std::ffi::CStr = c"archive.tar.uncompressed.create() -> Archive";
+pub const STD_ARCHIVE_TAR_UNCOMPRESSED_EXTRACT: &std::ffi::CStr = c"archive.tar.uncompressed.extract(path: string, destination: string, options: ArchiveOptions?)";
+pub const STD_ARCHIVE_TAR_UNCOMPRESSED_LOAD: &std::ffi::CStr = c"archive.tar.uncompressed.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_UNCOMPRESSED_READFILE: &std::ffi::CStr = c"archive.tar.uncompressed.readfile(path: string, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_UNCOMPRESSED_WRITEFILE: &std::ffi::CStr = c"archive.tar.uncompressed.writefile(path: string, archive: Archive, options: ArchiveOptions?)";
+
+// archive.tar.xz
+pub const STD_ARCHIVE_TAR_XZ_CREATE: &std::ffi::CStr = c"archive.tar.xz.create() -> Archive";
+pub const STD_ARCHIVE_TAR_XZ_EXTRACT: &std::ffi::CStr = c"archive.tar.xz.extract(path: string, destination: string, options: ArchiveOptions?)";
+pub const STD_ARCHIVE_TAR_XZ_LOAD: &std::ffi::CStr = c"archive.tar.xz.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_XZ_READFILE: &std::ffi::CStr = c"archive.tar.xz.readfile(path: string, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_XZ_WRITEFILE: &std::ffi::CStr = c"archive.tar.xz.writefile(path: string, archive: Archive, options: ArchiveOptions?)";
+
+// archive.tar.lz4
+pub const STD_ARCHIVE_TAR_LZ4_CREATE: &std::ffi::CStr = c"archive.tar.lz4.create() -> Archive";
+pub const STD_ARCHIVE_TAR_LZ4_EXTRACT: &std::ffi::CStr = c"archive.tar.lz4.extract(path: string, destination: string, options: ArchiveOptions?)";
+pub const STD_ARCHIVE_TAR_LZ4_LOAD: &std::ffi::CStr = c"archive.tar.lz4.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_LZ4_READFILE: &std::ffi::CStr = c"archive.tar.lz4.readfile(path: string, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_LZ4_WRITEFILE: &std::ffi::CStr = c"archive.tar.lz4.writefile(path: string, archive: Archive, options: ArchiveOptions?)";
+
+// archive.tar.bz2
+pub const STD_ARCHIVE_TAR_BZ2_CREATE: &std::ffi::CStr = c"archive.tar.bz2.create() -> Archive";
+pub const STD_ARCHIVE_TAR_BZ2_EXTRACT: &std::ffi::CStr = c"archive.tar.bz2.extract(path: string, destination: string, options: ArchiveOptions?)";
+pub const STD_ARCHIVE_TAR_BZ2_LOAD: &std::ffi::CStr = c"archive.tar.bz2.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_BZ2_READFILE: &std::ffi::CStr = c"archive.tar.bz2.readfile(path: string, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_BZ2_WRITEFILE: &std::ffi::CStr = c"archive.tar.bz2.writefile(path: string, archive: Archive, options: ArchiveOptions?)";
+
+// archive.tar.zst
+pub const STD_ARCHIVE_TAR_ZST_CREATE: &std::ffi::CStr = c"archive.tar.zst.create() -> Archive";
+pub const STD_ARCHIVE_TAR_ZST_EXTRACT: &std::ffi::CStr = c"archive.tar.zst.extract(path: string, destination: string, options: ArchiveOptions?)";
+pub const STD_ARCHIVE_TAR_ZST_LOAD: &std::ffi::CStr = c"archive.tar.zst.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_ZST_READFILE: &std::ffi::CStr = c"archive.tar.zst.readfile(path: string, options: ArchiveOptions?) -> Archive";
+pub const STD_ARCHIVE_TAR_ZST_WRITEFILE: &std::ffi::CStr = c"archive.tar.zst.writefile(path: string, archive: Archive, options: ArchiveOptions?)";
+
 // archive.zip
+pub const STD_ARCHIVE_ZIP_CREATE: &std::ffi::CStr = c"archive.zip.create() -> Archive";
 pub const STD_ARCHIVE_ZIP_EXTRACT: &std::ffi::CStr = c"archive.zip.extract(path: string, destination: string, options: ArchiveOptions?)";
 pub const STD_ARCHIVE_ZIP_LOAD: &std::ffi::CStr = c"archive.zip.load(bytes: buffer, options: ArchiveOptions?) -> Archive";
 pub const STD_ARCHIVE_ZIP_READFILE: &std::ffi::CStr = c"archive.zip.readfile(path: string, options: ArchiveOptions?) -> Archive";
@@ -317,6 +384,14 @@ pub const STD_SERDE_BASE64_ENCODE: &std::ffi::CStr = c"serde.base64.encode(data:
 pub const STD_SERDE_BASE64_URLSAFE_DECODE: &std::ffi::CStr = c"serde.base64.urlsafe.decode(data: string) -> buffer";
 pub const STD_SERDE_BASE64_URLSAFE_ENCODE: &std::ffi::CStr = c"serde.base64.urlsafe.encode(data: string | buffer) -> string";
 
+// serde.bz2
+pub const STD_SERDE_BZ2_COMPRESS: &std::ffi::CStr = c"serde.bz2.compress(content: string | buffer) -> buffer";
+pub const STD_SERDE_BZ2_DECOMPRESS: &std::ffi::CStr = c"serde.bz2.decompress(content: buffer, max_size: FileSize?) -> buffer";
+
+// serde.gzip
+pub const STD_SERDE_GZIP_COMPRESS: &std::ffi::CStr = c"serde.gzip.compress(content: string | buffer) -> buffer";
+pub const STD_SERDE_GZIP_DECOMPRESS: &std::ffi::CStr = c"serde.gzip.decompress(content: buffer, max_size: FileSize?) -> buffer";
+
 // serde.hex
 pub const STD_SERDE_HEX_DECODE: &std::ffi::CStr = c"serde.hex.decode(encoded: string) -> buffer";
 pub const STD_SERDE_HEX_ENCODE: &std::ffi::CStr = c"serde.hex.encode(data: buffer | string) -> string";
@@ -325,7 +400,7 @@ pub const STD_SERDE_HEX_ENCODE: &std::ffi::CStr = c"serde.hex.encode(data: buffe
 pub const STD_SERDE_JSON_ARRAY: &std::ffi::CStr = c"serde.json.array(t: { [number]: T }?) -> { [number]: T }";
 pub const STD_SERDE_JSON_DECODE: &std::ffi::CStr = c"serde.json.decode(json: string) -> JsonData";
 pub const STD_SERDE_JSON_ENCODE: &std::ffi::CStr = c"serde.json.encode(t: JsonData, options: EncodeOptions?) -> string";
-pub const STD_SERDE_JSON_NULL: &std::ffi::CStr = c"serde.json.null() -> any";
+pub const STD_SERDE_JSON_NULL: &std::ffi::CStr = c"serde.json.null() -> null";
 pub const STD_SERDE_JSON_RAW: &std::ffi::CStr = c"serde.json.raw(t: JsonData) -> string";
 pub const STD_SERDE_JSON_READFILE: &std::ffi::CStr = c"serde.json.readfile(path: string) -> JsonData";
 pub const STD_SERDE_JSON_WRITEFILE: &std::ffi::CStr = c"serde.json.writefile(path: string, data: JsonData, options: EncodeOptions?)";
@@ -348,6 +423,10 @@ pub const STD_SERDE_URL_ENCODE: &std::ffi::CStr = c"serde.url.encode(text: strin
 // serde.url.binary
 pub const STD_SERDE_URL_BINARY_DECODE: &std::ffi::CStr = c"serde.url.binary.decode(encoded: string) -> buffer";
 pub const STD_SERDE_URL_BINARY_ENCODE: &std::ffi::CStr = c"serde.url.binary.encode(data: string | buffer) -> string";
+
+// serde.xz
+pub const STD_SERDE_XZ_COMPRESS: &std::ffi::CStr = c"serde.xz.compress(content: string | buffer) -> buffer";
+pub const STD_SERDE_XZ_DECOMPRESS: &std::ffi::CStr = c"serde.xz.decompress(content: buffer, max_size: FileSize?) -> buffer";
 
 // serde.yaml
 pub const STD_SERDE_YAML_DECODE: &std::ffi::CStr = c"serde.yaml.decode(toml_data: string) -> YamlValue";

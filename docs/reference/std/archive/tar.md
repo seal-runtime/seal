@@ -1,0 +1,492 @@
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD024 -->
+
+# archive.tar
+
+`local tar = require("@std/archive/tar")`
+
+---
+
+### tar.gz
+
+<h4>
+
+```luau
+gz: {
+```
+
+</h4>
+
+---
+
+### tar.gz.extract
+
+<h4>
+
+```luau
+function tar.gz.extract(path: string, destination: string, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.gz.readfile
+
+<h4>
+
+```luau
+function tar.gz.readfile(path: string, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.gz.writefile
+
+<h4>
+
+```luau
+function tar.gz.writefile(path: string, archive: Archive, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.gz.load
+
+<h4>
+
+```luau
+function tar.gz.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.gz.create
+
+<h4>
+
+```luau
+function tar.gz.create() -> Archive,
+```
+
+</h4>
+
+---
+
+```luau
+  }, -- closes gz
+```
+
+---
+
+### tar.uncompressed
+
+<h4>
+
+```luau
+uncompressed: {
+```
+
+</h4>
+
+---
+
+### tar.uncompressed.extract
+
+<h4>
+
+```luau
+function tar.uncompressed.extract(path: string, destination: string, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.uncompressed.readfile
+
+<h4>
+
+```luau
+function tar.uncompressed.readfile(path: string, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.uncompressed.writefile
+
+<h4>
+
+```luau
+function tar.uncompressed.writefile(path: string, archive: Archive, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.uncompressed.load
+
+<h4>
+
+```luau
+function tar.uncompressed.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.uncompressed.create
+
+<h4>
+
+```luau
+function tar.uncompressed.create() -> Archive,
+```
+
+</h4>
+
+---
+
+```luau
+  }, -- closes uncompressed
+```
+
+---
+
+### tar.xz
+
+<h4>
+
+```luau
+xz: {
+```
+
+</h4>
+
+---
+
+### tar.xz.extract
+
+<h4>
+
+```luau
+function tar.xz.extract(path: string, destination: string, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.xz.readfile
+
+<h4>
+
+```luau
+function tar.xz.readfile(path: string, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.xz.writefile
+
+<h4>
+
+```luau
+function tar.xz.writefile(path: string, archive: Archive, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.xz.load
+
+<h4>
+
+```luau
+function tar.xz.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.xz.create
+
+<h4>
+
+```luau
+function tar.xz.create() -> Archive,
+```
+
+</h4>
+
+---
+
+```luau
+  }, -- closes xz
+```
+
+---
+
+### tar.lz4
+
+<h4>
+
+```luau
+lz4: {
+```
+
+</h4>
+
+---
+
+### tar.lz4.extract
+
+<h4>
+
+```luau
+function tar.lz4.extract(path: string, destination: string, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.lz4.readfile
+
+<h4>
+
+```luau
+function tar.lz4.readfile(path: string, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.lz4.writefile
+
+<h4>
+
+```luau
+function tar.lz4.writefile(path: string, archive: Archive, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.lz4.load
+
+<h4>
+
+```luau
+function tar.lz4.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.lz4.create
+
+<h4>
+
+```luau
+function tar.lz4.create() -> Archive,
+```
+
+</h4>
+
+---
+
+```luau
+  }, -- closes lz4
+```
+
+---
+
+### tar.bz2
+
+<h4>
+
+```luau
+bz2: {
+```
+
+</h4>
+
+---
+
+### tar.bz2.extract
+
+<h4>
+
+```luau
+function tar.bz2.extract(path: string, destination: string, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.bz2.readfile
+
+<h4>
+
+```luau
+function tar.bz2.readfile(path: string, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.bz2.writefile
+
+<h4>
+
+```luau
+function tar.bz2.writefile(path: string, archive: Archive, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.bz2.load
+
+<h4>
+
+```luau
+function tar.bz2.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.bz2.create
+
+<h4>
+
+```luau
+function tar.bz2.create() -> Archive,
+```
+
+</h4>
+
+---
+
+```luau
+  }, -- closes bz2
+```
+
+---
+
+### tar.zst
+
+<h4>
+
+```luau
+zst: {
+```
+
+</h4>
+
+---
+
+### tar.zst.extract
+
+<h4>
+
+```luau
+function tar.zst.extract(path: string, destination: string, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.zst.readfile
+
+<h4>
+
+```luau
+function tar.zst.readfile(path: string, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.zst.writefile
+
+<h4>
+
+```luau
+function tar.zst.writefile(path: string, archive: Archive, options: ArchiveOptions?) -> (),
+```
+
+</h4>
+
+---
+
+### tar.zst.load
+
+<h4>
+
+```luau
+function tar.zst.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
+### tar.zst.create
+
+<h4>
+
+```luau
+function tar.zst.create() -> Archive,
+```
+
+</h4>
+
+---
+
+```luau
+  }, -- closes zst
+```
+
+---
+
+## `export type` ArchiveOptions
+
+See [ArchiveOptions in @std/archive/_types](/docs/reference/std/archive/_types.md#export-type-archiveoptions)
+
+---
+
+## `export type` ArchiveFormat
+
+See [ArchiveFormat in @std/archive/_types](/docs/reference/std/archive/_types.md#export-type-archiveformat)
+
+---
+
+Autogenerated from [std/archive/tar.luau](/.seal/typedefs/std/archive/tar.luau).
+
+*seal* is best experienced with inline, in-editor documentation. Please see the linked typedefs file if this documentation is confusing, too verbose, or inaccurate.

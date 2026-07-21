@@ -7,15 +7,81 @@
 
 ---
 
+## `export type` ArchiveFormat
+
+See [ArchiveFormat in @std/archive/_types](/docs/reference/std/archive/_types.md#export-type-archiveformat)
+
+---
+
+## `export type` ContainerFormat
+
+See [ContainerFormat in @std/archive/_types](/docs/reference/std/archive/_types.md#export-type-containerformat)
+
+---
+
+## `export type` SingleFileFormat
+
+See [SingleFileFormat in @std/archive/_types](/docs/reference/std/archive/_types.md#export-type-singlefileformat)
+
+---
+
+## `export type` archive
+
+<h4>
+
+```luau
+export type archive = {
+```
+
+</h4>
+
+---
+
+### archive.zip
+
+See [@std/archive/zip](/docs/reference/std/archive/zip.md)
+
+---
+
+### archive.tar
+
+See [@std/archive/tar](/docs/reference/std/archive/tar.md)
+
+---
+
+### archive.ar
+
+See [@std/archive/ar](/docs/reference/std/archive/ar.md)
+
+---
+
+### archive.deb
+
+See [@std/archive/deb](/docs/reference/std/archive/deb.md)
+
+---
+
+### archive.sevenz
+
+See [@std/archive/sevenz](/docs/reference/std/archive/sevenz.md)
+
+---
+
 ### archive.create
 
 <h4>
 
 ```luau
-function archive.create(cats: string) -> Archive
+function archive.create() -> Archive,
 ```
 
 </h4>
+
+---
+
+```luau
+} -- closes archive
+```
 
 ---
 

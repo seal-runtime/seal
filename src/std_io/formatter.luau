@@ -292,19 +292,34 @@ const INTEGER_TYPE = "integer"
 const CLASS_TYPE = "class"
 const OBJECT_TYPE = "object"
 
-const function call_failable_display(self: unknown): string?
+type DisplayFunction = (
+    self: any,
+    depth: number,
+    config: FormatOptions?
+) -> unknown
+
+type FormatOptions = {
+    max_depth: number,
+    indent_spaces: number,
+    max_elements_in_array: number,
+    show_array_indices: boolean,
+    show_metatables: boolean,
+    show_array_length: boolean,
+}
+
+const function call_failable_display(self: unknown, depth: number, options): string?
     -- objects and userdata may or may not have a function named display
-    const _, display_fn = pcall(function()
-        return (self :: any).display :: (self: unknown) -> string
+    const success, display_fn = pcall(function()
+        return (self :: any).display :: DisplayFunction
     end)
-    if typeof(display_fn) == "error" then
+    if not success or typeof(display_fn) == "error" then
         return nil
     end
-    const success, displayed = pcall(display_fn, self)
+    const success, displayed = pcall(display_fn, self, depth, options)
     return if success and typeof(displayed) == "string" then displayed else nil
 end
 
-const function stringify_simple_type(value: any, key_function_name: string?): string
+const function stringify_simple_type(value: any, key_function_name: string?, depth: number, options: FormatOptions): string
     if type(value) == "number" then
         -- mlua Numbers are BOLD_BLUE and Integers are regular BLUE
         if mlua.isint(value) then
@@ -387,7 +402,7 @@ const function stringify_simple_type(value: any, key_function_name: string?): st
             return tostringed
         end
     elseif type(value) == "userdata" then
-        const displayable = call_failable_display(value)
+        const displayable = call_failable_display(value, depth, options)
         if displayable then
             return displayable
         end
@@ -409,7 +424,7 @@ const function stringify_simple_type(value: any, key_function_name: string?): st
     elseif type(value) == CLASS_TYPE then
         return tostring(value)
     elseif type(value) == OBJECT_TYPE then
-        const displayable = call_failable_display(value)
+        const displayable = call_failable_display(value, depth, options)
         if displayable then
             return displayable
         end
@@ -424,7 +439,7 @@ const function stringify_simple_type(value: any, key_function_name: string?): st
     end
 end
 
-local function stringify_table_path(current_table_path: { any }): string
+local function stringify_table_path(current_table_path: { any }, depth: number, options: FormatOptions): string
     local table_path = BOLD_YELLOW .. "self" .. RESET
     for _, level in current_table_path do
         if typeof(level) == "string" then
@@ -436,7 +451,7 @@ local function stringify_table_path(current_table_path: { any }): string
         elseif typeof(level) == "number" then
             table_path ..= LEFT_BRACKET .. BLUE .. level .. RESET .. RIGHT_BRACKET
         else
-            local stringified = stringify_simple_type(level)
+            local stringified = stringify_simple_type(level, nil, depth, options)
             table_path ..= LEFT_BRACKET .. stringified .. RIGHT_BRACKET
         end
     end
@@ -571,6 +586,16 @@ const function process_pretty_values(
     show_array_length = if show_array_length ~= nil then show_array_length else is_tty
 
     local current_indent, element_indent = indents(guidelines, depth, indent_spaces)
+
+    local options: FormatOptions = {
+        max_depth = max_depth,
+        indent_spaces = indent_spaces,
+        max_elements_in_array = max_elements_in_array,
+        show_array_indices = show_array_indices,
+        show_metatables = show_metatables,
+        guidelines = guidelines,
+        show_array_length = show_array_length,
+    }
     
     local current_table_path: { any } = current_table_path or {}
     if type(value) == "table" then
@@ -585,32 +610,13 @@ const function process_pretty_values(
             value_meta = value_meta :: {
                 -- we want to allow downstream users to be able to customize how their data structure
                 -- gets formatted based upon current level of indent and relevant formatting config
-                __display: (
-                    self: any,
-                    depth: number,
-                    config: {
-                        max_depth: number,
-                        indent_spaces: number,
-                        max_elements_in_array: number,
-                        show_array_indices: boolean,
-                        show_metatables: boolean,
-                        show_array_length: boolean,
-                    }?
-                ) -> unknown
+                __display: DisplayFunction
             }
             local success, custom_display = pcall(
                 value_meta.__display,
                 value,
                 depth,
-                {
-                    max_depth = max_depth,
-                    indent_spaces = indent_spaces,
-                    max_elements_in_array = max_elements_in_array,
-                    show_array_indices = show_array_indices,
-                    show_metatables = show_metatables,
-                    guidelines = guidelines,
-                    show_array_length = show_array_length,
-                }
+                options
             )
             if success and typeof(custom_display) == "string" then
                 return custom_display
@@ -749,7 +755,7 @@ const function process_pretty_values(
                 else
                     -- push key to current_table_path before recursion
                     table.insert(current_table_path, key)
-                    seen_tables[val] = stringify_table_path(current_table_path) -- tostring(key)
+                    seen_tables[val] = stringify_table_path(current_table_path, depth, options) -- tostring(key)
                     push(process_pretty_values(val, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length))
                     -- pop key from current_table_path after recursion
                     table.remove(current_table_path, #current_table_path)
@@ -765,10 +771,10 @@ const function process_pretty_values(
                     push(GREEN .. '"' .. val .. '"' .. RESET)
                 end
             elseif type(val) == "number" or type(val) == "boolean" then
-                push(stringify_simple_type(val))
+                push(stringify_simple_type(val, nil, depth, options))
             elseif type(val) == "function" and key_type == "string" then
                 -- pass table key in so we can skip displaying the function_name twice if key == debug.info(val)
-                push(stringify_simple_type(val, key))
+                push(stringify_simple_type(val, key, depth, options))
             else
                 push(process_pretty_values(val, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length))
             end
@@ -793,7 +799,7 @@ const function process_pretty_values(
     elseif type(value) == "string" and depth == 0 then -- calling print("hello world") shouldn't colorize
         return value
     else
-        return stringify_simple_type(value)
+        return stringify_simple_type(value, nil, depth, options)
     end
 end
 

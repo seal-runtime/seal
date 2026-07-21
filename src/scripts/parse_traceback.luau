@@ -185,12 +185,14 @@ local function parse_traceback(traceback: string): string
         }
 
         for index, line in lines do
-            if index == 1 then
+            if first_path == nil or first_line_number == nil then
                 for bad, better in bad_error_messages do
                     line = string.gsub(line, bad, better)
                 end
                 lines[index] = line
-                is_runtime_error = string.match(line, "runtime error: ") ~= nil
+                if index == 1 then
+                    is_runtime_error = string.match(line, "runtime error: ") ~= nil
+                end
                 if is_runtime_error then
                     local fixed_line: string
                     local path, line_number = string.match(line, `%["([%w%s%p]+)"%]:(%d+)`)
@@ -199,7 +201,13 @@ local function parse_traceback(traceback: string): string
                         first_line_number = line_number
                         fixed_line = string.gsub(line, `[%s]+%["[%w%s%p]+"%]:%d+:[%s]+`, " ")
                     end
-                    lines[index] = fixed_line
+                    -- usually the first_path == nil or first_line_number == nil condition
+                    -- should trigger on index 1, but some stupid error messages don't have paths in them
+                    if index == 1 and fixed_line then
+                        lines[1] = fixed_line
+                    else
+                        -- it's a weird runtime error that doesn't have line:number info on first line
+                    end
                 else
                     -- some seal stdlib error messages are pretty long, let's try giving them newlines
                     if #line > 100 then

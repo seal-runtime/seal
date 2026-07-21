@@ -19,6 +19,10 @@ impl ArchiveOptions {
             .with_max_total_size(self.max_total_size.as_bytes() as usize)
             .allow_unsafe_path_traversals(self.allow_unsafe_path_traversals)
     }
+    pub fn builder(&self) -> archive::ArchiveBuilder {
+        archive::ArchiveBuilder::new()
+            .allow_unsafe_path_traversals(self.allow_unsafe_path_traversals)
+    }
     fn default() -> Self {
         Self {
             max_file_size: FileSize::from_bytes(MAX_FILE_SIZE),

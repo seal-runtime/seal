@@ -1,8 +1,8 @@
+use std::borrow::Cow;
 use std::fs;
 use std::path::{Path, PathBuf};
 
 use mluau::prelude::*;
-use rustyline::completion::Candidate;
 use crate::prelude::*;
 
 use super::options::ArchiveOptions;
@@ -11,64 +11,8 @@ use archive::{ArchiveFormat, ArchiveEntry, ArchiveError};
 
 use crate::std_fs::{
     file_size::FileSize,
-    entry::wrap_io_read_errors_empty,
-    validate_path,
+    entry::wrap_io_read_errors_empty
 };
-
-pub fn from_file(
-    multivalue: &mut LuaMultiValue,
-    format: ArchiveFormat,
-    function_name: &'static str
-) -> LuaEmptyResult {
-    let path = match multivalue.pop_front() {
-        Some(LuaValue::String(path)) => validate_path(&path, function_name)?,
-        Some(LuaNil) | None => {
-            return wrap_err!("{}: expected path to be a string or Pathlike, got nothing or nil", function_name);
-        }
-        Some(other) => {
-            return wrap_err!("{}: expected path to be a string or Pathlike, got {:?}", function_name, other);
-        }
-    };
-
-    let destination = match multivalue.pop_front() {
-        Some(LuaValue::String(path)) => validate_path(&path, function_name)?,
-        Some(LuaNil) | None => {
-            return wrap_err!("{}: expected destination to be a string or Pathlike, got nothing or nil", function_name);
-        }
-        Some(other) => {
-            return wrap_err!("{}: expected destination to be a string or Pathlike, got {:?}", function_name, other);
-        }
-    };
-
-    let options = multivalue.pop_front().unwrap_or(LuaNil);
-    let options = ArchiveOptions::from_value(options, function_name)?;
-
-    let contents = match fs::read(&path) {
-        Ok(bytes) => bytes,
-        Err(err) => {
-            return wrap_io_read_errors_empty(err, function_name, &path);
-        }
-    };
-
-    let entries = super::extract::contents(
-        contents,
-        &path,
-        &options,
-        format,
-        function_name
-    )?;
-
-    super::extract::write_to_disk(
-        &entries,
-        destination,
-        options,
-        format,
-        function_name
-    )?;
-
-    Ok(())
-}
-
 
 const UNSAFE_PATH_BULLETPOINTS: &str = "
 This could mean the archive:
@@ -82,21 +26,28 @@ to read, write, or extract it.
 
 pub fn contents(
     contents: Vec<u8>,
-    path: &str,
+    path: Option<&str>,
     options: &ArchiveOptions,
     format: ArchiveFormat,
     function_name: &'static str
 ) -> LuaResult<Vec<ArchiveEntry>> {
     let extractor = options.extractor();
+    let path_for_display = move || {
+        match path {
+            Some(path) => Cow::Owned(format!("at '{}'", path)),
+            None => Cow::Borrowed("loaded from memory")
+        }
+    };
+
     let entries = match extractor.extract(&contents, format) {
         Ok(files) => files,
         Err(ArchiveError::FileTooLarge { path, size, limit }) => {
             let size = FileSize::from_bytes(size as u64);
             let limit = FileSize::from_bytes(limit as u64);
-            if let Some(path) = path {
-                return wrap_err!("{}: file in archive at path {} (size {}) exceeds max_file_size ({}); see options to change defaults", function_name, path, size, limit);
+            if let Some(archive_path) = path {
+                return wrap_err!("{}: file in archive {} at archive path '{}' (size {}) exceeds max_file_size ({}); see options to change defaults", function_name, path_for_display(), archive_path, size, limit);
             } else {
-                return wrap_err!("{}: a file in the archive (size {}) exceeds max_file_size ({}); see options to change defaults", function_name, size, limit);
+                return wrap_err!("{}: a file in the archive {} (size {}) exceeds max_file_size ({}); see options to change defaults", function_name, path_for_display(), size, limit);
             }
         },
         Err(ArchiveError::TotalSizeTooLarge { size, limit }) => {
@@ -106,16 +57,16 @@ pub fn contents(
         },
         Err(ArchiveError::AllocationFailed { size, source }) => {
             let size = FileSize::from_bytes(size as u64);
-            return wrap_err!("{}: you don't have enough memory to extract {}\n   (failed to reserve {} due to err: {})", function_name, path, size, source);
+            return wrap_err!("{}: you don't have enough memory to extract archive {}\n   (failed to reserve {} due to err: {})", function_name, path_for_display(), size, source);
         },
         Err(ArchiveError::InvalidArchive(reason)) => {
-            return wrap_err!("{}: archive at '{}' is invalid or not of format {}: {}", function_name, &path, format.name(), reason);
+            return wrap_err!("{}: archive {} is invalid or not of format {}: {}", function_name, path_for_display(), format.name(), reason);
         },
         Err(ArchiveError::UnsafePath(bad_path)) => {
-            return wrap_err!("{}: Path/Symlink Traversal: '{}'\n \nArchive contains a path that, once extracted, will traverse outside the extraction directory:\nTraversing path: '{}'\n \n{}", function_name, &path, bad_path, UNSAFE_PATH_BULLETPOINTS);
+            return wrap_err!("{}: Path/Symlink Traversal: archive {}\n \nArchive contains a path that, once extracted, will traverse outside the extraction directory:\nTraversing path: '{}'\n \n{}", function_name, path_for_display(), bad_path, UNSAFE_PATH_BULLETPOINTS);
         },
         Err(err) => {
-            return wrap_err!("{}: unable to extract archive at '{}' due to err: {}", function_name, &path, err);
+            return wrap_err!("{}: unable to extract archive at '{}' due to err: {}", function_name, path_for_display(), err);
         }
     };
 
@@ -169,17 +120,22 @@ pub fn write_to_disk<P: AsRef<Path>>(
                     eputs!("[WARN] writing to '{}' (ArchiveOptions.allow_unsafe_path_traversals enabled)", &path)?;
                 }
             } else {
-                return wrap_err!("{}: Path/Symlink Traversal:\n \nArchive contains a path that, once extracted, will traverse outside the extraction directory:\nTraversing path: '{}'\n \n{}", function_name, path.display(), UNSAFE_PATH_BULLETPOINTS);
+                return wrap_err!("{}: Path/Symlink Traversal:\n \nArchive contains a path that, once extracted, will traverse outside the extraction directory:\nTraversing path: '{}'\n \n{}", function_name, path, UNSAFE_PATH_BULLETPOINTS);
             }
         }
         Ok(())
     }
 
+    let mut symlinks: Option<Vec<&ArchiveEntry>> = if options.allow_symlinks {
+        Some(Vec::new())
+    } else {
+        None
+    };
+
     for entry in entries {
         let path = Path::new(entry.path());
+        validate_path_safety(path, &options, function_name)?;
         let path = destination.join(path);
-
-        validate_path_safety(&path, &options, function_name)?;
 
         match entry {
             ArchiveEntry::Directory { .. } => {
@@ -195,11 +151,24 @@ pub fn write_to_disk<P: AsRef<Path>>(
                     return wrap_io_read_errors_empty(err, function_name, &path);
                 }
             },
-            ArchiveEntry::Symlink { path, target, .. } => {
+            symlink @ ArchiveEntry::Symlink { path, target } => {
                 if !options.allow_symlinks {
-                    return wrap_err!("{}: archive has symlink from {} -> {}; this is unusual and could be malicious...\n  pass options.symlinks_allowed = true to extract symlinks", function_name, path, target);
+                    return wrap_err!("{}: archive has internal symlink from {} -> {}; this is unusual...\n  pass options.symlinks_allowed = true to extract symlinks", function_name, path, target);
                 }
+                // we handle symlinks after everything else is written
+                let symlinks = symlinks.as_mut().expect("we know symlinks are allowed here");
+                symlinks.push(symlink);
+                continue;
             }
+        }
+    }
+
+    if let Some(symlinks) = symlinks && !symlinks.is_empty() {
+        for link in symlinks {
+            let ArchiveEntry::Symlink { path, target } = link else {
+                unreachable!("all ArchiveEntries in symlinks vec should be symlinks");
+            };
+            crate::std_fs::create_symlink(path, target, function_name)?;
         }
     }
 

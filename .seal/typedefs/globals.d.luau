@@ -119,9 +119,11 @@ type ArchiveEntry =
     | ArchiveDirectory
     | ArchiveSymlink
 
-type ArchiveFormat =
+type ContainerFormat =
     | "Zip"
     | "Tar"
+    | "Ar"
+    | "Deb"
     | "TarGz"
     | "TarBz2"
     | "TarXz"
@@ -129,8 +131,23 @@ type ArchiveFormat =
     | "TarLz4"
     | "7z"
 
+type SingleFileFormat =
+    | "Gz"
+    | "Bz2"
+    | "Xz"
+    | "Lz4"
+    | "Zst"
+
+type ArchiveFormat = ContainerFormat | SingleFileFormat
+
+type ArchiveOptions = {
+    max_file_size: FileSize?,
+    max_total_size: FileSize?,
+    allow_symlinks: boolean?,
+    allow_unsafe_path_traversals: boolean?,
+}
+
 declare extern type Archive with
-    function entries(self): { ArchiveEntry }
     function paths(self): { string }
     --[=[
         If `path_or_index` is a string, gets the *first* entry with that path, or `nil` if the entry
@@ -139,11 +156,14 @@ declare extern type Archive with
         If `path_or_index` is a number, gets the entry at the specified index in the archive, or `nil`
         if an entry doesn't exist at that index.
     ]=]
-    function read(self, path_or_index: string | number): string?
-    function write(self, index: number, entry: ArchiveEntry)
-    function add(self, entry: ArchiveEntry, ...: ArchiveEntry)
+    function get(self, path_or_index: string | number): ArchiveEntry?
+    function insert(self, index: number, entry: ArchiveEntry)
+    function append(self, entry: ArchiveEntry, ...: ArchiveEntry)
     function remove(self, index: number)
-    function serialize(self, format: ArchiveFormat): buffer
+    function serialize(self, format: ArchiveFormat, options: ArchiveOptions?): buffer
+
+    function __len(self): number
+    function __iter(self): () -> (number, string)
 end
 
 --[=[
