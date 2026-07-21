@@ -23,6 +23,11 @@ export type deb = {
 
 </h4>
 
+Read, write, and extract Debian packages, an `ar` archive wrapping `control` and `data` tarballs.
+
+Like `ar`, the outer deb layer is flat with no directory structure; the `control` and `data`
+tarballs nested inside it are where actual directory trees (e.g. `/usr/bin/...`) live.
+
 ---
 
 ### deb.extract
@@ -34,6 +39,8 @@ function deb.extract(path: string, destination: string, options: ArchiveOptions?
 ```
 
 </h4>
+
+Extract the deb package at `path` into a new or existing directory at `destination`.
 
 ---
 
@@ -47,6 +54,8 @@ function deb.readfile(path: string, options: ArchiveOptions?) -> Archive,
 
 </h4>
 
+Read the deb package at `path` into memory as an `Archive`.
+
 ---
 
 ### deb.writefile
@@ -58,6 +67,8 @@ function deb.writefile(path: string, archive: Archive, options: ArchiveOptions?)
 ```
 
 </h4>
+
+Write an `Archive` to `path` as a deb package; the archive's top-level entries must be flat (no directories).
 
 ---
 
@@ -71,6 +82,8 @@ function deb.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
 
 </h4>
 
+Load a deb package into memory as an `Archive` from an existing buffer of bytes.
+
 ---
 
 ### deb.create
@@ -82,6 +95,8 @@ function deb.create() -> Archive,
 ```
 
 </h4>
+
+Create a new empty `Archive`.
 
 ---
 

@@ -23,6 +23,13 @@ export type sevenz = {
 
 </h4>
 
+Read, write, and extract the 7z format.
+
+7z (LZMA2) usually beats zip and tar.xz on compression ratio, at the cost of being slower
+to compress and less universally supported than zip.
+
+Uses LZMA2 preset 6, the same default as tar.xz. If you need a different preset, open an issue, make a PR, or contact me.
+
 ---
 
 ### sevenz.extract
@@ -34,6 +41,19 @@ function sevenz.extract(path: string, destination: string, options: ArchiveOptio
 ```
 
 </h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Extract the 7z archive at `path` into a new or existing directory at `destination`.
+
+This protects against path traversal attacks (unexpectedly writing outside destination directory),
+symlink traversal attacks, and caps archive and individual file sizes to prevent zip bombs.
+
+To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
+
+</details>
 
 ---
 
@@ -47,6 +67,10 @@ function sevenz.readfile(path: string, options: ArchiveOptions?) -> Archive,
 
 </h4>
 
+Read the 7z archive at `path` into memory as an `Archive`.
+
+To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
+
 ---
 
 ### sevenz.writefile
@@ -58,6 +82,10 @@ function sevenz.writefile(path: string, archive: Archive, options: ArchiveOption
 ```
 
 </h4>
+
+Write an `Archive` to `path` as a 7z archive.
+
+To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
 
 ---
 
@@ -71,6 +99,8 @@ function sevenz.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
 
 </h4>
 
+Load a 7z archive into memory as an `Archive` from an existing buffer of bytes.
+
 ---
 
 ### sevenz.create
@@ -82,6 +112,8 @@ function sevenz.create() -> Archive,
 ```
 
 </h4>
+
+Create a new empty `Archive`.
 
 ---
 

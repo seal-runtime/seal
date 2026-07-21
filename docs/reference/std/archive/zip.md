@@ -5,6 +5,10 @@
 
 `local zip = require("@std/archive/zip")`
 
+Read, write, and extract the ubiquitous DEFLATE-based zip format.
+
+Uses DEFLATE's default compression level (6). If you need a different level, open an issue, make a PR, or contact me.
+
 ---
 
 ### zip.extract
@@ -16,6 +20,19 @@ function zip.extract(path: string, destination: string, options: ArchiveOptions?
 ```
 
 </h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Extract the zip file at `path` into a new or existing directory at `destination`.
+
+This protects against path traversal attacks (unexpectedly writing outside destination directory),
+symlink traversal attacks, and caps archive and individual file sizes to prevent zip bombs.
+
+To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
+
+</details>
 
 ---
 
@@ -29,6 +46,10 @@ function zip.readfile(path: string, options: ArchiveOptions?) -> Archive,
 
 </h4>
 
+Reads the zip file at `path` into memory as an `Archive`.
+
+To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
+
 ---
 
 ### zip.writefile
@@ -40,6 +61,10 @@ function zip.writefile(path: string, archive: Archive, options: ArchiveOptions?)
 ```
 
 </h4>
+
+Writes an archive to `path`.
+
+To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
 
 ---
 
@@ -53,6 +78,8 @@ function zip.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
 
 </h4>
 
+Load a zip file into memory as an `Archive` from an existing buffer of bytes.
+
 ---
 
 ### zip.create
@@ -64,6 +91,8 @@ function zip.create() -> Archive,
 ```
 
 </h4>
+
+Create a new empty `Archive`.
 
 ---
 

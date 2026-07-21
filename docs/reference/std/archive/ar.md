@@ -23,6 +23,10 @@ export type ar = {
 
 </h4>
 
+Read, write, and extract the Unix `ar` format used for static libraries and as the outer container for `.deb` packages.
+
+ar is a single flat layer of entries with no directory structure, so an `Archive` written to ar can't contain subfolders.
+
 ---
 
 ### ar.extract
@@ -34,6 +38,8 @@ function ar.extract(path: string, destination: string, options: ArchiveOptions?)
 ```
 
 </h4>
+
+Extract the ar archive at `path` into a new or existing directory at `destination`.
 
 ---
 
@@ -47,6 +53,8 @@ function ar.readfile(path: string, options: ArchiveOptions?) -> Archive,
 
 </h4>
 
+Read the ar archive at `path` into memory as an `Archive`.
+
 ---
 
 ### ar.writefile
@@ -58,6 +66,8 @@ function ar.writefile(path: string, archive: Archive, options: ArchiveOptions?) 
 ```
 
 </h4>
+
+Write an `Archive` to `path` as an ar archive; the archive's entries must be flat (no directories).
 
 ---
 
@@ -71,6 +81,8 @@ function ar.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
 
 </h4>
 
+Load an ar archive into memory as an `Archive` from an existing buffer of bytes.
+
 ---
 
 ### ar.create
@@ -82,6 +94,8 @@ function ar.create() -> Archive,
 ```
 
 </h4>
+
+Create a new empty `Archive`.
 
 ---
 

@@ -11,11 +11,9 @@
 <br>
 <!-- markdownlint-enable MD033 -->
 
-<!-- *seal* is an all-in-one scripting tool that lets you write cross-platform scripts and applications in Luau with a greater utility than shell scripts and with less of a hassle than Python. -->
-
 ***seal*** is a cross-platform scripting tool that emphasizes correctness, performance, and fun.
 
-It can surreptitiously replace your shell and single-use Python scripts with Luau scripts, making them more readable to everyone. Or you can use it to write a full application.
+It can surreptitiously swap your one-off Python scripts and shell hacks for strictly-typed Luau, making your code easier to follow and maintain. Or you can use it to write a full application.
 
 <!-- **Usecases:**
 
@@ -33,6 +31,8 @@ It can surreptitiously replace your shell and single-use Python scripts with Lua
 - *seal* projects are more scalable than shell scripts.
 - Built in terminal manipulation for TUIs.
 - Powerful multithreading.
+- Best pretty printer in the business for dealing with nested data.
+- All the standard compression and archive support you want but with safety and saner defaults.
 - <!-- Start-Precommit-Marker-1 -->1227<!-- End-Precommit-Marker-1 --> handcrafted error messages.
 
 ## Install

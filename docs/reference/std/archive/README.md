@@ -35,6 +35,52 @@ export type archive = {
 
 </h4>
 
+<details>
+
+<summary> See the docs </summary
+
+Extract and create compressed archives (and compressed files) of most common formats.
+This library protects against path/symlink traversal attacks and extraction bombs by default.
+
+This library caps *max total archive size* and *max file size* by default:
+
+- **Max total size:** 4 GB
+- **Max individual file size:** 500 MB
+
+To adjust these settings, see `ArchiveOptions`.
+
+This library currently supports read and write for:
+
+- zip
+- tar (including tar.gz, tar.bz2, tar.xz, tar.zst, tar.lz4)
+- ar
+- deb
+- 7z
+
+As well as these single file formats:
+
+- gz
+- bz2
+- xz
+- lz4
+- zst
+
+## Usage
+
+To extract an archive directly to disk, use the respective library's extract function:
+
+```luau
+const tar = require("@std/archive/tar")
+
+const tar_path = fs.path.join(script:parent(), "credentials.tar.gz")
+tar.gz.extract(tar_path, fs.path.join(script:parent(), "credentials"))
+fs.removefile(tar_path)
+```
+
+To read an `Archive` into memory, use the respective library's `load` function or `archive.load`.
+
+</details>
+
 ---
 
 ### archive.zip
@@ -77,6 +123,8 @@ function archive.create() -> Archive,
 
 </h4>
 
+Create a new empty `Archive`.
+
 ---
 
 ### archive.load
@@ -88,6 +136,22 @@ function archive.load(bytes: buffer, format: ArchiveFormat, options: ArchiveOpti
 ```
 
 </h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Load an archive or single compressed file into memory as an `Archive` from an existing buffer of bytes, given its `format`.
+
+Use this when the format isn't known up front, or you want to read compressed files (single files)
+as an archive.
+
+If you know what format you're going to use up front, prefer using its dedicated library's own `load`
+(`zip.load`, `tar.gz.load`), which doesn't need `format` passed in.
+
+To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
+
+</details>
 
 ---
 
