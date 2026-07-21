@@ -1,5 +1,6 @@
 local zip = require("@std/archive/zip")
 local archive = require("@std/archive")
+local env = require("@std/env")
 local fs = require("@std/fs")
 
 const normal_path = "./tests/data/archives/zips/normal.zip"
@@ -120,16 +121,23 @@ zip.writefile(fs.path.join(temp_path, "meta.zip"), meta_built)
 zip.extract(fs.path.join(temp_path, "meta.zip"), meta_extract_path)
 const extracted_meta_file = fs.file(fs.path.join(meta_extract_path, "meta.txt"))
 assert(extracted_meta_file ~= nil, "extract didn't write meta.txt")
+
 const extracted_meta_metadata = extracted_meta_file:metadata()
 const extracted_unix_mode = extracted_meta_metadata.permissions.unix_mode
-assert(extracted_unix_mode ~= nil, "extracted meta.txt's metadata should include unix_mode on this platform")
-const extracted_meta_mode = bit32.band(extracted_unix_mode, 0x1ff)
-assert(extracted_meta_mode == 0x1a0 --[[ 0o640 ]],
-    `expected extracted meta.txt to have mode 0o640, got: {string.format("%o", extracted_meta_mode)}`)
+if env.os ~= "Windows" then
+    assert(extracted_unix_mode ~= nil, "extracted meta.txt's metadata should include unix_mode on this platform")
+    const extracted_meta_mode = bit32.band(extracted_unix_mode, 0x1ff)
+    assert(
+        extracted_meta_mode == 0x1a0 --[[ 0o640 ]],
+        `expected extracted meta.txt to have mode 0o640, got: {string.format("%o", extracted_meta_mode)}`
+    )
+end
 
 const extracted_modified_at = extracted_meta_metadata.modified_at
 assert(extracted_modified_at ~= nil, "extracted meta.txt's metadata should include modified_at")
-assert(mtime_close(extracted_modified_at, set_mtime),
-    "extracted meta.txt should have the mtime recorded in the archive")
+assert(
+    mtime_close(extracted_modified_at, set_mtime),
+    "extracted meta.txt should have the mtime recorded in the archive"
+)
 
 fs.dir.try_remove(temp_path)
