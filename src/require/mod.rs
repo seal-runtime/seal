@@ -42,7 +42,7 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
             }
         };
 
-        let chunk = Chunk::Src(src);
+        let chunk = Chunk::src(src);
 
         let value = luau.load(chunk).set_name(&resolved_path).eval::<LuaValue>()?;
         
@@ -168,13 +168,13 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
 
 const STD_SEMVER_SRC: &str = include_str!("../std_semver.luau");
 fn load_std_semver(luau: &Lua) -> LuaResult<LuaTable> {
-    let chunk = Chunk::Src(STD_SEMVER_SRC.to_owned());
+    let chunk = Chunk::src(STD_SEMVER_SRC);
     luau.load(chunk).set_name("std/semver").eval::<LuaTable>() // <<>> HACK
 }
 
 const RESOLVER_SRC: &str = include_str!("./resolver.luau");
 pub fn get_resolver(luau: &Lua) -> LuaResult<LuaTable> {
-    let chunk = Chunk::Src(RESOLVER_SRC.to_owned());
+    let chunk = Chunk::src(RESOLVER_SRC);
     let LuaValue::Table(resolver) = luau.load(chunk).eval()? else {
         panic!("require resolver didnt return table??");
     };
@@ -186,7 +186,7 @@ fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
     if let Some(resolve) = f {
         Ok(resolve)
     } else {
-        let chunk = Chunk::Src(RESOLVER_SRC.to_owned());
+        let chunk = Chunk::src(RESOLVER_SRC);
         let LuaValue::Table(resolver) = luau.load(chunk).eval()? else {
             panic!("require resolver didnt return table??");
         };

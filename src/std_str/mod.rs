@@ -960,7 +960,7 @@ pub fn create_internal(luau: &Lua) -> LuaResult<LuaTable> {
 const STR_DOT_LUAU_SRC: &str = include_str!("./str.luau");
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
-    let chunk = Chunk::Src(STR_DOT_LUAU_SRC.to_owned());
+    let chunk = Chunk::src(STR_DOT_LUAU_SRC);
     match luau.load(chunk).set_name("std/str").eval::<LuaTable>() {
         Ok(str_table) => Ok(str_table),
         Err(err) => {

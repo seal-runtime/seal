@@ -64,7 +64,10 @@ fn standalone_eval(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult 
         return wrap_err!("{}: unable to extract bytecode", function_name);
     };
 
-    match luau.load(&bytecode).set_name(&chunk_name).eval::<LuaValue>() {
+    // SAFETY: our compiler has just compiled this bytecode, we trust it to be safe.
+    let bytecode = unsafe { Chunk::bytecode(bytecode) };
+
+    match luau.load(bytecode).set_name(&chunk_name).eval::<LuaValue>() {
         Ok(value) => Ok(value),
         Err(err) => {
             wrap_err!("{}: error evaluating bytecode: {}", function_name, err)

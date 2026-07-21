@@ -111,7 +111,7 @@ pub fn bundle(project_path: &Path) -> LuaResult<String> {
     let luau = Lua::new();
     globals::set_globals(&luau, "bundler")?;
     
-    let chunk = Chunk::Src(BUNDLER_SRC.to_owned());
+    let chunk = Chunk::src(BUNDLER_SRC);
     let bundle = match luau.load(chunk).set_name("bundle.luau").eval::<LuaFunction>() {
         Ok(bundle) => bundle,
         Err(err) => {

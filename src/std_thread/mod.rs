@@ -222,7 +222,7 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
             .build_readonly()?
         )?;
 
-        let chunk = Chunk::Src(src);
+        let chunk = Chunk::src(src);
         match new_luau.load(chunk).set_name(options.chunk_name).exec() {
             Ok(_) => Ok(()),
             Err(err) => {

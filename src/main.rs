@@ -69,7 +69,7 @@ use globals::SEAL_VERSION;
 type LuauLoadResult = LuaResult<Option<LuauLoadInfo>>;
 struct LuauLoadInfo {
     luau: Lua,
-    code: Chunk,
+    code: Chunk<'static>,
     /// chunk_name is basically the entry_path except it's always an absolute path
     chunk_name: String,
 }
@@ -263,7 +263,7 @@ fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoad
         src = src[first_newline_pos + 1..].to_string();
     }
 
-    Ok(Some(LuauLoadInfo { luau, code: Chunk::Src(src), chunk_name }))
+    Ok(Some(LuauLoadInfo { luau, code: Chunk::src(src), chunk_name }))
 }
 
 fn seal_eval(mut args: Args) -> LuauLoadResult {
@@ -285,7 +285,7 @@ fn seal_eval(mut args: Args) -> LuauLoadResult {
 
     Ok(Some(LuauLoadInfo {
         luau,
-        code: Chunk::Src(src),
+        code: Chunk::src(src),
         // relative require probs wont work atm
         chunk_name: std_env::get_cwd("seal eval")?
             .to_string_lossy()
@@ -346,9 +346,14 @@ fn seal_standalone(bytecode: Vec<u8>) -> LuauLoadResult {
 
     globals::set_globals(&luau, &entry_path)?;
 
+    // SAFETY: standalone bytecode should be valid bytecode for this version of Luau
+    // unless a user has mutated the bytecode in place in the standaone executable file,
+    // in which case the user asserts responsibility for providing valid bytecode.
+    let bytecode = unsafe { Chunk::bytecode(bytecode) };
+
     Ok(Some(LuauLoadInfo {
         luau,
-        code: Chunk::Bytecode(bytecode),
+        code: bytecode,
         chunk_name: entry_path
     }))
 }

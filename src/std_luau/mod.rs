@@ -1,8 +1,7 @@
-use std::path::PathBuf;
-
 use mluau::prelude::*;
-use crate::{Chunk, prelude::*};
+use crate::prelude::*;
 
+use std::path::PathBuf;
 use mluau::Compiler;
 
 struct EvalError {
@@ -144,8 +143,11 @@ fn get_safe_globals(luau: &Lua) -> LuaResult<LuaTable> {
 unsafe fn eval(luau: &Lua, src: Vec<u8>, eval_options: EvalOptions) -> LuaValueResult {
     let name = eval_options.name.unwrap_or("luau.load".to_string());
     let code = match String::from_utf8(src) {
-        Ok(src) => Chunk::Src(src),
-        Err(err) => Chunk::Bytecode(err.into_bytes()),
+        Ok(src) => Chunk::src(src),
+        Err(err) => {
+            // SAFETY: caller in Luau is responsible for providing valid Luau bytecode.
+            unsafe { Chunk::bytecode(err.into_bytes()) }
+        }
     };
 
     fn merge_globals(standard_globals: LuaTable, extra_globals: Option<LuaTable>) -> LuaResult<LuaTable> {

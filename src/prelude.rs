@@ -1,7 +1,5 @@
-use std::borrow::Cow;
-
 use mluau::prelude::*;
-use mluau::AsChunk;
+pub use mluau::ChunkSource as Chunk;
 
 /// luau's actual limit: array/hash parts of a table can each hold at most `1 << MAXBITS` entries,
 /// where MAXBITS is 26 (see luau/VM/src/ltable.cpp); exceeding this aborts the process, so this
@@ -11,31 +9,6 @@ pub use crate::{
     std_io::colors as colors, wrap_err, table_helpers::TableBuilder,
     put, puts, eput, eputs, signatures
 };
-
-
-/// Chunk of Luau code, either sourcecode (valid utf8) or bytecode (never valid utf8)
-/// this is needed because passing invalid bytecode to luau.load causes segfaults at runtime
-/// If we apply any transformations on code before luau.load we need to ensure only src
-/// gets transformed and not bytecode. This newtype wrapper implements `AsChunk` to handle any such
-/// transformations in one place.
-pub enum Chunk {
-    Src(String),
-    Bytecode(Vec<u8>)
-}
-impl AsChunk for Chunk {
-    fn source<'a>(&self) -> std::io::Result<std::borrow::Cow<'a, [u8]>>
-    where
-        Self: 'a 
-    {
-        Ok(match self {
-            Chunk::Src(src) => {
-                // TODO: any future source code transformations
-                Cow::Owned(src.as_bytes().to_owned())
-            },
-            Chunk::Bytecode(bytecode) => Cow::Owned(bytecode.to_owned()),
-        })
-    }
-}
 
 pub type LuaValueResult = LuaResult<LuaValue>;
 pub type LuaEmptyResult = LuaResult<()>;
@@ -118,7 +91,7 @@ impl DebugInfo {
                 function_name = if function_name == "" then "top level" else function_name,
             }
         "#;
-        let chunk = Chunk::Src(SLN_SRC.to_owned());
+        let chunk = Chunk::src(SLN_SRC);
         let LuaValue::Table(info) = luau.load(chunk).set_name("gettin da debug info").eval()? else { // <<>> HACK
             return wrap_err!("{}: can't get debug info", function_name);
         };
