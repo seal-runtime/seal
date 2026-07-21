@@ -97,7 +97,3 @@ opt-level = 3 # otherwise rsa keygen takes forever
 members = [
     "tests/rust/crates/example",
 ]
-
-[patch."https://github.com/mluau/luau-src-rs"]
-luau0-src = { path = "/home/deviaze/Repositories/luau-src-rs" }
-

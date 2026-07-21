@@ -1206,6 +1206,7 @@ checksum = "0ceec5bc11778974d1bcb055b18002eba7f4b3518b6a0081b3af5f21666da9ad"
 [[package]]
 name = "luau0-src"
 version = "0.18.3+luau730"
+source = "git+https://github.com/mluau/luau-src-rs#3f2e15d5bcde8466c30229c43dd6aaa70aedbe75"
 dependencies = [
  "cc",
 ]
