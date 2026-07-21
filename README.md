@@ -5,7 +5,7 @@
 <div align="center">
     <img src="assets/seal-smaller.png" width="240" alt="seal mascot reading reference book" /><br />
     <em>the cutest scripting runtime</em><br />
-    <!-- Start-Precommit-Marker-2 --><img src="https://img.shields.io/badge/seal-0.0.8--rc.2-f0f8ff" alt="seal version" /><!-- End-Precommit-Marker-2 --> <!-- Start-Precommit-Marker-3 --><img src="https://img.shields.io/badge/Luau-0.725-4f99ba" alt="Luau version" /><!-- End-Precommit-Marker-3 --><br /><br />
+    <!-- Start-Precommit-Marker-2 --><img src="https://img.shields.io/badge/seal-0.0.8--rc.2-f0f8ff" alt="seal version" /><!-- End-Precommit-Marker-2 --> <!-- Start-Precommit-Marker-3 --><img src="https://img.shields.io/badge/Luau-0.730-4f99ba" alt="Luau version" /><!-- End-Precommit-Marker-3 --><br /><br />
     <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
 </div>
 <br>

@@ -74,15 +74,16 @@ local hook_path = ".git/hooks/pre-commit"
 local SCRIPT_SRC = [[
 #!/bin/sh
 if command -v seal > /dev/null 2>&1; then
-    SEAL=seal
+    BOOTSTRAP=seal
 elif [ -x "./target/release/seal" ]; then
-    SEAL="./target/release/seal"
+    BOOTSTRAP="./target/release/seal"
 elif [ -x "./target/debug/seal" ]; then
-    SEAL="./target/debug/seal"
+    BOOTSTRAP="./target/debug/seal"
 else
     echo "warning: seal not found in PATH or ./target/, skipping handcrafted error message update and reference regen"
     exit 0
 fi
+SEAL="$($BOOTSTRAP src/scripts/newest_seal.luau)"
 $SEAL src/scripts/precommit.luau
 $SEAL docs/docscripts/reference.luau
 git add README.md
