@@ -17,6 +17,7 @@ export type archive = {
     deb: deb.deb,
     sevenz: sevenz.sevenz,
     create: () -> Archive,
+    load: (bytes: buffer, format: ArchiveFormat, options: ArchiveOptions?) -> Archive,
 }
 
 return {} :: archive

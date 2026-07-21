@@ -22,6 +22,7 @@ pub const STD_ARCHIVE_DEB_WRITEFILE: &std::ffi::CStr = c"archive.deb.writefile(p
 
 // archive
 pub const STD_ARCHIVE_CREATE: &std::ffi::CStr = c"archive.create() -> Archive";
+pub const STD_ARCHIVE_LOAD: &std::ffi::CStr = c"archive.load(bytes: buffer, format: ArchiveFormat, options: ArchiveOptions?) -> Archive";
 
 // archive.sevenz
 pub const STD_ARCHIVE_SEVENZ_CREATE: &std::ffi::CStr = c"archive.sevenz.create() -> Archive";

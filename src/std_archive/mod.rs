@@ -450,6 +450,51 @@ pub fn archive_create(luau: &Lua, _: LuaValue) -> LuaValueResult {
     }.into_userdata(luau)
 }
 
+/// unlike per-format `<lib>.load`, this takes the format by name, including the single-file
+/// formats (`Gz`, `Bz2`, `Xz`, `Lz4`, `Zst`) that otherwise have no library of their own.
+fn archive_load_any(
+    luau: &Lua,
+    mut multivalue: LuaMultiValue,
+) -> LuaValueResult {
+    let function_name = "archive.load(bytes: buffer, format: ArchiveFormat, options: ArchiveOptions?)";
+
+    let contents = match multivalue.pop_front() {
+        Some(LuaValue::Buffer(buffy)) => buffy.to_vec(),
+        Some(LuaValue::String(s)) => s.as_bytes().to_owned(),
+        Some(LuaNil) | None => {
+            return wrap_err!("{}: called without required argument 'bytes' (expected buffer, got nothing or nil)", function_name);
+        },
+        Some(other) => {
+            return wrap_err!("{}: expected bytes to be a buffer, got: {:?}", function_name, other);
+        }
+    };
+
+    let format = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => entry::archive_format_from_str(&s.to_string_lossy(), function_name)?,
+        Some(LuaNil) | None => {
+            return wrap_err!("{}: called without required argument 'format' (expected an ArchiveFormat string)", function_name);
+        },
+        Some(other) => {
+            return wrap_err!("{}: expected format to be an ArchiveFormat string, got: {:?}", function_name, other);
+        }
+    };
+
+    let options = multivalue.pop_front().unwrap_or(LuaNil);
+    let options = ArchiveOptions::from_value(options, function_name)?;
+
+    let entries = extract::contents(
+        contents,
+        None,
+        &options,
+        format,
+        function_name
+    )?;
+
+    Archive {
+        entries
+    }.into_userdata(luau)
+}
+
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_value("zip", libraries::Zip::create(luau)?)?
@@ -458,5 +503,6 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_value("deb", libraries::Deb::create(luau)?)?
         .with_value("sevenz", libraries::Sevenz::create(luau)?)?
         .with_function_and_signature("create", archive_create, signatures::STD_ARCHIVE_CREATE)?
+        .with_function_and_signature("load", archive_load_any, signatures::STD_ARCHIVE_LOAD)?
         .build_readonly()
 }

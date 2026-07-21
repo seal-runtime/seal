@@ -79,6 +79,18 @@ function archive.create() -> Archive,
 
 ---
 
+### archive.load
+
+<h4>
+
+```luau
+function archive.load(bytes: buffer, format: ArchiveFormat, options: ArchiveOptions?) -> Archive,
+```
+
+</h4>
+
+---
+
 ```luau
 } -- closes archive
 ```
