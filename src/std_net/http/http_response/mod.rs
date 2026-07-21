@@ -174,7 +174,7 @@ impl HttpResponse {
         match Self::is_json(&self_table, function_name)? {
             IsJson::Yes => {
                 let body = Self::get_body(&self_table, function_name)?;
-                match std_json::json_decode(luau, body) {
+                match std_json::decode(luau, &body) {
                     Ok(value) => Ok(value),
                     Err(err) => {
                         wrap_err!("{}: HttpResponse.content_type.mime_type was application/json but we encountered an error decoding the json body: {}", function_name, err)
@@ -183,7 +183,7 @@ impl HttpResponse {
             },
             IsJson::Maybe => {
                 let body = Self::get_body(&self_table, function_name)?;
-                match std_json::json_decode(luau, body) {
+                match std_json::decode(luau, &body) {
                     Ok(value) => Ok(value),
                     Err(_) => Ok(LuaNil)
                 }
@@ -211,7 +211,7 @@ impl HttpResponse {
 
         let body = Self::get_body(&self_table, function_name)?;
 
-        std_json::json_decode(luau, body)
+        std_json::decode(luau, &body)
     }
 
     fn display(luau: &Lua, multivalue: LuaMultiValue) -> LuaValueResult {

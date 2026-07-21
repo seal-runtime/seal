@@ -5,6 +5,7 @@ local prompt = require("@std/io/prompt")
 local luau = require("@std/luau")
 local process = require("@std/process")
 local semver = require("@std/semver")
+
 local seal_setup = (require :: any)("@internal/setup") :: {
     extract_typedefs: (path: string) -> (),
     extract_extra: (path: string) -> (),
@@ -100,6 +101,22 @@ local function update_config_luau_version(config_path: string)
     fs.writefile(config_path, table.concat(lines, "\n"))
 end
 
+local function is_this_seals_repository(): boolean
+    local cwd = env.cwd()
+    local dot_luaurc = fs.path.join(cwd, ".luaurc")
+    local content, status = fs.file.try_read(dot_luaurc)
+    if content and status == "Ok" then
+        -- if .luaurc has this string we absolutely know it's seal's repo and we shouldn't be allowed to run seal regen here
+        if string.find(content, "seal.gamertag-epic_swag-hina-_seal.LEVEL-69420_1337.requires-tests.data_directory", 1, true) then
+            return true
+        end
+    end
+    return false
+end
+
+if is_this_seals_repository() then
+    error("You accidentally ran seal regen within seal's own repository. This is almost always a mistake; seal prevents this to avoid clobbering its own typedefs during development.")
+end
 local path = get_dotseal_path()
 
 -- check if version mismatch

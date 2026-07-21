@@ -444,6 +444,8 @@ pub const STD_SERDE_ZSTD_DECOMPRESS: &std::ffi::CStr = c"serde.zstd.decompress(c
 
 // str
 pub const STD_STR_CHARS: &std::ffi::CStr = c"str.chars(s: string) -> () -> (number, string)";
+pub const STD_STR_CONVERT: &std::ffi::CStr = c"str.convert(s: string | buffer, to: Encoding, from: Encoding?) -> string";
+pub const STD_STR_ENCODING: &std::ffi::CStr = c"str.encoding(s: string | buffer) -> Encoding";
 pub const STD_STR_ENDS: &std::ffi::CStr = c"str.ends(s: string, ...: string) -> boolean";
 pub const STD_STR_ENDSWITH: &std::ffi::CStr = c"str.endswith(s: string, suffix: string) -> boolean";
 pub const STD_STR_ESCAPE: &std::ffi::CStr = c"str.escape(s: string) -> string";
@@ -451,12 +453,17 @@ pub const STD_STR_GRAPHEMES: &std::ffi::CStr = c"str.graphemes(s: string) -> () 
 pub const STD_STR_INDENT: &std::ffi::CStr = c"str.indent(s: string, whitespace_type: \"Tabs\" | \"Spaces\", count: number, sep: \"\n\" | \"\r\n\"?) -> string";
 pub const STD_STR_LEFTPAD: &std::ffi::CStr = c"str.leftpad(s: string, width: number, pad: string?) -> string";
 pub const STD_STR_LEN: &std::ffi::CStr = c"str.len(s: string) -> number";
+pub const STD_STR_REPLACE: &std::ffi::CStr = c"str.replace(s: string, old: string, new: string, max_replacements: number?, start_index: number?, end_index: number?) -> string";
+pub const STD_STR_REVERSE: &std::ffi::CStr = c"str.reverse(s: string) -> string";
+pub const STD_STR_RIGHTPAD: &std::ffi::CStr = c"str.rightpad(s: string, width: number, pad: string?) -> string";
 pub const STD_STR_SLICE: &std::ffi::CStr = c"str.slice(s: string, first: number, final: number)";
 pub const STD_STR_SPLIT: &std::ffi::CStr = c"str.split(s: string, ...: string) -> { [number]: string }";
 pub const STD_STR_SPLITAFTER: &std::ffi::CStr = c"str.splitafter(s: string, seps: string, ...: string) -> { [number]: string }";
 pub const STD_STR_SPLITAROUND: &std::ffi::CStr = c"str.splitaround(s: string, seps: string, ...: string) -> { [number]: string }";
+pub const STD_STR_SPLITBACK: &std::ffi::CStr = c"str.splitback(s: string, sep: string, max: number?) -> { [number]: string }";
 pub const STD_STR_SPLITBEFORE: &std::ffi::CStr = c"str.splitbefore(s: string, seps: string, ...: string) -> { [number]: string }";
-pub const STD_STR_SPLITLINES: &std::ffi::CStr = c"str.splitlines(s: string, trim_trailing_whitespace: boolean?) -> { [number]: string }";
+pub const STD_STR_SPLITFRONT: &std::ffi::CStr = c"str.splitfront(s: string, sep: string, max: number?) -> { [number]: string }";
+pub const STD_STR_SPLITLINES: &std::ffi::CStr = c"str.splitlines(s: string, trim_trailing_whitespace: boolean?, include_terminator: boolean?) -> { [number]: string }";
 pub const STD_STR_STARTS: &std::ffi::CStr = c"str.starts(s: string, ...: string) -> boolean";
 pub const STD_STR_STARTSWITH: &std::ffi::CStr = c"str.startswith(s: string, prefix: string) -> boolean";
 pub const STD_STR_TRIM: &std::ffi::CStr = c"str.trim(s: string, ...: string) -> string";

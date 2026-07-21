@@ -438,7 +438,7 @@ fn serialize_data_for_transit(luau: &Lua, value: LuaValue, function_name: &'stat
 }
 
 fn deserialize_data_from_transit(luau: &Lua, data: String) -> LuaValueResult {
-    match std_json::json_decode(luau, data.clone()) {
+    match std_json::decode(luau, &data) {
         Ok(d) => Ok(d),
         Err(_) => ok_string(data, luau),
     }

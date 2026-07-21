@@ -55,7 +55,7 @@ fn decode(luau: &Lua, value: LuaValue) -> LuaValueResult {
             return wrap_err!("{}: error converting YamlValue into intermediate json string representation: {}", function_name, err);
         }
     };
-    std_json::json_decode(luau, intermediate_json_representation)
+    std_json::decode(luau, &intermediate_json_representation)
 }
 
 fn yaml_readfile(luau: &Lua, value: LuaValue) -> LuaValueResult {
@@ -84,7 +84,7 @@ fn yaml_readfile(luau: &Lua, value: LuaValue) -> LuaValueResult {
             return wrap_err!("{}: error converting YamlValue into intermediate json string representation: {}", function_name, err);
         }
     };
-    std_json::json_decode(luau, intermediate_json_representation)
+    std_json::decode(luau, &intermediate_json_representation)
 }
 
 fn yaml_writefile(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {

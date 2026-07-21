@@ -195,13 +195,13 @@ impl LuaUserData for TimeDuration {
         });
 
         methods.add_meta_method(LuaMetaMethod::Add, |luau, this, other| {
-            let function_name = "TimeDuration.__add(self, other: TimeDuration)";
+            let function_name = "Duration.__add(self, other: Duration)";
             let result = match other {
                 LuaValue::UserData(ud) => match ud.borrow::<TimeDuration>() {
                     Ok(other) => this.inner.checked_add(other.inner),
-                    Err(err) => return wrap_err!("{}: other must be TimeDuration; err: {}", function_name, err),
+                    Err(err) => return wrap_err!("{}: other must be Duration; err: {}", function_name, err),
                 },
-                other => return wrap_err!("{} expected TimeDuration, got {:?}", function_name, other),
+                other => return wrap_err!("{} expected Duration, got {:?}", function_name, other),
             };
 
             match result {
@@ -211,13 +211,13 @@ impl LuaUserData for TimeDuration {
         });
 
         methods.add_meta_method(LuaMetaMethod::Sub, |luau, this, other| {
-            let function_name = "TimeDuration.__sub(self, other: TimeDuration)";
+            let function_name = "Duration.__sub(self, other: Duration)";
             let result = match other {
                 LuaValue::UserData(ud) => match ud.borrow::<TimeDuration>() {
                     Ok(other) => this.inner.checked_sub(other.inner),
-                    Err(err) => return wrap_err!("{}: other must be TimeDuration; err: {}", function_name, err),
+                    Err(err) => return wrap_err!("{}: other must be Duration; err: {}", function_name, err),
                 },
-                other => return wrap_err!("{} expected TimeDuration, got {:?}", function_name, other),
+                other => return wrap_err!("{} expected Duration, got {:?}", function_name, other),
             };
 
             match result {
@@ -226,36 +226,86 @@ impl LuaUserData for TimeDuration {
             }
         });
 
+        methods.add_meta_method(LuaMetaMethod::Mul, |luau, this, other: LuaValue| {
+            let function_name = "Duration.__mul(self, other: Duration | number)";
+            let secs = match other {
+                LuaValue::UserData(ud) => match ud.borrow::<TimeDuration>() {
+                    Ok(other) => this.inner.as_secs_f64() * other.inner.as_secs_f64(),
+                    Err(err) => return wrap_err!("{}: other must be Duration; err: {}", function_name, err),
+                },
+                LuaValue::Number(n) => this.inner.as_secs_f64() * n,
+                LuaValue::Integer(i) => this.inner.as_secs_f64() * i as f64,
+                other => return wrap_err!("{} expected Duration or number, got {:?}", function_name, other),
+            };
+            match SignedDuration::try_from_secs_f64(secs) {
+                Ok(signed) => ok_userdata(TimeDuration::new(signed), luau),
+                Err(err) => wrap_err!("{} overflowed bounds, err: {}", function_name, err),
+            }
+        });
+
+        methods.add_meta_method(LuaMetaMethod::Div, |luau, this, other: LuaValue| {
+            let function_name = "Duration.__div(self, other: Duration | number)";
+            let secs = match other {
+                LuaValue::UserData(ud) => match ud.borrow::<TimeDuration>() {
+                    Ok(other) => {
+                        let divisor = other.inner.as_secs_f64();
+                        if divisor == 0.0 {
+                            return wrap_err!("{}: cannot divide by a zero Duration", function_name);
+                        }
+                        this.inner.as_secs_f64() / divisor
+                    }
+                    Err(err) => return wrap_err!("{}: other must be Duration; err: {}", function_name, err),
+                },
+                LuaValue::Number(n) => {
+                    if n == 0.0 {
+                        return wrap_err!("{}: cannot divide by zero", function_name);
+                    }
+                    this.inner.as_secs_f64() / n
+                }
+                LuaValue::Integer(i) => {
+                    if i == 0 {
+                        return wrap_err!("{}: cannot divide by zero", function_name);
+                    }
+                    this.inner.as_secs_f64() / i as f64
+                }
+                other => return wrap_err!("{} expected Duration or number, got {:?}", function_name, other),
+            };
+            match SignedDuration::try_from_secs_f64(secs) {
+                Ok(signed) => ok_userdata(TimeDuration::new(signed), luau),
+                Err(err) => wrap_err!("{} overflowed bounds, err: {}", function_name, err),
+            }
+        });
+
         methods.add_meta_method(LuaMetaMethod::Eq, |_, this, other| {
-            let function_name = "TimeDuration.__eq(self, other: TimeDuration)";
+            let function_name = "Duration.__eq(self, other: Duration)";
             match other {
                 LuaValue::UserData(ud) => match ud.borrow::<TimeDuration>() {
                     Ok(other) => Ok(this.inner == other.inner),
-                    Err(err) => wrap_err!("{}: other must be TimeDuration; err: {}", function_name, err),
+                    Err(err) => wrap_err!("{}: other must be Duration; err: {}", function_name, err),
                 },
-                other => wrap_err!("{} expected TimeDuration, got {:?}", function_name, other),
+                other => wrap_err!("{} expected Duration, got {:?}", function_name, other),
             }
         });
 
         methods.add_meta_method(LuaMetaMethod::Lt, |_, this, other| {
-            let function_name = "TimeDuration.__lt(self, other: TimeDuration)";
+            let function_name = "Duration.__lt(self, other: Duration)";
             match other {
                 LuaValue::UserData(ud) => match ud.borrow::<TimeDuration>() {
                     Ok(other) => Ok(this.inner < other.inner),
-                    Err(err) => wrap_err!("{}: other must be TimeDuration; err: {}", function_name, err),
+                    Err(err) => wrap_err!("{}: other must be Duration; err: {}", function_name, err),
                 },
-                other => wrap_err!("{} expected TimeDuration, got {:?}", function_name, other),
+                other => wrap_err!("{} expected Duration, got {:?}", function_name, other),
             }
         });
 
         methods.add_meta_method(LuaMetaMethod::Le, |_, this, other| {
-            let function_name = "TimeDuration.__le(self, other: TimeDuration)";
+            let function_name = "Duration.__le(self, other: Duration)";
             match other {
                 LuaValue::UserData(ud) => match ud.borrow::<TimeDuration>() {
                     Ok(other) => Ok(this.inner <= other.inner),
-                    Err(err) => wrap_err!("{}: other must be TimeDuration; err: {}", function_name, err),
+                    Err(err) => wrap_err!("{}: other must be Duration; err: {}", function_name, err),
                 },
-                other => wrap_err!("{} expected TimeDuration, got {:?}", function_name, other),
+                other => wrap_err!("{} expected Duration, got {:?}", function_name, other),
             }
         });
 

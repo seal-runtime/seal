@@ -47,6 +47,47 @@ end
 
 sub()
 
+local function mul()
+    local five = filesize.bytes(5)
+    assert(five * filesize.bytes(6) == filesize.bytes(30), "FileSize * FileSize incorrect")
+    assert(five * 3 == filesize.bytes(15), "FileSize * integer incorrect")
+    assert(filesize.bytes(10) * 1.5 == filesize.bytes(15), "FileSize * float incorrect")
+end
+
+mul()
+
+local function div()
+    local thirty = filesize.bytes(30)
+    assert(thirty / filesize.bytes(6) == filesize.bytes(5), "FileSize / FileSize incorrect")
+    assert(thirty / 3 == filesize.bytes(10), "FileSize / integer incorrect")
+    assert(filesize.bytes(15) / 1.5 == filesize.bytes(10), "FileSize / float incorrect")
+end
+
+div()
+
+local function mul_div_errors()
+    local five = filesize.bytes(5)
+    local s1, res1 = pcall(function()
+        return five * -2
+    end)
+    assert(s1 == false, "multiplying by a negative number should error")
+    assert(tostring(res1):match("must be positive"), "negative multiply error message incorrect")
+
+    local s2, res2 = pcall(function()
+        return five / 0
+    end)
+    assert(s2 == false, "dividing by zero should error")
+    assert(tostring(res2):match("divide by zero"), "divide by zero error message incorrect")
+
+    local s3, res3 = pcall(function()
+        return five / filesize.bytes(0)
+    end)
+    assert(s3 == false, "dividing by a zero-byte FileSize should error")
+    assert(tostring(res3):match("zero%-byte FileSize"), "divide by zero-byte FileSize error message incorrect")
+end
+
+mul_div_errors()
+
 local function constructors()
     assert(filesize.kilobytes(1) == filesize.bytes(1_024), "1 KB should be 1024 bytes")
     assert(filesize.megabytes(1) == filesize.kilobytes(1_024), "1 MB should be 1024 KB")
