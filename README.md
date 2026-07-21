@@ -35,6 +35,18 @@ It can surreptitiously swap your one-off Python scripts and shell hacks for stri
 - All the standard compression and archive support you want but with safety and saner defaults.
 - <!-- Start-Precommit-Marker-1 -->1227<!-- End-Precommit-Marker-1 --> handcrafted error messages.
 
+## Big updates
+
+**0.8.0** is adding some huge new features such as:
+
+- customizable table formatting, more colors
+- archives
+- str.encoding/convert between string encodings (utf-8 vs different flavors of utf-16)
+- const, classes, export syntax
+- set your own ssl certs or use system certs for http/websocket libs
+
+[See all updates here](UPDATE.md)
+
 ## Install
 
 Grab the [latest release](https://github.com/deviaze/seal/releases/latest) or check out [these install instructions](docs/install.md) for a detailed walkthrough.
