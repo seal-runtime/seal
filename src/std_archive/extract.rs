@@ -15,6 +15,31 @@ use crate::std_fs::{
     entry::wrap_io_read_errors_empty
 };
 
+/// Windows Defender (and other on-access scanners) can briefly hold a lock on a file or
+/// directory right after it's created, which surfaces to us as a transient `PermissionDenied`
+/// on the immediately following write/create call. Retry a handful of times with a short
+/// backoff before giving up; this race isn't observed on other platforms, so there we just
+/// run `op` once.
+#[cfg(windows)]
+fn retry_on_windows<T>(mut op: impl FnMut() -> std::io::Result<T>) -> std::io::Result<T> {
+    let mut attempt: u32 = 0;
+    loop {
+        match op() {
+            Ok(value) => return Ok(value),
+            Err(err) if err.kind() == std::io::ErrorKind::PermissionDenied && attempt < 5 => {
+                attempt += 1;
+                std::thread::sleep(std::time::Duration::from_millis(20 * attempt as u64));
+            },
+            Err(err) => return Err(err),
+        }
+    }
+}
+
+#[cfg(not(windows))]
+fn retry_on_windows<T>(mut op: impl FnMut() -> std::io::Result<T>) -> std::io::Result<T> {
+    op()
+}
+
 /// Applies an entry's Unix permission bits to the file/directory just written to `path`,
 /// if the source archive format recorded a `mode`. A no-op on non-Unix platforms, since
 /// there's no equivalent permission bit layout to apply there.
@@ -133,7 +158,7 @@ pub fn write_to_disk<P: AsRef<Path>>(
             return wrap_err!("{}: single file entry is empty", function_name);
         };
 
-        if let Err(err) = fs::write(&destination, contents) {
+        if let Err(err) = retry_on_windows(|| fs::write(&destination, contents)) {
             return wrap_io_read_errors_empty(err, function_name, &destination);
         }
         let file = &entries[0];
@@ -146,7 +171,7 @@ pub fn write_to_disk<P: AsRef<Path>>(
             return Ok(());
         };
 
-        if let Err(err) = fs::create_dir_all(parent) {
+        if let Err(err) = retry_on_windows(|| fs::create_dir_all(parent)) {
             if matches!(err.kind(), std::io::ErrorKind::AlreadyExists) {
                 return Ok(());
             }
@@ -188,7 +213,7 @@ pub fn write_to_disk<P: AsRef<Path>>(
 
         match entry {
             ArchiveEntry::Directory { mode, mtime, .. } => {
-                if let Err(err) = fs::create_dir_all(&path) {
+                if let Err(err) = retry_on_windows(|| fs::create_dir_all(&path)) {
                     return wrap_io_read_errors_empty(err, function_name, &path);
                 }
                 apply_mode(&path, *mode, function_name)?;
@@ -200,7 +225,7 @@ pub fn write_to_disk<P: AsRef<Path>>(
                 // fs::write can fail on some platforms if parent path not exist
                 create_parent_if_needed(&path, function_name)?;
 
-                if let Err(err) = fs::write(&path, data) {
+                if let Err(err) = retry_on_windows(|| fs::write(&path, data)) {
                     return wrap_io_read_errors_empty(err, function_name, &path);
                 }
                 apply_mode(&path, *mode, function_name)?;
