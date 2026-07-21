@@ -112,6 +112,29 @@ impl LuaUserData for Archive {
                 Ok(LuaNil)
             }
         );
+        methods.add_method(
+            "info",
+            |luau, this, value: LuaValue| -> LuaValueResult {
+                let function_name = "Archive:info(path_or_index: string | number)";
+                let which = PathOrIndex::from_value(value, function_name)?;
+                let index = match which {
+                    PathOrIndex::Index(idx) => idx - 1, // luau tables use index 1 we use index 0
+                    PathOrIndex::Path(path) => {
+                        let idx = this.index_of_path(&path);
+                        let Some(idx) = idx else {
+                            return Ok(LuaNil);
+                        };
+                        idx
+                    }
+                };
+
+                if let Some(entry) = this.entries.get(index) {
+                    return ok_table(entry::to_info_table(entry, luau));
+                }
+
+                Ok(LuaNil)
+            }
+        );
         methods.add_method_mut(
             "insert",
             |_luau, this, mut multivalue: LuaMultiValue| -> LuaEmptyResult {
@@ -245,9 +268,9 @@ impl LuaUserData for Archive {
                     .iter()
                     .map(|entry| {
                         match entry {
-                            ArchiveEntry::Directory { path } => format!("Directory: {}", path),
+                            ArchiveEntry::Directory { path, .. } => format!("Directory: {}", path),
                             ArchiveEntry::File { path, .. } => format!("File: {}", path),
-                            ArchiveEntry::Symlink { path, target } => format!("Symlink: {} -> {}", path, target),
+                            ArchiveEntry::Symlink { path, target, .. } => format!("Symlink: {} -> {}", path, target),
                         }
                     });
 

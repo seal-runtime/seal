@@ -82,4 +82,54 @@ assert(not pcall(function()
     return zip.readfile(normal_path, { max_file_size = filesize.bytes(1) })
 end), "readfile should error when an entry exceeds max_file_size")
 
+-- mode and mtime survive a create -> serialize -> load roundtrip
+const datetime = require("@std/time/datetime")
+const set_mtime = datetime.now()
+const meta_built = zip.create()
+meta_built:append({ type = "File", path = "meta.txt", content = "meta", mode = 0x1a0 --[[ 0o640 ]], mtime = set_mtime })
+meta_built:append({ type = "Directory", path = "meta_dir/", mode = 0x1e8 --[[ 0o750 ]] })
+const meta_back = zip.load(meta_built:serialize("Zip"))
+
+-- zip's MS-DOS timestamps only have 2-second resolution, so allow a small tolerance
+const function mtime_close(a: DateTime, b: DateTime)
+    return math.abs(a.unix_timestamp - b.unix_timestamp) <= 2
+end
+
+const meta_entry = meta_back:get("meta.txt")
+assert(meta_entry and meta_entry.mode == 0x1a0 --[[ 0o640 ]], `expected meta.txt mode 0o640, got: {meta_entry and meta_entry.mode}`)
+assert(meta_entry.mtime and mtime_close(meta_entry.mtime, set_mtime), "meta.txt mtime didn't survive the zip roundtrip")
+
+const meta_dir_entry = meta_back:get("meta_dir/")
+assert(meta_dir_entry and meta_dir_entry.mode == 0x1e8 --[[ 0o750 ]], `expected meta_dir/ mode 0o750, got: {meta_dir_entry and meta_dir_entry.mode}`)
+
+-- Archive:info exposes the same metadata as :get, minus content
+const meta_info = meta_back:info("meta.txt")
+assert(meta_info ~= nil, "info() should find meta.txt")
+assert(meta_info.type == "File", "info() should report meta.txt as a File")
+assert(meta_info.path == "meta.txt", "info() should report meta.txt's path")
+assert(meta_info.mode == 0x1a0 --[[ 0o640 ]], "info() should report meta.txt's mode")
+assert(meta_info.mtime and mtime_close(meta_info.mtime, set_mtime), "info() should report meta.txt's mtime")
+assert(meta_info.size == filesize.bytes(4), `expected info().size to be 4 bytes, got: {meta_info.size}`)
+
+const missing_info = meta_back:info("does_not_exist.txt")
+assert(missing_info == nil, "info() should return nil for a path that doesn't exist")
+
+-- mode and mtime survive an extract-to-disk roundtrip too
+const meta_extract_path = fs.path.join(temp_path, "meta_extracted")
+zip.writefile(fs.path.join(temp_path, "meta.zip"), meta_built)
+zip.extract(fs.path.join(temp_path, "meta.zip"), meta_extract_path)
+const extracted_meta_file = fs.file(fs.path.join(meta_extract_path, "meta.txt"))
+assert(extracted_meta_file ~= nil, "extract didn't write meta.txt")
+const extracted_meta_metadata = extracted_meta_file:metadata()
+const extracted_unix_mode = extracted_meta_metadata.permissions.unix_mode
+assert(extracted_unix_mode ~= nil, "extracted meta.txt's metadata should include unix_mode on this platform")
+const extracted_meta_mode = bit32.band(extracted_unix_mode, 0x1ff)
+assert(extracted_meta_mode == 0x1a0 --[[ 0o640 ]],
+    `expected extracted meta.txt to have mode 0o640, got: {string.format("%o", extracted_meta_mode)}`)
+
+const extracted_modified_at = extracted_meta_metadata.modified_at
+assert(extracted_modified_at ~= nil, "extracted meta.txt's metadata should include modified_at")
+assert(mtime_close(extracted_modified_at, set_mtime),
+    "extracted meta.txt should have the mtime recorded in the archive")
+
 fs.dir.try_remove(temp_path)

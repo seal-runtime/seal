@@ -1,6 +1,7 @@
 use std::borrow::Cow;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::time::SystemTime;
 
 use mluau::prelude::*;
 use crate::prelude::*;
@@ -13,6 +14,48 @@ use crate::std_fs::{
     file_size::FileSize,
     entry::wrap_io_read_errors_empty
 };
+
+/// Applies an entry's Unix permission bits to the file/directory just written to `path`,
+/// if the source archive format recorded a `mode`. A no-op on non-Unix platforms, since
+/// there's no equivalent permission bit layout to apply there.
+fn apply_mode(path: &Path, mode: Option<u32>, function_name: &'static str) -> LuaEmptyResult {
+    #[cfg(unix)]
+    if let Some(mode) = mode {
+        use std::os::unix::fs::PermissionsExt;
+        if let Err(err) = fs::set_permissions(path, fs::Permissions::from_mode(mode)) {
+            return wrap_io_read_errors_empty(err, function_name, path);
+        }
+    }
+    #[cfg(not(unix))]
+    let _ = mode;
+
+    Ok(())
+}
+
+/// Applies an entry's `mtime` to the file/directory just written to `path`, if the source
+/// archive format recorded one. Opening a directory via `fs::File::open` (rather than
+/// `fs::OpenOptions::new().write(true)`, which directories reject) works on Unix; on Windows
+/// it doesn't, so directory mtimes are best-effort there and silently skipped on failure.
+fn apply_mtime(path: &Path, mtime: Option<SystemTime>, function_name: &'static str) -> LuaEmptyResult {
+    let Some(mtime) = mtime else {
+        return Ok(());
+    };
+
+    let file = match fs::File::open(path) {
+        Ok(file) => file,
+        Err(_) if path.is_dir() => return Ok(()),
+        Err(err) => return wrap_io_read_errors_empty(err, function_name, path),
+    };
+
+    if let Err(err) = file.set_modified(mtime) {
+        if path.is_dir() {
+            return Ok(());
+        }
+        return wrap_io_read_errors_empty(err, function_name, path);
+    }
+
+    Ok(())
+}
 
 const UNSAFE_PATH_BULLETPOINTS: &str = "
 This could mean the archive:
@@ -82,17 +125,20 @@ pub fn write_to_disk<P: AsRef<Path>>(
 ) -> LuaEmptyResult {
     let destination = destination.as_ref().to_path_buf();
     if format.is_single_file() {
-        let contents = if let Some(file) = entries.first() 
+        let contents = if let Some(file) = entries.first()
             && let Some(contents) = file.data()
         {
             contents
         } else {
             return wrap_err!("{}: single file entry is empty", function_name);
         };
-        
+
         if let Err(err) = fs::write(&destination, contents) {
             return wrap_io_read_errors_empty(err, function_name, &destination);
         }
+        let file = &entries[0];
+        apply_mode(&destination, file.mode(), function_name)?;
+        apply_mtime(&destination, file.mtime(), function_name)?;
     }
 
     fn create_parent_if_needed(path: &PathBuf, function_name: &'static str) -> LuaEmptyResult {
@@ -131,6 +177,9 @@ pub fn write_to_disk<P: AsRef<Path>>(
     } else {
         None
     };
+    // directory mtimes are applied after every entry is written, since writing a file inside
+    // a directory bumps that directory's mtime right back
+    let mut directory_mtimes: Vec<(PathBuf, SystemTime)> = Vec::new();
 
     for entry in entries {
         let path = Path::new(entry.path());
@@ -138,20 +187,26 @@ pub fn write_to_disk<P: AsRef<Path>>(
         let path = destination.join(path);
 
         match entry {
-            ArchiveEntry::Directory { .. } => {
+            ArchiveEntry::Directory { mode, mtime, .. } => {
                 if let Err(err) = fs::create_dir_all(&path) {
                     return wrap_io_read_errors_empty(err, function_name, &path);
                 }
+                apply_mode(&path, *mode, function_name)?;
+                if let Some(mtime) = mtime {
+                    directory_mtimes.push((path, *mtime));
+                }
             },
-            ArchiveEntry::File { data, .. } => {
+            ArchiveEntry::File { data, mode, mtime, .. } => {
                 // fs::write can fail on some platforms if parent path not exist
                 create_parent_if_needed(&path, function_name)?;
 
                 if let Err(err) = fs::write(&path, data) {
                     return wrap_io_read_errors_empty(err, function_name, &path);
                 }
+                apply_mode(&path, *mode, function_name)?;
+                apply_mtime(&path, *mtime, function_name)?;
             },
-            symlink @ ArchiveEntry::Symlink { path, target } => {
+            symlink @ ArchiveEntry::Symlink { path, target, .. } => {
                 if !options.allow_symlinks {
                     return wrap_err!("{}: archive has internal symlink from {} -> {}; this is unusual...\n  pass options.symlinks_allowed = true to extract symlinks", function_name, path, target);
                 }
@@ -165,11 +220,15 @@ pub fn write_to_disk<P: AsRef<Path>>(
 
     if let Some(symlinks) = symlinks && !symlinks.is_empty() {
         for link in symlinks {
-            let ArchiveEntry::Symlink { path, target } = link else {
+            let ArchiveEntry::Symlink { path, target, .. } = link else {
                 unreachable!("all ArchiveEntries in symlinks vec should be symlinks");
             };
             crate::std_fs::create_symlink(path, target, function_name)?;
         }
+    }
+
+    for (path, mtime) in directory_mtimes {
+        apply_mtime(&path, Some(mtime), function_name)?;
     }
 
     Ok(())

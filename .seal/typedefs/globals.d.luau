@@ -103,21 +103,53 @@ type ArchiveFile = {
     type: "File",
     path: string,
     content: string,
+    --- Unix permission bits (e.g. `0o644`), if the source format recorded them.
+    mode: number?,
+    --- Last-modified time, if the source format recorded one.
+    mtime: DateTime?,
 }
 type ArchiveDirectory = {
     type: "Directory",
     path: string,
+    --- Unix permission bits (e.g. `0o755`), if the source format recorded them.
+    mode: number?,
+    --- Last-modified time, if the source format recorded one.
+    mtime: DateTime?,
 }
 type ArchiveSymlink = {
     type: "Symlink",
     path: string,
     target: string,
+    --- Unix permission bits, if the source format recorded them.
+    mode: number?,
+    --- Last-modified time, if the source format recorded one.
+    mtime: DateTime?,
 }
 
-type ArchiveEntry = 
+type ArchiveEntry =
     | ArchiveFile
     | ArchiveDirectory
     | ArchiveSymlink
+
+--[=[
+    Lightweight metadata about an entry in an `Archive`, returned by `Archive:info`.
+
+    Unlike `ArchiveEntry` (returned by `Archive:get`), this never carries a file's `content`,
+    so you can inspect every entry in a large archive without reading each file's bytes into
+    memory.
+]=]
+export type ArchiveEntryInfo = {
+    type: "File" | "Directory" | "Symlink",
+    path: string,
+    --- Only present when `type == "Symlink"`.
+    target: string?,
+    --- Only present when `type == "File"`: the size of the file's contents.
+    size: FileSize?,
+    --- Unix permission bits (e.g. `0o644`), if the source format recorded them.
+    mode: number?,
+    --- Last-modified time, if the source format recorded one.
+    mtime: DateTime?,
+}
 
 type ContainerFormat =
     | "Zip"
@@ -157,6 +189,8 @@ declare extern type Archive with
         if an entry doesn't exist at that index.
     ]=]
     function get(self, path_or_index: string | number): ArchiveEntry?
+    --- Gets an entry's metadata (path, type, unix mode, mtime) without allocating the entire file's contents.
+    function info(self, path_or_index: string | number): ArchiveEntryInfo?
     function insert(self, index: number, entry: ArchiveEntry)
     function append(self, entry: ArchiveEntry, ...: ArchiveEntry)
     function remove(self, index: number)

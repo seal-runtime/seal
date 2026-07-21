@@ -68,7 +68,7 @@ checksum = "d67af77d68a931ecd5cbd8a3b5987d63a1d1d1278f7f6a60ae33db485cdebb69"
 [[package]]
 name = "archive"
 version = "0.4.0"
-source = "git+https://github.com/deviaze/archive.git?branch=safer#204b0aca9aaba555cc5f61ab88b89f90d881809a"
+source = "git+https://github.com/deviaze/archive.git?branch=safer#9502e87c70256b576e575aca65787ab39589f4dc"
 dependencies = [
  "ar",
  "bzip2",
