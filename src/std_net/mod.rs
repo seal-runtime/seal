@@ -3,6 +3,7 @@ use mluau::prelude::*;
 pub mod http;
 pub mod serve;
 pub mod websocket;
+pub mod tls_config;
 
 use crate::prelude::*;
 

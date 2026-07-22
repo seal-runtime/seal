@@ -4,7 +4,15 @@ use mluau::prelude::*;
 use url::Url;
 
 use std::net::TcpStream;
-use tungstenite::{Message, protocol::{CloseFrame, frame::coding::CloseCode}, stream::MaybeTlsStream};
+use tungstenite::{
+    Message,
+    Connector,
+    client::IntoClientRequest,
+    protocol::{CloseFrame, frame::coding::CloseCode},
+    stream::MaybeTlsStream,
+};
+
+use super::tls_config;
 
 struct WebsocketMessage {
     inner: Message,
@@ -293,7 +301,7 @@ fn websocket_connect(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResul
         }
     };
 
-    let (websocket, _response) = match tungstenite::connect(url.as_str()) {
+    let (websocket, _response) = match connect_with_shared_tls_config(&url) {
         Ok(pair) => pair,
         Err(err) => {
             return wrap_err!("{}: unable to connect to websocket at '{}' due to err: {}", function_name, &url, err);
@@ -301,6 +309,31 @@ fn websocket_connect(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResul
     };
 
     WebsocketWrapper::new(websocket).get_userdata(luau)
+}
+
+/// Like `tungstenite::connect`, but always passes an explicit `rustls` connector built from
+/// `std_net::tls_config` so websockets respect `SSL_CERT_FILE`/`SEAL_SYSTEM_CERTS` the same
+/// way `@std/net/http` requests do (tungstenite's default connector has no way to plug in a
+/// custom CA bundle).
+fn connect_with_shared_tls_config(
+    url: &Url
+) -> Result<(TungsteniteWebSocket, tungstenite::handshake::client::Response), tungstenite::Error> {
+    let request = url.as_str().into_client_request()?;
+
+    let is_tls = url.scheme() == "wss";
+    let host = url.host_str().ok_or(tungstenite::Error::Url(tungstenite::error::UrlError::NoHostName))?;
+    let port = url.port_or_known_default().unwrap_or(if is_tls { 443 } else { 80 });
+
+    let stream = TcpStream::connect((host, port))?;
+    stream.set_nodelay(true)?;
+
+    let connector = Connector::Rustls(tls_config::rustls_client_config());
+
+    match tungstenite::client_tls_with_config(request, stream, None, Some(connector)) {
+        Ok(pair) => Ok(pair),
+        Err(tungstenite::HandshakeError::Failure(err)) => Err(err),
+        Err(tungstenite::HandshakeError::Interrupted(_)) => unreachable!("blocking handshake should never be interrupted"),
+    }
 }
 
 // use std::net::TcpListener;
