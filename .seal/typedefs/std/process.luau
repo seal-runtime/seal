@@ -103,6 +103,10 @@ export type process = {
     2. Running another program in the background while your program does work.
     3. Launching multiple instances of the same program in parallel.
 
+    Note that stdout and stderr buffer capacity are capped to 200 and 100 KB
+    by default respectively; see `SpawnOptions.stream`'s options to increase or
+    lower this limit.
+
     ## Usage
 
     Listen to the output of a long-running process:
@@ -296,7 +300,7 @@ export type SpawnOptions = {
         To prevent memory leaks (if you spawn a child process and never read from stdout or stderr), each stream's inner buffer capacity is capped,
         and adjustable by setting `stdout_capacity` and `stderr_capacity`, respectively.
 
-        By default, `stdout` streams are capped to 2048 bytes and `stderr` streams to 1028.
+        By default, `stdout` streams are capped to 200 KB and `stderr` streams to 100 KB.
 
         When more bytes are read from the stream than can fit in the buffer, old bytes are drained (and lost!) so the buffer
         can remain the same size (preventing memory leaks).
@@ -311,10 +315,10 @@ export type SpawnOptions = {
         By default, seal truncates bytes from the front of inner, causing old data to be lost first. Set `truncate == "back"` to override this behavior (and preserve old data at the expense of incoming data)
     ]=]
     stream: {
-        --- inner buffer capacity of `ChildProcess.stdout`, default 2048
-        stdout_capacity: number?,
-        --- inner buffer capacity of `ChildProcess.stderr`, default 1024
-        stderr_capacity: number?,
+        --- inner buffer capacity of `ChildProcess.stdout`, default 200 KB
+        stdout_capacity: number | FileSize?,
+        --- inner buffer capacity of `ChildProcess.stderr`, default 100 KB
+        stderr_capacity: number | FileSize?,
         --- what side of stdout should be truncated when full? defaults to "Front"
         stdout_truncate: ("Front" | "Back")?,
         --- what side of stderr should be truncated when full? defaults to "Front"
