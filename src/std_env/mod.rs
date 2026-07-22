@@ -183,6 +183,60 @@ fn env_environment_removevar(luau: &Lua, value: LuaValue) -> LuaValueResult {
     }
 }
 
+fn env_where(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    let function_name = "env.where(name: string)";
+    let name = match value {
+        LuaValue::String(s) => s.to_string_lossy(),
+        other => {
+            return wrap_err!("{}: expected name to be a string, got: {:#?}", function_name, other);
+        }
+    };
+
+    let mut found_paths: Vec<String> = Vec::new();
+
+    if let Some(path_var) = env::var_os("PATH") {
+        #[cfg(target_family = "unix")]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            for dir in env::split_paths(&path_var) {
+                let candidate = dir.join(&name);
+                if let Ok(metadata) = std::fs::metadata(&candidate)
+                    && metadata.is_file()
+                    && metadata.permissions().mode() & 0o111 != 0 {
+                        found_paths.push(candidate.to_string_lossy().to_string());
+                    }
+            }
+        }
+
+        #[cfg(target_os = "windows")]
+        {
+            let pathext = env::var("PATHEXT").unwrap_or_else(|_| String::from(".COM;.EXE;.BAT;.CMD"));
+            let extensions: Vec<&str> = pathext.split(';').filter(|ext| !ext.is_empty()).collect();
+            let has_extension = std::path::Path::new(&name).extension().is_some();
+
+            for dir in env::split_paths(&path_var) {
+                if has_extension {
+                    let candidate = dir.join(&name);
+                    if candidate.is_file() {
+                        found_paths.push(candidate.to_string_lossy().to_string());
+                    }
+                } else {
+                    for extension in &extensions {
+                        let candidate = dir.join(format!("{}{}", name, extension));
+                        if candidate.is_file() {
+                            found_paths.push(candidate.to_string_lossy().to_string());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    let result = luau.create_sequence_from(found_paths)?;
+    result.set_readonly(true);
+    ok_table(Ok(result))
+}
+
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     let formatted_os = match env::consts::OS {
         "linux" => String::from("Linux"),
@@ -215,11 +269,12 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_value("arch", env::consts::ARCH)?
         .with_value("args", luau_args)?
         .with_value("executable_path", executable_path)?
-        .with_value("shell_path", get_current_shell())?
+        .with_value("shell", get_current_shell())?
+        .with_value("vars", vars::create(luau)?)?
         .with_function_and_signature("getvar", env_environment_getvar, c"env.getvar is deprecated, use env.vars.get instead")?
         .with_function_and_signature("setvar", env_environment_setvar, c"env.setvar is deprecated, use env.vars.set instead")?
         .with_function_and_signature("removevar", env_environment_removevar, c"env.removevar is deprecated, use env.vars.unset instead")?
-        .with_value("vars", vars::create(luau)?)?
         .with_function_and_signature("cwd", env_cwd, signatures::STD_ENV_CWD)?
+        .with_function_and_signature("where", env_where, signatures::STD_ENV_WHERE)?
         .build_readonly()
 }

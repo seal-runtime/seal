@@ -10,12 +10,24 @@ export type env = {
     arch: ARCH,
     --- path to the executable running your code; either *seal* itself or a compiled standalone version of *seal*.
     executable_path: string,
+    --- path to the current shell, like `/usr/bin/zsh`. Handles cross-platform edge cases with fallbacks.
+    shell: string,
     --[=[ 
         Get the current working directory of the running process.
 
         Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission denied).
     ]=]
     cwd: () -> string,
+    --[=[
+        Finds 'where' an executable is in your `$PATH`, similar to the common `where` utility
+        on Linux systems. Returns a list of every occurence of `name` in your path
+        in order of PATH precedence.
+
+        On Unix-like, also checks the executable bit to make sure the paths returned are executable.
+
+        On Windows, checks `PATH` and `PATHEXT` for you so you don't have to worry about appending `.exe`.
+    ]=]
+    where: (name: string) -> { string },
     -- below are deprecated; set SEAL_ALLOW_DEPRECATED=TRUE to disable warnings at runtime
     -- --[=[
     -- Gets an environment variable in the current process.
