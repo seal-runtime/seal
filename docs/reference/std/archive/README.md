@@ -74,6 +74,9 @@ fs.removefile(tar_path)
 
 To read an `Archive` into memory, use the respective library's `load` function or `archive.load`.
 
+Note that `Archives` are completely format-generic, you can unzip a zip file and resave it as a tar.gz without
+writing to disk first.
+
 </details>
 
 ---
