@@ -33,7 +33,7 @@ It can surreptitiously swap your one-off Python scripts and shell hacks for stri
 - Powerful multithreading.
 - Best pretty printer in the business for dealing with nested data.
 - All the standard compression and archive support you want but with safety and saner defaults.
-- <!-- Start-Precommit-Marker-1 -->1227<!-- End-Precommit-Marker-1 --> handcrafted error messages.
+- <!-- Start-Precommit-Marker-1 -->1228<!-- End-Precommit-Marker-1 --> handcrafted error messages.
 
 ## Big updates
 
