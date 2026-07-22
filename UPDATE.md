@@ -9,6 +9,10 @@
   basis with `ArchiveOptions` to override some defaults. Let me know if the defaults are
   too low for y'all.
 
+## HTTP Library SSL certificate configuration & system certs
+
+- seal now respects `SSL_CERT_FILE` and allows you to enable/disable `SEAL_SYSTEM_CERTS` (defaults to enabled) to trust system stores. To trust Mozilla CAs instead, set this to `false`.
+
 ## Classes, export, and const
 
 Added experimental support for Luau's experimental classes feature, and brought us to

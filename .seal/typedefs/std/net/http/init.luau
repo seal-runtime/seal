@@ -1,5 +1,19 @@
 --[=[
     Send HTTP Requests.
+
+    By default, the http and websocket libaries trust only system certs.
+
+    If no system certs are found, http library functions will throw an error.
+    It should be very rare for no system certs to be found, and should only really
+    be possible on barebones Linux distros. If that happens, turn off `SEAL_SYSTEM_CERTS` 
+    to force usage of Mozilla CAs.
+
+    To provide custom SSL certs, set `SSL_CERT_FILE` to a `.pem` certificate file,
+    and to disable system certs set `SEAL_SYSTEM_CERTS=false`.
+
+    - If `SEAL_SYSTEM_CERTS=false` and an `SSL_CERT_FILE` is not provided, falls back to
+    Mozilla's public CA. 
+    - If an `SSL_CERT_FILE` is provided and `SEAL_SYSTEM_CERTS=false`, seal trusts only the `SSL_CERT_FILE`.
 ]=]
 export type http = {
     --[=[

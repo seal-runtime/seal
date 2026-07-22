@@ -22,10 +22,10 @@ macro_rules! configure_config_builder {
                 .http_status_as_error(false)
                 .tls_config(
                     ureq::tls::TlsConfig::builder()
-                        .provider(ureq::tls::TlsProvider::NativeTls)
-                        // use the OS trust store (schannel/Windows, system OpenSSL/Linux) instead of
-                        // TlsConfig's default RootCerts::WebPki, which disables platform roots entirely
-                        .root_certs(ureq::tls::RootCerts::PlatformVerifier)
+                        .provider(ureq::tls::TlsProvider::Rustls)
+                        // combines the OS trust store and/or a custom CA bundle depending on
+                        // SEAL_SYSTEM_CERTS/SSL_CERT_FILE; see std_net::tls_config
+                        .root_certs(crate::std_net::tls_config::ureq_root_certs())
                         .build()
                 );
 
