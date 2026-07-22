@@ -5,9 +5,12 @@
 
 `local zip = require("@std/archive/zip")`
 
-Read, write, and extract the ubiquitous DEFLATE-based zip format.
+Read, write, and extract the most common archive type I know of,
+the DEFLATE-based zip format.
 
-Uses DEFLATE's default compression level (6). If you need a different level, open an issue, make a PR, or contact me.
+Uses DEFLATE's default compression level (6).
+
+If you need a different level, open an issue, make a PR, or contact me.
 
 ---
 
@@ -32,6 +35,10 @@ symlink traversal attacks, and caps archive and individual file sizes to prevent
 
 To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
 
+## Errors
+
+Throws an error if the zip file isn't valid, doesn't exist, is permission denied, etc.
+
 </details>
 
 ---
@@ -46,7 +53,8 @@ function zip.readfile(path: string, options: ArchiveOptions?) -> Archive,
 
 </h4>
 
-Reads the zip file at `path` into memory as an `Archive`.
+Reads the zip file at `path` into memory as an `Archive`. Other than requiring `path`
+be a zip file, has the same erroring semantics as `fs.readfile`.
 
 To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
 
@@ -62,7 +70,8 @@ function zip.writefile(path: string, archive: Archive, options: ArchiveOptions?)
 
 </h4>
 
-Writes an archive to `path`.
+Writes an archive to `path`. Other than requiring the `archive` be valid, has the same
+erroring semantics as `fs.writefile`.
 
 To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
 

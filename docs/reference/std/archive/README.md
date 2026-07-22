@@ -40,9 +40,10 @@ export type archive = {
 <summary> See the docs </summary
 
 Extract and create compressed archives (and compressed files) of most common formats.
-This library protects against path/symlink traversal attacks and extraction bombs by default.
+This library protects against path/symlink traversal attacks and extraction bombs by default,
+meaning you may need to increase some defaults to extract large movies or high-def FLAC albums.
 
-This library caps *max total archive size* and *max file size* by default:
+We cap *max total archive size* and *max file size* by default:
 
 - **Max total size:** 4 GB
 - **Max individual file size:** 500 MB
@@ -57,13 +58,7 @@ This library currently supports read and write for:
 - deb
 - 7z
 
-As well as these single file formats:
-
-- gz
-- bz2
-- xz
-- lz4
-- zst
+As well as compressed files of: gz, bz2, xz, lz4, zst
 
 ## Usage
 
@@ -141,10 +136,10 @@ function archive.load(bytes: buffer, format: ArchiveFormat, options: ArchiveOpti
 
 <summary> See the docs </summary
 
-Load an archive or single compressed file into memory as an `Archive` from an existing buffer of bytes, given its `format`.
+Load an archive or single compressed file from bytes into memory as an `Archive`.
 
 Use this when the format isn't known up front, or you want to read compressed files (single files)
-as an archive.
+that don't have a dedicated archive library as an archive.
 
 If you know what format you're going to use up front, prefer using its dedicated library's own `load`
 (`zip.load`, `tar.gz.load`), which doesn't need `format` passed in.

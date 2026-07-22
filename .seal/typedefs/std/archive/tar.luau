@@ -7,34 +7,46 @@ local _types = require("./_types")
 ]=]
 export type tar = {
     --[=[
-        gzip-compressed tarballs (`.tar.gz`/`.tgz`) are the most common type of tar 
-        on Linux/Unix-like platforms.
 
-        Fast to compress and decompress with the most universal support of any codec here, but its
-        compression ratio trails xz/zstd/7z.
+        Unzip/Unball(is that a word?) gzip-compressed tarballs (`.tar.gz`/`.tgz`),
+        the most common type of archive on Linux and Unix-like platforms.
 
-        The safe default when you don't know what'll be reading the file back.
+        tar.gz tarballs are fast to decompress and are very well supported, but have a compression ratio lower
+        than tar.xz, zstd, and 7z.
+
+        If you don't know who or what will need to decompress the archive, use zip or this.
 
         Uses gzip's default compression level (6). If you need a different level, open an issue, make a PR, or contact me.
     ]=]
     gz: {
         --[=[
             Extract the tar.gz archive at `path` into a new or existing directory at `destination`.
+            This function has the same erroring semantics as `fs.writefile`.
 
             This protects against path traversal attacks (unexpectedly writing outside destination directory),
             symlink traversal attacks, and caps archive and individual file sizes to prevent extraction bombs.
 
             To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
+
+            ## Errors
+
+            Throws an error if the path doesn't exist, path doesn't lead to a valid `TarGz` archive, 
+            is permission denied, or another IO error occurs.
         ]=]
         extract: (path: string, destination: string, options: ArchiveOptions?) -> (),
         --[=[
-            Read the tar.gz archive at `path` into memory as an `Archive`.
+            Read the tar.gz archive at `path` into memory as an `Archive` with the same erroring semantics
+            as `fs.readfile`.
 
             To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
+
+            ## Errors
+
+            Throws an error if the path doesn't exist, isn't a valid `tar.gz` archive, permission denied, etc. 
         ]=]
         readfile: (path: string, options: ArchiveOptions?) -> Archive,
         --[=[
-            Write an `Archive` to `path` as a tar.gz archive.
+            Write an `Archive` to `path` as a tar.gz archive with the same erorring semantics as `fs.writefile`.
 
             To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
         ]=]
@@ -49,15 +61,12 @@ export type tar = {
         create: () -> Archive,
     },
     --[=[
-        Plain tar archives with no compression.
-
-        No compression overhead means the fastest reads/writes and no CPU cost, at the expense of the
-        largest output size. Useful when bundling data that's already compressed (e.g. media, other archives)
-        where recompressing wouldn't help anyway.
+        Plain tarball with no compression. You might be looking for `tar.gz` instead.
     ]=]
     uncompressed: {
         --[=[
-            Extract the tar archive at `path` into a new or existing directory at `destination`.
+            Extract an uncompressed tar archive at `path` into a new or existing directory at `destination`.
+            This function has the same erroring semantics as `fs.writefile`.
 
             This protects against path traversal attacks (unexpectedly writing outside destination directory),
             symlink traversal attacks, and caps archive and individual file sizes to prevent extraction bombs.
@@ -66,13 +75,13 @@ export type tar = {
         ]=]
         extract: (path: string, destination: string, options: ArchiveOptions?) -> (),
         --[=[
-            Read the tar archive at `path` into memory as an `Archive`.
+            Read the tar archive at `path` into memory as an `Archive` with the same erroring semantics as `fs.readfile`.
 
             To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
         ]=]
         readfile: (path: string, options: ArchiveOptions?) -> Archive,
         --[=[
-            Write an `Archive` to `path` as a tar archive.
+            Write an `Archive` to `path` as an uncompressed tar archive.
 
             To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
         ]=]
@@ -90,8 +99,9 @@ export type tar = {
         xz-compressed tarballs (`.tar.xz`), using LZMA2.
 
         Best-in-class compression ratio, on par with 7z, but noticeably slower to compress than
-        gzip or zstd (decompression stays cheap). Good for release tarballs you compress once and
-        many people decompress.
+        gzip or zstd.
+        
+        Good for release tarballs you compress once and many people decompress.
 
         Uses xz preset 6. If you need a different preset, open an issue, make a PR, or contact me.
     ]=]
@@ -129,10 +139,8 @@ export type tar = {
     --[=[
         lz4-compressed tarballs (`.tar.lz4`).
 
-        The fastest codec here to compress and decompress by a wide margin, at the cost of the
-        worst compression ratio. Best when speed (e.g. repeated packing/unpacking, hot paths) matters
-        more than size on disk.
-
+        The fastest codec here to compress and decompress but has the worst compression ratio.
+        
         Uses lz4's fast mode (level 0), not its high-compression mode. If you need high-compression
         mode or a specific level, open an issue, make a PR, or contact me.
     ]=]
@@ -211,8 +219,9 @@ export type tar = {
         Zstandard-compressed tarballs (`.tar.zst`).
 
         We compress at zstd's default level (3), which is fast like gzip/lz4 while landing closer to
-        xz's ratio than gzip does. The best general-purpose choice unless you need gzip's ubiquity or
-        xz/7z's maximum ratio.
+        xz's ratio than gzip does. 
+        
+        The best general-purpose choice unless you need gzip (`tar.gz`) ubiquity or xz/7z's maximum ratio.
 
         If you want to write `tar.zst` archives with a different compression level or other zstd
         options (checksums, window log, etc.), create the tarball as tar.uncompressed and then
@@ -220,7 +229,8 @@ export type tar = {
     ]=]
     zst: {
         --[=[
-            Extract the tar.zst archive at `path` into a new or existing directory at `destination`.
+            Extract the tar.zst archive at `path` into a new or existing directory at `destination`. Same erroring
+            semantics as `fs.writefile`.
 
             This protects against path traversal attacks (unexpectedly writing outside destination directory),
             symlink traversal attacks, and caps archive and individual file sizes to prevent extraction bombs.

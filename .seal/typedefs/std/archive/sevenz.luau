@@ -12,22 +12,26 @@ export type ArchiveFormat = _types.ArchiveFormat
 ]=]
 export type sevenz = {
     --[=[
-        Extract the 7z archive at `path` into a new or existing directory at `destination`.
+        Extract the 7z archive at `path` into the directory at `destination`, creating a new
+        directory if needed. This function has the same erroring semantics as `fs.writefile`.
 
         This protects against path traversal attacks (unexpectedly writing outside destination directory),
         symlink traversal attacks, and caps archive and individual file sizes to prevent zip bombs.
+
+        If you hit an error extracting a directory to a destination folder you're re-using, just remove that
+        destination folder first with `fs.removetree`.
 
         To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
     ]=]
     extract: (path: string, destination: string, options: ArchiveOptions?) -> (),
     --[=[
-        Read the 7z archive at `path` into memory as an `Archive`.
+        Read the 7z archive at `path` into memory as an `Archive` with the same erroring semantics as `fs.readfile`.
 
         To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
     ]=]
     readfile: (path: string, options: ArchiveOptions?) -> Archive,
     --[=[
-        Write an `Archive` to `path` as a 7z archive.
+        Write an `Archive` to `path` as a 7z archive with the same erorring semantics as `fs.writefile`.
 
         To increase size limits, allow unsafe path traversals or allow symlinks, see `ArchiveOptions`.
     ]=]

@@ -39,7 +39,12 @@ function ar.extract(path: string, destination: string, options: ArchiveOptions?)
 
 </h4>
 
-Extract the ar archive at `path` into a new or existing directory at `destination`.
+Directly extract the ar archive at `path` into directory at `destination`, creating
+a new directory if needed.
+
+This overwrites files in `destination` if those files existed already, but should not
+cause directory issues like overwriting a directory because `ar is a flat archive format that
+doesn't allow directories.
 
 ---
 
@@ -53,7 +58,10 @@ function ar.readfile(path: string, options: ArchiveOptions?) -> Archive,
 
 </h4>
 
-Read the ar archive at `path` into memory as an `Archive`.
+Reads the ar archive at `path` into memory as an `Archive`, with the same erroring semantics as `fs.readfile`.
+
+This may throw an error if one file or the total archive size exceeds the archive lib defaults, pass an
+`ArchiveOptions` to adjust these settings.
 
 ---
 
@@ -67,7 +75,10 @@ function ar.writefile(path: string, archive: Archive, options: ArchiveOptions?) 
 
 </h4>
 
-Write an `Archive` to `path` as an ar archive; the archive's entries must be flat (no directories).
+Write an `Archive` to `path` as an ar archive, following the same erroring semantics as `fs.writefile`.
+
+The archive must be completely flat (no directories) because directories aren't supported by
+the ar format.
 
 ---
 
@@ -82,6 +93,9 @@ function ar.load(bytes: buffer, options: ArchiveOptions?) -> Archive,
 </h4>
 
 Load an ar archive into memory as an `Archive` from an existing buffer of bytes.
+
+This may throw an error if one file or the total archive size exceeds the archive lib defaults, pass an
+`ArchiveOptions` to adjust these settings.
 
 ---
 
