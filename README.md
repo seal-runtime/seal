@@ -39,11 +39,10 @@ It can surreptitiously swap your one-off Python scripts and shell hacks for stri
 
 **0.8.0** is adding some huge new features such as:
 
-- customizable table formatting, more colors
 - archives
-- str.encoding/convert between string encodings (utf-8 vs different flavors of utf-16)
+- customizable table formatting, more colors
+- str.encoding/convert (utf-8 <-> different flavors of utf-16)
 - const, classes, export syntax
-- set your own ssl certs or use system certs for http/websocket libs
 
 [See all updates here](UPDATE.md)
 
