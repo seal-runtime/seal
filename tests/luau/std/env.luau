@@ -68,3 +68,10 @@ local function rem()
 end
 
 rem()
+
+const function where()
+    const seal_paths = env.where("git")
+    print(seal_paths)
+end
+
+where()

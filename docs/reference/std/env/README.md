@@ -65,6 +65,20 @@ executable_path: string,
 
 ---
 
+### env.shell
+
+<h4>
+
+```luau
+shell: string,
+```
+
+</h4>
+
+ path to the current shell, like `/usr/bin/zsh`. Handles cross-platform edge cases with fallbacks.
+
+---
+
 ### env.cwd
 
 <h4>
@@ -78,6 +92,32 @@ function env.cwd() -> string,
 Get the current working directory of the running process.
 
 Errors if the `cwd` doesn't exist or otherwise isn't accessible (permission denied).
+
+---
+
+### env.where
+
+<h4>
+
+```luau
+function env.where(name: string) -> { string },
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Finds 'where' an executable is in your `$PATH`, similar to the common `where` utility
+on Linux systems. Returns a list of every occurence of `name` in your path
+in order of PATH precedence.
+
+On Unix-like, also checks the executable bit to make sure the paths returned are executable.
+
+On Windows, checks `PATH` and `PATHEXT` for you so you don't have to worry about appending `.exe`.
+
+</details>
 
 ---
 

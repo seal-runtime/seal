@@ -136,6 +136,7 @@ pub const STD_CRYPT_RSA_GENERATEKEYS: &std::ffi::CStr = c"crypt.rsa.generatekeys
 
 // env
 pub const STD_ENV_CWD: &std::ffi::CStr = c"env.cwd() -> string";
+pub const STD_ENV_WHERE: &std::ffi::CStr = c"env.where(name: string) -> { [number]: string }";
 
 // env.vars
 pub const STD_ENV_VARS_ALL: &std::ffi::CStr = c"env.vars.all() -> { [string]: string }";
