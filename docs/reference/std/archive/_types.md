@@ -15,6 +15,16 @@ export type ArchiveOptions = {
 
 </h4>
 
+Overrides for path safety and archive bomb limits.
+
+The default limits are kinda low, be sure to increase them if you know
+you're going to be extracting large files.
+
+- **Max total size:** 4 GB
+- **Max individual file size:** 500 MB
+- **allow_unsafe_path_traversals:** false, obviously
+- **allow_symlinks:** also false by default
+
 ---
 
 ### ArchiveOptions.max_file_size
@@ -81,7 +91,8 @@ export type ContainerFormat =
 
 </h4>
 
-Multi-file archive formats: containers that hold many entries (files, directories, symlinks).
+These hold multiple files, but only some (the ones that aren't Ar and Deb)
+can also hold directories. Can also hold symlinks, but symlinks are weird.
 
 ---
 
@@ -155,8 +166,10 @@ export type SingleFileFormat =
 
 </h4>
 
-Single-file compression formats: these wrap exactly one file's contents rather than a
-directory tree, so serializing to one of these requires an `Archive` holding a single entry.
+Compressed file formats that hold a single file.
+
+We treat these as `Archive`s internally because they're handled by the same crate,
+so you can read these as an archive of just 1 file.
 
 ---
 
@@ -199,8 +212,6 @@ export type ArchiveFormat = ContainerFormat | SingleFileFormat
 ```
 
 </h4>
-
- Any format an `Archive` can be serialized to; see `ContainerFormat` and `SingleFileFormat`.
 
 ---
 
