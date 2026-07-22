@@ -322,7 +322,7 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function_and_signature("confirm", prompt_confirm, signatures::STD_IO_PROMPT_CONFIRM)?
         .build()?;
 
-    let chunk = Chunk::Src(PROMPT_DOT_LUAU_SRC.to_owned());
+    let chunk = Chunk::src(PROMPT_DOT_LUAU_SRC);
     let prompt_table = match luau.load(chunk).eval::<LuaTable>() {
         Ok(t) => t,
         Err(err) => {

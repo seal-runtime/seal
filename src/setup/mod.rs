@@ -87,7 +87,7 @@ pub fn run(options: SetupOptions) -> LuaEmptyResult {
     let cwd = std_env::get_cwd("seal setup")?;
     let temp_luau = Lua::default();
     globals::set_globals(&temp_luau, cwd.to_string_lossy())?;
-    let chunk = Chunk::Src(SETUP_SRC.to_owned());
+    let chunk = Chunk::src(SETUP_SRC);
     let setup_table = match temp_luau.load(chunk).set_name("seal setup").eval::<LuaValue>() {
         Ok(t) => match t {
             LuaValue::Table(t) => t,
@@ -119,7 +119,7 @@ pub fn regen() -> LuaEmptyResult {
     let cwd = std_env::get_cwd("seal regen")?;
     let temp_luau = Lua::default();
     globals::set_globals(&temp_luau, cwd.to_string_lossy())?;
-    let chunk = Chunk::Src(REGEN_SRC.to_owned());
+    let chunk = Chunk::src(REGEN_SRC);
     if let Err(err) = temp_luau.load(chunk).set_name("seal regen").exec() {
         return wrap_err!("seal regen: {}", err);
     }

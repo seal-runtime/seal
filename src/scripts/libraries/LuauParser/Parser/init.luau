@@ -6323,19 +6323,47 @@ local function parseChunk(sourceText: string, parseOptions: Syntax.Options): Syn
 	return result
 end
 
+export type Result = Syntax.Result
+
 return {
-	parse = function(source: string, options: Syntax.Options?): (boolean, Syntax.Result)
+	-- parse = function(source: string, options: Syntax.Options?): (boolean, Syntax.Result)
+	parse = function(source: string, options: Syntax.Options?): Syntax.Result | error
 		local parseOptions = options or {} :: Syntax.Options
 		local success, result = pcall(parseChunk, source, parseOptions)
 		local root = if success then result else nil
 
-		return success and #parseErrors == 0,
-			{
-				root = if success then root else nil,
+		-- return success and #parseErrors == 0,
+		-- 	{
+		-- 		root = if success then root else nil,
+		-- 		commentLocations = commentLocations,
+		-- 		hotcomments = hotcomments,
+		-- 		errors = parseErrors,
+		-- 	}
+
+		if success then
+			return {
+				root = root,
 				commentLocations = commentLocations,
 				hotcomments = hotcomments,
 				errors = parseErrors,
 			}
+		else
+			local err = require("@std/err")
+			local str = require("@std/str")
+			local path = require("@std/fs/path")
+			local json = require("@std/serde/json")
+
+			local dinfo: string = debug.info(2, "s")
+			local callerPath = str.trimback(str.trimfront(dinfo, "[string \""), "\"]")
+			local parent = path.parent(callerPath)
+			assert(parent, "file calling parser doesnt have a parent")
+
+			local errorsOutputPath = path.join(parent, "parse_errors.json")
+			json.writefile(errorsOutputPath, parseErrors)
+
+			local error_message = `Got {#parseErrors}; parse errors written to {errorsOutputPath}`
+			return err.message(error_message)
+		end
 	end,
 
 	BraceType = BraceType,

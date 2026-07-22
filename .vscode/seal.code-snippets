@@ -1,7 +1,7 @@
 {
   "Prelude imports": {
     "scope": "rust",
-    "prefix": "sprel",
+    "prefix": "prel",
     "body": [
       "use mluau::prelude::*;",
       "use crate::prelude::*;"
@@ -10,10 +10,10 @@
   },
   "Function that returns LuaValueResult": {
     "scope": "rust",
-    "prefix": "flvr",
+    "prefix": "fvr",
     "body": [
       "fn ${1:function}(luau: &Lua, value: LuaValue) -> LuaValueResult {",
-      "    let function_name = \"$0\";",
+      "\tlet function_name = \"$0\";",
       "}"
     ]
   },
@@ -28,10 +28,10 @@
   },
   "Function that takes MultiValue": {
     "scope": "rust",
-    "prefix": "fnmut",
+    "prefix": "fmr",
     "body": [
       "fn ${1:function}(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {",
-      "    let function_name = \"$0\";",
+      "\tlet function_name = \"$0\";",
       "}"
     ]
   },
@@ -40,16 +40,16 @@
     "prefix": "fnmut",
     "body": [
       "fn ${1:function}(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<()> {",
-      "    let function_name = \"$0\";",
+      "\tlet function_name = \"$0\";",
       "}"
     ]
   },
   "Auxiliary function": {
     "scope": "rust",
-    "prefix": "flaux",
+    "prefix": "fnr",
     "body": [
       "fn ${1:function}($3, function_name: &'static str) -> LuaResult<$2> {",
-      "    $0",
+      "\t$0",
       "}"
     ]
   },
@@ -57,5 +57,15 @@
     "scope": "rust",
     "prefix": "rerr",
     "body": "return wrap_err!(\"{}: $0\", function_name);"
+  },
+  "function name in parameter": {
+    "scope": "rust",
+    "prefix": "fnnamep",
+    "body": "function_name: &'static str"
+  },
+  "Add documentation block": {
+    "scope": "luau",
+    "prefix": "doc",
+    "body": "--[=[\n\t$0\n]=]"
   }
 }

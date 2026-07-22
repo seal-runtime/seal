@@ -19,7 +19,7 @@ export type json = {
     writefile: (path: string, data: JsonData, options: EncodeOptions?) -> (),
     writefile_raw: (path: string, data: JsonData) -> (),
     --- returns an object that serializes to json's `null`
-    null: () -> any,
+    null: () -> null,
     --- Treat `t` as an array (will always encode as `[]` even when empty).
     ---
     --- If `t` isn't provided, returns a new array-like table that will serialize to a json array.

@@ -99,6 +99,133 @@ declare extern type interrupt with
     code: "CtrlC" | "CtrlD"
 end
 
+type ArchiveFile = {
+    type: "File",
+    path: string,
+    content: string,
+    --- Unix permission bits (unix_mode, like `0o755`) if present
+    mode: number?,
+    --- Last modified time
+    mtime: DateTime?,
+}
+type ArchiveDirectory = {
+    type: "Directory",
+    path: string,
+    --- Unix permission bits (unix_mode, like `0o755`) if present
+    mode: number?,
+    --- Last modified time
+    mtime: DateTime?,
+}
+type ArchiveSymlink = {
+    type: "Symlink",
+    path: string,
+    target: string,
+    --- Unix permission bits (unix_mode, like `0o755`) if present
+    mode: number?,
+    --- Last modified time if present
+    mtime: DateTime?,
+}
+
+type ArchiveEntry =
+    | ArchiveFile
+    | ArchiveDirectory
+    | ArchiveSymlink
+
+--[=[
+    Info about a specific ArchiveEntry without the entry's contents.
+
+    This exists so you don't have to allocate an entire ArchiveEntry if you're
+    just looping over all entries.
+]=]
+export type ArchiveEntryInfo = {
+    type: "File" | "Directory" | "Symlink",
+    path: string,
+    --- Only present when `type == "Symlink"`.
+    target: string?,
+    --- Only present when `type == "File"`: the size of the file's contents.
+    size: FileSize?,
+    --- Unix permission bits (e.g. `0o644`), if the source format recorded them.
+    mode: number?,
+    --- Last-modified time, if the source format recorded one.
+    mtime: DateTime?,
+}
+
+type ContainerFormat =
+    | "Zip"
+    | "Tar"
+    | "Ar"
+    | "Deb"
+    | "TarGz"
+    | "TarBz2"
+    | "TarXz"
+    | "TarZst"
+    | "TarLz4"
+    | "7z"
+
+type SingleFileFormat =
+    | "Gz"
+    | "Bz2"
+    | "Xz"
+    | "Lz4"
+    | "Zst"
+
+type ArchiveFormat = ContainerFormat | SingleFileFormat
+
+type ArchiveOptions = {
+    max_file_size: FileSize?,
+    max_total_size: FileSize?,
+    allow_symlinks: boolean?,
+    allow_unsafe_path_traversals: boolean?,
+}
+
+--[=[
+    Represents any compressed archive (tar.gz, zip file, 7z, debian packages/etc.)
+
+    The `Archive` type itself is format-agnostic and can be re-saved in a different format.
+
+    To see what's in the archive, try printing it or calling `:paths()` or `:info(path)` on specific paths
+    or indices.
+
+    Please don't try and assume that all paths are unique because most archive types can have many entries
+    with the same path (unlike a real filesystem). Attackers have been known to exploit that before.
+]=]
+declare extern type Archive with
+    function paths(self): { string }
+    --[=[
+        Gets all the info (including content) for the `ArchiveEntry` at the specified index or path.
+
+        If a path is specified (a string), gets the first entry with that path. Prefer using indices
+        instead of paths unless you know all paths are unique.
+    ]=]
+    function get(self, path_or_index: string | number): ArchiveEntry?
+    --- Gets an entry's metadata (path, type, unix mode, mtime) without allocating the entire file's contents.
+    function info(self, path_or_index: string | number): ArchiveEntryInfo?
+    --[=[
+        Adds a single `ArchiveEntry` table to an existing archive in place with similar semantics to `table.insert`.
+    ]=]
+    function insert(self, index: number, entry: ArchiveEntry)
+    --[=[
+        Adds one or more entries to the back of an archive.
+    ]=]
+    function append(self, entry: ArchiveEntry, ...: ArchiveEntry)
+    --[=[
+        Removes the `ArchiveEntry` element by index, shuffling all remaining entries to the front.
+
+        This function only takes an index because an archive can contain multiple identical paths,
+        use `:paths()` to get indices to remove.
+    ]=]
+    function remove(self, index: number)
+    --[=[
+        Compress the archive into a buffer of the requested archive or single file format.
+
+        You can just save this via `fs.readfile`. You could also use any archive library's
+        writefile function to write this directly to disk without needing to create an additional buffer.
+    ]=]
+    function serialize(self, format: ArchiveFormat, options: ArchiveOptions?): buffer
+
+    function __len(self): number
+end
+
 --[=[
     Represents the size of data in bytes, but in a more human-readable way with convenient constructors.
 

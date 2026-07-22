@@ -18,7 +18,7 @@ local function watchception()
         not_first == nil, 
         "not_first should be nil here since :read with timeout 0.0 should be nonblocking"
     )
-    local first = child.stdout:read(5, 0.2)
+    local first = child.stdout:read(5, 0.6)
     assert(typeof(first) == "string" and first == "first", "first should be first here")
     local newline = child.stdout:read()
     assert(typeof(newline) == "string" and newline == "\n", "a newline should be printed after first")

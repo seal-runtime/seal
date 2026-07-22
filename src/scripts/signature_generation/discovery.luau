@@ -2,12 +2,12 @@
 -- Scans .seal/typedefs/std/** and produces typed entries describing each
 -- extractable prefix (module functions and class methods).
 
-local Parser = require("@libraries/LuauParser/Parser")
+local parser = require("@libraries/LuauParser/Parser")
 local fs = require("@std/fs")
 
 local REPO_ROOT = fs.path.project()
-assert(REPO_ROOT)
-local TYPEDEFS_DIR = REPO_ROOT .. "/.seal/typedefs/std"
+assert(REPO_ROOT, "project root doesn't exist?")
+local TYPEDEFS_DIR = fs.path.join(REPO_ROOT, ".seal/typedefs/std")
 
 -- ── Path → prefix ─────────────────────────────────────────────────────────────
 -- fs/file.luau       → fs.file
@@ -229,8 +229,11 @@ local function extract_fn_sigs(typedef_path: string, is_method: boolean, type_na
     local content = fs.file.try_read(typedef_path)
     if not content then return {} end
 
-    local success, result = Parser.parse(content)
-    if not success or not result.root then return {} end
+    -- local success, result = Parser.parse(content)
+    local result = parser.parse(content)
+    if typeof(result) == "error" or not result.root then
+        return {}
+    end
 
     local fns: { [string]: string } = {}
 
@@ -417,8 +420,10 @@ local function discover_entries(): { Entry }
         local content = fs.file.try_read(abs_path)
         if not content then continue end
 
-        local ok, result = Parser.parse(content)
-        if not ok or not result.root then continue end
+        local result = parser.parse(content)
+        if typeof(result) == "error" or not result.root then
+            continue
+        end
 
         local has_module_entry = false
 
@@ -444,9 +449,8 @@ local function discover_entries(): { Entry }
                 end
             end
 
-            if not has_fns then continue end
-
             if is_class then
+                if not has_fns then continue end
                 if not exported then continue end
                 -- Class prefix in c-strings is just the alias name (e.g. "ChildProcess:alive()").
                 -- Constant naming includes the library so "process.ChildProcess" → STD_PROCESS_CHILD_PROCESS_*.
@@ -458,16 +462,23 @@ local function discover_entries(): { Entry }
                     type_name = alias_name,
                 })
             else
-                table.insert(entries, {
-                    prefix = base_prefix,
-                    naming_prefix = base_prefix,
-                    file_path = abs_path,
-                    is_method = false,
-                    type_name = alias_name,
-                })
-                has_module_entry = true
+                -- Module alias with its own callable functions → module entry.
+                -- Aliases with no direct functions but nested function tables (e.g. archive/tar's
+                -- `tar` alias with `gz`, `xz`, ... sub-tables) get no module entry here but still
+                -- have their sub-modules discovered below.
+                if has_fns then
+                    table.insert(entries, {
+                        prefix = base_prefix,
+                        naming_prefix = base_prefix,
+                        file_path = abs_path,
+                        is_method = false,
+                        type_name = alias_name,
+                    })
+                    has_module_entry = true
+                end
 
-                -- Also discover nested table sub-modules (e.g. io.colors.bold, terminal.rawmode)
+                -- Also discover nested table sub-modules (e.g. io.colors.bold, terminal.rawmode,
+                -- archive.tar.gz). Runs whether or not the alias itself has direct functions.
                 for _, prop in (table_type :: any).props do
                     local pname = (prop :: any).name.value :: string
                     if string.sub(pname, 1, 2) == "__" then continue end

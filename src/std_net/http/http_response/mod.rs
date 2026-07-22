@@ -219,7 +219,7 @@ impl HttpResponse {
         if let Some(display_fn) = luau.named_registry_value::<Option<LuaFunction>>("HttpResponse:__display")? {
             display_fn.call(multivalue)
         } else {
-            let display_fn = luau.load(Chunk::Src(DISPLAY_SRC.to_string())).eval::<LuaFunction>()?;
+            let display_fn = luau.load(Chunk::src(DISPLAY_SRC)).eval::<LuaFunction>()?;
             luau.set_named_registry_value("HttpResponse:__display", &display_fn)?;
             display_fn.call(multivalue)
         }

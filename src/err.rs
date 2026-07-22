@@ -2,6 +2,7 @@ use std::panic;
 use mluau::prelude::*;
 use crate::globals;
 use crate::prelude::*;
+use crate::std_err::WrappedError;
 
 use std::io::Write;
 use std::env::VarError;
@@ -41,12 +42,27 @@ pub fn parse_traceback(raw_traceback: String) -> String {
     if let Err(err) = globals::set_globals(&luau_for_traceback, String::default()) {
         unreachable!("setting globals for parse_traceback.luau shouldn't fail; err: {}", err);
     }
-    match luau_for_traceback.load(parse_traceback).eval() {
+    match luau_for_traceback.load(parse_traceback).set_name("seal/src/err/parse_traceback.luau").eval() {
         Ok(LuaValue::Function(parse_traceback)) => {
-            parse_traceback.call::<LuaString>(raw_traceback)
-                .expect("calling parse_traceback.luau should not fail unexpectedly.")
-                .to_string_lossy()
-                .to_string()
+            match parse_traceback.call::<LuaValue>(raw_traceback) {
+                Ok(LuaValue::String(s)) => s.to_string_lossy(),
+                Ok(LuaValue::UserData(ud)) => {
+                    match WrappedError::borrowed(ud) {
+                        Ok(err) => {
+                            panic!("parse_traceback.luau (error formatter) errored at runtime:\n\n{}", err.message());
+                        },
+                        Err(name) => {
+                            panic!("parse_traceback.luau should return string or return an error, got userdata of type: {}", name);
+                        }
+                    }
+                }
+                Ok(other) => {
+                    panic!("parse_traceback.luau should return string or return an error, got: {:?}", other);
+                },
+                Err(err) => {
+                    panic!("parse_traceback.luau should not fail unexpectedly; got error message: {}", err);
+                },
+            }
         },
         Ok(other) => {
             panic!("parse_traceback.luau should return a function??, got: {:#?}", other);
@@ -68,42 +84,67 @@ pub fn setup_panic_hook() {
 
         if let Some(location) = info.location() {
             let nc = colors::are_disabled();
+            
             let (bold_red, yellow, red, reset) = if nc { ("", "", "", "") } else { (colors::BOLD_RED, colors::YELLOW, colors::RED, colors::RESET) };
             let payload_line = format!("{}[PANIC! IN THE SEAL INTERNALS]: {}{}{}{}", bold_red, reset, yellow, payload, reset);
-            let panic_top_line = format!("panic occurred at: [\"{}\"]:{}:{}", location.file(), location.line(), location.column());
+            let panic_occurred_at = format!("panic occurred at: [\"{}\"]:{}:{}", location.file(), location.line(), location.column());
             let rust_backtrace: Option<String> = if let Ok(var) = std::env::var("RUST_BACKTRACE") && !var.eq_ignore_ascii_case("0") {
                 Some(std::backtrace::Backtrace::capture().to_string())
             } else {
                 None
             };
 
-            let mut stderr = std::io::stderr().lock();
+            let save_path = {
+                let dt = jiff::Zoned::now().strftime("%Y-%m-%dT%H:%M:%S%z");
+                format!("PANIC_IN_THE_SEAL_INTERNALS_{dt}.log")
+            };
 
+            let seal_panicked_message = format!("seal panicked. seal is not supposed to panic, so you've found a bug.\nContext and traceback written to {}.\n\nPlease report it here: https://github.com/seal-runtime/seal/issues", save_path);
+
+            let mut stderr = std::io::stderr().lock();
+            
             let we_should_have_stderr_stream = crate::std_io::input::EXPECT_OUTPUT_STREAMS.stderr();
             if we_should_have_stderr_stream {
                 // we should have access to a sane stderr to print on so let's just report to it
-                let _ = writeln!(stderr, "{}\n{}", payload_line, panic_top_line);
-                let _ = writeln!(stderr,
-                    "{}\nseal panicked. seal is not supposed to panic, so you've found a bug.\nPlease report it here: https://github.com/seal-runtime/seal/issues{}",
-                    red, reset
+                let _ = writeln!(stderr, "{}\n{}", payload_line, panic_occurred_at);
+                let _ = writeln!(stderr, "{r}\n{seal_panicked_message}{res}",
+                    r=red,
+                    res=reset
                 );
                 if let Some(ref bt) = rust_backtrace {
                     let _ = writeln!(stderr, "\nRUST BACKTRACE:\n{}", bt);
                 }
             }
 
+            let context = std::env::current_exe().ok().map(|env| {
+                let mut displayable = format!("executable: {}",  env.display());
+                let args = std::env::args()
+                    .collect::<Vec<String>>()
+                    .join(" ");
+                displayable.push('\n');
+                displayable.push_str("args: ");
+                displayable.push_str(&args);
+                displayable
+            });
+
+
             // even if seal is running headless/without visible stderr we want to see panics so we report to a log file
-            let mut payload_lines = "seal panicked. seal is not supposed to panic, so you've found a bug.\nPlease report it here: https://github.com/seal-runtime/seal/issues"
-                .to_string() + "\n" + &payload + "\n" + &panic_top_line + "\n";
-            payload_lines.push_str("RUST BACKTRACE:\n");
+            let mut payload_lines = format!(
+                "{pan}\n\nmessage: {pay}\n{wher}\n{cont}\n",
+                pan=seal_panicked_message,
+                pay=payload,
+                wher=panic_occurred_at,
+                cont=context.unwrap_or_default()
+            );
+            payload_lines.push_str("\nRUST BACKTRACE:\n");
             payload_lines += &rust_backtrace.unwrap_or(std::backtrace::Backtrace::force_capture().to_string());
 
             // we purposefully omit an option for disabling panic logfiles to encourage (annoy)
             // users into reporting seal bugs to the github repository
-            if let Err(err) = std::fs::write("PANIC_IN_THE_SEAL_INTERNALS.log", payload_lines)
+            if let Err(err) = std::fs::write(&save_path, payload_lines)
                 && we_should_have_stderr_stream
             {
-                let _ = writeln!(stderr, "unable to write panic log file to ./PANIC_IN_THE_SEAL_INTERNALS.log due to err: {}", err);
+                let _ = writeln!(stderr, "unable to write panic log file to ./{} due to err: {}", save_path, err);
             };
         }
     }));

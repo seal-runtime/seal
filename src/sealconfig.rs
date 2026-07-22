@@ -55,7 +55,7 @@ impl SealConfig {
             },
         };
 
-        let chunk = Chunk::Src(sealconfig_src);
+        let chunk = Chunk::src(sealconfig_src);
         let sealconfig = match luau.load(chunk).eval::<LuaValue>() {
             Ok(LuaValue::Table(config)) => config,
             Ok(other) => {

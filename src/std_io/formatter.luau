@@ -6,13 +6,14 @@
     associated with iterating through tables
 ]]
 
-local mlua = require("@interop/mlua")
-local colors = require("@std/io/colors")
-local vars = require("@std/env/vars")
-local format = require("@std/io/format")
-local terminal = require("@std/terminal")
+const mlua = require("@interop/mlua")
+const colors = require("@std/io/colors")
+const vars = require("@std/env/vars")
+const format = require("@std/io/format")
+const terminal = require("@std/terminal")
+const err = require("@std/err")
 
-local VECTOR_FOUR_WIDE_MODE = (function()
+const VECTOR_FOUR_WIDE_MODE = (function()
     local s, _ = pcall(function()
         local testvec = (vector.create :: any)(1, 2, 3, 4)
         return testvec.w
@@ -20,7 +21,7 @@ local VECTOR_FOUR_WIDE_MODE = (function()
     return s
 end)()
 
-local function get_table_id(t: { [any]: any }): string
+const function get_table_id(t: { [any]: any }): string
     if typeof(t) ~= "table" then
         error("[INTERNAL] output_process_values.get_table_id got passed something that isn't a table")
     end
@@ -30,9 +31,9 @@ local function get_table_id(t: { [any]: any }): string
     return tableid
 end
 
-local IDENTIFIER_PATTERN = "^[%a_][%w_]*$"
+const IDENTIFIER_PATTERN = "^[%a_][%w_]*$"
 
-local function process_raw_values(
+const function process_raw_values(
     value: any,
     seen_tables: { [string]: string }?,
     depth: number?
@@ -188,8 +189,8 @@ local DIM = colors.codes.DIM
 
 local ORANGE = colors.rgb(vector.create(255, 165, 0))
 
-local is_tty = terminal.tty()
-local is_truecolor = (function()
+const is_tty = terminal.tty()
+const is_truecolor = (function()
     local colorterm = vars.get("COLORTERM")
     return colorterm == "truecolor" or colorterm == "24bit"
 end)()
@@ -205,7 +206,7 @@ local GUIDE_HUE_OFFSETS = {
     vector.create( 20, -30, -30),  -- red
 }
 
-local function compute_guide_colors(): { string }
+const function compute_guide_colors(): { string }
     if not is_truecolor then
         return { CYAN, MAGENTA, BLUE, YELLOW, GREEN, RED }
     end
@@ -220,6 +221,17 @@ local function compute_guide_colors(): { string }
         table.insert(result, colors.rgb(vector.create(r, g, b)))
     end
     return result
+end
+
+--- users can mess up implementing __tostring on tables and class objects
+--- we shouldn't full panic when that happens
+const function checked_tostring(value): string | error
+    local success, result = pcall(tostring, value)
+    if success then
+        assert(type(result) == "string", "checked_tostring result should be a string if success")
+        return result
+    end
+    return err.wrap(`someone bunged up a __tostring implementation ({result})`)
 end
 
 local GUIDE_COLORS: { string } = compute_guide_colors()
@@ -277,8 +289,37 @@ local RIGHT_ANGLED = BOLD .. DIM .. ">" .. RESET
 const ID_CATCHER_PATTERN = "[.]*0x0*([%d%w]+)"
 -- bypass incorrect typeerror
 const INTEGER_TYPE = "integer"
+const CLASS_TYPE = "class"
+const OBJECT_TYPE = "object"
 
-local function stringify_simple_type(value: any, key_function_name: string?): string
+type DisplayFunction = (
+    self: any,
+    depth: number,
+    config: FormatOptions?
+) -> unknown
+
+type FormatOptions = {
+    max_depth: number,
+    indent_spaces: number,
+    max_elements_in_array: number,
+    show_array_indices: boolean,
+    show_metatables: boolean,
+    show_array_length: boolean,
+}
+
+const function call_failable_display(self: unknown, depth: number, options): string?
+    -- objects and userdata may or may not have a function named display
+    const success, display_fn = pcall(function()
+        return (self :: any).display :: DisplayFunction
+    end)
+    if not success or typeof(display_fn) == "error" then
+        return nil
+    end
+    const success, displayed = pcall(display_fn, self, depth, options)
+    return if success and typeof(displayed) == "string" then displayed else nil
+end
+
+const function stringify_simple_type(value: any, key_function_name: string?, depth: number, options: FormatOptions): string
     if type(value) == "number" then
         -- mlua Numbers are BOLD_BLUE and Integers are regular BLUE
         if mlua.isint(value) then
@@ -347,7 +388,11 @@ local function stringify_simple_type(value: any, key_function_name: string?): st
         local thread_id = string.match(tostring(value), ID_CATCHER_PATTERN)
         return "corothread" .. LEFT_ANGLED .. "0x" .. thread_id .. RIGHT_ANGLED
     elseif type(value) == "table" then -- treat a table as a simple value
-        local tostringed = tostring(value)
+        -- local tostringed = tostring(value)
+        local tostringed = checked_tostring(value)
+        if typeof(tostringed) == "error" then
+            return "cannot format value of type " .. typeof(value) .. ": " .. tostring(tostringed)
+        end
         local table_id = string.match(tostringed, ID_CATCHER_PATTERN)
         if table_id then
             local last_five = string.sub(table_id, #table_id - 4, #table_id)
@@ -357,6 +402,11 @@ local function stringify_simple_type(value: any, key_function_name: string?): st
             return tostringed
         end
     elseif type(value) == "userdata" then
+        const displayable = call_failable_display(value, depth, options)
+        if displayable then
+            return displayable
+        end
+
         local tostringed = tostring(value)
         local userdata_id: string? = string.match(tostringed, ID_CATCHER_PATTERN)
         local typeof_userdata = typeof(value)
@@ -371,12 +421,25 @@ local function stringify_simple_type(value: any, key_function_name: string?): st
         end
     elseif type(value) == INTEGER_TYPE then -- bypass incorret TypeError
         return ORANGE .. tostring(value) .. RESET
+    elseif type(value) == CLASS_TYPE then
+        return tostring(value)
+    elseif type(value) == OBJECT_TYPE then
+        const displayable = call_failable_display(value, depth, options)
+        if displayable then
+            return displayable
+        end
+        const checked = checked_tostring(value)
+        if typeof(checked) == "string" then
+            return checked
+        else
+            return "cannot format value of type " .. typeof(value) .. ": " .. tostring(checked)
+        end
     else
         return tostring(value)
     end
 end
 
-local function stringify_table_path(current_table_path: { any }): string
+local function stringify_table_path(current_table_path: { any }, depth: number, options: FormatOptions): string
     local table_path = BOLD_YELLOW .. "self" .. RESET
     for _, level in current_table_path do
         if typeof(level) == "string" then
@@ -388,7 +451,8 @@ local function stringify_table_path(current_table_path: { any }): string
         elseif typeof(level) == "number" then
             table_path ..= LEFT_BRACKET .. BLUE .. level .. RESET .. RIGHT_BRACKET
         else
-            table_path ..= LEFT_BRACKET .. stringify_simple_type(level) .. RIGHT_BRACKET
+            local stringified = stringify_simple_type(level, nil, depth, options)
+            table_path ..= LEFT_BRACKET .. stringified .. RIGHT_BRACKET
         end
     end
     return table_path
@@ -399,7 +463,7 @@ type TablePair = {
     val: any,
 }
 
-local function sort_table_pairs(unsorted_pairs: { TablePair }): { TablePair }
+const function sort_table_pairs(unsorted_pairs: { TablePair }): { TablePair }
     local sorted_pairs: { TablePair } = table.create(#unsorted_pairs) :: { TablePair }
     local seen_indices: { [number]: boolean } = {} -- indices seen/visited in unsorted_pairs
 
@@ -464,7 +528,7 @@ local function sort_table_pairs(unsorted_pairs: { TablePair }): { TablePair }
     return sorted_pairs
 end
 
-local function indents(guidelines: boolean, depth: number, indent_spaces: number): (string, string)
+const function indents(guidelines: boolean, depth: number, indent_spaces: number): (string, string)
     local current_indent: string
     local element_indent: string
     if guidelines then
@@ -488,7 +552,7 @@ local function indents(guidelines: boolean, depth: number, indent_spaces: number
     return current_indent, element_indent
 end
 
-local function process_pretty_values(
+const function process_pretty_values(
     value: any,
     --- seen_tables' keys are tables since they get uniquely hashed, value is stringified path
     seen_tables: { [{ [any]: any }]: string? }?,
@@ -522,6 +586,16 @@ local function process_pretty_values(
     show_array_length = if show_array_length ~= nil then show_array_length else is_tty
 
     local current_indent, element_indent = indents(guidelines, depth, indent_spaces)
+
+    local options: FormatOptions = {
+        max_depth = max_depth,
+        indent_spaces = indent_spaces,
+        max_elements_in_array = max_elements_in_array,
+        show_array_indices = show_array_indices,
+        show_metatables = show_metatables,
+        guidelines = guidelines,
+        show_array_length = show_array_length,
+    }
     
     local current_table_path: { any } = current_table_path or {}
     if type(value) == "table" then
@@ -536,32 +610,13 @@ local function process_pretty_values(
             value_meta = value_meta :: {
                 -- we want to allow downstream users to be able to customize how their data structure
                 -- gets formatted based upon current level of indent and relevant formatting config
-                __display: (
-                    self: any,
-                    depth: number,
-                    config: {
-                        max_depth: number,
-                        indent_spaces: number,
-                        max_elements_in_array: number,
-                        show_array_indices: boolean,
-                        show_metatables: boolean,
-                        show_array_length: boolean,
-                    }?
-                ) -> unknown
+                __display: DisplayFunction
             }
             local success, custom_display = pcall(
                 value_meta.__display,
                 value,
                 depth,
-                {
-                    max_depth = max_depth,
-                    indent_spaces = indent_spaces,
-                    max_elements_in_array = max_elements_in_array,
-                    show_array_indices = show_array_indices,
-                    show_metatables = show_metatables,
-                    guidelines = guidelines,
-                    show_array_length = show_array_length,
-                }
+                options
             )
             if success and typeof(custom_display) == "string" then
                 return custom_display
@@ -700,7 +755,7 @@ local function process_pretty_values(
                 else
                     -- push key to current_table_path before recursion
                     table.insert(current_table_path, key)
-                    seen_tables[val] = stringify_table_path(current_table_path) -- tostring(key)
+                    seen_tables[val] = stringify_table_path(current_table_path, depth, options) -- tostring(key)
                     push(process_pretty_values(val, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length))
                     -- pop key from current_table_path after recursion
                     table.remove(current_table_path, #current_table_path)
@@ -716,10 +771,10 @@ local function process_pretty_values(
                     push(GREEN .. '"' .. val .. '"' .. RESET)
                 end
             elseif type(val) == "number" or type(val) == "boolean" then
-                push(stringify_simple_type(val))
+                push(stringify_simple_type(val, nil, depth, options))
             elseif type(val) == "function" and key_type == "string" then
                 -- pass table key in so we can skip displaying the function_name twice if key == debug.info(val)
-                push(stringify_simple_type(val, key))
+                push(stringify_simple_type(val, key, depth, options))
             else
                 push(process_pretty_values(val, seen_tables, depth + 1, current_table_path, indent_spaces, max_depth, max_elements_in_array, show_array_indices, show_metatables, guidelines, show_array_length))
             end
@@ -744,11 +799,11 @@ local function process_pretty_values(
     elseif type(value) == "string" and depth == 0 then -- calling print("hello world") shouldn't colorize
         return value
     else
-        return stringify_simple_type(value)
+        return stringify_simple_type(value, nil, depth, options)
     end
 end
 
-local function pretty(value: any, ...: any): string
+const function pretty(value: any, ...: any): string
     local now_enabled = colors.enabled()
     if now_enabled ~= colors_enabled_state then
         colors_enabled_state = now_enabled

@@ -1,17 +1,17 @@
 [package]
 name = "seal"
 authors = ["Dev Chrysalis Dalal <dev@deviaze.com>"]
-version = "0.0.8-rc.2"
+version = "0.0.8-rc.3"
 edition = "2024"
 
 # mluau is our custom mlua fork with a greater focus on luau and luau ecosystem
 # support, maintained by Midnight Frost and myself (mostly him).
 [target.'cfg(not(target_os = "android"))'.dependencies]
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-jit", "serialize", "error-send"] }
+mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-jit", "serialize", "error-send", "luau-classes"], branch = "fix-classes" }
 
 [target.'cfg(target_os = "android")'.dependencies]
 # luau jit (ncg) compilation is not available on android
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send"] }
+mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send", "luau-classes"], branch = "fix-classes" }
 
 [dependencies]
 regex = "1.11.1"
@@ -75,6 +75,7 @@ atty = "0.2.14"
 rustyline = "18.0.0"
 # hidden password handling so i dont have to implement it myself with crossterm
 rpassword = "7.4.0"
+# open seal extern plugins (cdylibs)
 libloading = "0.9.0"
 # format.hexdump and dp
 pretty-hex = "0.4.1"
@@ -83,6 +84,14 @@ tungstenite = { version = "0.29.0", features = ["native-tls"] }
 url = "2.5.7"
 # needed for .env support in @std/env/vars
 dotenvy = "0.15.7"
+# very good for byte strings that aren't utf8 but should impl Display
+bstr = "1.12.3"
+# my custom fork of archive crate with huge featureset and safety improvements
+# including writing archives and dealing with unsafe path traversals, also fixes
+# a number of bugs in how it handled protecting against archive bombs in some formats
+archive = { git = "https://github.com/deviaze/archive.git", branch = "safer" }
+# compile time macro makes archive much more DRY
+pastey = "0.2.3"
 
 [profile.dev.package.num-bigint-dig]
 opt-level = 3 # otherwise rsa keygen takes forever

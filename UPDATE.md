@@ -1,4 +1,32 @@
-# 0.9.0
+# 0.8.0
+
+## Archives
+
+- I added support for zip, tar + 5 of its compression formats, 7z, ar, deb.
+- Also supports single file compression for gz, bz2, xz, lz4, and zst.
+- This is a safe library by default with automatic flagging of unsafe path traversal,
+  archive bombs, etc.; you can modify `max_total_size` and `max_file_size` on a per-call
+  basis with `ArchiveOptions` to override some defaults. Let me know if the defaults are
+  too low for y'all.
+
+## Classes, export, and const
+
+Added experimental support for Luau's experimental classes feature, and brought us to
+Luau 0.730 which is honestly the most up-to-date *seal* has ever been (and probably makes us
+the most up-to-date Luau runtime(!?)).
+
+Please note that the class feature has some bugs right now, [including at runtime](https://github.com/luau-lang/luau/issues/2570), so be careful and be sure to report any you find.
+
+Classes are an experimental feature that may be changed by Luau in future versions, may be modified by upstream *mluau* if Luau's implementation diverges from our needs, may become discontinued in a later version of *seal* if I discover security or memory safety issues that we cannot patch, etc.
+
+Nonetheless I added and enabled them because classes have quite some utility and are nice to work with already.
+
+## str lib improvements
+
+- Added `str.encoding` and `str.convert` which can detect and convert between UTF-8 and UTF-16 LE/BE. This is very useful to have on Windows.
+- Insane performance improvements in `str.split` and related splitting functions, making our splits faster than node.js, especially for `str.splitlines`.
+- More `str` lib utility functions: `splitfront`, `splitback`, `reverse`, `rightpad`, `replace`
+- `str.width` now strips ANSI color codes so you no longer need to `str.width(format.uncolor(text))` when writing TUIs.
 
 ## Configurable colors and formatting
 

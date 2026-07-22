@@ -4,31 +4,33 @@
   },
   "rust-analyzer.check.command": "clippy",
   "files.eol": "\n",
-  "luau-lsp.completion.imports.suggestRequires": true,
   "[rust]": {
     "editor.insertSpaces": true,
     "editor.tabSize": 4
   },
-  "luau-lsp.inlayHints.parameterNames": "literals",
-  "luau-lsp.platform.type": "standard",
   "workbench.editor.customLabels.patterns": {
     "**/mod.rs": "${dirname}",
     "**/init.luau": "${dirname}",
-    "**/init.client.luau": "${dirname}",
-    "**/init.server.luau": "${dirname}",
+    "**/typedefs/globals.d.luau": "globals",
     "**/tests/**/init.luau": "tests/${dirname}",
     "**/tests/**": "tests/${dirname}/${filename}",
     "**/typedefs/**/init.luau": "defs/${dirname}",
     "**/typedefs/**": "defs/${dirname}/${filename}",
     "**/standard-library-reference/**": "refs/${dirname}/${filename}"
   },
+  "luau-lsp.completion.imports.suggestRequires": true,
+  "luau-lsp.platform.type": "standard",
   "luau-lsp.types.definitionFiles": {
     "@seal": "./.seal/typedefs/globals.d.luau"
   },
   "luau-lsp.types.documentationFiles": ["./.seal/typedefs/docs.json"],
+  "luau-lsp.completion.imports.ignoreGlobs": [
+    "**/tests/**"
+  ],
   "luau-lsp.fflags.enableNewSolver": true,
   "luau-lsp.fflags.enableByDefault": true,
+  "luau-lsp.inlayHints.functionReturnTypes": true,
+  "luau-lsp.inlayHints.parameterNames": "all",
   "luau-lsp.inlayHints.variableTypes": false,
   "luau-lsp.studioPlugin.enabled": false,
-  "FSharp.suggestGitignore": false,
 }

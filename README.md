@@ -5,17 +5,15 @@
 <div align="center">
     <img src="assets/seal-smaller.png" width="240" alt="seal mascot reading reference book" /><br />
     <em>the cutest scripting runtime</em><br />
-    <!-- Start-Precommit-Marker-2 --><img src="https://img.shields.io/badge/seal-0.0.8--rc.2-f0f8ff" alt="seal version" /><!-- End-Precommit-Marker-2 --> <!-- Start-Precommit-Marker-3 --><img src="https://img.shields.io/badge/Luau-0.725-4f99ba" alt="Luau version" /><!-- End-Precommit-Marker-3 --><br /><br />
+    <!-- Start-Precommit-Marker-2 --><img src="https://img.shields.io/badge/seal-0.0.8--rc.3-f0f8ff" alt="seal version" /><!-- End-Precommit-Marker-2 --> <!-- Start-Precommit-Marker-3 --><img src="https://img.shields.io/badge/Luau-0.730-4f99ba" alt="Luau version" /><!-- End-Precommit-Marker-3 --><br /><br />
     <a href="/docs/usage.md">Usage</a> | <a href="/docs/libraries_and_programming.md">Programming</a> | <a href="/docs/reference/">API Reference</a>
 </div>
 <br>
 <!-- markdownlint-enable MD033 -->
 
-<!-- *seal* is an all-in-one scripting tool that lets you write cross-platform scripts and applications in Luau with a greater utility than shell scripts and with less of a hassle than Python. -->
-
 ***seal*** is a cross-platform scripting tool that emphasizes correctness, performance, and fun.
 
-It can surreptitiously replace your shell and single-use Python scripts with Luau scripts, making them more readable to everyone. Or you can use it to write a full application.
+It can surreptitiously swap your one-off Python scripts and shell hacks for strictly-typed Luau, making your code easier to follow and maintain. Or you can use it to write a full application.
 
 <!-- **Usecases:**
 
@@ -33,7 +31,21 @@ It can surreptitiously replace your shell and single-use Python scripts with Lua
 - *seal* projects are more scalable than shell scripts.
 - Built in terminal manipulation for TUIs.
 - Powerful multithreading.
-- <!-- Start-Precommit-Marker-1 -->1153<!-- End-Precommit-Marker-1 --> handcrafted error messages.
+- Best pretty printer in the business for dealing with nested data.
+- All the standard compression and archive support you want but with safety and saner defaults.
+- <!-- Start-Precommit-Marker-1 -->1227<!-- End-Precommit-Marker-1 --> handcrafted error messages.
+
+## Big updates
+
+**0.8.0** is adding some huge new features such as:
+
+- customizable table formatting, more colors
+- archives
+- str.encoding/convert between string encodings (utf-8 vs different flavors of utf-16)
+- const, classes, export syntax
+- set your own ssl certs or use system certs for http/websocket libs
+
+[See all updates here](UPDATE.md)
 
 ## Install
 

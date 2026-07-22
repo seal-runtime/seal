@@ -60,6 +60,7 @@ mod sealconfig;
 mod setup;
 mod compile;
 mod std_args;
+mod std_archive;
 
 use err::display_error_and_exit;
 use sealconfig::SealConfig;
@@ -68,7 +69,7 @@ use globals::SEAL_VERSION;
 type LuauLoadResult = LuaResult<Option<LuauLoadInfo>>;
 struct LuauLoadInfo {
     luau: Lua,
-    code: Chunk,
+    code: Chunk<'static>,
     /// chunk_name is basically the entry_path except it's always an absolute path
     chunk_name: String,
 }
@@ -144,15 +145,20 @@ impl SealCommand {
     // rest of the SealCommand impl defined at the bottom of main.rs
 }
 
+fn set_fflags(flags: [&'static str; 3]) -> LuaResult<()> {
+    for flag in flags {
+        if mluau::Lua::set_fflag(flag, true).is_err() {
+            eputs!("[WARN] unable to enable Luau FFlag '{}'; was Luau updated and the flag removed?", flag)?;
+        }
+    }
+    Ok(())
+}
+
 
 fn main() -> LuaResult<()> {
     // We intercept SIGABRT on *nix to prevent core dumps when seal is used as a child process
     err::setup_sigabrt_handler();
     err::setup_panic_hook(); // seal panic = seal bug; we shouldn't panic in normal operation
-
-    if mluau::Lua::set_fflag("LuauConst2", true).is_err() {
-        eputs!("[WARN] unable to enable Luau FFlag LuauConst2, was Luau updated and the flag removed?")?;
-    }
 
     let args: VecDeque<OsString> = env::args_os().collect();
     
@@ -161,6 +167,12 @@ fn main() -> LuaResult<()> {
     }
 
     crate::std_io::input::EXPECT_OUTPUT_STREAMS.initialize_and_check();
+
+    set_fflags([
+        "DebugLuauUserDefinedClassesRuntime",
+        "DebugLuauUserDefinedClasses",
+        "LuauExportValueSyntax"
+    ])?;
 
     let command = match SealCommand::parse(args) {
         Ok(command) => command,
@@ -250,7 +262,7 @@ fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoad
         src = src[first_newline_pos + 1..].to_string();
     }
 
-    Ok(Some(LuauLoadInfo { luau, code: Chunk::Src(src), chunk_name }))
+    Ok(Some(LuauLoadInfo { luau, code: Chunk::src(src), chunk_name }))
 }
 
 fn seal_eval(mut args: Args) -> LuauLoadResult {
@@ -272,7 +284,7 @@ fn seal_eval(mut args: Args) -> LuauLoadResult {
 
     Ok(Some(LuauLoadInfo {
         luau,
-        code: Chunk::Src(src),
+        code: Chunk::src(src),
         // relative require probs wont work atm
         chunk_name: std_env::get_cwd("seal eval")?
             .to_string_lossy()
@@ -333,9 +345,14 @@ fn seal_standalone(bytecode: Vec<u8>) -> LuauLoadResult {
 
     globals::set_globals(&luau, &entry_path)?;
 
+    // SAFETY: standalone bytecode should be valid bytecode for this version of Luau
+    // unless a user has mutated the bytecode in place in the standaone executable file,
+    // in which case the user asserts responsibility for providing valid bytecode.
+    let bytecode = unsafe { Chunk::bytecode(bytecode) };
+
     Ok(Some(LuauLoadInfo {
         luau,
-        code: Chunk::Bytecode(bytecode),
+        code: bytecode,
         chunk_name: entry_path
     }))
 }

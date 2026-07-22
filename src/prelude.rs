@@ -1,7 +1,5 @@
-use std::borrow::Cow;
-
 use mluau::prelude::*;
-use mluau::AsChunk;
+pub use mluau::ChunkSource as Chunk;
 
 /// luau's actual limit: array/hash parts of a table can each hold at most `1 << MAXBITS` entries,
 /// where MAXBITS is 26 (see luau/VM/src/ltable.cpp); exceeding this aborts the process, so this
@@ -11,30 +9,6 @@ pub use crate::{
     std_io::colors as colors, wrap_err, table_helpers::TableBuilder,
     put, puts, eput, eputs, signatures
 };
-
-/// Chunk of Luau code, either sourcecode (valid utf8) or bytecode (never valid utf8)
-/// this is needed because passing invalid bytecode to luau.load causes segfaults at runtime
-/// If we apply any transformations on code before luau.load we need to ensure only src
-/// gets transformed and not bytecode. This newtype wrapper implements `AsChunk` to handle any such
-/// transformations in one place.
-pub enum Chunk {
-    Src(String),
-    Bytecode(Vec<u8>)
-}
-impl AsChunk for Chunk {
-    fn source<'a>(&self) -> std::io::Result<std::borrow::Cow<'a, [u8]>>
-    where
-        Self: 'a 
-    {
-        Ok(match self {
-            Chunk::Src(src) => {
-                // TODO: any future source code transformations
-                Cow::Owned(src.as_bytes().to_owned())
-            },
-            Chunk::Bytecode(bytecode) => Cow::Owned(bytecode.to_owned()),
-        })
-    }
-}
 
 pub type LuaValueResult = LuaResult<LuaValue>;
 pub type LuaEmptyResult = LuaResult<()>;
@@ -117,7 +91,7 @@ impl DebugInfo {
                 function_name = if function_name == "" then "top level" else function_name,
             }
         "#;
-        let chunk = Chunk::Src(SLN_SRC.to_owned());
+        let chunk = Chunk::src(SLN_SRC);
         let LuaValue::Table(info) = luau.load(chunk).set_name("gettin da debug info").eval()? else { // <<>> HACK
             return wrap_err!("{}: can't get debug info", function_name);
         };
@@ -276,4 +250,90 @@ pub fn create_table_with_capacity(luau: &Lua, n_array: usize, n_records: usize) 
     // This API should be marked unsafe... but isn't.. so we explicitly treat it as unsafe here.
     #[allow(unused_unsafe)]
     unsafe { luau.create_table_with_capacity(n_array, n_records) }
+}
+
+pub struct UserDataTypeName {
+    inner: Option<String>
+}
+impl UserDataTypeName {
+    fn from(ud: LuaAnyUserData) -> Self {
+        Self {
+            inner: ud.type_name()
+                .unwrap_or(Some("<unable to get type name>".into()))
+        }
+    }
+}
+impl std::fmt::Display for UserDataTypeName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.inner.as_deref().unwrap_or("<unknown userdata type>"))
+    }
+}
+pub trait Borrowable {
+    fn type_name() -> &'static str;
+
+    /// Borrows of Self type or gives type name for error message if it can't
+    fn borrowed(ud: LuaAnyUserData) -> Result<LuaUserDataRef<Self>, UserDataTypeName>
+        where Self: LuaUserData
+    {
+        if let Ok(got_it) = ud.borrow::<Self>() {
+            Ok(got_it)
+        } else {
+            Err(UserDataTypeName::from(ud))
+        }
+    }
+    /// Borrows and then clones Self type of ud; gives type name for error message if it can't
+    fn cloned(ud: LuaAnyUserData) -> Result<Self, UserDataTypeName>
+        where Self: LuaUserData + Clone + 'static
+    {
+        if let Ok(got_it) = ud.borrow::<Self>() {
+            Ok(got_it.clone())
+        } else {
+            Err(UserDataTypeName::from(ud))
+        }
+    }
+    fn expect_borrowed(
+        ud: LuaAnyUserData,
+        parameter_name: &'static str,
+        function_name: &'static str
+    ) -> LuaResult<LuaUserDataRef<Self>>
+        where Self: LuaUserData
+    {
+        if let Ok(got_it) = ud.borrow::<Self>() {
+            Ok(got_it)
+        } else {
+            let name = UserDataTypeName::from(ud);
+            let expected = Self::type_name();
+            wrap_err!("{}: expected {} to be a {}, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
+        }
+    }
+    fn expect_cloned(
+        ud: LuaAnyUserData,
+        parameter_name: &'static str,
+        function_name: &'static str
+    ) -> LuaResult<Self>
+        where Self: LuaUserData + Clone + 'static
+    {
+        if let Ok(got_it) = ud.borrow::<Self>() {
+            Ok(got_it.clone())
+        } else {
+            let name = UserDataTypeName::from(ud);
+            let expected = Self::type_name();
+            wrap_err!("{}: expected {} to be a {}, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
+        }
+    }
+    fn expect_cloned_or_nil(
+        ud: LuaAnyUserData,
+        parameter_name: &'static str,
+        function_name: &'static str
+    ) -> LuaResult<Self>
+        where Self: LuaUserData + Clone + 'static
+    {
+        if let Ok(got_it) = ud.borrow::<Self>() {
+            Ok(got_it.clone())
+        } else {
+            let name = UserDataTypeName::from(ud);
+            let expected = Self::type_name();
+            wrap_err!("{}: expected {} to be a {} or nil, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
+        }
+    }
 }

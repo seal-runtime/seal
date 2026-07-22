@@ -170,7 +170,6 @@ local function parse_traceback(traceback: string): string
         end
         -- syntax highlighting stuff end
 
-        -- new_traceback = new_traceback:gsub("stack traceback", colors.bold.yellow("stack traceback"))
         local lines = str.splitlines(new_traceback)
         is_runtime_error = false
         is_error_error = false
@@ -186,23 +185,29 @@ local function parse_traceback(traceback: string): string
         }
 
         for index, line in lines do
-            if index == 1 then
+            if first_path == nil or first_line_number == nil then
                 for bad, better in bad_error_messages do
                     line = string.gsub(line, bad, better)
                 end
                 lines[index] = line
-                is_runtime_error = string.match(line, "runtime error: ") ~= nil
+                if index == 1 then
+                    is_runtime_error = string.match(line, "runtime error: ") ~= nil
+                end
                 if is_runtime_error then
                     local fixed_line: string
                     local path, line_number = string.match(line, `%["([%w%s%p]+)"%]:(%d+)`)
                     if path and line_number then
                         first_path = path
                         first_line_number = line_number
-                        fixed_line = line
-                            -- :gsub("runtime error:", "")
-                            :gsub(`[%s]+%["[%w%s%p]+"%]:%d+:[%s]+`, " ")
+                        fixed_line = string.gsub(line, `[%s]+%["[%w%s%p]+"%]:%d+:[%s]+`, " ")
                     end
-                    lines[index] = fixed_line
+                    -- usually the first_path == nil or first_line_number == nil condition
+                    -- should trigger on index 1, but some stupid error messages don't have paths in them
+                    if index == 1 and fixed_line then
+                        lines[1] = fixed_line
+                    else
+                        -- it's a weird runtime error that doesn't have line:number info on first line
+                    end
                 else
                     -- some seal stdlib error messages are pretty long, let's try giving them newlines
                     if #line > 100 then
@@ -270,4 +275,17 @@ local function parse_traceback(traceback: string): string
     return new_traceback
 end
 
-return parse_traceback
+const function parse(traceback: string): string | error
+    const success, result = pcall(parse_traceback, traceback)
+    if success and type(result) == "string" then
+        return result
+    end
+    -- if the error formatter throws we don't want to clobber what actually caused the error
+    local err = require("@std/err")
+    local format = require("@std/io/format")
+    local str = require("@std/str")
+    local indented = str.indent(traceback, "Spaces", 2)
+    return err.message(`original error traceback:\n{format.uncolor(indented)}\n\nerror in error formatter:\n  {result}`)
+end
+
+return parse
