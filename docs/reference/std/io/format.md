@@ -134,7 +134,7 @@ export type FormatOptions = {
 
 </h4>
 
- Table max depth.
+ How many levels deep into a nested table before showing `{ ... }`; 1 shows top level table, defaults to 7.
 
 ---
 
