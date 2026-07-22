@@ -37,7 +37,7 @@ export type format = setmetatable<{
 
 --- Customize how your output looks.
 export type FormatOptions = {
-    --- Table max depth.
+    --- How many levels deep into a nested table before showing `{ ... }`; 1 shows top level table, defaults to 7.
     max_depth: number?,
     --- How many spaces to indent, defaults to 4
     indent_spaces: number?,

@@ -565,7 +565,7 @@ const function process_pretty_values(
 
     --- how many spaces, defaults to 4
     indent_spaces: number?,
-    --- how deep inside a table before we say nope
+    --- how many levels deep into a nested table before showing { ... }; 1 shows top level table, defaults to 7
     max_depth: number?,
     --- how many array elements to print before putting ..., defaults to 100 when not tty or everything
     max_elements_in_array: number?,
@@ -577,7 +577,7 @@ const function process_pretty_values(
 ): string
     seen_tables = seen_tables or {}
     depth = depth or 0
-    max_depth = if not is_tty then math.huge elseif max_depth then max_depth else 6
+    max_depth = if not is_tty then math.huge elseif max_depth then max_depth else 7
     max_elements_in_array = if not is_tty then math.huge elseif max_elements_in_array then max_elements_in_array else 42
     indent_spaces = indent_spaces or 4
     show_array_indices = if show_array_indices == nil or show_array_indices == true then true else false
@@ -721,7 +721,7 @@ const function process_pretty_values(
                 local seen_name: string? = seen_tables[key]
                 if seen_name then
                     push(LEFT_BRACKET .. seen_name .. RIGHT_BRACKET)
-                elseif depth + 1 > max_depth then
+                elseif depth + 1 >= max_depth then
                     local tostringed = tostring(key)
                     local tableid = string.match(tostringed, ID_CATCHER_PATTERN) or tostringed
                     push(LEFT_BRACKET .. colors.cyan(`table<0x{tableid}>`) .. RIGHT_BRACKET)
@@ -746,7 +746,7 @@ const function process_pretty_values(
                 local seen_name: string? = seen_tables[val]
                 if seen_name then
                     push(seen_name)
-                elseif depth + 1 > max_depth then
+                elseif depth + 1 >= max_depth then
                     if next(val) == nil then -- table is empty
                         push("{}")
                     else
