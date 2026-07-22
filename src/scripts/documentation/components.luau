@@ -30,7 +30,7 @@ export class CodeblockComponent
         return "```luau\n" .. self.text .. "\n```"
     end
     function __tostring(self)
-        return enclose_component("Code","\n" .. self.text, vector.create(144, 144, 244))
+        return enclose_component("Code", "\n" .. self.text, vector.create(144, 144, 244))
     end
 end
 export class ListItem

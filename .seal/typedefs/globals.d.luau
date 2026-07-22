@@ -137,7 +137,7 @@ type ArchiveEntry =
     This exists so you don't have to allocate an entire ArchiveEntry if you're
     just looping over all entries.
 ]=]
-export type ArchiveEntryInfo = {
+type ArchiveEntryInfo = {
     type: "File" | "Directory" | "Symlink",
     path: string,
     --- Only present when `type == "Symlink"`.
@@ -186,6 +186,8 @@ type ArchiveOptions = {
     To see what's in the archive, try printing it or calling `:paths()` or `:info(path)` on specific paths
     or indices.
 
+    To get the length of an archive, just use `#archive`.
+
     Please don't try and assume that all paths are unique because most archive types can have many entries
     with the same path (unlike a real filesystem). Attackers have been known to exploit that before.
 ]=]
@@ -198,7 +200,9 @@ declare extern type Archive with
         instead of paths unless you know all paths are unique.
     ]=]
     function get(self, path_or_index: string | number): ArchiveEntry?
-    --- Gets an entry's metadata (path, type, unix mode, mtime) without allocating the entire file's contents.
+    --[=[
+        Gets an entry's metadata (path, type, unix mode, mtime) without allocating the entire file's contents.
+    ]=]
     function info(self, path_or_index: string | number): ArchiveEntryInfo?
     --[=[
         Adds a single `ArchiveEntry` table to an existing archive in place with similar semantics to `table.insert`.
@@ -211,15 +215,17 @@ declare extern type Archive with
     --[=[
         Removes the `ArchiveEntry` element by index, shuffling all remaining entries to the front.
 
-        This function only takes an index because an archive can contain multiple identical paths,
-        use `:paths()` to get indices to remove.
+        This function only takes an index because an archive can contain multiple identical paths
+        and removal by path would therefore be a footgun.
+
+        Use `:paths()` to get indices to remove.
     ]=]
     function remove(self, index: number)
     --[=[
         Compress the archive into a buffer of the requested archive or single file format.
 
         You can just save this via `fs.readfile`. You could also use any archive library's
-        writefile function to write this directly to disk without needing to create an additional buffer.
+        writefile function to write this directly to disk without needing to create an additional buffer.`
     ]=]
     function serialize(self, format: ArchiveFormat, options: ArchiveOptions?): buffer
 

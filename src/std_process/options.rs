@@ -1,10 +1,17 @@
 use std::path::{Path, PathBuf};
 use std::collections::HashMap as Map;
 
-use crate::std_env::get_current_shell;
-use crate::std_io::format::hexdump;
-use crate::{prelude::*, std_process::stream::TruncateSide};
+use crate::prelude::*;
 use mluau::prelude::*;
+
+use crate::std_io::format::hexdump;
+use crate::std_env::get_current_shell;
+use crate::std_fs::file_size::{FileSize, KILOBYTE};
+
+use super::stream::TruncateSide;
+
+const DEFAULT_STDOUT_CAPACITY: usize = 200 * KILOBYTE as usize;
+const DEFAULT_STDERR_CAPACITY: usize = 100 * KILOBYTE as usize;
 
 #[derive(Debug)]
 pub enum Shell {
@@ -344,7 +351,15 @@ impl SpawnOptions {
                 match stream_table.raw_get("stdout_capacity")? {
                     LuaValue::Number(f) => float_to_usize(f, "SpawnOptions.capacity.stdout", "stdout")?,
                     LuaValue::Integer(i) => int_to_usize(i, "SpawnOptions.capacity.stdout", "stdout")?,
-                    LuaNil => 2048_usize,
+                    LuaValue::UserData(ud) => {
+                        match FileSize::borrowed(ud) {
+                            Ok(size) => size.as_bytes() as usize,
+                            Err(typ) => {
+                                return wrap_err!("expected stdout_capacity to be a number or FileSize, got userdata of type: {}", typ);
+                            }
+                        }
+                    },
+                    LuaNil => DEFAULT_STDOUT_CAPACITY,
                     other => {
                         return wrap_err!("SpawnOptions.stream.stdout expected to be number or nil, got: {:?}", other);
                     }
@@ -352,7 +367,15 @@ impl SpawnOptions {
                 match stream_table.raw_get("stderr_capacity")? {
                     LuaValue::Number(f) => float_to_usize(f, "SpawnOptions.capacity.stderr", "stderr")?,
                     LuaValue::Integer(i) => int_to_usize(i, "SpawnOptions.capacity.stderr", "stderr")?,
-                    LuaNil => 1024_usize,
+                    LuaValue::UserData(ud) => {
+                        match FileSize::borrowed(ud) {
+                            Ok(size) => size.as_bytes() as usize,
+                            Err(typ) => {
+                                return wrap_err!("expected stderr_capacity to be a number or FileSize, got userdata of type: {}", typ);
+                            }
+                        }
+                    },
+                    LuaNil => DEFAULT_STDERR_CAPACITY,
                     other => {
                         return wrap_err!("SpawnOptions.stream.stdout expected to be number or nil, got: {:?}", other);
                     }
@@ -360,7 +383,7 @@ impl SpawnOptions {
                 TruncateSide::from_value(stream_table.raw_get("stdout_truncate")?, "stdout_truncate")?,
                 TruncateSide::from_value(stream_table.raw_get("stderr_truncate")?, "stderr_truncate")?,
             ),
-            LuaNil => (2048_usize, 1024_usize, TruncateSide::Front, TruncateSide::Front),
+            LuaNil => (DEFAULT_STDOUT_CAPACITY, DEFAULT_STDERR_CAPACITY, TruncateSide::Front, TruncateSide::Front),
             other => {
                 return wrap_err!("SpawnOptions.capacity expected to be a table or nil, got: {:?}", other);
             }
@@ -385,6 +408,7 @@ impl SpawnOptions {
             stderr_truncate
         ) = Self::extract_stream_fields(spawn_options.raw_get("stream")?)?;
 
+        // TODO: implement detached/daemon processes
         // let detached = match spawn_options.raw_get("detached")? {
         //     LuaValue::Boolean(b) => b,
         //     LuaNil => false,
