@@ -1,17 +1,20 @@
 [package]
 name = "seal"
 authors = ["Dev Chrysalis Dalal <dev@deviaze.com>"]
-version = "0.8.1"
+version = "0.9.0"
 edition = "2024"
 
 # mluau is our custom mlua fork with a greater focus on luau and luau ecosystem
 # support, maintained by Midnight Frost and myself (mostly him).
 [target.'cfg(not(target_os = "android"))'.dependencies]
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-jit", "serialize", "luau-classes"] }
+# mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-jit", "serialize", "luau-classes"] }
+mluau = { git = "https://github.com/luwu-community/mluau.git", features = ["luau", "luau-jit", "serialize", "none-primitive", "luau-classes"], branch = "luwu-classes" }
+
 
 [target.'cfg(target_os = "android")'.dependencies]
 # luau jit (ncg) compilation is not available on android
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "luau-classes"] }
+# mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "luau-classes"] }
+mluau = { git = "https://github.com/luwu-community/mluau.git", features = ["luau", "serialize", "none-primitive", "luau-classes"], branch = "luwu-classes" }
 
 [dependencies]
 regex = "1.11.1"

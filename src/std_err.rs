@@ -191,16 +191,11 @@ pub fn ecall(luau: &Lua, f: LuaFunction) -> LuaValueResult {
         };
         if !result.is_empty()
             && let Some(front) = result.front()
-        {
-            match front {
-                LuaValue::UserData(ud) => {
-                    if let Some(err) = ud.borrow::<SealLock<WrappedError>>() {
-                        return LuaEither::Right(LuaCustomError(err.borrow().clone().into_mut()));
-                    }
-                },
-                _ => {},
+            && let LuaValue::UserData(ud) = front
+            && let Some(err) = ud.borrow::<SealLock<WrappedError>>() {
+                return LuaEither::Right(LuaCustomError(err.borrow().clone().into_mut()));
             }
-        }
+            
         LuaEither::Left(LuaOk(result))
     }, debugname)?;
     Ok(LuaValue::Function(result))

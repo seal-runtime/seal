@@ -172,7 +172,13 @@ fn main() -> LuaResult<()> {
 
     crate::std_io::input::EXPECT_OUTPUT_STREAMS.initialize_and_check();
 
-    set_fflags(["LuauExportValueSyntax"])?;
+    set_fflags([
+        "LuauExportValueSyntax",
+        "LuauBetterUserDefinedClasses",
+        "LuauDefaultArguments",
+        "LuauGenericNominals",
+        "LuauExportedClassIsNilWorkaround"
+    ])?;
 
     let command = match SealCommand::parse(args) {
         Ok(command) => command,

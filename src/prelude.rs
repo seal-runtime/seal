@@ -59,9 +59,9 @@ pub fn ok_string<S: AsRef<[u8]>>(s: S, luau: &Lua) -> LuaValueResult {
 }
 
 pub fn ok_buffy(b: Vec<u8>, luau: &Lua) -> LuaValueResult {
-    println!("b is: {b:?}, len: {}", b.len());
+    // println!("b is: {b:?}, len: {}", b.len());
     let b = luau.create_external_buffer_mut(b)?;
-    b.with_bytes(|x| println!("buf with_bytes: {x:?}"));
+    // b.with_bytes(|x| println!("buf with_bytes: {x:?}"));
     Ok(LuaValue::Buffer(b))
 }
 
