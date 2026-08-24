@@ -44,7 +44,7 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
 
         let chunk = Chunk::src(src);
 
-        let value = luau.load(chunk).set_name(&resolved_path).eval::<LuaValue>()?;
+        let value = luau.load(chunk).set_name(&resolved_path).eval_wrapped()?;
         
         require_cache.raw_set(resolved_path.clone(), &value)?;
 
@@ -170,7 +170,7 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
 const STD_SEMVER_SRC: &str = include_str!("../std_semver.luau");
 fn load_std_semver(luau: &Lua) -> LuaResult<LuaTable> {
     let chunk = Chunk::src(STD_SEMVER_SRC);
-    luau.load(chunk).set_name("std/semver").eval::<LuaTable>() // <<>> HACK
+    luau.load(chunk).set_name("std/semver").eval_wrapped()
 }
 
 const RESOLVER_SRC: &str = include_str!("./resolver.luau");
@@ -183,7 +183,7 @@ pub fn get_resolver(luau: &Lua) -> LuaResult<LuaTable> {
 }
 
 fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
-    let f = luau.named_registry_value::<Option<LuaFunction>>("require.resolver.resolve")?;
+    let f = luau.registry().get::<Option<LuaFunction>>("require.resolver.resolve")?;
     if let Some(resolve) = f {
         Ok(resolve)
     } else {
@@ -191,12 +191,12 @@ fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
         // putting @@ makes mluau correctly display @seal/src/require/resolver.luau in stack traceback
         let LuaValue::Table(resolver) = luau.load(chunk).set_name("@@seal/src/require/resolver.luau").eval()? else {
             panic!("require resolver didnt return table??");
-        };
+        }; 
         let LuaValue::Function(resolve) = resolver.raw_get("resolve")? else {
             panic!("require resolver.resolve not a function??");
         };
 
-        luau.set_named_registry_value("require.resolver.resolve", &resolve)?;
+        luau.registry().set("require.resolver.resolve", &resolve)?;
 
         Ok(resolve)
     }
@@ -204,7 +204,7 @@ fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
 
 fn resolve_path(luau: &Lua, path: String) -> LuaResult<String> {
     let resolve = cached_resolver(luau)?;
-    match resolve.call::<LuaValue>(path.to_owned()) {
+    match resolve.call_wrapped(path.to_owned()) {
         Ok(LuaValue::Table(result_table)) => {
             if let LuaValue::String(path) = result_table.raw_get("path")? {
                 Ok(path.to_string_lossy())
