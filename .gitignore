@@ -5,3 +5,11 @@
 /PANIC_IN_THE_SEAL_INTERNALS*
 /tests/data/bundle_projects/lsl/_bundled_intermediate.luau
 /rustc-ice*
+tests/luau/std/archive/temp/cache.json
+tests/luau/std/fs/watch/testfile.txt
+tests/luau/std/net/http/dummy_python_upload_api/.python-version
+tests/luau/std/net/http/dummy_python_upload_api/main.py
+tests/luau/std/net/http/dummy_python_upload_api/pyproject.toml
+tests/luau/std/net/http/dummy_python_upload_api/README.md
+tests/luau/std/net/http/dummy_python_upload_api/uv.lock
+tests/luau/std/process/spawn/poem.luau

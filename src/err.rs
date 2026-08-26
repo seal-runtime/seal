@@ -2,7 +2,6 @@ use std::panic;
 use mluau::prelude::*;
 use crate::globals;
 use crate::prelude::*;
-use crate::std_err::WrappedError;
 
 use std::io::Write;
 use std::env::VarError;
@@ -36,7 +35,7 @@ pub fn setup_sigabrt_handler() {
     }
 }
 
-pub fn parse_traceback(raw_traceback: String) -> String {
+pub fn parse_traceback<T: IntoLua>(raw_traceback: T) -> String {
     let parse_traceback = include_str!("./scripts/parse_traceback.luau");
     let luau_for_traceback = Lua::new();
     if let Err(err) = globals::set_globals(&luau_for_traceback, String::default()) {
@@ -44,12 +43,13 @@ pub fn parse_traceback(raw_traceback: String) -> String {
     }
     match luau_for_traceback.load(parse_traceback).set_name("seal/src/err/parse_traceback.luau").eval() {
         Ok(LuaValue::Function(parse_traceback)) => {
-            match parse_traceback.call::<LuaValue>(raw_traceback) {
+            // intentionally uses call_with_err directly to better control error
+            match parse_traceback.call_with_err::<LuaValue, WrappedError>(raw_traceback) {
                 Ok(LuaValue::String(s)) => s.to_string_lossy(),
-                Ok(LuaValue::UserData(ud)) => {
-                    match WrappedError::borrowed(ud) {
+                Ok(LuaValue::UserData(ref ud)) => {
+                    match WrappedError::as_borrowed(ud) {
                         Ok(err) => {
-                            panic!("parse_traceback.luau (error formatter) errored at runtime:\n\n{}", err.message());
+                            panic!("parse_traceback.luau (error formatter) errored at runtime:\n\n{}", *err.borrow());
                         },
                         Err(name) => {
                             panic!("parse_traceback.luau should return string or return an error, got userdata of type: {}", name);
@@ -207,8 +207,10 @@ pub fn display_error_and_exit(err: LuaError) -> ! {
 #[macro_export]
 macro_rules! wrap_err {
     ($msg:expr) => {{
+        use mluau::Error as Error;
+        use $crate::colors;
         let msg = $msg.to_string();
-        Err(LuaError::external(if colors::are_disabled() { msg } else { format!("{}{}{}", colors::RED, msg, colors::RESET) }))
+        Err(Error::external(if colors::are_disabled() { msg } else { format!("{}{}{}", colors::RED, msg, colors::RESET) }))
     }};
     ($msg:expr, $($arg:tt)*) => {{
         let msg = format!($msg, $($arg)*);

@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::cell::RefCell;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
@@ -10,6 +11,9 @@ use crate::std_fs::entry::{wrap_io_read_errors, wrap_io_read_errors_empty};
 use crate::std_fs::file_size::FileSize;
 use crate::std_io::colors;
 use crate::std_time::datetime::DateTime;
+use crate::userdata::{
+    SealLock, SealUserData as LuaUserDataMut, SealUserDataFields as LuaUserDataFieldsMut, SealUserDataMethods as LuaUserDataMethodsMut
+};
 
 enum ArchiveOutputPath {
     As(PathBuf),
@@ -72,7 +76,7 @@ impl Entries {
         match self {
             Self::One(entry) => entry.into_userdata(luau),
             Self::Many(entries) => {
-                ok_table(luau.create_sequence_from(entries))
+                ok_table(luau.create_sequence_from(entries.into_iter().map(|x| x.into_mut())))
             }
         }
     }
@@ -366,7 +370,7 @@ impl WrappedArchiveEntry {
         let function_name = "ArchiveEntry:modified()";
         let inner = this.inner.borrow();
         if let Some(modified) = inner.mtime() {
-            ok_userdata(DateTime::from_system_time(modified, function_name)?, luau)
+            ok_userdata_mut(DateTime::from_system_time(modified, function_name)?, luau)
         } else {
             Ok(LuaNil)
         }
@@ -375,10 +379,10 @@ impl WrappedArchiveEntry {
     fn entry_set_modified(_luau: &Lua, this: &mut WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         let function_name = "ArchiveEntry:set_modified(dt: DateTime)";
         let dt = match multivalue.pop_front() {
-            Some(LuaValue::UserData(ud)) => match ud.borrow::<DateTime>() {
-                Ok(dt) => dt._to_system_time(),
-                Err(_) => {
-                    return wrap_err!("{}: expected dt to be a DateTime userdata, got the wrong type of userdata", function_name);
+            Some(LuaValue::UserData(ud)) => match ud.borrow::<SealLock<DateTime>>() {
+                Some(dt) => dt.borrow()._to_system_time(),
+                None => {
+                    return wrap_err!("{}: expected dt to be a DateTime userdata, got the wrong type of userdata {:?}", function_name, ud.type_name());
                 }
             },
             Some(LuaNil) | None => {
@@ -596,8 +600,12 @@ impl WrappedArchiveEntry {
 }
 
 
-impl LuaUserData for WrappedArchiveEntry {
-    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
+impl LuaUserDataMut for WrappedArchiveEntry {
+    fn type_name<'a>() -> Cow<'a, str> {
+        Cow::Borrowed("ArchiveEntry")
+    }
+
+    fn add_fields<F: LuaUserDataFieldsMut<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "ArchiveEntry");
         fields.add_field_method_get(
             "type",
@@ -606,7 +614,7 @@ impl LuaUserData for WrappedArchiveEntry {
             }
         );
     }
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: LuaUserDataMethodsMut<Self>>(methods: &mut M) {
         methods.add_method("try_file", WrappedArchiveEntry::entry_try_file);
         methods.add_method("expect_file", WrappedArchiveEntry::entry_expect_file);
         methods.add_method("try_directory", WrappedArchiveEntry::entry_try_directory);
@@ -629,10 +637,7 @@ impl LuaUserData for WrappedArchiveEntry {
         methods.add_method_mut("set_unix_mode", WrappedArchiveEntry::entry_set_unix_mode);
     }
 }
-impl Borrowable for WrappedArchiveEntry {
-    fn type_name() -> &'static str {
-        "ArchiveEntry"
-    }
+impl BorrowableMut for WrappedArchiveEntry {
 }
 
 /// archive crate expects paths to be String in the end anyway

@@ -61,7 +61,7 @@ fn run_result_unwrap_or(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueRe
     } else if let Some(default_value) = default_value {
         match default_value {
             LuaValue::String(d) => LuaValue::String(d),
-            LuaValue::Function(f) => match f.call::<LuaValue>(run_result) {
+            LuaValue::Function(f) => match f.call_with_err::<LuaValue, WrappedError>(run_result) {
                 Ok(LuaValue::String(default)) => LuaValue::String(default),
                 Ok(other) => {
                     return wrap_err!("{}: expected default value function to return string, got: {:?}", function_name, other);
@@ -457,7 +457,7 @@ fn set_exit_callback(luau: &Lua, f: Option<LuaValue>) -> LuaValueResult {
 pub fn _handle_exit_callback(luau: &Lua, exit_code: i32) -> LuaResult<()> {
     match luau.globals().get("_process_exit_callback_function")? {
         LuaValue::Function(f) => {
-            let _ = f.call::<i32>(exit_code);
+            let _ = f.call_with_err::<i32, WrappedError>(exit_code);
         }
         LuaValue::Nil => {}
         _ => {
@@ -482,7 +482,10 @@ fn exit(luau: &Lua, exit_code: Option<LuaValue>) -> LuaResult<()> {
     let globals = luau.globals();
     match globals.get("_process_exit_callback_function")? {
         LuaValue::Function(f) => {
-            f.call::<i64>(exit_code)?;
+            match f.call_with_err::<i64, WrappedError>(exit_code) {
+                Ok(v) => v,
+                Err(e) => return wrap_err!(e)
+            };
         }
         LuaValue::Nil => {}
         other => {
