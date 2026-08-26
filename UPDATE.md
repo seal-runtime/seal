@@ -6,7 +6,14 @@ This document will contain new features, breaking changes, etc.
 
 ## 0.8.1
 
+### Support `.config.luau` for require aliases
+
 - Implement support for `.config.luau` files; they may be used instead of a `.luaurc`.
+
+### Flush stdin and granular `ChildProcess` exit status
+
+- Adds `ChildProcess.stdin:flush()` to explicitly flush the child process's stdin without writing `\n`.
+- Adds `ChildProcess:status()` which returns a `ChildStatus` table that contains info about if the child successfully exited, failed, was terminated by a signal (did it segfault or sigint?), and whether it coredumped. Those additional fields are for Unixlike platforms only and will be `nil` otherwise--you'll only get `ok` and `code` on Windows.
 
 ## 0.8.0
 

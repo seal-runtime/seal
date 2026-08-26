@@ -384,10 +384,12 @@ pub const STD_PROCESS_CHILD_PROCESS_STREAM_READ_TO: &std::ffi::CStr = c"ChildPro
 // ChildProcess
 pub const STD_PROCESS_CHILD_PROCESS_ALIVE: &std::ffi::CStr = c"ChildProcess:alive() -> boolean";
 pub const STD_PROCESS_CHILD_PROCESS_KILL: &std::ffi::CStr = c"ChildProcess:kill()";
+pub const STD_PROCESS_CHILD_PROCESS_STATUS: &std::ffi::CStr = c"ChildProcess:status() -> ChildStatus?";
 
 // PipedChild
 pub const STD_PROCESS_PIPED_CHILD_ALIVE: &std::ffi::CStr = c"PipedChild:alive() -> boolean";
 pub const STD_PROCESS_PIPED_CHILD_KILL: &std::ffi::CStr = c"PipedChild:kill()";
+pub const STD_PROCESS_PIPED_CHILD_STATUS: &std::ffi::CStr = c"PipedChild:status() -> ChildStatus?";
 
 // semver
 pub const STD_SEMVER_DEFAULT: &std::ffi::CStr = c"semver.default() -> Semver";
