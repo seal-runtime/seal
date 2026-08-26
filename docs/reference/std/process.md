@@ -1404,6 +1404,24 @@ Attempts to write to the child process' stdin; if an error occurs (usually a bro
 
 ---
 
+### ChildProcessStdin.flush
+
+<h4>
+
+```luau
+function ChildProcessStdin.flush(self: ChildProcessStdin) -> (),
+```
+
+</h4>
+
+Flush the child's stdin to send all the bytes written on their way.
+
+## Errors
+
+Throws an error if the child's stdin couldn't be flushed or if it was already closed.
+
+---
+
 ### ChildProcessStdin.close
 
 <h4>
@@ -1486,6 +1504,27 @@ function ChildProcess.alive(self: ChildProcess | PipedChild) -> boolean,
 ```
 
 </h4>
+
+Returns true if the child is still alive, false if the child has exited. Once the child has exited, you
+can call `child:status()` for more info about what happened to the child.
+
+---
+
+### ChildProcess.status
+
+<h4>
+
+```luau
+function ChildProcess.status(self: ChildProcess | PipedChild) -> ChildStatus?,
+```
+
+</h4>
+
+Returns `nil` if the child is still alive.
+
+If the child has exited, returns a `ChildStatus` table, which contains info
+regarding if the child exited successfully, failed, blew up (was terminated by a
+unix signal such as SIGSEV), core dumped, etc. Also contains exit codes if present.
 
 ---
 
@@ -1581,6 +1620,27 @@ function PipedChild.alive(self: ChildProcess | PipedChild) -> boolean,
 
 </h4>
 
+Returns true if the child is still alive, false if the child has exited. Once the child has exited, you
+can call `child:status()` for more info about what happened to the child.
+
+---
+
+### PipedChild.status
+
+<h4>
+
+```luau
+function PipedChild.status(self: ChildProcess | PipedChild) -> ChildStatus?,
+```
+
+</h4>
+
+Returns `nil` if the child is still alive.
+
+If the child has exited, returns a `ChildStatus` table, which contains info
+regarding if the child exited successfully, failed, blew up (was terminated by a
+unix signal such as SIGSEV), core dumped, etc. Also contains exit codes if present.
+
 ---
 
 ### PipedChild.kill
@@ -1633,6 +1693,99 @@ function PipedChild.kill(self: ChildProcess | PipedChild) -> (),
 
 ```luau
 } -- closes PipedChild
+```
+
+---
+
+## `export type` ChildStatus
+
+<h4>
+
+```luau
+export type ChildStatus = {
+```
+
+</h4>
+
+---
+
+### ChildStatus.ok
+
+<h4>
+
+```luau
+  ok: boolean,
+```
+
+</h4>
+
+ Whether the ChildProcess exited successfully (status code 0)
+
+---
+
+### ChildStatus.code
+
+<h4>
+
+```luau
+  code: number?,
+```
+
+</h4>
+
+The exit code (not wait code) of the ChildProcess.
+
+On Unixlike systems, this will be `nil` if the process was terminated by signal (such as SIGSEV (segfault), SIGINT, etc.)
+
+---
+
+### ChildStatus.signal
+
+<h4>
+
+```luau
+  signal: number?,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Only present on Unixlike systems when the process was terminated by signal such as SIGTERM, SIGINT, SIGSEV, etc.
+
+Exactly what this might report may differ based upon shell and whether the process
+was spawned within a shell or not.
+
+From the Rust docs:
+
+> When invoking a shell, the signal value indicates whether the top-level shell itself received a terminating signal.
+If instead a command *within* an invoked shell receives a terminating signal, many shells convert the signal number
+into an exit code by adding 128. For example, a command run under `sh` that receives a [SIGTERM](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/kill.html)
+canonically causes the shell to report an exit code of 15 + 128, i.e. 143.
+
+</details>
+
+---
+
+### ChildStatus.core_dumped
+
+<h4>
+
+```luau
+  core_dumped: boolean?,
+```
+
+</h4>
+
+ Was the child process terminated by a signal, and if it was, did it dump core?
+ Only present on Unixlike.
+
+---
+
+```luau
+} -- closes ChildStatus
 ```
 
 ---
