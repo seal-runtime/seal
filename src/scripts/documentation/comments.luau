@@ -1,7 +1,9 @@
 --!nolint FunctionUnused
-local fs = require("@std/fs")
+const fs = require("@std/fs")
 
-local parser = require("@libraries/LuauParser/Parser")
+const parser = require("@libraries/LuauParser/Parser")
+const syntax = require("@libraries/LuauParser/Parser/Syntax")
+
 local path = ""
 const function update_path(p: string)
     path = string.gsub(p, fs.path.cwd(), ".")
@@ -11,15 +13,17 @@ export class BlockComment
     public start: vector
     public finish: vector
 
-    function new(begin_col: number, begin_line: number, end_col: number, end_line: number)
+    function from_location(location: syntax.Location)
         return BlockComment {
-            start = vector.create(begin_col + 1, begin_line),
-            finish = vector.create(end_col + 1, end_line)
+            start = vector.create(location.begin.column, location.begin.line),
+            finish = vector.create(location.end_.column, location.end_.line)
         }
     end
+    
     function __tostring(self)
         return `BlockComment<({path}:{self.start.y}:{self.start.x}), ({path}:{self.finish.y}:{self.finish.x})>`
     end
+
     function extract_from_lines(
         self,
         lines: { string },
@@ -31,7 +35,6 @@ export class BlockComment
 
         const end_column = self.finish.x
         const end_line = self.finish.y
-
         local start_pos: number
         local end_pos: number
 
@@ -52,15 +55,17 @@ export class LineComment
     public line: number
     public first_column: number
 
-    function new(line: number, col: number)
+    function from_location(location: syntax.Location)
         return LineComment {
-            line = line + 1,
-            first_column = col + 1
+            line = location.begin.line + 1,
+            first_column = location.begin.column + 1
         }
     end
-    function __tostring(self)
+
+    function __tostring(self )
         return `LineComment<line: {self.line}, column: {self.first_column}>`
     end
+    
     function extract_from_lines(
         self,
         lines: { string },
@@ -88,17 +93,9 @@ export function build(
     const comments: { BlockComment | LineComment } = {}
     for _, c in parsed.commentLocations do
         if c.type == 283 then -- Block comment
-            table.insert(comments, BlockComment.new(
-                c.location.begin.column,
-                c.location.begin.line,
-                c.location.end_.column,
-                c.location.end_.line
-            ))
+            table.insert(comments, BlockComment.from_location(c.location))
         elseif c.type == 282 then
-            table.insert(comments, LineComment.new(
-                c.location.begin.line,
-                c.location.begin.column
-            ))
+            table.insert(comments, LineComment.from_location(c.location))
         end
     end
 

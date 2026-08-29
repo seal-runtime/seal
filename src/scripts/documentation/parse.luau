@@ -155,15 +155,13 @@ const docs: { Documentation } = {}
 const comments: { BlockComment | LineComment } = comment.build(parsed, lines, path, content)
 for index, comm in comments do
     local text: string, last: number
-    if class.isinstance(comm, BlockComment) then -- LUAU FIXME: refines to never
-        comm = comm :: BlockComment
+    if class.isinstance(comm, BlockComment) then
         text, last = comm:extract_from_lines(lines, bytes_by_line, content)
         if str.startswith(text, "--[[") then -- not --[=[]=]
             continue
         end
         table.insert(docs, Documentation.from(text, last))
-    elseif class.isinstance(comm, LineComment) then -- LUAU FIXME: refines to never
-        comm = comm :: LineComment
+    elseif class.isinstance(comm, LineComment) then
         text, last = comm:extract_from_lines(lines, bytes_by_line, content)
         if str.startswith(text, "---") then
             text = str.trimfront(text, "%-%-%-")

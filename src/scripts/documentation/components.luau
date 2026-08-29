@@ -35,7 +35,7 @@ export class CodeblockComponent
 end
 export class ListItem
     public indent: number
-    public text: number
+    public text: string
     function __tostring(self)
         return enclose_component("ListItem", `i: {self.indent}: {self.text}`, vector.create(80, 80, 80))
     end
@@ -206,8 +206,8 @@ export class Documentation
 
             table.insert(last_lines, str.trimback(line))
         end
-        if in_list and list_type then
-            push_list(list_type :: any)
+        if in_list and list_type then -- LUAU FIXME: wtf
+            push_list(list_type :: "Ordered" | "Unordered")
         elseif in_codeblock then
             push_codeblock()
         else
