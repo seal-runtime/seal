@@ -66,8 +66,8 @@ class TableType
     public properties: { Property }
 end
 class Param
-    public name
-    public type
+    name
+    type
     function __tostring(self)
         if self.name ~= "" then
             return `{self.name}: {self.type}`
@@ -77,11 +77,11 @@ class Param
     end
 end
 class Function
-    public name: string
-    public location: vector
-    public parameters: { Param }
-    public returns: { string }
-    public docs: Documentation?
+    name: string
+    location: vector
+    parameters: { Param }
+    returns: { string }
+    docs: Documentation?
 
     function from_ast(name: string, node: syntax.AstTypeFunction)
         const params: { Param } = {}
@@ -125,21 +125,21 @@ class Function
     end
 end
 class Field
-    public docs: Documentation
-    public value: Property
+    docs: Documentation
+    value: Property
 end
 class Array
-    public docs: Documentation?
-    public inner: string
+    docs: Documentation?
+    inner: string
 end
 class Map
-    public docs: Documentation?
-    public key_indexer: string
-    public value_result: string
+    docs: Documentation?
+    key_indexer: string
+    value_result: string
 end
 class StringEnum
-    public docs: Documentation
-    public variants: {
+    docs: Documentation
+    variants: {
         {
             name: string,
             docs: Documentation?,
@@ -147,8 +147,8 @@ class StringEnum
     }
 end
 class ComplexEnum
-    public docs: Documentation
-    public variants: { Property }
+    docs: Documentation
+    variants: { Property }
 end
 
 const docs: { Documentation } = {}

@@ -174,9 +174,9 @@ fn main() -> LuaResult<()> {
 
     set_fflags([
         "LuauExportValueSyntax",
-        "LuauBetterUserDefinedClasses",
-        "LuauDefaultArguments",
-        "LuauGenericNominals",
+        "LuwuBetterUserDefinedClasses",
+        "LuwuDefaultArguments",
+        "LuwuGenericNominals",
         "LuauExportedClassIsNilWorkaround"
     ])?;
 

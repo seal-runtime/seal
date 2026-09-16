@@ -8,13 +8,17 @@ edition = "2024"
 # support, maintained by Midnight Frost and myself (mostly him).
 [target.'cfg(not(target_os = "android"))'.dependencies]
 # mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-jit", "serialize", "luau-classes"] }
-mluau = { git = "https://github.com/luwu-community/mluau.git", features = ["luau", "luau-jit", "serialize", "none-primitive", "luau-classes"], branch = "luwu-classes" }
+mluau = { git = "https://github.com/luwu-community/mluau.git", features = ["luau", "luau-jit", "serialize", "none-primitive", "luwu-classes"], branch = "luwu-classes" }
 
 
 [target.'cfg(target_os = "android")'.dependencies]
 # luau jit (ncg) compilation is not available on android
 # mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "luau-classes"] }
-mluau = { git = "https://github.com/luwu-community/mluau.git", features = ["luau", "serialize", "none-primitive", "luau-classes"], branch = "luwu-classes" }
+mluau = { git = "https://github.com/luwu-community/mluau.git", features = ["luau", "serialize", "none-primitive", "luwu-classes"], branch = "luwu-classes" }
+
+# [patch."https://github.com/luwu-community/mluau.git"]
+# mluau = { path = "/home/deviaze/Repositories/mluau" }
+# mlua-sys = { path = "/home/deviaze/Repositories/mluau/mlua-sys" }
 
 [dependencies]
 regex = "1.11.1"

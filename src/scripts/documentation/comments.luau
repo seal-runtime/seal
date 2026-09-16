@@ -10,8 +10,8 @@ const function update_path(p: string)
 end
 
 export class BlockComment
-    public start: vector
-    public finish: vector
+    start: vector
+    finish: vector
 
     function from_location(location: syntax.Location)
         return BlockComment {
@@ -52,8 +52,8 @@ export class BlockComment
 end
 
 export class LineComment
-    public line: number
-    public first_column: number
+    line: number
+    first_column: number
 
     function from_location(location: syntax.Location)
         return LineComment {
