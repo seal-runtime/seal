@@ -177,7 +177,8 @@ fn main() -> LuaResult<()> {
         "LuwuBetterUserDefinedClasses",
         "LuwuDefaultArguments",
         "LuwuGenericNominals",
-        "LuauExportedClassIsNilWorkaround"
+        "LuauExportedClassIsNilWorkaround",
+        "LuwuTableDrop"
     ])?;
 
     let command = match SealCommand::parse(args) {
