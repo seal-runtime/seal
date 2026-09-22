@@ -248,12 +248,19 @@ pub fn get_chunk_name_for_module(path: &str, function_name: &'static str) -> Lua
     if path.is_file() && path.exists() && let Some(path) = path.to_str() {
         Ok(Some(normalize_path(path)))
     } else if path.is_dir() {
-        #[allow(clippy::disallowed_methods, reason = "child is a literal that doesn't start with an absolute path separator")]
-        let possible_init_path = path.join("init.luau");
-        if possible_init_path.exists() && let Some(init_path) = possible_init_path.to_str() {
-            Ok(Some(normalize_path(init_path)))
+        let found_init_path = ["init.luau", "init.luwu"].into_iter().find_map(|init_file| {
+            #[allow(clippy::disallowed_methods, reason = "child is a literal that doesn't start with an absolute path separator")]
+            let possible_init_path = path.join(init_file);
+            if possible_init_path.exists() {
+                possible_init_path.to_str().map(normalize_path)
+            } else {
+                None
+            }
+        });
+        if let Some(init_path) = found_init_path {
+            Ok(Some(init_path))
         } else {
-            wrap_err!("{}: directory at '{}' missing its init.luau, cannot assign it a chunk_name", function_name, path.display())
+            wrap_err!("{}: directory at '{}' missing its init.luau or init.luwu, cannot assign it a chunk_name", function_name, path.display())
         }
     } else {
         Ok(None)

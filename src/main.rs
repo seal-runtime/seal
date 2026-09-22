@@ -81,7 +81,7 @@ type Args = VecDeque<OsString>;
 #[derive(Debug)]
 enum SealCommand {
     /**
-    Runs `seal` with a valid luau module path/filename (must be `*.luau` or directory w/ `init.luau`)
+    Runs `seal` with a valid luau module path/filename (must be `*.luau`/`*.luwu` or directory w/ `init.luau`/`init.luwu`)
 
     ## Examples:
     * `seal ./hi.luau`
@@ -247,10 +247,10 @@ fn set_jit(luau: &Lua) -> bool {
 
 fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoadResult {
     if requested_path.ends_with(".lua") {
-        return wrap_err!("{}: wrong language! seal only runs .luau files", function_name);
+        return wrap_err!("{}: wrong language! seal only runs .luau and .luwu files", function_name);
     }
     let Some(chunk_name) = require::get_chunk_name_for_module(&requested_path, function_name)? else {
-        return wrap_err!("'{}' not found; does it exist and is it either a .luau file or directory with an init.luau?", requested_path);
+        return wrap_err!("'{}' not found; does it exist and is it either a .luau/.luwu file or directory with an init.luau/init.luwu?", requested_path);
     };
 
     let luau = Lua::default();
