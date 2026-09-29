@@ -174,11 +174,15 @@ fn main() -> LuaResult<()> {
 
     set_fflags([
         "LuauExportValueSyntax",
-        "LuwuBetterUserDefinedClasses",
         "LuwuDefaultArguments",
         "LuwuGenericNominals",
-        "LuauExportedClassIsNilWorkaround",
-        "LuwuTableDrop"
+        "LuwuExportedClassIsNilWorkaround",
+        "LuwuTableDrop",
+        "LuwuNoinlineAttribute",
+        "LuwuDestructuring",
+        "LuwuDeclareStatements",
+        "DebugLuwuCompilerTrustsTypeAnnotations",
+        "LuwuTraits"
     ])?;
 
     let command = match SealCommand::parse(args) {
