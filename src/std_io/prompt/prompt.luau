@@ -360,6 +360,10 @@ function prompt.pick(message: string, options: { string }, default: number?): er
 
     for event in terminal.events(time.milliseconds(10)) do
         if event.type == "Key" then
+            if event.kind == "Release" then
+                -- stupid powershell on windows sends press and release instantly causing instant selection bug
+                continue
+            end
             interrupt = terminal.interrupt.check(event)
             if interrupt then
                 break

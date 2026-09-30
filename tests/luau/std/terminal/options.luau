@@ -41,6 +41,10 @@ if terminal.tty() then
 
     while selected == nil do
         for event in terminal.events(time.milliseconds(50)) do
+            if event.type == "Key" and event.kind == "Release" then
+                continue
+            end
+
             local interrupt = terminal.interrupt.check(event)
             if interrupt then
                 selected = interrupt
