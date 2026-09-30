@@ -25,7 +25,7 @@ if terminal.tty() then
     while name_result == nil do
         local characters: { string } = {}
         for event in terminal.events(time.milliseconds(10)) do
-            if event.type == "Key" then
+            if event.type == "Key" and event.kind ~= "Release" then
                 local interrupt = terminal.interrupt.check(event)
                 if interrupt then
                     name_result = interrupt

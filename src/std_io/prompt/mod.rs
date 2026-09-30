@@ -237,7 +237,10 @@ pub fn prompt_password_masked(message: &str, function_name: &str) -> LuaResult<S
         };
 
         // only care about key events, ignore mouse or resize
-        if let crossterm::event::Event::Key(key) = event {
+        if let crossterm::event::Event::Key(key) = event
+            // crossterm sends release instantly on windows powershell breaking this otherwise
+            && key.kind != crossterm::event::KeyEventKind::Release
+        {
             match key.code {
                 KeyCode::Enter => break, // user pressed enter, we're done
                 KeyCode::Char(c) => {

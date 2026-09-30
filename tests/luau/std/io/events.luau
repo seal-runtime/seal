@@ -5,7 +5,7 @@ local output = require("@std/io/output")
 terminal.rawmode.enable()
 
 for event in terminal.events(time.milliseconds(20)) do
-    if event.type == "Key" then
+    if event.type == "Key" and event.kind ~= "Release" then
         if event.key == "c" and event.modifiers.ctrl then
             print("\r\n")
             break
