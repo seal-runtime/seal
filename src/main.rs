@@ -182,7 +182,8 @@ fn main() -> LuaResult<()> {
         "LuwuDestructuring",
         "LuwuDeclareStatements",
         "DebugLuwuCompilerTrustsTypeAnnotations",
-        "LuwuTraits"
+        "LuwuTraits",
+        "DebugLuwuUserDefinedRefinements"
     ])?;
 
     let command = match SealCommand::parse(args) {
