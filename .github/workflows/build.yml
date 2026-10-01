@@ -32,7 +32,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest, windows-11-arm]
+        # linux is built separately in build-linux (old-glibc container)
+        os: [macos-latest, windows-latest, windows-11-arm]
 
     steps:
       - name: Checkout repository
@@ -92,7 +93,104 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v5
         with:
-          name: seal-v${{ needs.version.outputs.version }}-${{ runner.os == 'macOS' && 'macos-darwin' || runner.os == 'Windows' && 'windows' || runner.os == 'Linux' && 'linux' }}-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' }}
+          name: seal-v${{ needs.version.outputs.version }}-${{ runner.os == 'macOS' && 'macos-darwin' || runner.os == 'Windows' && 'windows' }}-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' }}
+          path: ./target/release/seal*
+
+  build-linux:
+    needs: ["version"]
+    name: build (linux-${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    # manylinux_2_28 is AlmaLinux 8 (glibc 2.28), so the binary runs on RHEL 8+ and any newer distro.
+    # building on ubuntu-latest would require whatever glibc that runner ships (2.39 on 24.04).
+    container: quay.io/pypa/manylinux_2_28_${{ matrix.image-arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            arch: x64
+            image-arch: x86_64
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+            image-arch: aarch64
+
+    env:
+      # compile liblzma (pulled in by archive) from source and link it statically instead of
+      # depending on the system's liblzma.so at runtime
+      LZMA_API_STATIC: "1"
+      # the image's gcc-toolset g++ links libstdc++ through a linker script that uses the system's
+      # (gcc 8) libstdc++.so.6 and statically links anything newer from libstdc++_nonshared.a,
+      # so the binary works with RHEL 8's stock libstdc++
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Mark workspace as safe for git
+        # the container runs as a different uid than the checkout owner; without this build.rs
+        # can't read the commit hash/branch
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Build project
+        run: cargo build --release
+
+      - name: Check glibc/libstdc++ requirements
+        # fail if the binary needs anything newer than RHEL 8 ships
+        run: |
+          BIN_PATH="./target/release/seal"
+          ldd "$BIN_PATH"
+          max_glibc=$(objdump -T "$BIN_PATH" | grep -o 'GLIBC_[0-9.]*' | sort -Vu | tail -1)
+          max_glibcxx=$(objdump -T "$BIN_PATH" | grep -o 'GLIBCXX_[0-9.]*' | sort -Vu | tail -1)
+          echo "max glibc symbol: $max_glibc"
+          echo "max libstdc++ symbol: ${max_glibcxx:-<none>}"
+          if [ "$(printf '%s\n' GLIBC_2.28 "$max_glibc" | sort -V | tail -1)" != "GLIBC_2.28" ]; then
+            echo "::error::binary requires $max_glibc, newer than GLIBC_2.28"
+            exit 1
+          fi
+          if [ -n "$max_glibcxx" ] && [ "$(printf '%s\n' GLIBCXX_3.4.25 "$max_glibcxx" | sort -V | tail -1)" != "GLIBCXX_3.4.25" ]; then
+            echo "::error::binary requires $max_glibcxx, newer than RHEL 8's libstdc++ (GLIBCXX_3.4.25)"
+            exit 1
+          fi
+          if ldd "$BIN_PATH" | grep -q liblzma; then
+            echo "::error::binary dynamically links liblzma"
+            exit 1
+          fi
+        shell: bash
+      - name: Install test dependencies
+        # need lsof to clean up leftover server in http tests
+        run: dnf install -y lsof
+      - name: Run tests
+        run: |
+          # BIN_PATH="./target/release/seal"
+          # TEST_CMD="$BIN_PATH ./tests/run.luau"
+          useradd --create-home sealtest
+          chown -R sealtest "$GITHUB_WORKSPACE"
+
+          BIN_PATH="./target/release/seal"
+          TEST_CMD="runuser -u sealtest -- env HOME=/home/sealtest $BIN_PATH ./tests/run.luau"
+
+          # Capture both stdout and stderr separately
+          STDOUT_CHECK=$($TEST_CMD 2>/tmp/stderr_output)
+
+          # Print stdout to GitHub Actions logs
+          echo "$STDOUT_CHECK"
+
+          # Check stderr separately
+          STDERR_CHECK=$(cat /tmp/stderr_output)
+          if [ -n "$STDERR_CHECK" ]; then
+            echo "Tests failed! STDERR contains output."
+            exit 1
+          fi
+        shell: bash
+
+      - name: Upload artifacts
+        if: success()
+        uses: actions/upload-artifact@v5
+        with:
+          name: seal-v${{ needs.version.outputs.version }}-linux-${{ matrix.arch }}
           path: ./target/release/seal*
 
   build-android:

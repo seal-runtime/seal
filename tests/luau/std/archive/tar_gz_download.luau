@@ -11,6 +11,12 @@ if env.os ~= "Linux" then
     return
 end
 
+if _RUNTIME.version.display == "0.8.2" then
+    -- HACK: cant run prev bin on old glibc mismatch
+    -- if u see this dm me otherwise temp solution lives forever
+    return
+end
+
 format.defaults {
     max_depth = 2,
     indent_spaces = 2,
@@ -103,7 +109,7 @@ if seal_data then
         program = temp_seal_path,
         args = { "--help" },
     }
-    assert(result.ok, "download reponse not successful")
+    assert(result.ok, `download reponse not successful? (got {result.stderr})`)
     assert(string.match(result.out, "cutest"), "seal --help doesn't have 'cutest' in it anymore?")
 end
 
