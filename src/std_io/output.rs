@@ -5,7 +5,6 @@ use crate::prelude::*;
 use mluau::prelude::*;
 
 use super::format;
-use crate::std_err::WrappedError;
 
 pub fn debug_print(luau: &Lua, multivalue: LuaMultiValue) -> LuaMultiResult {
     let function_name = "dp(...: any)";
@@ -35,7 +34,7 @@ pub fn simple_print_and_return(luau: &Lua, multivalue: LuaMultiValue) -> LuaMult
     let mut output = String::from("");
 
     for (index, value) in multivalue.iter().enumerate() {
-        let formatted = match format_simple.call::<LuaValue>(value) {
+        let formatted = match format_simple.call_with_err::<LuaValue, WrappedError>(value) {
             Ok(LuaValue::String(text)) => text.to_string_lossy(),
             Ok(other) => {
                 panic!("p: format.simple returned a non-string, got: {:?}", other);

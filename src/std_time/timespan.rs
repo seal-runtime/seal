@@ -1,8 +1,9 @@
 use mluau::prelude::*;
 use crate::prelude::*;
 use crate::std_time::{datetime::DateTime, duration::TimeDuration};
+use crate::userdata::{SealLock, SealUserData, SealUserDataFields, SealUserDataMethods};
 use jiff::{Span, SpanArithmetic, SpanRelativeTo};
-use std::ops::Deref;
+use std::borrow::Cow;
 
 pub struct TimeSpan {
     pub inner: Span,
@@ -58,13 +59,16 @@ impl TimeSpan {
         Self::new(Span::new().seconds(secs.clamp(-631_107_417_600, 631_107_417_600)))
     }
     pub fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata(self, luau)
+        ok_userdata_mut(self, luau)
     }
 }
 
-impl LuaUserData for TimeSpan {
-    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
-        fields.add_field_method_get("relative_to", |luau: &Lua, this: &TimeSpan| {
+impl SealUserData for TimeSpan {
+    fn type_name<'a>() -> Cow<'a, str> {
+        Cow::Borrowed("TimeSpan")   
+    }
+    fn add_fields<F: SealUserDataFields<Self>>(fields: &mut F) {
+        fields.add_field_method_get("relative_to", |luau: &Lua, this| {
             if let Some(relative_to) = &this.relative_to {
                 relative_to.clone().get_userdata(luau)
             } else {
@@ -72,13 +76,13 @@ impl LuaUserData for TimeSpan {
             }
         });
     }
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
-        methods.add_meta_method(LuaMetaMethod::ToString, | luau: &Lua, this: &TimeSpan, _: LuaValue| -> LuaValueResult {
+    fn add_methods<M: SealUserDataMethods<Self>>(methods: &mut M) {
+        methods.add_meta_method(LuaMetaMethod::ToString, | luau: &Lua, this, _: LuaValue| -> LuaValueResult {
             ok_string(format!("TimeSpan<{:#}>", this.inner), luau)
         });
         // we actually don't want to make these as easy to access as with DateTime & TimeDuration
         // because they're the internal representations of the units and probably not what users want
-        methods.add_method("units", |luau: &Lua, this: &TimeSpan, _: LuaValue| {
+        methods.add_method("units", |luau: &Lua, this, _: LuaValue| {
             TableBuilder::create(luau)?
                 .with_value("years", this.inner.get_years())?
                 .with_value("months", this.inner.get_months())?
@@ -90,7 +94,7 @@ impl LuaUserData for TimeSpan {
                 .with_value("microseconds", this.inner.get_microseconds())?
                 .build_readonly()
         });
-        methods.add_method("duration", |luau: &Lua, this: &TimeSpan, _: LuaValue| {
+        methods.add_method("duration", |luau: &Lua, this, _: LuaValue| {
             let function_name = "TimeSpan:duration()";
             let total = match if let Some(relative) = &this.relative_to {
                 this.inner.to_duration(relative.date())
@@ -102,7 +106,7 @@ impl LuaUserData for TimeSpan {
                     return wrap_err!("{} unable to convert to duration: {}", function_name, err);
                 }
             };
-            ok_userdata(TimeDuration::new(total), luau)
+            ok_userdata_mut(TimeDuration::new(total), luau)
         });
 
         /// we want to not error.. so we check if either TimeSpan is relative_to a DateTime for SpanArithmetic
@@ -116,12 +120,12 @@ impl LuaUserData for TimeSpan {
             }
         }
 
-        methods.add_meta_method(LuaMetaMethod::Add, | luau: &Lua, this: &TimeSpan, other: LuaValue | {
+        methods.add_meta_method(LuaMetaMethod::Add, | luau: &Lua, this, other: LuaValue | {
             let function_name = "TimeSpan.__add(self, other: TimeSpan)";
             let other = match other {
-                LuaValue::UserData(ud) => {
-                    if ud.is::<TimeSpan>() {
-                        ud.borrow::<TimeSpan>().expect("must be TimeSpan here")
+                LuaValue::UserData(ref ud) => {
+                    if let Some(borrowed) = ud.borrow::<SealLock<TimeSpan>>() {
+                        borrowed
                     } else {
                         return wrap_err!("{}: other must be another TimeSpan", function_name);
                     }
@@ -131,16 +135,17 @@ impl LuaUserData for TimeSpan {
                 }
             };
 
-            let relative_to = which_relative(this, &other);
+            let other_ref = other.borrow();
+            let relative_to = which_relative(&this, &other_ref);
 
             let subbed = match if let Some(relative) = relative_to {
-                this.inner.checked_add((other.deref().inner, relative.date()))
+                this.inner.checked_add((other_ref.inner, relative.date()))
             } else {
-                this.inner.checked_add(SpanArithmetic::from(other.deref().inner).days_are_24_hours())
+                this.inner.checked_add(SpanArithmetic::from(other_ref.inner).days_are_24_hours())
             } {
                 Ok(span) => span,
                 Err(err) => {
-                    return wrap_err!("{} error subtracting timespans {} + {}; err: {}", function_name, this.inner, other.inner, err);
+                    return wrap_err!("{} error subtracting timespans {} + {}; err: {}", function_name, this.inner, other_ref.inner, err);
                 }
             };
             if let Some(relative) = relative_to {
@@ -150,12 +155,12 @@ impl LuaUserData for TimeSpan {
             }
         });
 
-        methods.add_meta_method(LuaMetaMethod::Sub, | luau: &Lua, this: &TimeSpan, other: LuaValue | {
+        methods.add_meta_method(LuaMetaMethod::Sub, | luau: &Lua, this, other: LuaValue | {
             let function_name = "TimeSpan.__sub(self, other: TimeSpan)";
             let other = match other {
-                LuaValue::UserData(ud) => {
-                    if ud.is::<TimeSpan>() {
-                        ud.borrow::<TimeSpan>().expect("must be TimeSpan here")
+                LuaValue::UserData(ref ud) => {
+                    if let Some(borrowed) = ud.borrow::<SealLock<TimeSpan>>() {
+                        borrowed
                     } else {
                         return wrap_err!("{}: other must be another TimeSpan", function_name);
                     }
@@ -165,16 +170,17 @@ impl LuaUserData for TimeSpan {
                 }
             };
 
-            let relative_to = which_relative(this, &other);
+            let other_ref = other.borrow();
+            let relative_to = which_relative(&this, &other_ref);
 
             let subbed = match if let Some(relative) = relative_to {
-                this.inner.checked_sub((other.deref().inner, relative.date()))
+                this.inner.checked_sub((other_ref.inner, relative.date()))
             } else {
-                this.inner.checked_sub(SpanArithmetic::from(other.deref().inner).days_are_24_hours())
+                this.inner.checked_sub(SpanArithmetic::from(other_ref.inner).days_are_24_hours())
             } {
                 Ok(span) => span,
                 Err(err) => {
-                    return wrap_err!("{} error subtracting timespans {} + {}; err: {}", function_name, this.inner, other.inner, err);
+                    return wrap_err!("{} error subtracting timespans {} + {}; err: {}", function_name, this.inner, other_ref.inner, err);
                 }
             };
             if let Some(relative) = relative_to {

@@ -1,6 +1,6 @@
 use mluau::prelude::*;
 use crate::prelude::*;
-use crate::std_err::WrappedError;
+use crate::userdata::{SealLock, SealUserData, SealUserDataFields, SealUserDataMethods};
 
 use crossterm::event::{Event, KeyEvent, KeyModifiers, MouseEvent};
 use crossterm::execute;
@@ -86,7 +86,7 @@ fn create_event_table(luau: &Lua, event: Event) -> LuaResult<LuaTable> {
     let t = create_table_with_capacity(luau, 0, 3)?;
 
     fn table_from_modifiers(luau: &Lua, modifiers: KeyModifiers) -> LuaResult<LuaTable> {
-        let t: LuaTable = luau.named_registry_value("InputKeyModifiers")?;
+        let t: LuaTable = luau.registry().get("InputKeyModifiers")?;
         t.raw_set("shift", modifiers.contains(KeyModifiers::SHIFT))?;
         t.raw_set("ctrl", modifiers.contains(KeyModifiers::CONTROL))?;
         t.raw_set("alt", modifiers.contains(KeyModifiers::ALT))?;
@@ -225,12 +225,12 @@ fn capture_paste(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
 pub(super) fn events(luau: &Lua, value: LuaValue) -> LuaResult<LuaFunction> {
     let function_name = "terminal.events(poll: Duration?)";
     let poll_duration = match value {
-        LuaValue::UserData(ud) => {
-            if let Ok(duration) = ud.borrow::<TimeDuration>() {
-                if duration.inner.is_negative() {
+        LuaValue::UserData(ref ud) => {
+            if let Some(duration) = ud.borrow::<SealLock<TimeDuration>>() {
+                if duration.borrow().inner.is_negative() {
                     return wrap_err!("{}: cannot poll for a negative duration", function_name);
                 } else {
-                    duration.inner.unsigned_abs()
+                    duration.borrow().inner.unsigned_abs()
                 }
             } else {
                 let type_name = ud.type_name()?.unwrap_or(String::from("userdata"));
@@ -250,9 +250,9 @@ pub(super) fn events(luau: &Lua, value: LuaValue) -> LuaResult<LuaFunction> {
         .build_readonly()?;
 
     let modifiers_table = create_table_with_capacity(luau, 0, 3)?;
-    luau.set_named_registry_value("InputKeyModifiers", modifiers_table)?;
+    luau.registry().set("InputKeyModifiers", modifiers_table)?;
 
-    let empty_event_registry_key = luau.create_registry_value(empty_event_table)?;
+    luau.registry().set("TerminalEmptyEvent", empty_event_table)?;
 
     let f = luau.create_function(move | luau: &Lua, _: LuaValue | -> LuaValueResult {
         if let Ok(b) = crossterm::event::poll(poll_duration) && b {
@@ -264,7 +264,7 @@ pub(super) fn events(luau: &Lua, value: LuaValue) -> LuaResult<LuaFunction> {
             };
             ok_table(create_event_table(luau, event))
         } else {
-            let empty_event_table: LuaTable = luau.registry_value(&empty_event_registry_key)?;
+            let empty_event_table: LuaTable = luau.registry().get("TerminalEmptyEvent")?;
             ok_table(Ok(empty_event_table))
         }
     })?;
@@ -292,22 +292,25 @@ impl Interrupt {
         }
     }
     pub fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata(self, luau)
+        ok_userdata_mut(self, luau)
     }
 }
 
-impl LuaUserData for Interrupt {
-    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
+impl SealUserData for Interrupt {
+    fn type_name<'a>() -> Cow<'a, str> {
+        Cow::Borrowed("Interrupt")
+    }
+    fn add_fields<F: SealUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "interrupt"); // allow users to typeof check
-        fields.add_field_method_get("code", |luau: &Lua, this: &Interrupt| {
+        fields.add_field_method_get("code", |luau, this| {
             match this.code {
                 InterruptCode::CtrlC => "CtrlC".into_lua(luau),
                 InterruptCode::CtrlD => "CtrlD".into_lua(luau),
             }
         });
     }
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
-        methods.add_meta_method(LuaMetaMethod::ToString, | luau: &Lua, this: &Interrupt, _: LuaValue| -> LuaValueResult {
+    fn add_methods<M: SealUserDataMethods<Self>>(methods: &mut M) {
+        methods.add_meta_method(LuaMetaMethod::ToString, | luau, this, _: LuaValue| -> LuaValueResult {
             match this.code {
                 InterruptCode::CtrlC => "CtrlC (SIGINT)".into_lua(luau),
                 InterruptCode::CtrlD => "CtrlD (EOF)".into_lua(luau),
@@ -329,22 +332,22 @@ const INTERRUPT_CHECK_SRC: &str = include_str!("interrupt_check.luau");
 fn interrupt_check(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "interrupt.check(event: TerminalEvent)";
     
-    let function = if let Some(function) = luau.named_registry_value::<Option<LuaFunction>>("terminal/interrupt_check")? {
+    let function = if let Some(function) = luau.registry().get::<Option<LuaFunction>>("terminal/interrupt_check")? {
         function
     } else {
-        let function = luau.load(INTERRUPT_CHECK_SRC).eval::<LuaFunction>()?;
-        luau.set_named_registry_value("terminal/interrupt_check", &function)?;
+        let function = luau.load(INTERRUPT_CHECK_SRC).eval_wrapped::<LuaFunction>()?;
+        luau.registry().set("terminal/interrupt_check", &function)?;
         function
     };
 
-    let interrupt = match function.call::<LuaValue>(value) {
+    let interrupt = match function.call_with_err::<LuaValue, WrappedError>(value) {
         Ok(LuaValue::Boolean(b)) if b => Interrupt::ctrlc(),
         Ok(LuaValue::Boolean(b)) if !b => Interrupt::ctrld(),
         Ok(LuaNil) => {
             return Ok(LuaNil);
         },
-        Ok(LuaValue::UserData(ud)) if let Ok(err) = ud.borrow::<WrappedError>() => {
-            return wrap_err!("{}: {}", function_name, err.format());
+        Ok(LuaValue::UserData(ref ud)) if let Some(err) = ud.borrow::<SealLock<WrappedError>>() => {
+            return wrap_err!("{}: {}", function_name, err.borrow().format_from_ud(ud));
         },
         Ok(other) => {
             panic!("{} returned an unexpected type of value: {:?}", function_name, other);

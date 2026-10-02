@@ -4,7 +4,7 @@ use unicode_segmentation::UnicodeSegmentation;
 use std::io::Cursor;
 use unicode_reader::Graphemes;
 
-use mluau::prelude::*;
+use mluau::{FunctionMutExt, prelude::*};
 use crate::prelude::*;
 
 /// bytes-per-split divisor grows with sqrt(len) past `SPLIT_SCALE_THRESHOLD`, so the guess grows sublinearly
@@ -961,7 +961,7 @@ const STR_DOT_LUAU_SRC: &str = include_str!("./str.luau");
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     let chunk = Chunk::src(STR_DOT_LUAU_SRC);
-    match luau.load(chunk).set_name("std/str").eval::<LuaTable>() {
+    match luau.load(chunk).set_name("std/str").eval_wrapped::<LuaTable>() {
         Ok(str_table) => Ok(str_table),
         Err(err) => {
             panic!("std/str's str.luau did a bad: {}", err);

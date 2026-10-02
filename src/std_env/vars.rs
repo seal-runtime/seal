@@ -156,7 +156,7 @@ fn vars_validate(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
         None => LuaNil,
     };
 
-    let result = callback.call::<LuaValue>(arg)?;
+    let result = callback.call_wrapped::<LuaValue>(arg)?;
 
     Ok(result)
 }

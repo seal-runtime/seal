@@ -317,8 +317,8 @@ fn fs_file_try_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaMultiR
             target_buffer.write_bytes(buffer_offset as usize, &rust_buffer);
             (Some(target_buffer), "Ok")
         } else {
-            // Ok(LuaValue::Buffer(luau.create_buffer(rust_buffer)?))
-            let luau_buffer = luau.create_buffer(rust_buffer)?;
+            // Ok(LuaValue::Buffer(luau.create_external_buffer_mut(rust_buffer)?))
+            let luau_buffer = luau.create_external_buffer_mut(rust_buffer)?;
             (Some(luau_buffer), "Ok")
         }
     };

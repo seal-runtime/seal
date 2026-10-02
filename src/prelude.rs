@@ -1,13 +1,26 @@
-use mluau::prelude::*;
+use mluau::{FunctionMutExt, prelude::*};
 pub use mluau::ChunkSource as Chunk;
 
 /// luau's actual limit: array/hash parts of a table can each hold at most `1 << MAXBITS` entries,
 /// where MAXBITS is 26 (see luau/VM/src/ltable.cpp); exceeding this aborts the process, so this
 /// constant must never be looser than luau's real MAXSIZE
 pub const MAX_TABLE_SIZE: usize = 1 << 26;
+
+pub use crate::{
+    userdata::WrappedFunction as WrappedFunction,  // TODO: Consider removing it
+    userdata::SealLock as SealLock, // TODO: Replace with Borrowable
+    userdata::SealUserData as SealUserData,
+    userdata::SealUserDataBorrowExt as SealUserDataBorrowExt, // TODO: Replace with Borrowable
+    userdata::SealUserDataExt as SealUserDataExt,
+    userdata::SealUserDataFields as SealUserDataFields,
+    userdata::SealUserDataMethods as SealUserDataMethods,
+    userdata::CallWrapped as CallWrapped,
+    userdata::CallWrappedChunk as CallWrappedChunk
+};
+
 pub use crate::{
     std_io::colors as colors, wrap_err, table_helpers::TableBuilder,
-    put, puts, eput, eputs, signatures
+    put, puts, eput, eputs, signatures, std_err::WrappedError as WrappedError
 };
 
 pub type LuaValueResult = LuaResult<LuaValue>;
@@ -20,16 +33,16 @@ pub fn ok_table(t: LuaResult<LuaTable>) -> LuaValueResult {
 }
 
 pub fn ok_function(f: fn(&Lua, LuaValue) -> LuaValueResult, luau: &Lua) -> LuaValueResult {
-    Ok(LuaValue::Function(luau.create_function(f)?))
+    Ok(LuaValue::Function(luau.create_wrapped_function(f)?))
 }
 
 // TODO: figure out how to get generics working for ok_function so we don't need multiple functions to do this
 pub fn ok_function_multi_returns_value(f: fn(&Lua, LuaMultiValue) -> LuaValueResult, luau: &Lua) -> LuaValueResult {
-    Ok(LuaValue::Function(luau.create_function(f)?))
+    Ok(LuaValue::Function(luau.create_wrapped_function(f)?))
 }
 
 pub fn ok_function_multi_returns_multi(f: fn(&Lua, LuaMultiValue) -> LuaMultiResult, luau: &Lua) -> LuaValueResult {
-    Ok(LuaValue::Function(luau.create_function(f)?))
+    Ok(LuaValue::Function(luau.create_wrapped_function(f)?))
 }
 
 pub fn ok_function_mut<F, I, Fn>(f: Fn, luau: &Lua) -> LuaValueResult
@@ -45,12 +58,15 @@ pub fn ok_string<S: AsRef<[u8]>>(s: S, luau: &Lua) -> LuaValueResult {
     Ok(LuaValue::String(luau.create_string(s)?))
 }
 
-pub fn ok_buffy<B: AsRef<[u8]>>(b: B, luau: &Lua) -> LuaValueResult {
-    Ok(LuaValue::Buffer(luau.create_buffer(b)?))
+pub fn ok_buffy(b: Vec<u8>, luau: &Lua) -> LuaValueResult {
+    println!("b is: {b:?}, len: {}", b.len());
+    let b = luau.create_external_buffer_mut(b)?;
+    b.with_bytes(|x| println!("buf with_bytes: {x:?}"));
+    Ok(LuaValue::Buffer(b))
 }
 
-pub fn ok_userdata<S: LuaUserData + 'static>(u: S, luau: &Lua) -> LuaValueResult {
-    Ok(LuaValue::UserData(luau.create_userdata(u)?))
+pub fn ok_userdata_mut<S: SealUserData + 'static>(u: S, luau: &Lua) -> LuaValueResult {
+    Ok(LuaValue::UserData(luau.create_seal_userdata(u)?))
 }
 
 pub fn pop_self(multivalue: &mut LuaMultiValue, function_name: &'static str) -> LuaEmptyResult {
@@ -310,14 +326,13 @@ impl std::fmt::Display for UserDataTypeName {
         f.write_str(self.inner.as_deref().unwrap_or("<unknown userdata type>"))
     }
 }
-pub trait Borrowable {
-    fn type_name() -> &'static str;
 
+pub trait BorrowableMut: SealUserData {
     /// Borrows of Self type or gives type name for error message if it can't
-    fn as_borrowed(ud: &LuaAnyUserData) -> Result<LuaUserDataRef<Self>, UserDataTypeName>
-        where Self: LuaUserData + 'static
+    fn as_borrowed(ud: &LuaAnyUserData) -> Result<LuaUserDataRef<SealLock<Self>>, UserDataTypeName>
+        where Self: 'static
     {
-        if let Ok(got_it) = ud.borrow::<Self>() {
+        if let Some(got_it) = ud.clone().into::<SealLock<Self>>() {
             Ok(got_it)
         } else {
             Err(UserDataTypeName::from(ud))
@@ -325,10 +340,10 @@ pub trait Borrowable {
     }
 
     /// Borrows of Self type or gives type name for error message if it can't
-    fn borrowed(ud: LuaAnyUserData) -> Result<LuaUserDataRef<Self>, UserDataTypeName>
-        where Self: LuaUserData + 'static
+    fn borrowed(ud: LuaAnyUserData) -> Result<LuaUserDataRef<SealLock<Self>>, UserDataTypeName>
+        where Self: 'static
     {
-        if let Ok(got_it) = ud.borrow::<Self>() {
+        if let Some(got_it) = ud.clone().into::<SealLock<Self>>() {
             Ok(got_it)
         } else {
             Err(UserDataTypeName::from(ud))
@@ -336,9 +351,9 @@ pub trait Borrowable {
     }
     /// Borrows and then clones Self type of ud; gives type name for error message if it can't
     fn cloned(ud: LuaAnyUserData) -> Result<Self, UserDataTypeName>
-        where Self: LuaUserData + Clone + 'static
+        where Self: Clone + 'static
     {
-        if let Ok(got_it) = ud.borrow::<Self>() {
+        if let Ok(got_it) = ud.with_borrow::<Self, _, _>(|x| x.clone()) {
             Ok(got_it.clone())
         } else {
             Err(UserDataTypeName::from(ud))
@@ -348,10 +363,8 @@ pub trait Borrowable {
         ud: LuaAnyUserData,
         parameter_name: &'static str,
         function_name: &'static str
-    ) -> LuaResult<LuaUserDataRef<Self>>
-        where Self: LuaUserData
-    {
-        if let Ok(got_it) = ud.borrow::<Self>() {
+    ) -> LuaResult<LuaUserDataRef<SealLock<Self>>> {
+        if let Some(got_it) = ud.clone().into::<SealLock<Self>>() {
             Ok(got_it)
         } else {
             let name = UserDataTypeName::from(ud);
@@ -359,29 +372,30 @@ pub trait Borrowable {
             wrap_err!("{}: expected {} to be a {}, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
         }
     }
+
     fn expect_cloned(
         ud: LuaAnyUserData,
         parameter_name: &'static str,
         function_name: &'static str
     ) -> LuaResult<Self>
-        where Self: LuaUserData + Clone + 'static
-    {
-        if let Ok(got_it) = ud.borrow::<Self>() {
+        where Self: Clone + 'static {
+        if let Ok(got_it) = ud.with_borrow::<Self, _, _>(|x| x.clone()) {
             Ok(got_it.clone())
         } else {
             let name = UserDataTypeName::from(ud);
-            let expected = Self::type_name();
+            let expected = <Self as SealUserData>::type_name();
             wrap_err!("{}: expected {} to be a {}, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
         }
     }
+
     fn expect_cloned_or_nil(
         ud: LuaAnyUserData,
         parameter_name: &'static str,
         function_name: &'static str
     ) -> LuaResult<Self>
-        where Self: LuaUserData + Clone + 'static
+        where Self: Clone + 'static
     {
-        if let Ok(got_it) = ud.borrow::<Self>() {
+        if let Ok(got_it) = ud.with_borrow::<Self, _, _>(|x| x.clone()) {
             Ok(got_it.clone())
         } else {
             let name = UserDataTypeName::from(ud);
@@ -394,8 +408,15 @@ pub trait Borrowable {
         self,
         luau: &Lua
     ) -> LuaValueResult
-        where Self: LuaUserData + 'static 
+        where Self: SealUserData + 'static 
     {
-        Ok(LuaValue::UserData(luau.create_userdata(self)?))
+        Ok(LuaValue::UserData(luau.create_seal_userdata(self)?))
     }
+}
+
+#[macro_export]
+macro_rules! wrap_method {
+    ($method:expr) => {{
+        |lua, this, args| $method(lua, &this, args)
+    }};
 }

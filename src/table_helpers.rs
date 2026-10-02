@@ -5,7 +5,8 @@
 #![allow(clippy::missing_errors_doc)]
 #![allow(dead_code)]
 
-use mluau::prelude::*;
+use mluau::{FunctionMutExt, prelude::*};
+use crate::WrappedError; // avoid importing prelude here due to circular deps
 
 /**
     Utility struct for building Lua tables.
@@ -96,7 +97,12 @@ impl<'luau> TableBuilder<'luau> {
         R: IntoLuaMulti,
         F: Fn(&Lua, A) -> LuaResult<R> + 'static, //+ MaybeSend + 'static,
     {
-        let f = self.luau.create_function(func)?;
+        let f = self.luau.create_function(move |lua, args: A| {
+            match func(lua, args) {
+                Ok(v) => LuaEither::Left(LuaOk(v)),
+                Err(e) => LuaEither::Right(WrappedError::from_message(e.to_string()))
+            }
+        })?;
         self.with_value(key, LuaValue::Function(f))
     }
 
@@ -112,37 +118,30 @@ impl<'luau> TableBuilder<'luau> {
         R: IntoLuaMulti,
         F: Fn(&Lua, A) -> LuaResult<R> + 'static, //+ MaybeSend + 'static,
     {
-        let f = self.luau.create_function_with_debug(func, Some(sig))?;
+        let f = self.luau.create_function_with_debug(move |lua, args: A| {
+            match func(lua, args) {
+                Ok(v) => LuaEither::Left(LuaOk(v)),
+                Err(e) => LuaEither::Right(WrappedError::from_message(e.to_string()))
+            }
+        }, Some(sig))?;
         self.with_value(key, LuaValue::Function(f))
     }
 
-    pub fn with_function_mut<K, A, R, F>(self, key: K, func: F) -> LuaResult<Self>
+    pub fn with_function_mut<K, A, R, F>(self, key: K, mut func: F) -> LuaResult<Self>
     where
         K: IntoLua,
         A: FromLuaMulti,
         R: IntoLuaMulti,
         F: FnMut(&Lua, A) -> LuaResult<R> + 'static,
     {
-        let f = self.luau.create_function_mut(func)?;
+        let f = self.luau.create_function_mut(move |lua, args: A| {
+            match func(lua, args) {
+                Ok(v) => LuaEither::Left(LuaOk(v)),
+                Err(e) => LuaEither::Right(WrappedError::from_message(e.to_string()))
+            }
+        })?;
         self.with_value(key, LuaValue::Function(f))
     }
-
-    /*
-        Adds a new key-value pair to the table, with an async function value.
-
-        This will overwrite any value that already exists.
-    */
-//    pub fn with_async_function<K, A, R, F, FR>(self, key: K, func: F) -> LuaResult<Self>
-//    where
-//        K: IntoLua,
-//        A: FromLuaMulti,
-//        R: IntoLuaMulti,
-//        F: Fn(Lua, A) -> FR + MaybeSend + 'static,
-//        FR: Future<Output = LuaResult<R>> + 'static,
-//   {
-//        let f = self.luau.create_async_function(func)?;
-//       self.with_value(key, LuaValue::Function(f))
-//    }
 
     /**
         Adds a metatable to the table.

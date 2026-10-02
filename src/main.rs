@@ -63,6 +63,7 @@ mod setup;
 mod compile;
 mod std_args;
 mod std_archive;
+mod userdata;
 
 use err::display_error_and_exit;
 use sealconfig::SealConfig;
@@ -209,8 +210,13 @@ fn main() -> LuaResult<()> {
         Err(err) => display_error_and_exit(err),
     };
 
-    match luau.load(code).set_name(chunk_name).exec() {
-        Ok(_) => Ok(()),
+    let func = match luau.load(code).set_name(chunk_name).into_function() {
+        Ok(func) => func,
+        Err(err) => display_error_and_exit(err),
+    };
+
+    match func.call_wrapped(()) {
+        Ok(()) => Ok(()),
         Err(err) => display_error_and_exit(err),
     }
 }
@@ -436,7 +442,7 @@ impl SealCommand {
                 return wrap_err!("help not yet implemented for command {:#?}", other);
             },
         })?;
-        puts!("{}", help_function.call::<String>(LuaNil)?)?;
+        puts!("{}", help_function.call_wrapped::<String>(LuaNil)?)?;
         Ok(None)
     }
     fn next_is_help(&self, args: &Args) -> bool {

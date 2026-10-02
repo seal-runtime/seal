@@ -223,10 +223,10 @@ fn thread_spawn(luau: &Lua, value: LuaValue) -> LuaValueResult {
         )?;
 
         let chunk = Chunk::src(src);
-        match new_luau.load(chunk).set_name(options.chunk_name).exec() {
+        match new_luau.load(chunk).set_name(options.chunk_name).call_with_err::<(), WrappedError>(()) {
             Ok(_) => Ok(()),
             Err(err) => {
-                let formatted_err = LuaError::external(format!("{}{}{}\n Error occurred in thread '{}', which was spawned at {}", colors::RED, err, colors::RESET, thread_name, options.spawned_at));
+                let formatted_err = LuaError::external(format!("{}{}{}\n Error occurred in thread '{}', which was spawned at {}", colors::RED, err.format_message_dirty(), colors::RESET, thread_name, options.spawned_at));
                 // if we dont exit the main program when the child thread errors then the child thread exits and
                 // we get RecvError (receiving on empty + disconnected thread) on the main thread
                 err::display_error_and_exit(formatted_err);

@@ -1,9 +1,14 @@
 use crate::{prelude::*, std_err::WrappedError, std_json};
 use mluau::prelude::*;
+use crate::userdata::{
+    SealUserData as LuaUserDataMut,
+    SealUserDataFields as LuaUserDataFieldsMut,
+    SealUserDataMethods as LuaUserDataMethodsMut
+};
 
 use url::Url;
 
-use std::net::TcpStream;
+use std::{borrow::Cow, net::TcpStream};
 use tungstenite::{
     Message,
     Connector,
@@ -24,14 +29,17 @@ impl WebsocketMessage {
         }
     }
     fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata(self, luau)
+        ok_userdata_mut(self, luau)
     }
 }
-impl LuaUserData for WebsocketMessage {
-    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
+impl LuaUserDataMut for WebsocketMessage {
+    fn type_name<'a>() -> Cow<'a, str> {
+        Cow::Borrowed("WebsocketMessage")
+    }
+    fn add_fields<F: LuaUserDataFieldsMut<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "WebsocketMessage");
     }
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: LuaUserDataMethodsMut<Self>>(methods: &mut M) {
         methods.add_method("is_binary", |_luau, it, _: LuaValue| {
             if let Message::Binary(_) = it.inner {
                 Ok(true)
@@ -194,15 +202,18 @@ impl WebsocketWrapper {
         }
     }
     fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata(self, luau)
+        ok_userdata_mut(self, luau)
     }
 }
 
-impl LuaUserData for WebsocketWrapper {
-    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
+impl LuaUserDataMut for WebsocketWrapper {
+    fn type_name<'a>() -> Cow<'a, str> {
+        Cow::Borrowed("WebsocketWrapper")
+    }
+    fn add_fields<F: LuaUserDataFieldsMut<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "Websocket");
     }
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: LuaUserDataMethodsMut<Self>>(methods: &mut M) {
         methods.add_method("readable", |_luau, it, _: LuaValue| {
             Ok(LuaValue::Boolean(it.can_read()))
         });
