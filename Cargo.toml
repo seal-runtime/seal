@@ -16,9 +16,9 @@ mluau = { git = "https://github.com/luwu-community/mluau.git", features = ["luau
 # mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "luau-classes"] }
 mluau = { git = "https://github.com/luwu-community/mluau.git", features = ["luau", "serialize", "none-primitive", "luwu-classes"], branch = "luwu-classes" }
 
-[patch."https://github.com/luwu-community/mluau.git"]
-mluau = { path = "/home/deviaze/Repositories/mluau" }
-mlua-sys = { path = "/home/deviaze/Repositories/mluau/mlua-sys" }
+# [patch."https://github.com/luwu-community/mluau.git"]
+# mluau = { path = "/home/deviaze/Repositories/mluau" }
+# mlua-sys = { path = "/home/deviaze/Repositories/mluau/mlua-sys" }
 
 [dependencies]
 regex = "1.11.1"
