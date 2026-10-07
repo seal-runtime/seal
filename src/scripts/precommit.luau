@@ -84,7 +84,8 @@ else
     exit 0
 fi
 SEAL="$($BOOTSTRAP src/scripts/newest_seal.luau)"
-$SEAL src/scripts/precommit.luau
+$SEAL src/scripts/check_local_patch.luau || exit 1
+$SEAL src/scripts/precommit.luau || exit 1
 $SEAL docs/docscripts/reference.luau
 git add README.md
 git add docs/reference/*

@@ -183,7 +183,10 @@ fn main() -> LuaResult<()> {
         "LuwuDeclareStatements",
         "DebugLuwuCompilerTrustsTypeAnnotations",
         "LuwuTraits",
-        "DebugLuwuUserDefinedRefinements"
+        "DebugLuwuUserDefinedRefinements",
+        "LuwuIfLocal",
+        "DebugLuwuDoExpr",
+        "LuwuTableComprehensions"
     ])?;
 
     let command = match SealCommand::parse(args) {
