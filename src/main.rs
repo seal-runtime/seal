@@ -186,7 +186,8 @@ fn main() -> LuaResult<()> {
         "DebugLuwuUserDefinedRefinements",
         "LuwuIfLocal",
         "DebugLuwuDoExpr",
-        "LuwuTableComprehensions"
+        "LuwuTableComprehensions",
+        "LuwuTableFunctionFields"
     ])?;
 
     let command = match SealCommand::parse(args) {
