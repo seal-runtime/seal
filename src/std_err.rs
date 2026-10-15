@@ -232,7 +232,7 @@ fn format_error(value: LuaValue) -> LuaResult<Arc<str>> {
             }
         },
         other => {
-            return wrap_err!("passed error isn't a userdata, got: {:?}", other).into();
+            return wrap_err!("passed error isn't a userdata, got: {:?}", other);
         }
     };
     Ok(stringified)

@@ -43,6 +43,9 @@ const SEAL_URL: &str = "https://github.com/seal-runtime/seal";
 const LUAU_URL: &str = "https://github.com/mluau/luau";
 
 pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
+    // everything loaded into this state is Luwu unless its chunk says otherwise (`seal eval`, `luau.eval`, ...)
+    luau.set_compiler(mluau::Compiler::luwu());
+
     let globals: LuaTable = luau.globals();
     // must use globals().get instead of globals().raw_get due to safeenv/sandbox (which requires newindex); raw_get incorrectly returns nil when safeenv enabled
     let luau_version: LuaString = globals.get("_VERSION")?;

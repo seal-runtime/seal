@@ -26,6 +26,10 @@
 // runtime case, so we ban the method outright via clippy.toml's disallowed-methods.
 #![warn(clippy::disallowed_methods, reason = "see clippy.toml for banned methods and why")]
 
+// compiler doesn't mind and i dont want to have to go back and add & next time i end up using
+// this value again and need to borrow
+#![allow(clippy::needless_borrow)]
+
 use crate::{prelude::*, setup::SetupOptions};
 use mluau::prelude::*;
 
@@ -185,9 +189,14 @@ fn main() -> LuaResult<()> {
         "LuwuTraits",
         "DebugLuwuUserDefinedRefinements",
         "LuwuIfLocal",
-        "DebugLuwuDoExpr",
+        "LuwuDoExpr",
         "LuwuTableComprehensions",
-        "LuwuTableFunctionFields"
+        "LuwuTableFunctionFields",
+        "DebugLuwuPoperators",
+        "DebugLuwuMatchExpressions",
+        "LuwuAttributesEverywhere",
+        "LuwuBufferIsFrozen",
+        "LuwuExternTypeGenericMethods"
     ])?;
 
     let command = match SealCommand::parse(args) {
@@ -226,7 +235,7 @@ fn main() -> LuaResult<()> {
         Err(err) => display_error_and_exit(err),
     };
 
-    let func = match luau.load(code).set_name(chunk_name).into_function() {
+    let func = match luau.load_from_chunk(code, &chunk_name).into_function() {
         Ok(func) => func,
         Err(err) => display_error_and_exit(err),
     };

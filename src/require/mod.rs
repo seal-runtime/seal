@@ -44,7 +44,7 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
 
         let chunk = Chunk::src(src);
 
-        let value = luau.load(chunk).set_name(&resolved_path).eval_wrapped()?;
+        let value = luau.load_from_chunk(chunk, &resolved_path).eval_wrapped()?;
         
         require_cache.raw_set(resolved_path.clone(), &value)?;
 

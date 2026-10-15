@@ -2,7 +2,6 @@ use mluau::prelude::*;
 use crate::prelude::*;
 use crate::userdata::SealUserDataExt;
 use std::path::PathBuf;
-use mluau::Compiler;
 
 enum EvalStdlib {
     Seal,
@@ -228,7 +227,7 @@ fn luau_bytecode(luau: &Lua, value: LuaValue) -> LuaValueResult {
             return wrap_err!("{} expected src to be a string, got: {:?}", function_name, other);
         }
     };
-    let comp = Compiler::new();
+    let comp = mluau::Compiler::luwu();
     let res = match comp.compile(src) {
         Ok(bytecode) => bytecode,
         Err(err) => {

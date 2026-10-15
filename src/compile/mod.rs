@@ -8,7 +8,6 @@ use std::fs::{self, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
-use mluau::Compiler;
 
 pub mod options;
 use options::CompileOptions;
@@ -198,7 +197,7 @@ pub fn extract_bytecode(bin: Option<PathBuf>) -> Option<Vec<u8>> {
 /// returns a compiled binary of <normal seal machine code><bytecode><magic><len>
 /// so we only need to check the end of the bin to see if it's a standalone exec or not
 pub fn standalone(src: &str) -> LuaResult<Vec<u8>> {
-    let comp = Compiler::new();
+    let comp = mluau::Compiler::luwu();
     let bytecode = match comp.compile(src) {
         Ok(bytecode) => bytecode,
         Err(err) => {

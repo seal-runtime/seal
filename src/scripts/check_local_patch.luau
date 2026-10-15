@@ -24,9 +24,11 @@ end
 
 const contents = read_cargo_toml()
 if not contents then
+    warn("No Cargo.toml here?")
     -- no Cargo.toml in the index: nothing to check
-    process.exit(0)
+    process.exit(1)
 end
+assert(contents, "contents can't be nil here")
 
 const function mentions(line: string, word: string): boolean
     return string.find(line, word, 1, true) ~= nil
@@ -34,10 +36,10 @@ end
 
 for _, line in str.splitlines(contents) do
     const trimmed = str.trimfront(line, " ")
-    const local_dependency = (str.startswith(trimmed, "mluau") or str.startswith(trimmed, "mlua-sys")) and mentions(trimmed, "path")
+    const local_dependency = str.starts(trimmed, "mluau", "mlua-sys") and mentions(trimmed, "path")
 
     if str.startswith(trimmed, "[patch.") or local_dependency then
-        output.ewriteln("you forgot to comment out mluau local patch u goober")
+        output.ewriteln("you forgot to comment out mluau local patch u silly goober")
         output.ewriteln(`  {path or "Cargo.toml (staged)"}: {line}`)
         process.exit(1)
     end

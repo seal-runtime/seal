@@ -23,6 +23,22 @@ pub use crate::{
     put, puts, eput, eputs, signatures, std_err::WrappedError as WrappedError
 };
 
+/// Loads code as a chunk named `chunk_name`, compiled as the language the name says: Luau for a `.luau` file, Luwu
+/// otherwise (see [`language_of`](crate::globals::language_of)).
+pub trait LoadChunk {
+    fn load_from_chunk<'a>(&self, chunk: impl mluau::AsChunk + 'a, chunk_name: impl AsRef<str>) -> mluau::Chunk<'a>;
+}
+
+impl LoadChunk for Lua {
+    fn load_from_chunk<'a>(&self, chunk: impl mluau::AsChunk + 'a, chunk_name: impl AsRef<str>) -> mluau::Chunk<'a> {
+        let chunk_name = chunk_name.as_ref();
+        let lang = mluau::Language::from_chunk_name(chunk_name).unwrap_or(mluau::Language::Luwu);
+        self.load(chunk)
+            .set_name(chunk_name)
+            .set_language(lang)
+    }
+}
+
 pub type LuaValueResult = LuaResult<LuaValue>;
 pub type LuaEmptyResult = LuaResult<()>;
 pub type LuaMultiResult = LuaResult<LuaMultiValue>;

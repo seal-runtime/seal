@@ -534,7 +534,7 @@ impl SealUserData for DateTime {
                         // let other_dt = ud.borrow::<SealLock<DateTime>>().expect("impossible not DateTime");
                         wrap_err!("{}: adding DateTime + DateTime makes no sense and is ambiguous, did you mean to add a TimeSpan?", function_name)
                     } else if let Some(_) = ud.borrow::<SealLock<TimeDuration>>() {
-                        wrap_err!("{}: unfortunately we can't add DateTime + Duration directly, you need to use a TimeSpan (time.datetime.days(n))")
+                        wrap_err!("{}: unfortunately we can't add DateTime + Duration directly, you need to use a TimeSpan (time.datetime.days(n))", function_name)
                     } else {
                         wrap_err!("{}: other must be a TimeSpan", function_name)
                     }
@@ -555,9 +555,9 @@ impl SealUserData for DateTime {
                         DateTime::from(new_dt).get_userdata(luau)
                     } else if let Some(_) = ud.borrow::<SealLock<DateTime>>() {
                         // let other_dt = ud.borrow::<SealLock<DateTime>>().expect("impossible not DateTime");
-                        wrap_err!("{}: adding DateTime - DateTime is ambiguous; if you need a TimeSpan between two DateTimes, use DateTime:since(dt: DateTime)", function_name)
+                        wrap_err!("{}: DateTime - DateTime is ambiguous; if you need a TimeSpan between two DateTimes, use DateTime:since(dt: DateTime)", function_name)
                     } else if let Some(_) = ud.borrow::<SealLock<TimeDuration>>() {
-                        wrap_err!("{}: unfortunately we can't add DateTime + Duration directly, you need to use a TimeSpan (time.datetime.days(n))")
+                        wrap_err!("{}: unfortunately we can't add DateTime + Duration directly, you need to use a TimeSpan (time.datetime.days(n))", function_name)
                     } else {
                         wrap_err!("{}: other must be a TimeSpan", function_name)
                     }
