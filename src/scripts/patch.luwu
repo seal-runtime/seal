@@ -6,11 +6,20 @@ const function mentions(line: string, word: string): boolean
     return string.find(line, word, 1, true) ~= nil
 end
 
-const which: "patch" | "unpatch" = match const other = env.args[1]
-    case nil then error("missing 'patch' or 'unpatch'")
-    case "p" | "patch" then "patch"
-    case "u" | "unpatch" then "unpatch"
-    else error(`Expected one of p for patch or u for unpatch, got {other}`)
+const which: "patch" | "unpatch" = do
+    local got = env.args[1]
+    assert(got ~= nil, "Missing 'which': 'patch' ('p') or 'unpatch'")
+    got = str.trim(got)
+    if got == "patch" or got == "unpatch" then
+        give got
+    elseif got == "p" then
+        got = "patch"
+    elseif got == "u" then
+        got = "unpatch"
+    else
+        return error(`'which' should be one of 'patch', 'unpatch' or aliases 'p' or 'u', got '{got}'`)
+    end
+    give got
 
 type Line = {
     ln: number,
@@ -23,7 +32,7 @@ for ln, line in fs.readlines("./Cargo.toml") do
         after_patch = true
     end
     if after_patch and mentions(line, "mluau") then -- catches 3 lines
-        patch_lines <+ .{ln, line}
+        table.insert(patch_lines, .{ln, line})
     end
 end
 for _, info.{ln, line} in patch_lines do
