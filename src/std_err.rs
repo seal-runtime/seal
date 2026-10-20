@@ -50,10 +50,6 @@ impl WrappedError {
         Ok(Self::new(ErrorMessage::String(message.into()), Some(traceback.into())))
     }
 
-    pub fn format_from_ud(&self, ud: &LuaAnyUserData) -> Arc<str> {
-        self.format(&ud.weak_lua().upgrade())
-    }
-
     pub fn format(&self, luau: &Lua) -> Arc<str> {
         if let Some(ref val) = *self.formatted_tb.borrow() {
             return val.clone()
@@ -81,8 +77,8 @@ impl WrappedError {
             ErrorMessage::String(s) => s.clone(),
             ErrorMessage::Value(v) => {
                 match v {
-                    LuaValue::UserData(u) if let Some(we) = u.borrow::<SealLock<Self>>() => {
-                        return we.borrow().format_message(luau); // Recurse to inner
+                    LuaValue::UserData(u) if let Some(we) = Self::borrow(u) => {
+                        return we.format_message(luau); // Recurse to inner
                     },
                     _ => {
                         match pretty(luau, LuaMultiValue::from_iter([v.clone()])) {
@@ -107,8 +103,8 @@ impl WrappedError {
             ErrorMessage::String(s) => s.clone(),
             ErrorMessage::Value(v) => {
                 match v {
-                    LuaValue::UserData(u) if let Some(we) = u.borrow::<SealLock<Self>>() => {
-                        return we.borrow().format_message_dirty(); // Recurse to inner
+                    LuaValue::UserData(u) if let Some(we) = Self::borrow(u) => {
+                        return we.format_message_dirty(); // Recurse to inner
                     },
                     _ => {
                         v.to_string().unwrap_or_else(|_x| "<unknown>".to_string()).into()
@@ -122,26 +118,42 @@ impl WrappedError {
     }
 
     pub fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata_mut(self, luau)
+        ok_userdata(self, luau)
+    }
+
+    pub fn from_value(value: LuaValue, function_name: &'static str) -> LuaResult<WrappedWrappedError> {
+        let ud = match value {
+            LuaValue::UserData(ud) => ud,
+            other => {
+                return wrap_err!("{}: expected err to be an error (a userdata with type name 'error'), got something else: {:?}", function_name, other);
+            }
+        };
+        WrappedError::expect_borrowed(ud, "err", function_name)
     }
 }
 
-impl SealUserData for WrappedError {
+/// fml
+type WrappedWrappedError = LuaTypedRef<Wrapped<WrappedError>, LuaAnyUserData, 2>;
+
+impl WrappedUserData for WrappedError {
     fn type_name<'a>() -> Cow<'a, str> {
         Cow::Borrowed("error")
     }
-    fn add_fields<F: SealUserDataFields<Self>>(fields: &mut F) {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "error"); // allow users to typeof check
     }
-    fn add_methods<M: SealUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_meta_method(LuaMetaMethod::ToString, |luau: &Lua, this, _: LuaValue| {
-            //println!("__tostring {:?}", );
-            Ok(luau.create_string(this.format_message(luau).as_ref()).expect("WE FAILED")) // NOTE/TODO: For now, we use normal non-external strings here
+            ok_string(this.format_message(luau).as_ref(), luau) // NOTE/TODO: For now, we use normal non-external strings here
         });
     }
 }
 
-impl BorrowableMut for WrappedError {}
+impl Borrowable for WrappedError {
+    fn display_name() -> &'static str {
+        "error"
+    }
+}
 
 // WrappedError's are first class error values, so impl FromLuaErr and IntoCallbackResult for them
 impl FromLuaErr for WrappedError {
@@ -157,7 +169,7 @@ impl FromLuaErr for WrappedError {
 
 impl IntoCallbackResult for WrappedError {
     fn into_callback_result(self, lua: &Lua) -> CallbackResult {
-        LuaCustomError(self.into_mut()).into_callback_result(lua)
+        LuaCustomError(self.into_wrapped()).into_callback_result(lua)
     }
 }
 
@@ -187,13 +199,13 @@ pub fn ecall(luau: &Lua, f: LuaFunction) -> LuaValueResult {
         // intentionally uses call_with_err directly to better control error
         let result = match f.call_with_err::<LuaMultiValue, WrappedError>(multivalue) {
             Ok(result) => result,
-            Err(e) => return LuaEither::Right(LuaCustomError(e.into_mut()))
+            Err(e) => return LuaEither::Right(LuaCustomError(e.into_wrapped()))
         };
         if !result.is_empty()
             && let Some(front) = result.front()
             && let LuaValue::UserData(ud) = front
-            && let Some(err) = ud.borrow::<SealLock<WrappedError>>() {
-                return LuaEither::Right(LuaCustomError(err.borrow().clone().into_mut()));
+            && let Some(err) = WrappedError::borrow(ud) {
+                return LuaEither::Right(LuaCustomError(err.0.clone().into_wrapped()));
             }
             
         LuaEither::Left(LuaOk(result))
@@ -222,25 +234,10 @@ pub fn err_wrap(luau: &Lua, value: LuaValue) -> LuaValueResult {
     WrappedError::new(ErrorMessage::String(message.into()), None).get_userdata(luau)
 }
 
-fn format_error(value: LuaValue) -> LuaResult<Arc<str>> {
-    let stringified = match value {
-        LuaValue::UserData(ud) => {
-            if let Some(wrapped) = ud.borrow::<SealLock<WrappedError>>() {
-                wrapped.borrow().format(&ud.weak_lua().upgrade())
-            } else {
-                return wrap_err!("passed error isn't the expected userdata, got: {:?}", ud);
-            }
-        },
-        other => {
-            return wrap_err!("passed error isn't a userdata, got: {:?}", other);
-        }
-    };
-    Ok(stringified)
-}
-
 fn err_format(luau: &Lua, value: LuaValue) -> LuaValueResult {
-    let formatted = format_error(value)?;
-    ok_string(formatted.as_ref(), luau)
+    let function_name = "err.format(err: error)";
+    let err = WrappedError::from_value(value, function_name)?;
+    ok_string(err.format(luau).as_ref(), luau)
 }
 
 fn err_traceback(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
@@ -266,8 +263,10 @@ fn err_traceback(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     ok_string(traceback, luau)
 }
 
-fn err_throw(_luau: &Lua, value: LuaValue) -> LuaValueResult {
-    let formatted = format_error(value)?;
+fn err_throw(luau: &Lua, value: LuaValue) -> LuaValueResult {
+    let function_name = "err.throw(err: error)";
+    let err = WrappedError::from_value(value, function_name)?;
+    let formatted = err.format(luau);
     Err(LuaError::external(formatted.to_string()))
 }
 
@@ -275,9 +274,9 @@ pub fn err_extract(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "err.extract(err: error)";
 
     let (message, traceback) = match value {
-        LuaValue::UserData(ref ud) if let Some(err) = ud.borrow::<SealLock<WrappedError>>() => {
-            let message = err.borrow().message.clone();
-            let traceback = err.borrow().traceback.clone();
+        LuaValue::UserData(ref ud) if let Some(err) = WrappedError::borrow(ud) => {
+            let message = err.message.clone();
+            let traceback = err.traceback.clone();
 
             (message, traceback)
         },

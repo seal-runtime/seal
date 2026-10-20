@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use crate::{prelude::*, userdata::{SealLock, SealUserData, SealUserDataFields, SealUserDataMethods}};
+use crate::{prelude::*, userdata::{WrappedUserData, WrappedUserDataFields, WrappedUserDataMethods}};
 use mluau::prelude::*;
 use jiff::SignedDuration;
 
@@ -119,16 +119,22 @@ impl TimeDuration {
     }
 
     pub fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata_mut(self, luau)
+        ok_userdata(self, luau)
     }
 }
 
 
-impl SealUserData for TimeDuration {
+impl Borrowable for TimeDuration {
+    fn display_name() -> &'static str {
+        "Duration"
+    }
+}
+
+impl WrappedUserData for TimeDuration {
     fn type_name<'a>() -> Cow<'a, str> {
         Cow::Borrowed("Duration")
     }
-    fn add_fields<F: SealUserDataFields<Self>>(fields: &mut F) {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "Duration");
 
         fn round_4_decimals(val: f64) -> f64 {
@@ -161,14 +167,14 @@ impl SealUserData for TimeDuration {
         fields.add_field_method_get("nanoseconds", |_, this| Ok(this.inner.as_nanos()));
     }
 
-    fn add_methods<M: SealUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_meta_method(LuaMetaMethod::ToString, |luau, this, _: LuaValue| {
             ok_string(format!("Duration<{}s>", this.inner.as_secs_f64()), luau)
         });
 
         methods.add_method("abs", |luau, this, _: ()| {
             let signed = this.inner.abs();
-            ok_userdata_mut(TimeDuration::new(signed), luau)
+            ok_userdata(TimeDuration::new(signed), luau)
         });
 
         methods.add_method("display", |luau, this, _: ()| {
@@ -202,15 +208,15 @@ impl SealUserData for TimeDuration {
         methods.add_meta_method(LuaMetaMethod::Add, |luau, this, other| {
             let function_name = "Duration.__add(self, other: Duration)";
             let result = match other {
-                LuaValue::UserData(ud) => match ud.borrow::<SealLock<TimeDuration>>() {
-                    Some(other) => this.inner.checked_add(other.borrow().inner),
+                LuaValue::UserData(ud) => match TimeDuration::borrow(&ud) {
+                    Some(other) => this.inner.checked_add(other.inner),
                     None => return wrap_err!("{}: other must be Duration", function_name),
                 },
                 other => return wrap_err!("{} expected Duration, got {:?}", function_name, other),
             };
 
             match result {
-                Some(sum) => ok_userdata_mut(TimeDuration::new(sum), luau),
+                Some(sum) => ok_userdata(TimeDuration::new(sum), luau),
                 None => wrap_err!("{} overflow when adding durations", function_name),
             }
         });
@@ -218,15 +224,15 @@ impl SealUserData for TimeDuration {
         methods.add_meta_method(LuaMetaMethod::Sub, |luau, this, other| {
             let function_name = "Duration.__sub(self, other: Duration)";
             let result = match other {
-                LuaValue::UserData(ud) => match ud.borrow::<SealLock<TimeDuration>>() {
-                    Some(other) => this.inner.checked_sub(other.borrow().inner),
+                LuaValue::UserData(ud) => match TimeDuration::borrow(&ud) {
+                    Some(other) => this.inner.checked_sub(other.inner),
                     None => return wrap_err!("{}: other must be Duration", function_name),
                 },
                 other => return wrap_err!("{} expected Duration, got {:?}", function_name, other),
             };
 
             match result {
-                Some(diff) => ok_userdata_mut(TimeDuration::new(diff), luau),
+                Some(diff) => ok_userdata(TimeDuration::new(diff), luau),
                 None => wrap_err!("{}: underflow when subtracting durations", function_name),
             }
         });
@@ -234,8 +240,8 @@ impl SealUserData for TimeDuration {
         methods.add_meta_method(LuaMetaMethod::Mul, |luau, this, other: LuaValue| {
             let function_name = "Duration.__mul(self, other: Duration | number)";
             let secs = match other {
-                LuaValue::UserData(ud) => match ud.borrow::<SealLock<TimeDuration>>() {
-                    Some(other) => this.inner.as_secs_f64() * other.borrow().inner.as_secs_f64(),
+                LuaValue::UserData(ud) => match TimeDuration::borrow(&ud) {
+                    Some(other) => this.inner.as_secs_f64() * other.inner.as_secs_f64(),
                     None => return wrap_err!("{}: other must be Duration", function_name),
                 },
                 LuaValue::Number(n) => this.inner.as_secs_f64() * n,
@@ -243,7 +249,7 @@ impl SealUserData for TimeDuration {
                 other => return wrap_err!("{} expected Duration or number, got {:?}", function_name, other),
             };
             match SignedDuration::try_from_secs_f64(secs) {
-                Ok(signed) => ok_userdata_mut(TimeDuration::new(signed), luau),
+                Ok(signed) => ok_userdata(TimeDuration::new(signed), luau),
                 Err(err) => wrap_err!("{} overflowed bounds, err: {}", function_name, err),
             }
         });
@@ -251,9 +257,9 @@ impl SealUserData for TimeDuration {
         methods.add_meta_method(LuaMetaMethod::Div, |luau, this, other: LuaValue| {
             let function_name = "Duration.__div(self, other: Duration | number)";
             let secs = match other {
-                LuaValue::UserData(ud) => match ud.borrow::<SealLock<TimeDuration>>() {
+                LuaValue::UserData(ud) => match TimeDuration::borrow(&ud) {
                     Some(other) => {
-                        let divisor = other.borrow().inner.as_secs_f64();
+                        let divisor = other.inner.as_secs_f64();
                         if divisor == 0.0 {
                             return wrap_err!("{}: cannot divide by a zero Duration", function_name);
                         }
@@ -276,7 +282,7 @@ impl SealUserData for TimeDuration {
                 other => return wrap_err!("{} expected Duration or number, got {:?}", function_name, other),
             };
             match SignedDuration::try_from_secs_f64(secs) {
-                Ok(signed) => ok_userdata_mut(TimeDuration::new(signed), luau),
+                Ok(signed) => ok_userdata(TimeDuration::new(signed), luau),
                 Err(err) => wrap_err!("{} overflowed bounds, err: {}", function_name, err),
             }
         });
@@ -284,8 +290,8 @@ impl SealUserData for TimeDuration {
         methods.add_meta_method(LuaMetaMethod::Eq, |_, this, other| {
             let function_name = "Duration.__eq(self, other: Duration)";
             match other {
-                LuaValue::UserData(ud) => match ud.borrow::<SealLock<TimeDuration>>() {
-                    Some(other) => Ok(this.inner == other.borrow().inner),
+                LuaValue::UserData(ud) => match TimeDuration::borrow(&ud) {
+                    Some(other) => Ok(this.inner == other.inner),
                     None => wrap_err!("{}: other must be Duration", function_name),
                 },
                 other => wrap_err!("{} expected Duration, got {:?}", function_name, other),
@@ -295,8 +301,8 @@ impl SealUserData for TimeDuration {
         methods.add_meta_method(LuaMetaMethod::Lt, |_, this, other| {
             let function_name = "Duration.__lt(self, other: Duration)";
             match other {
-                LuaValue::UserData(ud) => match ud.borrow::<SealLock<TimeDuration>>() {
-                    Some(other) => Ok(this.inner < other.borrow().inner),
+                LuaValue::UserData(ud) => match TimeDuration::borrow(&ud) {
+                    Some(other) => Ok(this.inner < other.inner),
                     None => wrap_err!("{}: other must be Duration", function_name),
                 },
                 other => wrap_err!("{} expected Duration, got {:?}", function_name, other),
@@ -306,8 +312,8 @@ impl SealUserData for TimeDuration {
         methods.add_meta_method(LuaMetaMethod::Le, |_, this, other| {
             let function_name = "Duration.__le(self, other: Duration)";
             match other {
-                LuaValue::UserData(ud) => match ud.borrow::<SealLock<TimeDuration>>() {
-                    Some(other) => Ok(this.inner <= other.borrow().inner),
+                LuaValue::UserData(ud) => match TimeDuration::borrow(&ud) {
+                    Some(other) => Ok(this.inner <= other.inner),
                     None => wrap_err!("{}: other must be Duration", function_name),
                 },
                 other => wrap_err!("{} expected Duration, got {:?}", function_name, other),

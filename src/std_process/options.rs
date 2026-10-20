@@ -356,7 +356,7 @@ impl SpawnOptions {
                     LuaValue::Integer(i) => int_to_usize(i, "SpawnOptions.capacity.stdout", "stdout")?,
                     LuaValue::UserData(ud) => {
                         match FileSize::borrowed(ud) {
-                            Ok(size) => size.borrow().as_bytes() as usize,
+                            Ok(size) => size.as_bytes() as usize,
                             Err(typ) => {
                                 return wrap_err!("expected stdout_capacity to be a number or FileSize, got userdata of type: {}", typ);
                             }
@@ -372,7 +372,7 @@ impl SpawnOptions {
                     LuaValue::Integer(i) => int_to_usize(i, "SpawnOptions.capacity.stderr", "stderr")?,
                     LuaValue::UserData(ud) => {
                         match FileSize::borrowed(ud) {
-                            Ok(size) => size.borrow().as_bytes() as usize,
+                            Ok(size) => size.as_bytes() as usize,
                             Err(typ) => {
                                 return wrap_err!("expected stderr_capacity to be a number or FileSize, got userdata of type: {}", typ);
                             }

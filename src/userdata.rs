@@ -1,23 +1,30 @@
-use std::{borrow::Cow, cell::RefCell, ffi::c_int};
-use mluau::{AnyUserData, CallbackResult, CustomError, FromLua, FromLuaMulti, Function, IntoCallbackResult, IntoLua, IntoLuaMulti, Lua, LuaUserDataExt, Ok as LuaOk, TypedUserData, USERDATA2_TAG, UserData, UserDataFields, UserDataMethods};
+use std::{borrow::Cow, ffi::c_int};
+use mluau::{AnyUserData, CallbackResult, CustomError, FromLuaMulti, Function, IntoCallbackResult, IntoLua, IntoLuaMulti, Lua, LuaUserDataExt, Ok as LuaOk, TypedUserData, USERDATA2_TAG, UserData, UserDataFields, UserDataMethods};
 use crate::WrappedError; // avoid importing prelude here due to circular deps
 
-pub struct SealLock<T>(pub RefCell<T>);
+/// What a [`WrappedUserData`] type is actually stored as inside Luau.
+///
+/// It's just the `T`; this newtype only exists because Rust won't let us `impl UserData for T`
+/// for every `T: WrappedUserData` directly. Use [`Borrowable`](crate::prelude::Borrowable) to get at the `T`
+/// instead of naming this type.
+pub struct Wrapped<T>(pub T);
 
-impl<T> SealLock<T> {
-    pub fn new(inner: T) -> Self {
-        Self(RefCell::new(inner))
-    }
-}
-
-impl<T> std::ops::Deref for SealLock<T> {
-    type Target = RefCell<T>;
+impl<T> std::ops::Deref for Wrapped<T> {
+    type Target = T;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-pub trait SealUserDataMethods<T, const TAG: c_int = USERDATA2_TAG> {
+/// Turns errors returned from userdata methods into [`WrappedError`]s, like the rest of seal's functions.
+fn wrap_callback_error(lua: &Lua, result: CallbackResult) -> CallbackResult {
+    if let CallbackResult::LuaError(ce) = result {
+        return CustomError(WrappedError::from_message(ce.to_string()).into_wrapped()).into_callback_result(lua);
+    }
+    result
+}
+
+pub trait WrappedUserDataMethods<T, const TAG: c_int = USERDATA2_TAG> {
     /// Add a regular method which accepts a `&T` as the first parameter.
     ///
     /// Regular methods are implemented by overriding the `__index` metamethod and returning the
@@ -28,19 +35,6 @@ pub trait SealUserDataMethods<T, const TAG: c_int = USERDATA2_TAG> {
     fn add_method<M, A, R>(&mut self, name: impl Into<&'static str>, method: M)
     where
         M: Fn(&Lua, &T, A) -> R + 'static,
-        A: FromLuaMulti,
-        R: IntoCallbackResult;
-    
-    /// Add a mutable method which accepts a `&mut T` as the first parameter.
-    ///
-    /// Mutable methods are implemented by overriding the `__index` metamethod and returning the
-    /// accessed method. This allows them to be used with the expected `userdata:method()` syntax.
-    ///
-    /// If `add_meta_method` or `add_meta_method_mut` is used to set the `__index` metamethod, the `__index` metamethod will
-    /// be used as a fall-back if no regular method is found.
-    fn add_method_mut<M, A, R>(&mut self, name: impl Into<&'static str>, method: M)
-    where
-        M: Fn(&Lua, &mut T, A) -> R + 'static,
         A: FromLuaMulti,
         R: IntoCallbackResult;
 
@@ -60,13 +54,6 @@ pub trait SealUserDataMethods<T, const TAG: c_int = USERDATA2_TAG> {
         A: FromLuaMulti,
         R: IntoCallbackResult;
 
-    /// Add a mutable metamethod which accepts a `&mut T` as the first parameter.
-    fn add_meta_method_mut<M, A, R>(&mut self, name: impl Into<&'static str>, method: M)
-    where
-        M: Fn(&Lua, &mut T, A) -> R + 'static,
-        A: FromLuaMulti,
-        R: IntoCallbackResult;
-
     /// Add a metamethod which accepts generic arguments.
     ///
     /// Metamethods for binary operators can be triggered if either the left or right argument to
@@ -79,8 +66,8 @@ pub trait SealUserDataMethods<T, const TAG: c_int = USERDATA2_TAG> {
         R: IntoCallbackResult;
 }
 
-/// Field registry for [`SealUserData`] implementors.
-pub trait SealUserDataFields<T, const TAG: c_int = USERDATA2_TAG> {
+/// Field registry for [`WrappedUserData`] implementors.
+pub trait WrappedUserDataFields<T, const TAG: c_int = USERDATA2_TAG> {
     /// Add a static field to the [`UserData`].
     ///
     /// Static fields are implemented by updating the `__index` metamethod and returning the
@@ -113,28 +100,15 @@ pub trait SealUserDataFields<T, const TAG: c_int = USERDATA2_TAG> {
     where
         M: Fn(&Lua, &T) -> R + 'static,
         R: IntoCallbackResult;
-
-    /// Add a regular field getter as a method which accepts a `&T` as the parameter.
-    ///
-    /// Regular field getters are implemented by overriding the `__index` metamethod and returning
-    /// the accessed field. This allows them to be used with the expected `userdata.field` syntax.
-    ///
-    /// If `add_meta_method` is used to set the `__index` metamethod, the `__index` metamethod will
-    /// be used as a fall-back if no regular index property is found.
-    fn add_field_method_set<M, A>(&mut self, name: impl Into<&'static str>, method: M)
-    where
-        M: Fn(&Lua, &mut T, A) -> Result<(), mluau::Error> + 'static, // TODO: fix this later on
-        A: FromLua;
 }
 
-/// Trait for custom mutable userdata types.
+/// Trait for seal's userdata types; errors returned from methods are turned into [`WrappedError`]s.
 ///
 /// See [`UserData`] for information on common userdata implementation notes.
-/// 
-/// Note: mutable methods will error if the userdata is already borrowed. Also note that mutable
-/// userdata does incur overhead compared to normal immutable userdata. Be careful: here be dragons, 
-/// this api is a *major* footgun. Users be warned.
-pub trait SealUserData<const TAG: c_int = USERDATA2_TAG>: 'static + Sized {
+///
+/// Wrapped userdata is immutable: methods only ever get a `&T`, so there's no borrow flag to check
+/// on every access. Types that need to mutate state should keep a `RefCell` on just that field.
+pub trait WrappedUserData<const TAG: c_int = USERDATA2_TAG>: 'static + Sized {
     /// Whether or not to use __namecall optimization. See [`UserData`] 
     /// for more info on what this means.
     const USE_NAMECALL: bool = true;
@@ -144,21 +118,21 @@ pub trait SealUserData<const TAG: c_int = USERDATA2_TAG>: 'static + Sized {
 
     /// Adds custom fields specific to this userdata.
     #[allow(unused_variables)]
-    fn add_fields<F: SealUserDataFields<Self, TAG>>(fields: &mut F) {}
+    fn add_fields<F: WrappedUserDataFields<Self, TAG>>(fields: &mut F) {}
 
     /// Adds custom methods and operators specific to this userdata.
     #[allow(unused_variables)]
-    fn add_methods<M: SealUserDataMethods<Self, TAG>>(methods: &mut M) {}
+    fn add_methods<M: WrappedUserDataMethods<Self, TAG>>(methods: &mut M) {}
 
-    fn into_mut(self) -> SealLock<Self> {
-        SealLock::new(self)
+    fn into_wrapped(self) -> Wrapped<Self> {
+        Wrapped(self)
     }
 }
 
-impl<const TAG: c_int, T, M> SealUserDataMethods<T, TAG> for M
+impl<const TAG: c_int, T, M> WrappedUserDataMethods<T, TAG> for M
 where
     T: 'static,
-    M: UserDataMethods<SealLock<T>, TAG>, 
+    M: UserDataMethods<Wrapped<T>, TAG>, 
 {
     fn add_method<F, A, R>(&mut self, name: impl Into<&'static str>, method: F)
     where
@@ -166,30 +140,9 @@ where
         A: FromLuaMulti,
         R: IntoCallbackResult 
     {
-        self.add_method(name, move |lua, this: TypedUserData<SealLock<T>, TAG>, args| {
-            // Wrap method in WrappedError
-            let inner = this.0.borrow(); 
-            let result = method(lua, &*inner, args).into_callback_result(lua);
-            if let CallbackResult::LuaError(ce) = result {
-                return CustomError(WrappedError::from_message(ce.to_string()).into_mut()).into_callback_result(lua);
-            }
-            result
-        });
-    }
-
-    fn add_method_mut<F, A, R>(&mut self, name: impl Into<&'static str>, method: F)
-    where
-        F: Fn(&Lua, &mut T, A) -> R + 'static,
-        A: FromLuaMulti,
-        R: IntoCallbackResult 
-    {
-        self.add_method(name, move |lua, this: TypedUserData<SealLock<T>, TAG>, args| {
-            let mut inner = this.0.borrow_mut(); 
-            let result = method(lua, &mut *inner, args).into_callback_result(lua);
-            if let CallbackResult::LuaError(ce) = result {
-                return CustomError(WrappedError::from_message(ce.to_string()).into_mut()).into_callback_result(lua);
-            }
-            result
+        UserDataMethods::<Wrapped<T>, TAG>::add_method(self, name, move |lua, this: TypedUserData<Wrapped<T>, TAG>, args| {
+            let result = method(lua, &this.0, args).into_callback_result(lua);
+            wrap_callback_error(lua, result)
         });
     }
 
@@ -199,7 +152,7 @@ where
         A: FromLuaMulti,
         R: IntoCallbackResult,
     {
-        UserDataMethods::<SealLock<T>, TAG>::add_function(self, name, function);
+        UserDataMethods::<Wrapped<T>, TAG>::add_function(self, name, function);
     }
 
     fn add_meta_method<F, A, R>(&mut self, name: impl Into<&'static str>, method: F)
@@ -208,29 +161,9 @@ where
         A: FromLuaMulti,
         R: IntoCallbackResult,
     {
-        self.add_meta_method(name, move |lua, this: TypedUserData<SealLock<T>, TAG>, args| {
-            let inner = this.0.borrow(); 
-            let result = method(lua, &*inner, args).into_callback_result(lua);
-            if let CallbackResult::LuaError(ce) = result {
-                return CustomError(WrappedError::from_message(ce.to_string()).into_mut()).into_callback_result(lua);
-            }
-            result
-        });
-    }
-
-    fn add_meta_method_mut<F, A, R>(&mut self, name: impl Into<&'static str>, method: F)
-    where
-        F: Fn(&Lua, &mut T, A) -> R + 'static,
-        A: FromLuaMulti,
-        R: IntoCallbackResult,
-    {
-        self.add_meta_method(name, move |lua, this: TypedUserData<SealLock<T>, TAG>, args| {
-            let mut inner = this.0.borrow_mut(); 
-            let result = method(lua, &mut *inner, args).into_callback_result(lua);
-            if let CallbackResult::LuaError(ce) = result {
-                return CustomError(WrappedError::from_message(ce.to_string()).into_mut()).into_callback_result(lua);
-            }
-            result
+        UserDataMethods::<Wrapped<T>, TAG>::add_meta_method(self, name, move |lua, this: TypedUserData<Wrapped<T>, TAG>, args| {
+            let result = method(lua, &this.0, args).into_callback_result(lua);
+            wrap_callback_error(lua, result)
         });
     }
 
@@ -240,54 +173,42 @@ where
         A: FromLuaMulti,
         R: IntoCallbackResult,
     {
-        UserDataMethods::<SealLock<T>, TAG>::add_meta_function(self, name, function);
+        UserDataMethods::<Wrapped<T>, TAG>::add_meta_function(self, name, function);
     }
 }
 
-impl<const TAG: c_int, T, M> SealUserDataFields<T, TAG> for M
+impl<const TAG: c_int, T, M> WrappedUserDataFields<T, TAG> for M
 where
     T: 'static,
-    M: UserDataFields<SealLock<T>, TAG>,
+    M: UserDataFields<Wrapped<T>, TAG>,
 {
     fn add_field<V>(&mut self, name: impl Into<&'static str>, value: V)
     where
-        V: crate::IntoLua + 'static,
+        V: IntoLua + 'static,
     {
-        UserDataFields::<SealLock<T>, TAG>::add_field(self, name, value);
+        UserDataFields::<Wrapped<T>, TAG>::add_field(self, name, value);
     }
 
     fn add_meta_field<V>(&mut self, name: impl Into<&'static str>, value: V)
     where
-        V: crate::IntoLua + 'static,
+        V: IntoLua + 'static,
     {
-        UserDataFields::<SealLock<T>, TAG>::add_meta_field(self, name, value);
+        UserDataFields::<Wrapped<T>, TAG>::add_meta_field(self, name, value);
     }
 
     fn add_field_method_get<F, R>(&mut self, name: impl Into<&'static str>, method: F)
     where
-        F: Fn(&crate::Lua, &T) -> R + 'static,
+        F: Fn(&Lua, &T) -> R + 'static,
         R: IntoCallbackResult,
     {
-        self.add_field_method_get(name, move |lua, this: TypedUserData<SealLock<T>, TAG>| {
-            let inner = this.0.borrow();
-            method(lua, &*inner)
-        });
-    }
-
-    fn add_field_method_set<F, A>(&mut self, name: impl Into<&'static str>, method: F)
-    where
-        F: Fn(&Lua, &mut T, A) -> Result<(), mluau::Error> + 'static,
-        A: FromLua,
-    {
-        self.add_field_method_set(name, move |lua, this: TypedUserData<SealLock<T>, TAG>, args: A| {
-            let mut inner = this.0.borrow_mut();
-            method(lua, &mut *inner, args)
+        UserDataFields::<Wrapped<T>, TAG>::add_field_method_get(self, name, move |lua, this: TypedUserData<Wrapped<T>, TAG>| {
+            method(lua, &this.0)
         });
     }
 }
 
-impl<const TAG: c_int, T: SealUserData<TAG>> UserData<TAG> for SealLock<T> {
-    const USE_NAMECALL: bool = true;
+impl<const TAG: c_int, T: WrappedUserData<TAG>> UserData<TAG> for Wrapped<T> {
+    const USE_NAMECALL: bool = T::USE_NAMECALL;
 
     fn type_name<'a>() -> Cow<'a, str> {
         T::type_name()
@@ -302,42 +223,14 @@ impl<const TAG: c_int, T: SealUserData<TAG>> UserData<TAG> for SealLock<T> {
     }
 }
 
-pub trait SealUserDataExt {
-    /// Create a mutable userdata
-    /// 
-    /// The `T` is internally wrapped in a [`SealLock`] for interior mutability purposes
-    fn create_seal_userdata<const TAG: c_int, T: SealUserData<TAG>>(&self, data: T) -> mluau::Result<AnyUserData>;
+pub trait WrappedUserDataExt {
+    /// Create a userdata out of a [`WrappedUserData`] type
+    fn create_wrapped_userdata<const TAG: c_int, T: WrappedUserData<TAG>>(&self, data: T) -> mluau::Result<AnyUserData>;
 }
 
-impl SealUserDataExt for Lua {
-    fn create_seal_userdata<const TAG: c_int, T: SealUserData<TAG>>(&self, data: T) -> mluau::Result<AnyUserData> {
-        LuaUserDataExt::create_userdata(self, data.into_mut())
-    }
-}
-
-pub trait SealUserDataBorrowExt {
-    fn with_borrow<T: SealUserData<TAG>, R, const TAG: c_int>(
-        &self, 
-        f: impl FnOnce(&T) -> R
-    ) -> mluau::Result<R>;
-}
-
-impl SealUserDataBorrowExt for AnyUserData {
-    fn with_borrow<T: SealUserData<TAG>, R, const TAG: c_int>(
-        &self, 
-        f: impl FnOnce(&T) -> R
-    ) -> mluau::Result<R> {
-        let tref = self.borrow_with_tag::<SealLock<T>, TAG>()
-            .ok_or_else(|| mluau::Error::FromLuaConversionError { 
-                from: "userdata", 
-                to: T::type_name().to_string(), 
-                message: None 
-            })?;
-        
-        let inner = tref.0.try_borrow()
-            .map_err(|_| mluau::Error::RuntimeError(format!("{} has a mutable borrow currently", T::type_name())))?;
-
-        Ok(f(&inner))
+impl WrappedUserDataExt for Lua {
+    fn create_wrapped_userdata<const TAG: c_int, T: WrappedUserData<TAG>>(&self, data: T) -> mluau::Result<AnyUserData> {
+        LuaUserDataExt::create_userdata(self, data.into_wrapped())
     }
 }
 

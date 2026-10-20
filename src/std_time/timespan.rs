@@ -1,7 +1,7 @@
 use mluau::prelude::*;
 use crate::prelude::*;
 use crate::std_time::{datetime::DateTime, duration::TimeDuration};
-use crate::userdata::{SealLock, SealUserData, SealUserDataFields, SealUserDataMethods};
+use crate::userdata::{WrappedUserData, WrappedUserDataFields, WrappedUserDataMethods};
 use jiff::{Span, SpanArithmetic, SpanRelativeTo};
 use std::borrow::Cow;
 
@@ -59,15 +59,21 @@ impl TimeSpan {
         Self::new(Span::new().seconds(secs.clamp(-631_107_417_600, 631_107_417_600)))
     }
     pub fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata_mut(self, luau)
+        ok_userdata(self, luau)
     }
 }
 
-impl SealUserData for TimeSpan {
+impl Borrowable for TimeSpan {
+    fn display_name() -> &'static str {
+        "TimeSpan"
+    }
+}
+
+impl WrappedUserData for TimeSpan {
     fn type_name<'a>() -> Cow<'a, str> {
         Cow::Borrowed("TimeSpan")   
     }
-    fn add_fields<F: SealUserDataFields<Self>>(fields: &mut F) {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_field_method_get("relative_to", |luau: &Lua, this| {
             if let Some(relative_to) = &this.relative_to {
                 relative_to.clone().get_userdata(luau)
@@ -76,7 +82,7 @@ impl SealUserData for TimeSpan {
             }
         });
     }
-    fn add_methods<M: SealUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_meta_method(LuaMetaMethod::ToString, | luau: &Lua, this, _: LuaValue| -> LuaValueResult {
             ok_string(format!("TimeSpan<{:#}>", this.inner), luau)
         });
@@ -106,7 +112,7 @@ impl SealUserData for TimeSpan {
                     return wrap_err!("{} unable to convert to duration: {}", function_name, err);
                 }
             };
-            ok_userdata_mut(TimeDuration::new(total), luau)
+            ok_userdata(TimeDuration::new(total), luau)
         });
 
         /// we want to not error.. so we check if either TimeSpan is relative_to a DateTime for SpanArithmetic
@@ -124,7 +130,7 @@ impl SealUserData for TimeSpan {
             let function_name = "TimeSpan.__add(self, other: TimeSpan)";
             let other = match other {
                 LuaValue::UserData(ref ud) => {
-                    if let Some(borrowed) = ud.borrow::<SealLock<TimeSpan>>() {
+                    if let Some(borrowed) = TimeSpan::borrow(ud) {
                         borrowed
                     } else {
                         return wrap_err!("{}: other must be another TimeSpan", function_name);
@@ -135,8 +141,8 @@ impl SealUserData for TimeSpan {
                 }
             };
 
-            let other_ref = other.borrow();
-            let relative_to = which_relative(&this, &other_ref);
+            let other_ref: &TimeSpan = &other;
+            let relative_to = which_relative(this, other_ref);
 
             let subbed = match if let Some(relative) = relative_to {
                 this.inner.checked_add((other_ref.inner, relative.date()))
@@ -159,7 +165,7 @@ impl SealUserData for TimeSpan {
             let function_name = "TimeSpan.__sub(self, other: TimeSpan)";
             let other = match other {
                 LuaValue::UserData(ref ud) => {
-                    if let Some(borrowed) = ud.borrow::<SealLock<TimeSpan>>() {
+                    if let Some(borrowed) = TimeSpan::borrow(ud) {
                         borrowed
                     } else {
                         return wrap_err!("{}: other must be another TimeSpan", function_name);
@@ -170,8 +176,8 @@ impl SealUserData for TimeSpan {
                 }
             };
 
-            let other_ref = other.borrow();
-            let relative_to = which_relative(&this, &other_ref);
+            let other_ref: &TimeSpan = &other;
+            let relative_to = which_relative(this, other_ref);
 
             let subbed = match if let Some(relative) = relative_to {
                 this.inner.checked_sub((other_ref.inner, relative.date()))

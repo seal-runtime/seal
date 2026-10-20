@@ -1,5 +1,5 @@
 use mluau::prelude::*;
-use crate::{prelude::*, userdata::{SealUserData, SealUserDataFields, SealUserDataMethods}};
+use crate::{prelude::*, userdata::{WrappedUserData, WrappedUserDataFields, WrappedUserDataMethods}};
 use std::borrow::Cow;
 
 use archive::{ArchiveFormat, CompressionLevel, ZipCompression};
@@ -48,17 +48,21 @@ impl ArchiveCompressionLevel {
     }
 }
 
-impl BorrowableMut for ArchiveCompressionLevel {}
+impl Borrowable for ArchiveCompressionLevel {
+    fn display_name() -> &'static str {
+        "CompressionLevel"
+    }
+}
 
-impl SealUserData for ArchiveCompressionLevel {
+impl WrappedUserData for ArchiveCompressionLevel {
     fn type_name<'a>() -> Cow<'a, str> {
         Cow::Borrowed("ArchiveCompressionLevel")
     }
 
-    fn add_fields<F: SealUserDataFields<Self>>(fields: &mut F) {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "CompressionLevel");
     }
-    fn add_methods<M: SealUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_meta_method(LuaMetaMethod::ToString, |luau, acl, val: LuaValue| {
             Self::tostring(luau, &acl, val)
         });

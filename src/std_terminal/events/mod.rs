@@ -1,6 +1,6 @@
 use mluau::prelude::*;
 use crate::prelude::*;
-use crate::userdata::{SealLock, SealUserData, SealUserDataFields, SealUserDataMethods};
+use crate::userdata::{WrappedUserData, WrappedUserDataFields, WrappedUserDataMethods};
 
 use crossterm::event::{Event, KeyEvent, KeyModifiers, MouseEvent};
 use crossterm::execute;
@@ -226,11 +226,11 @@ pub(super) fn events(luau: &Lua, value: LuaValue) -> LuaResult<LuaFunction> {
     let function_name = "terminal.events(poll: Duration?)";
     let poll_duration = match value {
         LuaValue::UserData(ref ud) => {
-            if let Some(duration) = ud.borrow::<SealLock<TimeDuration>>() {
-                if duration.borrow().inner.is_negative() {
+            if let Some(duration) = TimeDuration::borrow(ud) {
+                if duration.inner.is_negative() {
                     return wrap_err!("{}: cannot poll for a negative duration", function_name);
                 } else {
-                    duration.borrow().inner.unsigned_abs()
+                    duration.inner.unsigned_abs()
                 }
             } else {
                 let type_name = ud.type_name()?.unwrap_or(String::from("userdata"));
@@ -292,15 +292,15 @@ impl Interrupt {
         }
     }
     pub fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata_mut(self, luau)
+        ok_userdata(self, luau)
     }
 }
 
-impl SealUserData for Interrupt {
+impl WrappedUserData for Interrupt {
     fn type_name<'a>() -> Cow<'a, str> {
         Cow::Borrowed("Interrupt")
     }
-    fn add_fields<F: SealUserDataFields<Self>>(fields: &mut F) {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "interrupt"); // allow users to typeof check
         fields.add_field_method_get("code", |luau, this| {
             match this.code {
@@ -309,7 +309,7 @@ impl SealUserData for Interrupt {
             }
         });
     }
-    fn add_methods<M: SealUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_meta_method(LuaMetaMethod::ToString, | luau, this, _: LuaValue| -> LuaValueResult {
             match this.code {
                 InterruptCode::CtrlC => "CtrlC (SIGINT)".into_lua(luau),
@@ -346,8 +346,8 @@ fn interrupt_check(luau: &Lua, value: LuaValue) -> LuaValueResult {
         Ok(LuaNil) => {
             return Ok(LuaNil);
         },
-        Ok(LuaValue::UserData(ref ud)) if let Some(err) = ud.borrow::<SealLock<WrappedError>>() => {
-            return wrap_err!("{}: {}", function_name, err.borrow().format_from_ud(ud));
+        Ok(LuaValue::UserData(ref ud)) if let Some(err) = WrappedError::borrow(ud) => {
+            return wrap_err!("{}: {}", function_name, err.format(luau));
         },
         Ok(other) => {
             panic!("{} returned an unexpected type of value: {:?}", function_name, other);

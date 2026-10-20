@@ -1,14 +1,14 @@
 use crate::{prelude::*, std_err::WrappedError, std_json};
 use mluau::prelude::*;
 use crate::userdata::{
-    SealUserData as LuaUserDataMut,
-    SealUserDataFields as LuaUserDataFieldsMut,
-    SealUserDataMethods as LuaUserDataMethodsMut
+    WrappedUserData,
+    WrappedUserDataFields,
+    WrappedUserDataMethods
 };
 
 use url::Url;
 
-use std::{borrow::Cow, net::TcpStream};
+use std::{borrow::Cow, cell::RefCell, net::TcpStream};
 use tungstenite::{
     Message,
     Connector,
@@ -29,17 +29,17 @@ impl WebsocketMessage {
         }
     }
     fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata_mut(self, luau)
+        ok_userdata(self, luau)
     }
 }
-impl LuaUserDataMut for WebsocketMessage {
+impl WrappedUserData for WebsocketMessage {
     fn type_name<'a>() -> Cow<'a, str> {
         Cow::Borrowed("WebsocketMessage")
     }
-    fn add_fields<F: LuaUserDataFieldsMut<Self>>(fields: &mut F) {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "WebsocketMessage");
     }
-    fn add_methods<M: LuaUserDataMethodsMut<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_method("is_binary", |_luau, it, _: LuaValue| {
             if let Message::Binary(_) = it.inner {
                 Ok(true)
@@ -65,7 +65,7 @@ impl LuaUserDataMut for WebsocketMessage {
             };
             t.into_lua(luau)
         });
-        methods.add_method_mut("as_bytes", |luau, it, _: LuaValue| {
+        methods.add_method("as_bytes", |luau, it, _: LuaValue| {
             let bytes = match &it.inner {
                 Message::Binary(bytes) => bytes.to_vec(),
                 Message::Text(s) => s.as_str().as_bytes().to_owned(),
@@ -85,7 +85,7 @@ impl LuaUserDataMut for WebsocketMessage {
 
             ok_buffy(bytes, luau)
         });
-        methods.add_method_mut("as_string", |luau, it, _: LuaValue| {
+        methods.add_method("as_string", |luau, it, _: LuaValue| {
             let bytes = match &it.inner {
                 Message::Binary(bytes) => bytes.to_vec(),
                 Message::Text(s) => s.as_str().as_bytes().to_owned(),
@@ -105,7 +105,7 @@ impl LuaUserDataMut for WebsocketMessage {
 
             ok_string(bytes, luau)
         });
-        methods.add_method_mut("try_json", |luau, it, _: LuaValue| {
+        methods.add_method("try_json", |luau, it, _: LuaValue| {
             let function_name = "WebSocketMessage:expect_json()";
             let text = match &it.inner {
                 Message::Text(text) => text.as_str(),
@@ -125,7 +125,7 @@ impl LuaUserDataMut for WebsocketMessage {
 
             Ok(decoded)
         });
-        methods.add_method_mut("expect_json", |luau, it, _: LuaValue| {
+        methods.add_method("expect_json", |luau, it, _: LuaValue| {
             let function_name = "WebSocketMessage:expect_json()";
             let text = match &it.inner {
                 Message::Text(text) => text.as_str(),
@@ -149,17 +149,18 @@ impl LuaUserDataMut for WebsocketMessage {
 type TungsteniteWebSocket = tungstenite::WebSocket<MaybeTlsStream<TcpStream>>;
 
 struct WebsocketWrapper {
-    inner: TungsteniteWebSocket
+    // reading, sending, and closing all need &mut on the socket
+    inner: RefCell<TungsteniteWebSocket>
 }
 impl WebsocketWrapper {
     fn new(inner: TungsteniteWebSocket) -> Self {
         Self {
-            inner
+            inner: RefCell::new(inner)
         }
     }
-    fn read(&mut self) -> LuaResult<WebsocketMessage> {
+    fn read(&self) -> LuaResult<WebsocketMessage> {
         // self.inner.read()
-        let message = match self.inner.read() {
+        let message = match self.inner.borrow_mut().read() {
             Ok(message) => message,
             Err(err) => {
                 return wrap_err!("unable to read message due to err: {}", err);
@@ -168,16 +169,16 @@ impl WebsocketWrapper {
 
         Ok(WebsocketMessage::from(message))
     }
-    fn send(&mut self, message: String) -> LuaEmptyResult {
-        match self.inner.send(Message::Text(message.into())) {
+    fn send(&self, message: String) -> LuaEmptyResult {
+        match self.inner.borrow_mut().send(Message::Text(message.into())) {
             Ok(_) => Ok(()),
             Err(err) => {
                 wrap_err!("unable to send text message due to err: {}", err)
             }
         }
     }
-    fn send_bytes(&mut self, message: Vec<u8>) -> LuaEmptyResult {
-        match self.inner.send(Message::Binary(message.into())) {
+    fn send_bytes(&self, message: Vec<u8>) -> LuaEmptyResult {
+        match self.inner.borrow_mut().send(Message::Binary(message.into())) {
             Ok(_) => Ok(()),
             Err(err) => {
                 wrap_err!("unable to send binary message due to err: {}", err)
@@ -185,13 +186,13 @@ impl WebsocketWrapper {
         }
     }
     fn can_read(&self) -> bool {
-        self.inner.can_read()
+        self.inner.borrow().can_read()
     }
     fn can_send(&self) -> bool {
-        self.inner.can_write()
+        self.inner.borrow().can_write()
     }
-    fn close(&mut self, code: CloseCode, reason: Option<String>) -> LuaEmptyResult {
-        match self.inner.close(Some(CloseFrame {
+    fn close(&self, code: CloseCode, reason: Option<String>) -> LuaEmptyResult {
+        match self.inner.borrow_mut().close(Some(CloseFrame {
             code,
             reason: reason.unwrap_or_default().into(),
         })) {
@@ -202,29 +203,29 @@ impl WebsocketWrapper {
         }
     }
     fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata_mut(self, luau)
+        ok_userdata(self, luau)
     }
 }
 
-impl LuaUserDataMut for WebsocketWrapper {
+impl WrappedUserData for WebsocketWrapper {
     fn type_name<'a>() -> Cow<'a, str> {
         Cow::Borrowed("WebsocketWrapper")
     }
-    fn add_fields<F: LuaUserDataFieldsMut<Self>>(fields: &mut F) {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "Websocket");
     }
-    fn add_methods<M: LuaUserDataMethodsMut<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_method("readable", |_luau, it, _: LuaValue| {
             Ok(LuaValue::Boolean(it.can_read()))
         });
         methods.add_method("sendable", |_luau, it, _: LuaValue| {
             Ok(LuaValue::Boolean(it.can_send()))
         });
-        methods.add_method_mut("read", |luau, it, _: LuaValue| -> LuaValueResult {
+        methods.add_method("read", |luau, it, _: LuaValue| -> LuaValueResult {
             let message = it.read()?;
             message.get_userdata(luau)
         });
-        methods.add_method_mut("send", |luau: &Lua, it: &mut WebsocketWrapper, value: LuaValue| {
+        methods.add_method("send", |luau: &Lua, it: &WebsocketWrapper, value: LuaValue| {
             let function_name = "Websocket:send(message: string)";
             match value {
                 LuaValue::String(s) => it.send(s.to_string_lossy()),
@@ -246,7 +247,7 @@ impl LuaUserDataMut for WebsocketWrapper {
                 }
             }
         });
-        methods.add_method_mut("close", |_luau, it, mut multivalue: LuaMultiValue| -> LuaEmptyResult {
+        methods.add_method("close", |_luau, it, mut multivalue: LuaMultiValue| -> LuaEmptyResult {
             let function_name = "Websocket:close(code: CloseCode?, reason: string?)";
             let close_code = match multivalue.pop_front() {
                 None | Some(LuaNil) => CloseCode::Normal,

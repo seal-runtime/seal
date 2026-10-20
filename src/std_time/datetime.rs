@@ -1,6 +1,6 @@
-use std::{borrow::Cow, ops::Deref, time::SystemTime};
+use std::{borrow::Cow, time::SystemTime};
 
-use crate::{prelude::*, std_time::duration::TimeDuration, userdata::{SealLock, SealUserData, SealUserDataFields, SealUserDataMethods}};
+use crate::{prelude::*, std_time::duration::TimeDuration, userdata::{WrappedUserData, WrappedUserDataFields, WrappedUserDataMethods}};
 use mluau::prelude::*;
 use jiff::Zoned;
 
@@ -370,7 +370,7 @@ impl DateTime {
         }
     }
     pub fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata_mut(self, luau)
+        ok_userdata(self, luau)
     }
     pub fn _to_system_time(&self) -> SystemTime {
         SystemTime::from(self.inner.timestamp())
@@ -380,11 +380,17 @@ impl DateTime {
     }
 }
 
-impl SealUserData for DateTime {
+impl Borrowable for DateTime {
+    fn display_name() -> &'static str {
+        "DateTime"
+    }
+}
+
+impl WrappedUserData for DateTime {
     fn type_name<'a>() -> Cow<'a, str> {
         Cow::Borrowed("DateTime")
     }
-    fn add_fields<F: SealUserDataFields<Self>>(fields: &mut F) {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_field_method_get("year", |_: &Lua, this| Ok(this.inner.date().year()));
         fields.add_field_method_get("month", |_: &Lua, this| Ok(this.inner.date().month()));
         fields.add_field_method_get("day", |_: &Lua, this| Ok(this.inner.date().day()));
@@ -410,7 +416,7 @@ impl SealUserData for DateTime {
         });
     }
 
-    fn add_methods<M: SealUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_meta_method(LuaMetaMethod::ToString, | luau: &Lua, this, _: LuaValue| -> LuaValueResult {
             ok_string(format!("DateTime<{}>", this.inner.strftime("%Y-%m-%d %H:%M:%S (%I:%M %p) [%Z]")), luau)
         });
@@ -460,8 +466,8 @@ impl SealUserData for DateTime {
             let function_name = "DateTime:to(other: DateTime)";
             match other {
                 LuaValue::UserData(ud) => {
-                    if let Some(other_dt) = ud.borrow::<SealLock<DateTime>>() {
-                        let span = match this.inner.until(&other_dt.deref().borrow().inner) {
+                    if let Some(other_dt) = DateTime::borrow(&ud) {
+                        let span = match this.inner.until(&other_dt.inner) {
                             Ok(span) => span,
                             Err(err) => {
                                 return wrap_err!("{} unable to compute timespan due to err: {}", function_name, err);
@@ -482,8 +488,8 @@ impl SealUserData for DateTime {
             let function_name = "DateTime:timespan(other: DateTime)";
             match other {
                 LuaValue::UserData(ud) => {
-                    if let Some(other_dt) = ud.borrow::<SealLock<DateTime>>() {
-                        let span = match this.inner.until(&other_dt.deref().borrow().inner) {
+                    if let Some(other_dt) = DateTime::borrow(&ud) {
+                        let span = match this.inner.until(&other_dt.inner) {
                             Ok(span) => span,
                             Err(err) => {
                                 return wrap_err!("{} unable to compute timespan due to err: {}", function_name, err);
@@ -504,8 +510,8 @@ impl SealUserData for DateTime {
             let function_name = "DateTime:since(other: DateTime)";
             match other {
                 LuaValue::UserData(ud) => {
-                    if let Some(other_dt) = ud.borrow::<SealLock<DateTime>>() {
-                        let span = match this.inner.since(&other_dt.deref().borrow().inner) {
+                    if let Some(other_dt) = DateTime::borrow(&ud) {
+                        let span = match this.inner.since(&other_dt.inner) {
                             Ok(span) => span,
                             Err(err) => {
                                 return wrap_err!("{} unable to compute timespan due to err: {}", function_name, err);
@@ -527,13 +533,13 @@ impl SealUserData for DateTime {
             let function_name = "DateTime.__add(self, other: TimeSpan)";
             match other {
                 LuaValue::UserData(ud) => {
-                    if let Some(other_timespan) = ud.borrow::<SealLock<TimeSpan>>() {
-                        let new_dt = &this.inner + other_timespan.deref().borrow().inner;
+                    if let Some(other_timespan) = TimeSpan::borrow(&ud) {
+                        let new_dt = &this.inner + other_timespan.inner;
                         DateTime::from(new_dt).get_userdata(luau)
-                    } else if let Some(_) = ud.borrow::<SealLock<DateTime>>() {
-                        // let other_dt = ud.borrow::<SealLock<DateTime>>().expect("impossible not DateTime");
+                    } else if DateTime::borrow(&ud).is_some() {
+                        // let other_dt = DateTime::borrow(&ud).expect("impossible not DateTime");
                         wrap_err!("{}: adding DateTime + DateTime makes no sense and is ambiguous, did you mean to add a TimeSpan?", function_name)
-                    } else if let Some(_) = ud.borrow::<SealLock<TimeDuration>>() {
+                    } else if TimeDuration::borrow(&ud).is_some() {
                         wrap_err!("{}: unfortunately we can't add DateTime + Duration directly, you need to use a TimeSpan (time.datetime.days(n))", function_name)
                     } else {
                         wrap_err!("{}: other must be a TimeSpan", function_name)
@@ -550,13 +556,12 @@ impl SealUserData for DateTime {
             let function_name = "DateTime.__sub(self, other: TimeSpan)";
             match other {
                 LuaValue::UserData(ud) => {
-                    if let Some(other_timespan) = ud.borrow::<SealLock<TimeSpan>>() {
-                        let new_dt = &this.inner - other_timespan.deref().borrow().inner;
+                    if let Some(other_timespan) = TimeSpan::borrow(&ud) {
+                        let new_dt = &this.inner - other_timespan.inner;
                         DateTime::from(new_dt).get_userdata(luau)
-                    } else if let Some(_) = ud.borrow::<SealLock<DateTime>>() {
-                        // let other_dt = ud.borrow::<SealLock<DateTime>>().expect("impossible not DateTime");
+                    } else if DateTime::borrow(&ud).is_some() {
                         wrap_err!("{}: DateTime - DateTime is ambiguous; if you need a TimeSpan between two DateTimes, use DateTime:since(dt: DateTime)", function_name)
-                    } else if let Some(_) = ud.borrow::<SealLock<TimeDuration>>() {
+                    } else if TimeDuration::borrow(&ud).is_some() {
                         wrap_err!("{}: unfortunately we can't add DateTime + Duration directly, you need to use a TimeSpan (time.datetime.days(n))", function_name)
                     } else {
                         wrap_err!("{}: other must be a TimeSpan", function_name)
@@ -572,9 +577,9 @@ impl SealUserData for DateTime {
             let function_name = "DateTime.__eq(self, other: DateTime)";
             match other {
                 LuaValue::UserData(ud) => {
-                    if let Some(other_dt) = ud.borrow::<SealLock<DateTime>>() {
-                        Ok(LuaValue::Boolean(this.inner == other_dt.deref().borrow().inner))
-                    } else if let Some(_) = ud.borrow::<SealLock<TimeSpan>>() {
+                    if let Some(other_dt) = DateTime::borrow(&ud) {
+                        Ok(LuaValue::Boolean(this.inner == other_dt.inner))
+                    } else if TimeSpan::borrow(&ud).is_some() {
                         wrap_err!("{}: DateTime == TimeSpan makes no sense to me lol", function_name)
                     } else {
                         wrap_err!("{}: other must be a DateTime", function_name)
@@ -590,9 +595,9 @@ impl SealUserData for DateTime {
             let function_name = "DateTime.__lt(self, other: DateTime)";
             match other {
                 LuaValue::UserData(ud) => {
-                    if let Some(other_dt) = ud.borrow::<SealLock<DateTime>>() {
-                        Ok(LuaValue::Boolean(this.inner < other_dt.deref().borrow().inner))
-                    } else if let Some(_) = ud.borrow::<SealLock<TimeSpan>>() {
+                    if let Some(other_dt) = DateTime::borrow(&ud) {
+                        Ok(LuaValue::Boolean(this.inner < other_dt.inner))
+                    } else if TimeSpan::borrow(&ud).is_some() {
                         wrap_err!("{}: DateTime < TimeSpan makes no sense to me lol", function_name)
                     } else {
                         wrap_err!("{}: other must be a DateTime", function_name)
@@ -608,9 +613,9 @@ impl SealUserData for DateTime {
             let function_name = "DateTime.__le(self, other: DateTime)";
             match other {
                 LuaValue::UserData(ud) => {
-                    if let Some(other_dt) = ud.borrow::<SealLock<DateTime>>() {
-                        Ok(LuaValue::Boolean(this.inner <= other_dt.deref().borrow().inner))
-                    } else if let Some(_) = ud.borrow::<SealLock<TimeSpan>>() {
+                    if let Some(other_dt) = DateTime::borrow(&ud) {
+                        Ok(LuaValue::Boolean(this.inner <= other_dt.inner))
+                    } else if TimeSpan::borrow(&ud).is_some() {
                         wrap_err!("{}: DateTime <= TimeSpan makes no sense to me lol", function_name)
                     } else {
                         wrap_err!("{}: other must be a DateTime", function_name)
@@ -764,8 +769,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
             };
             let relative_to = match multivalue.pop_front() {
                 Some(LuaValue::UserData(ud)) => {
-                    if let Some(dt) = ud.borrow::<SealLock<DateTime>>() {
-                        Some(dt.deref().borrow().clone())
+                    if let Some(dt) = DateTime::borrow(&ud) {
+                        Some(dt.0.clone())
                     } else {
                         let type_name = ud.type_name()?.unwrap_or_default();
                         return wrap_err!("{} expected relative_to to be a DateTime or nil/unspecified, got a userdata of type: {}", function_name, type_name);
@@ -789,8 +794,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
             };
             let relative_to = match multivalue.pop_front() {
                 Some(LuaValue::UserData(ud)) => {
-                    if let Some(dt) = ud.borrow::<SealLock<DateTime>>() {
-                        Some(dt.deref().borrow().clone())
+                    if let Some(dt) = DateTime::borrow(&ud) {
+                        Some(dt.0.clone())
                     } else {
                         let type_name = ud.type_name()?.unwrap_or_default();
                         return wrap_err!("{} expected relative_to to be a DateTime or nil/unspecified, got a userdata of type: {}", function_name, type_name);

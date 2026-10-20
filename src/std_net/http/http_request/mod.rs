@@ -2,7 +2,6 @@
 use mluau::prelude::*;
 use crate::prelude::*;
 use crate::std_json;
-use crate::userdata::SealLock;
 
 use ureq::http::Method;
 
@@ -102,8 +101,8 @@ impl HttpRequest {
         };
 
         let max_body_size = match config.raw_get("max_body_size")? {
-            LuaValue::UserData(ref ud) if let Some(file_size) = ud.borrow::<SealLock<FileSize>>() => {
-                Some(file_size.borrow().as_bytes())
+            LuaValue::UserData(ref ud) if let Some(file_size) = FileSize::borrow(ud) => {
+                Some(file_size.as_bytes())
             },
             LuaValue::UserData(other) => {
                 return wrap_err!("{}: expected config.max_body_size to be a FileSize userdata from std/fs/filesize, got an unexpected userdata instance: {:?}", function_name, other);

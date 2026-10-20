@@ -1,6 +1,6 @@
 use mluau::prelude::*;
 use crate::prelude::*;
-use crate::userdata::SealUserDataExt;
+use crate::userdata::WrappedUserDataExt;
 use std::path::PathBuf;
 
 enum EvalStdlib {
@@ -158,7 +158,7 @@ unsafe fn eval(luau: &Lua, src: Vec<u8>, eval_options: EvalOptions) -> LuaValueR
     let res = match chunk.eval_with_err::<LuaValue, WrappedError>() {
         Ok(value) => value,
         Err(err) => {
-            LuaValue::UserData(luau.create_seal_userdata(err)?)
+            LuaValue::UserData(luau.create_wrapped_userdata(err)?)
         }
     };
 
@@ -232,7 +232,7 @@ fn luau_bytecode(luau: &Lua, value: LuaValue) -> LuaValueResult {
         Ok(bytecode) => bytecode,
         Err(err) => {
             return Ok(LuaValue::UserData(
-                luau.create_seal_userdata(WrappedError::from_message(err.to_string()))?
+                luau.create_wrapped_userdata(WrappedError::from_message(err.to_string()))?
             ))
         }
     };
@@ -253,7 +253,7 @@ fn luau_bundle(luau: &Lua, value: LuaValue) -> LuaValueResult {
     };
     match crate::compile::bundle(&PathBuf::from(path)) {
         Ok(bundled) => bundled.into_lua(luau),
-        Err(err) => Ok(LuaValue::UserData(luau.create_seal_userdata(WrappedError::from_message(err.to_string()))?)),
+        Err(err) => Ok(LuaValue::UserData(luau.create_wrapped_userdata(WrappedError::from_message(err.to_string()))?)),
     }
 }
 

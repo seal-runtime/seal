@@ -12,7 +12,7 @@ use crate::std_fs::file_size::FileSize;
 use crate::std_io::colors;
 use crate::std_time::datetime::DateTime;
 use crate::userdata::{
-    SealLock, SealUserData as LuaUserDataMut, SealUserDataFields as LuaUserDataFieldsMut, SealUserDataMethods as LuaUserDataMethodsMut
+    WrappedUserData, WrappedUserDataFields, WrappedUserDataMethods
 };
 
 enum ArchiveOutputPath {
@@ -76,7 +76,7 @@ impl Entries {
         match self {
             Self::One(entry) => entry.into_userdata(luau),
             Self::Many(entries) => {
-                ok_table(luau.create_sequence_from(entries.into_iter().map(|x| x.into_mut())))
+                ok_table(luau.create_sequence_from(entries.into_iter().map(|x| x.into_wrapped())))
             }
         }
     }
@@ -138,20 +138,20 @@ impl WrappedArchiveEntry {
         }
         new_entries
     }
-    pub fn swap(&mut self, with: ArchiveEntry) -> ArchiveEntry {
+    pub fn swap(&self, with: ArchiveEntry) -> ArchiveEntry {
         self.inner.replace(with)
     }
-    fn set_mtime(&mut self, mtime: SystemTime) {
+    fn set_mtime(&self, mtime: SystemTime) {
         if let Ok(mut borr) = self.inner.try_borrow_mut() {
             borr.set_mtime(mtime);
         }
     }
-    fn set_mode(&mut self, mode: u32) {
+    fn set_mode(&self, mode: u32) {
         if let Ok(mut borr) = self.inner.try_borrow_mut() {
             borr.set_mode(mode);
         }
     }
-    fn with_metadata_from_disk<P: AsRef<Path>>(mut self, path: P) -> Result<Self, std::io::Error> {
+    fn with_metadata_from_disk<P: AsRef<Path>>(self, path: P) -> Result<Self, std::io::Error> {
         let metadata = std::fs::metadata(&path)?;
         let modified = metadata.modified().ok();
 
@@ -370,17 +370,17 @@ impl WrappedArchiveEntry {
         let function_name = "ArchiveEntry:modified()";
         let inner = this.inner.borrow();
         if let Some(modified) = inner.mtime() {
-            ok_userdata_mut(DateTime::from_system_time(modified, function_name)?, luau)
+            ok_userdata(DateTime::from_system_time(modified, function_name)?, luau)
         } else {
             Ok(LuaNil)
         }
     }
 
-    fn entry_set_modified(_luau: &Lua, this: &mut WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    fn entry_set_modified(_luau: &Lua, this: &WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         let function_name = "ArchiveEntry:set_modified(dt: DateTime)";
         let dt = match multivalue.pop_front() {
-            Some(LuaValue::UserData(ud)) => match ud.borrow::<SealLock<DateTime>>() {
-                Some(dt) => dt.borrow()._to_system_time(),
+            Some(LuaValue::UserData(ud)) => match DateTime::borrow(&ud) {
+                Some(dt) => dt._to_system_time(),
                 None => {
                     return wrap_err!("{}: expected dt to be a DateTime userdata, got the wrong type of userdata {:?}", function_name, ud.type_name());
                 }
@@ -404,7 +404,7 @@ impl WrappedArchiveEntry {
         }
     }
 
-    fn entry_set_unix_mode(_luau: &Lua, this: &mut WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    fn entry_set_unix_mode(_luau: &Lua, this: &WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         let function_name = "ArchiveEntry:set_unix_mode(mode: number)";
         let mode = match multivalue.pop_front() {
             Some(LuaValue::Integer(i)) => int_to_u32(i, function_name, "mode")?,
@@ -500,7 +500,7 @@ impl WrappedArchiveEntry {
         Ok(())
     }
 
-    fn file_set_contents(_luau: &Lua, this: &mut WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    fn file_set_contents(_luau: &Lua, this: &WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         let function_name = "ArchiveEntry:set_contents(new: string | buffer)";
         if this.whatami() != EntryType::File {
             return wrap_err!("{}: self must be a File, got: {}", function_name, this.whatami());
@@ -534,7 +534,7 @@ impl WrappedArchiveEntry {
         ok_string(sym, luau)
     }
 
-    fn symlink_set_target(_luau: &Lua, this: &mut WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    fn symlink_set_target(_luau: &Lua, this: &WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         let function_name = "ArchiveEntrySymlink:set_target(target: string)";
         let target = expect_stringy_path(multivalue.pop_front(), function_name)?;
         if this.whatami() != EntryType::Symlink {
@@ -549,7 +549,7 @@ impl WrappedArchiveEntry {
         this.path().into_lua(luau)
     }
 
-    fn entry_set_path(_luau: &Lua, this: &mut WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    fn entry_set_path(_luau: &Lua, this: &WrappedArchiveEntry, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         let function_name = "ArchiveEntry:set_path(path: string)";
         let path = expect_stringy_path(multivalue.pop_front(), function_name)?;
         let mut inner = this.inner.borrow_mut();
@@ -600,12 +600,12 @@ impl WrappedArchiveEntry {
 }
 
 
-impl LuaUserDataMut for WrappedArchiveEntry {
+impl WrappedUserData for WrappedArchiveEntry {
     fn type_name<'a>() -> Cow<'a, str> {
         Cow::Borrowed("ArchiveEntry")
     }
 
-    fn add_fields<F: LuaUserDataFieldsMut<Self>>(fields: &mut F) {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "ArchiveEntry");
         fields.add_field_method_get(
             "type",
@@ -614,7 +614,7 @@ impl LuaUserDataMut for WrappedArchiveEntry {
             }
         );
     }
-    fn add_methods<M: LuaUserDataMethodsMut<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_method("try_file", WrappedArchiveEntry::entry_try_file);
         methods.add_method("expect_file", WrappedArchiveEntry::entry_expect_file);
         methods.add_method("try_directory", WrappedArchiveEntry::entry_try_directory);
@@ -626,18 +626,21 @@ impl LuaUserDataMut for WrappedArchiveEntry {
         methods.add_method("compress", WrappedArchiveEntry::file_compress);
         methods.add_method("extract", WrappedArchiveEntry::file_extract);
         methods.add_method("path", WrappedArchiveEntry::entry_get_path);
-        methods.add_method_mut("set_path", WrappedArchiveEntry::entry_set_path);
+        methods.add_method("set_path", WrappedArchiveEntry::entry_set_path);
         methods.add_method("target", WrappedArchiveEntry::symlink_get_target);
-        methods.add_method_mut("set_target", WrappedArchiveEntry::symlink_set_target);
+        methods.add_method("set_target", WrappedArchiveEntry::symlink_set_target);
         methods.add_method("display", WrappedArchiveEntry::entry_display);
-        methods.add_method_mut("replace_contents", WrappedArchiveEntry::file_set_contents);
+        methods.add_method("replace_contents", WrappedArchiveEntry::file_set_contents);
         methods.add_method("modified", WrappedArchiveEntry::entry_get_modified);
-        methods.add_method_mut("set_modified", WrappedArchiveEntry::entry_set_modified);
+        methods.add_method("set_modified", WrappedArchiveEntry::entry_set_modified);
         methods.add_method("unix_mode", WrappedArchiveEntry::entry_get_unix_mode);
-        methods.add_method_mut("set_unix_mode", WrappedArchiveEntry::entry_set_unix_mode);
+        methods.add_method("set_unix_mode", WrappedArchiveEntry::entry_set_unix_mode);
     }
 }
-impl BorrowableMut for WrappedArchiveEntry {
+impl Borrowable for WrappedArchiveEntry {
+    fn display_name() -> &'static str {
+        "ArchiveEntry"
+    }
 }
 
 /// archive crate expects paths to be String in the end anyway

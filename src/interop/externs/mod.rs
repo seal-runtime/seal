@@ -3,7 +3,6 @@ use std::path::Path;
 use mluau::prelude::*;
 use mluau::ffi::{self, lua_State};
 use crate::prelude::*;
-use crate::userdata::SealLock;
 
 use libloading::Library;
 use std::mem::ManuallyDrop;
@@ -101,9 +100,9 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
     // errored at runtime during initialization or panicked during initialization and
     // was caught by sealbindings::initialize
     if let LuaValue::UserData(ref ud) = returned_value
-        && let Some(err) = ud.borrow::<SealLock<crate::std_err::WrappedError>>()
+        && let Some(err) = crate::std_err::WrappedError::borrow(ud)
     {
-        return wrap_err!("{}: dynamic library at '{}' errored during initialization:\n{}", function_name, &path, err.borrow().format_message_dirty());
+        return wrap_err!("{}: dynamic library at '{}' errored during initialization:\n{}", function_name, &path, err.format_message_dirty());
     }
 
     Ok(returned_value)

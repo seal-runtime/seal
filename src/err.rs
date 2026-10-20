@@ -47,9 +47,9 @@ pub fn parse_traceback<T: IntoLua>(raw_traceback: T) -> String {
             match parse_traceback.call_with_err::<LuaValue, WrappedError>(raw_traceback) {
                 Ok(LuaValue::String(s)) => s.to_string_lossy(),
                 Ok(LuaValue::UserData(ref ud)) => {
-                    match WrappedError::as_borrowed(ud) {
+                    match WrappedError::try_borrow(ud) {
                         Ok(err) => {
-                            panic!("parse_traceback.luau (error formatter) errored at runtime:\n\n{}", *err.borrow());
+                            panic!("parse_traceback.luau (error formatter) errored at runtime:\n\n{}", err.0);
                         },
                         Err(name) => {
                             panic!("parse_traceback.luau should return string or return an error, got userdata of type: {}", name);

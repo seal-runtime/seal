@@ -1,14 +1,15 @@
 use mluau::prelude::*;
-use crate::userdata::SealLock;
+use crate::userdata::Wrapped;
 use crate::{prelude::*, std_archive::entry::EntryType};
 use crate::userdata::{
-    SealUserData as LuaUserDataMut,
-    SealUserDataFields as LuaUserDataFieldsMut,
-    SealUserDataMethods as LuaUserDataMethodsMut
+    WrappedUserData,
+    WrappedUserDataFields,
+    WrappedUserDataMethods
 };
 
 use crate::std_io::format;
 use std::borrow::Cow;
+use std::cell::RefCell;
 use std::fs;
 
 pub mod extract;
@@ -48,18 +49,19 @@ impl PathOrIndex {
 
 #[derive(Clone)]
 struct Archive {
-    entries: Vec<WrappedArchiveEntry>,
+    // only insert/append/remove mutate the Vec itself; entries mutate through their own RefCell
+    entries: RefCell<Vec<WrappedArchiveEntry>>,
 }
 impl Archive {
     fn index_of_path(&self, path: &str) -> Option<usize> {
-        for (index, entry) in self.entries.iter().enumerate() {
+        for (index, entry) in self.entries.borrow().iter().enumerate() {
             if entry.path() == path {
                 return Some(index);
             }
         }
         None
     }
-    fn from_value(value: Option<LuaValue>, function_name: &'static str) -> LuaResult<LuaUserDataRef<SealLock<Self>>> {
+    fn from_value(value: Option<LuaValue>, function_name: &'static str) -> LuaResult<LuaUserDataRef<Wrapped<Self>>> {
         match value {
             Some(LuaValue::UserData(ud)) => {
                 Archive::expect_borrowed(ud, "archive", function_name)
@@ -83,23 +85,25 @@ impl Archive {
     }
 
     /// replace dummies with real entries when self.entries is full of dummies
-    fn swap_out_dummies(&mut self, actual_entries: &mut Vec<ArchiveEntry>) {
+    fn swap_out_dummies(&self, actual_entries: &mut Vec<ArchiveEntry>) {
         // now put the real entries back
-        let mut index = self.entries.len() - 1;
+        let entries = self.entries.borrow();
+        let mut index = entries.len() - 1;
         while let Some(actual_entry) = actual_entries.pop() {
             // panic safety = we know that moved.len == entries.len, therefore same indices should exist in both
-            let entry_to_replace = &mut self.entries[index];
+            let entry_to_replace = &entries[index];
             let _dummy_to_drop = entry_to_replace.swap(actual_entry);
             index = index.saturating_sub(1);
         }
     }
 
-    pub fn build_with_dummies(&mut self, builder: ArchiveBuilder, format: ArchiveFormat, function_name: &'static str) -> LuaResult<Vec<u8>> {
+    pub fn build_with_dummies(&self, builder: ArchiveBuilder, format: ArchiveFormat, function_name: &'static str) -> LuaResult<Vec<u8>> {
         // this is the worst idea i've ever had. instead of having to clone possibly huge ArchiveEntries
         // within the WrappedArchiveEntry, we just allocate a bunch of empty dummies, swap them in so the type
         // remains safe, and then swap them out after builder.build is done building the entries
-        let mut moved_entries: Vec<ArchiveEntry> = Vec::with_capacity(self.entries.len());
-        for entry in self.entries.iter_mut() {
+        let entries = self.entries.borrow();
+        let mut moved_entries: Vec<ArchiveEntry> = Vec::with_capacity(entries.len());
+        for entry in entries.iter() {
             let what = entry.whatami();
             let actual_entry = entry.swap(Self::dummy(what));
             moved_entries.push(actual_entry);
@@ -124,7 +128,7 @@ impl Archive {
     }
 
     fn extract_with_dummies(
-        &mut self,
+        &self,
         destination: String,
         options: ArchiveOptions,
         format: Option<ArchiveFormat>,
@@ -133,8 +137,9 @@ impl Archive {
         // we need a &[ArchiveEntry] to pass to extract::write_to_disk, but the ArchiveEntries inside
         // this WrappedArchiveEntry are held under Rc<RefCell<ArchiveEntry>>
         // so to get around this we temporarily swap out all the archive entries in `this` with dummies
-        let mut actual_entries = Vec::with_capacity(self.entries.len());
-        for wrapped in self.entries.iter_mut() {
+        let entries = self.entries.borrow();
+        let mut actual_entries = Vec::with_capacity(entries.len());
+        for wrapped in entries.iter() {
             let what = wrapped.whatami();
             let entry = wrapped.swap(Self::dummy(what));
             actual_entries.push(entry);
@@ -147,13 +152,18 @@ impl Archive {
         result
     }
 }
-impl BorrowableMut for Archive {}
+impl Borrowable for Archive {
+    fn display_name() -> &'static str {
+        "Archive"
+    }
+}
 
 // methods exposed to Luau
 impl Archive {
     fn paths(luau: &Lua, this: &Archive, _: LuaValue) -> LuaValueResult {
         let paths: Vec<String> = this
             .entries
+            .borrow()
             .iter()
             .map(|entry| entry.path())
             .collect();
@@ -176,7 +186,7 @@ impl Archive {
             }
         };
 
-        if let Some(entry) = this.entries.get(index) {
+        if let Some(entry) = this.entries.borrow().get(index) {
             return entry.clone().into_userdata(luau);
         }
 
@@ -199,14 +209,14 @@ impl Archive {
             }
         };
 
-        if let Some(entry) = this.entries.get(index) {
+        if let Some(entry) = this.entries.borrow().get(index) {
             return entry.clone().into_userdata(luau);
         }
 
-        wrap_err!("{}: no entry at index {} (archive has {} entries)", function_name, index + 1, this.entries.len())
+        wrap_err!("{}: no entry at index {} (archive has {} entries)", function_name, index + 1, this.entries.borrow().len())
     }
 
-    fn insert(_luau: &Lua, this: &mut Archive, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    fn insert(_luau: &Lua, this: &Archive, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         let function_name = "Archive:insert(index: number, entry: ArchiveEntry)";
         let mut index = match multivalue.pop_front() {
             Some(LuaValue::Integer(i)) => int_to_usize(i, function_name, "index")?,
@@ -236,7 +246,7 @@ impl Archive {
             }
         };
 
-        let entries = &mut this.entries;
+        let mut entries = this.entries.borrow_mut();
         let len = entries.len();
         if index == 0 {
             return wrap_err!("{}: index should be 1 or greater (got {})", function_name, index);
@@ -253,7 +263,7 @@ impl Archive {
         Ok(())
     }
 
-    fn append(_luau: &Lua, this: &mut Archive, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    fn append(_luau: &Lua, this: &Archive, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         let function_name = "Archive:append(entry: ArchiveEntry, ...ArchiveEntry)";
         if multivalue.is_empty() {
             return wrap_err!("{}: expected at least one ArchiveEntry entry from @std/archive/entry (but 0 were passed)", function_name);
@@ -269,14 +279,14 @@ impl Archive {
                 }
             };
             match entries {
-                Entries::Many(entries) => this.entries.extend(entries),
-                Entries::One(entry) => this.entries.push(entry),
+                Entries::Many(entries) => this.entries.borrow_mut().extend(entries),
+                Entries::One(entry) => this.entries.borrow_mut().push(entry),
             }
         }
         Ok(())
     }
 
-    fn remove(_luau: &Lua, this: &mut Archive, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    fn remove(_luau: &Lua, this: &Archive, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         let function_name = "Archive:remove(index: number)";
         let mut index = match multivalue.pop_front() {
             Some(LuaValue::Integer(i)) => int_to_usize(i, function_name, "index")?,
@@ -289,7 +299,7 @@ impl Archive {
             }
         };
 
-        let len = this.entries.len();
+        let len = this.entries.borrow().len();
         if index == 0 {
             return wrap_err!("{}: index should be 1 or greater (got {})", function_name, index);
         }
@@ -300,13 +310,13 @@ impl Archive {
         // convert from luau 1 based to 0 based
         index -= 1;
 
-        let entries = &mut this.entries;
+        let mut entries = this.entries.borrow_mut();
         entries.remove(index);
 
         Ok(())
     }
 
-    fn serialize(luau: &Lua, this: &mut Archive, mut multivalue: LuaMultiValue) -> LuaValueResult {
+    fn serialize(luau: &Lua, this: &Archive, mut multivalue: LuaMultiValue) -> LuaValueResult {
         let function_name = "Archive:serialize(format: ArchiveFormat, options: ArchiveOptions?)";
         let format = match multivalue.pop_front() {
             Some(LuaValue::String(s)) => {
@@ -330,7 +340,7 @@ impl Archive {
         ok_buffy(serialized, luau)
     }
 
-    fn extract(_luau: &Lua, this: &mut Archive, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
+    fn extract(_luau: &Lua, this: &Archive, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
         let function_name = "Archive:extract(output_path: Pathlike | string, options: ArchiveOptions?)";
 
         let destination = expect_pathlike(multivalue.pop_front(), function_name)?;
@@ -341,12 +351,12 @@ impl Archive {
     }
 
     fn len(luau: &Lua, this: &Archive, _: LuaValue) -> LuaValueResult {
-        this.entries.len().into_lua(luau)
+        this.entries.borrow().len().into_lua(luau)
     }
 
     fn iter(luau: &Lua, this: &Archive, _: LuaValue) -> LuaValueResult {
         // entries are Rc<RefCell<ArchiveEntry>> under the hood, so cloning this Vec is cheap
-        let entries = this.entries.clone();
+        let entries = this.entries.borrow().clone();
         let index = std::cell::Cell::new(0usize);
 
         let iterator = luau.create_function(move |luau, _: LuaMultiValue| -> LuaResult<LuaMultiValue> {
@@ -366,8 +376,8 @@ impl Archive {
     }
 
     fn display(luau: &Lua, this: &Archive, mut multivalue: LuaMultiValue) -> LuaValueResult {
-        let paths = this
-            .entries
+        let entries = this.entries.borrow();
+        let paths = entries
             .iter()
             .map(|entry| {
                 let what = entry.whatami();
@@ -398,22 +408,22 @@ impl Archive {
     }
 }
 
-impl LuaUserDataMut for Archive {
+impl WrappedUserData for Archive {
     fn type_name<'a>() -> Cow<'a, str> {
         Cow::Borrowed("Archive")
     }
-    fn add_fields<F: LuaUserDataFieldsMut<Self>>(fields: &mut F) {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "Archive");
     }
-    fn add_methods<M: LuaUserDataMethodsMut<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_method("paths", Archive::paths);
         methods.add_method("get", Archive::get);
         methods.add_method("expect", Archive::expect);
-        methods.add_method_mut("insert", Archive::insert);
-        methods.add_method_mut("append", Archive::append);
-        methods.add_method_mut("remove", Archive::remove);
-        methods.add_method_mut("serialize", Archive::serialize);
-        methods.add_method_mut("extract", Archive::extract);
+        methods.add_method("insert", Archive::insert);
+        methods.add_method("append", Archive::append);
+        methods.add_method("remove", Archive::remove);
+        methods.add_method("serialize", Archive::serialize);
+        methods.add_method("extract", Archive::extract);
         methods.add_meta_method("__len", Archive::len);
         methods.add_meta_method("__iter", Archive::iter);
         methods.add_method("display", Archive::display);
@@ -503,7 +513,7 @@ pub fn archive_extract(
         PathOrArchive::Path(path) => {
             extract_streaming(path, destination, options, format, function_name)
         },
-        PathOrArchive::Archive(mut archive) => {
+        PathOrArchive::Archive(archive) => {
             archive.extract_with_dummies(destination, options, Some(format), function_name)
         }
     }
@@ -538,7 +548,7 @@ pub fn archive_readfile(
     )?;
 
     Archive {
-        entries: WrappedArchiveEntry::from_entries(entries)
+        entries: RefCell::new(WrappedArchiveEntry::from_entries(entries))
     }.into_userdata(luau)
 }
 
@@ -549,12 +559,6 @@ pub fn archive_writefile(
 ) -> LuaEmptyResult {
     let path = expect_pathlike(multivalue.pop_front(), function_name)?;
     let archive = Archive::from_value(multivalue.pop_front(), function_name)?;
-    // cloning the archive sucks but not completely because archive contains a Vec of Rc pointers, cloning it
-    // doesn't mean we clone all the data inside each ArchiveEntry
-    let mut archive = match archive.0.try_borrow_mut() {
-        Ok(a) => a.clone(),
-        Err(_) => return wrap_err!("cannot borrow Archive while its being mutated!")
-    };
 
     let options = multivalue.pop_front().unwrap_or(LuaNil);
     let options = ArchiveOptions::from_value(options, function_name)?;
@@ -597,13 +601,13 @@ pub fn archive_load(
     )?;
 
     Archive {
-        entries: WrappedArchiveEntry::from_entries(entries)
+        entries: RefCell::new(WrappedArchiveEntry::from_entries(entries))
     }.into_userdata(luau)
 }
 
 pub fn archive_create(luau: &Lua, _: LuaValue) -> LuaValueResult {
     Archive {
-        entries: Vec::new(),
+        entries: RefCell::new(Vec::new()),
     }.into_userdata(luau)
 }
 
@@ -648,7 +652,7 @@ fn archive_load_any(
     )?;
 
     Archive {
-        entries: WrappedArchiveEntry::from_entries(entries)
+        entries: RefCell::new(WrappedArchiveEntry::from_entries(entries))
     }.into_userdata(luau)
 }
 
@@ -698,7 +702,7 @@ fn archive_extract_any(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyRe
         PathOrArchive::Path(path) => {
             extract_streaming(path, destination, options, format, function_name)
         },
-        PathOrArchive::Archive(mut archive) => {
+        PathOrArchive::Archive(archive) => {
             archive.extract_with_dummies(destination, options, Some(format), function_name)
         }
     }
