@@ -272,10 +272,10 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
     let stdin = child.stdin.take();
 
     let child_cell = Rc::new(RefCell::new(child));
-    // Shared owner of the child's stdin pipe. We keep it open across writes (so stdin is writable
-    // multiple times), but drop it — closing the fd — as soon as the child is killed or observed to
-    // have exited, so we don't retain a dead pipe fd per child until the handle is GC'd (Luau has no
-    // __gc). `child.stdin:close()` and handle GC also drop it.
+    // We keep stdin open across writes so stdin can be written to multiple times, but we don't
+    // drop stdin until the child dies or the user explicitly closes it with child`child.stdin:close()`.
+    // After the child exits or the user closes it explicitly, we drop stdin so we don't get a dead pipe
+    // fd for each child process the user spawns.
     let stdin_cell: Rc<RefCell<Option<process::ChildStdin>>> = Rc::new(RefCell::new(stdin));
 
     let child_process_handle = {
@@ -310,8 +310,32 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
         let stdin_handle = if stdin_cell.borrow().is_some() {
             let stdin_cell_write = Rc::clone(&stdin_cell);
             let stdin_cell_close = Rc::clone(&stdin_cell);
+            let stdin_cell_flush = Rc::clone(&stdin_cell);
     
             Some(TableBuilder::create(luau)?
+                .with_function_mut("flush", {
+                    move |_luau: &Lua, mut multivalue: LuaMultiValue| -> LuaEmptyResult {
+                        let function_name = "child.stdin:flush()";
+                        pop_self(&mut multivalue, function_name)?;
+                        let mut cell = match stdin_cell_flush.try_borrow_mut() {
+                            Ok(cell) => cell,
+                            Err(_) => {
+                                unreachable!("{}: stdin already borrowed; this shouldn't happen as Luau VM is single threaded and multithreaded code should never touch this???", function_name);
+                            }
+                        };
+                        // borrow stdin in place (don't take() it) so it stays open for subsequent writes
+                        let stdin = match cell.as_mut() {
+                            Some(stdin) => stdin,
+                            None => {
+                                return wrap_err!("{}: attempt to flush an already closed stdin", function_name);
+                            }
+                        };
+                        if let Err(err) = stdin.flush() {
+                            return wrap_err!("{}: unable to flush stdin due to err: {}", function_name, err);
+                        }
+                        Ok(())
+                    }
+                })?
                 .with_function_mut("write", {
                     move |luau: &Lua, mut multivalue: LuaMultiValue| -> LuaValueResult {
                         let function_name = "child.stdin:write(data: string)";
@@ -407,6 +431,45 @@ fn process_spawn(luau: &Lua, spawn_options: LuaValue) -> LuaValueResult {
 
                 }
             }, signatures::STD_PROCESS_CHILD_PROCESS_ALIVE)?
+            .with_function_and_signature("status", {
+                let child_cell = Rc::clone(&child_cell);
+                let stdin_cell = Rc::clone(&stdin_cell);
+                move |luau: &Lua, _value: LuaValue| -> LuaValueResult {
+                    let function_name = "ChildProcess:status()";
+                    let Ok(mut child) = child_cell.try_borrow_mut() else {
+                        unreachable!("{}: child (pid {}) already borrowed; this is likely a seal bug because there isn't anything multithreaded that should touch this.", function_name, child_id);
+                    };
+
+                    match child.try_wait() {
+                        Ok(Some(status)) => {
+                            // child has exited; drop its stdin pipe (if still open) to free the fd
+                            let _ = stdin_cell.borrow_mut().take();
+                            let mut builder = TableBuilder::create(luau)?
+                                .with_value("ok", status.success())?
+                                .with_value("code", status.code())?;
+                            #[cfg(unix)]
+                            {
+                                use std::os::unix::process::ExitStatusExt;
+                                builder = builder
+                                    .with_value("signal", status.signal())?
+                                    .with_value("core_dumped", status.core_dumped())?;
+                            }
+                            #[cfg(not(unix))]
+                            { // dont worry about this
+                                builder = builder
+                                    .with_value("signal", LuaNil)?
+                                    .with_value("core_dumped", LuaNil)?
+                            }
+                            ok_table(builder.build_readonly())
+                        },
+                        Ok(None) => Ok(LuaNil),
+                        Err(err) => {
+                            wrap_err!("{}: cannot determine child (pid {}) status due to err: {}", function_name, child_id, err)
+                        }
+                    }
+
+                }
+            }, signatures::STD_PROCESS_CHILD_PROCESS_STATUS)?
             .with_function_and_signature("kill", {
                 let function_name = "ChildProcess:kill()";
                 let child_cell = Rc::clone(&child_cell);

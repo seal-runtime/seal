@@ -268,7 +268,7 @@ export type terminal = {
                         break
                     end
 
-                    if event.type == "Key" then
+                    if event.type == "Key" and event.kind ~= "Release" then
                         if event.key == "Up" then
                             current_selection = if current_selection > 1 then current_selection - 1 else #animals
                             draw(current_selection, start_row)

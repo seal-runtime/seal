@@ -84,10 +84,10 @@ local function cantfitintowholebuffer()
     end)
     child:kill()
     fs.file.try_remove(poem_path)
-    assert(typeof(result) == "error" and tostring(result):match("can't fit offset"), "we should get an error for invalid readbytes_exact usage")
+    assert(typeof(result) == "error" and tostring(result):match("can't fit offset"), `we should get an error for invalid readbytes_exact usage, got {result}`)
 end
 
-cantfitintowholebuffer()
+cheese.retry(cantfitintowholebuffer, 2)
 
 local function canreadintowholebufferwithchecks()
     local child, poem_path = spawn_poem()

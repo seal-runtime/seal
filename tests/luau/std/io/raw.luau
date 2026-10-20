@@ -12,7 +12,7 @@ if terminal.tty() then
             continue
         end
 
-        if event.type == "Key" then
+        if event.type == "Key" and event.kind ~= "Release" then
             if event.modifiers.ctrl and event.key == "c" then
                 break
             end

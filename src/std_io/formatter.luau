@@ -604,19 +604,22 @@ const function process_pretty_values(
 
         -- if we have a metatable and the metatable has custom working __display implementation
         -- we want to call it and return whatever string it returns.
-        -- we don't use __tostring for this because a __tostring implementation is not necessarily for displaying
-        -- a user can call tostring(value) explicitly if they want that.
-        if value_meta and value_meta.__display and typeof(value_meta.__display) == "function" then
-            value_meta = value_meta :: {
-                -- we want to allow downstream users to be able to customize how their data structure
-                -- gets formatted based upon current level of indent and relevant formatting config
-                __display: DisplayFunction
-            }
+        -- use __tostring as a fallback
+        local display_impl, display_impl_kind
+        if value_meta then
+            if value_meta.__display and type(value_meta.__display) == "function" then
+                display_impl, display_impl_kind = value_meta.__display, "display"
+            elseif value_meta.__tostring and type(value_meta.__tostring) == "function" then
+                display_impl, display_impl_kind = value_meta.__tostring, "tostring"
+            end
+        end
+
+        if display_impl then
             local success, custom_display = pcall(
-                value_meta.__display,
+                display_impl,
                 value,
-                depth,
-                options
+                if display_impl_kind == "display" then depth else nil,
+                if display_impl_kind == "display" then options else nil
             )
             if success and typeof(custom_display) == "string" then
                 return custom_display

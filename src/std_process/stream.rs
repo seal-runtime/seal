@@ -236,7 +236,7 @@ impl Stream {
                     unreachable!("{}: callers of this function shouldn't panic and cause this mutex to become poisoned; if they do, that's a bug we should propagate: {}", function_name, err);
                 }
             };
-            if inner.len() <= count {
+            if inner.len() < count {
                 if !&self.still_reading.load(Ordering::Relaxed) {
                     return Ok(LuaNil);
                 } else if let Some(timeout) = timeout && timeout.is_zero() { // user passed 0.0 duration for nonblocking behavior
