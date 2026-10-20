@@ -1304,7 +1304,7 @@ dependencies = [
 [[package]]
 name = "mlua-sys"
 version = "0.9.0"
-source = "git+https://github.com/luwu-community/mluau.git?branch=luwu-classes#61e532dfc1b3886bbb6403449dac9fe99d754a79"
+source = "git+https://github.com/luwu-community/mluau.git?branch=luwu-classes#93109051d4d15e520cf96f8816bf6b6c35280f75"
 dependencies = [
  "cc",
  "cfg-if",
@@ -1314,7 +1314,7 @@ dependencies = [
 [[package]]
 name = "mluau"
 version = "0.11.5"
-source = "git+https://github.com/luwu-community/mluau.git?branch=luwu-classes#61e532dfc1b3886bbb6403449dac9fe99d754a79"
+source = "git+https://github.com/luwu-community/mluau.git?branch=luwu-classes#93109051d4d15e520cf96f8816bf6b6c35280f75"
 dependencies = [
  "bstr",
  "bytes",
