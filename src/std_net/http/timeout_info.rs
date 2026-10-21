@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{prelude::*, userdata::SealLock};
 use mluau::prelude::*;
 
 use std::time::Duration;
@@ -163,8 +163,8 @@ impl TimeoutInfo {
         keep_going: bool,
     ) -> LuaResult<MaybeDuration> {
         Ok(match t.raw_get(key)? {
-            LuaValue::UserData(ud) if let Ok(duration) = ud.borrow::<TimeDuration>() => {
-                let timeout = (*duration).inner; // SignedDuration is clone on copy, we don't have to worry about dropping it here
+            LuaValue::UserData(ref ud) if let Some(duration) = ud.borrow::<SealLock<TimeDuration>>() => {
+                let timeout = (*duration).borrow().inner; // SignedDuration is clone on copy, we don't have to worry about dropping it here
                 if !timeout.is_positive() {
                     return wrap_err!("{}: {}: Duration must be positive, got: {:#?}", function_name, field_name, timeout);
                 }

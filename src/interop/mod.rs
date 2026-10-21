@@ -1,6 +1,6 @@
 
 use mluau::prelude::*;
-use crate::prelude::*;
+use crate::{prelude::*, std_err::WrappedError, userdata::SealLock};
 
 pub mod externs;
 pub mod standalone;
@@ -21,12 +21,10 @@ fn interop_mlua_isint(_luau: &Lua, n: LuaValue) -> LuaValueResult {
 
 fn interop_mlua_iserror(_luau: &Lua, value: LuaValue) -> LuaValueResult {
     match value {
-        LuaValue::Error(_err) => {
-            Ok(LuaValue::Boolean(true))
+        LuaValue::UserData(v) => {
+            Ok(LuaValue::Boolean(v.borrow::<SealLock<WrappedError>>().is_some()))
         },
-        _other => {
-            Ok(LuaValue::Boolean(false))
-        }
+        _ => Ok(LuaValue::Boolean(false))
     }
 }
 

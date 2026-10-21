@@ -259,14 +259,12 @@ fn hash_sha2_256(luau: &Lua, value: LuaValue) -> LuaValueResult {
             let plaintext = plaintext.to_string_lossy();
             let plaintext_bytes = plaintext.as_ref();
             context.update(plaintext_bytes);
-            let rust_buffy: [u8; 32] = {
+            let rust_buffy = {
                 let hash_result = context.finish();
                 let hash_result = hash_result.as_ref();
-                let mut rust_buffy = [0u8; 32];
-                rust_buffy.copy_from_slice(hash_result);
-                rust_buffy
+                Vec::from(hash_result)
             };
-            let result_buffy = luau.create_buffer(rust_buffy)?;
+            let result_buffy = luau.create_external_buffer_mut(rust_buffy)?;
             Ok(LuaValue::Buffer(result_buffy))
         },
         other => {
@@ -311,7 +309,7 @@ fn password_hash(luau: &Lua, value: LuaValue) -> LuaValueResult {
     );
 
     let salt_buffy = luau.create_buffer(salt)?;
-    let hash_buffy = luau.create_buffer(hash)?;
+    let hash_buffy = luau.create_external_buffer_mut(hash)?;
     Ok(LuaValue::Table(TableBuilder::create(luau)?
         .with_value("salt", salt_buffy)?
         .with_value("hash", hash_buffy)?

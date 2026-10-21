@@ -1,29 +1,8 @@
 use mluau::prelude::*;
 use crate::prelude::*;
-
+use crate::userdata::SealUserDataExt;
 use std::path::PathBuf;
 use mluau::Compiler;
-
-struct EvalError {
-    message: String,
-}
-impl EvalError {
-    fn new(err: LuaError) -> Self {
-        Self {
-            message: err.to_string()
-        }
-    }
-}
-impl LuaUserData for EvalError {
-    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
-        fields.add_meta_field("__type", "error"); // allow users to typeof check
-    }
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
-        methods.add_meta_method(LuaMetaMethod::ToString, | luau: &Lua, this: &EvalError, _: LuaValue| -> LuaValueResult {
-            this.message.clone().into_lua(luau)
-        });
-    }
-}
 
 enum EvalStdlib {
     Seal,
@@ -176,10 +155,11 @@ unsafe fn eval(luau: &Lua, src: Vec<u8>, eval_options: EvalOptions) -> LuaValueR
         .set_name(name)
         .set_environment(globals);
 
-    let res = match chunk.eval::<LuaValue>() {
+    // NOTE: We use eval_with_err directly here to directly capture the err
+    let res = match chunk.eval_with_err::<LuaValue, WrappedError>() {
         Ok(value) => value,
         Err(err) => {
-            LuaValue::UserData(luau.create_userdata(EvalError::new(err))?)
+            LuaValue::UserData(luau.create_seal_userdata(err)?)
         }
     };
 
@@ -253,7 +233,7 @@ fn luau_bytecode(luau: &Lua, value: LuaValue) -> LuaValueResult {
         Ok(bytecode) => bytecode,
         Err(err) => {
             return Ok(LuaValue::UserData(
-                luau.create_userdata(EvalError::new(err))?
+                luau.create_seal_userdata(WrappedError::from_message(err.to_string()))?
             ))
         }
     };
@@ -274,7 +254,7 @@ fn luau_bundle(luau: &Lua, value: LuaValue) -> LuaValueResult {
     };
     match crate::compile::bundle(&PathBuf::from(path)) {
         Ok(bundled) => bundled.into_lua(luau),
-        Err(err) => Ok(LuaValue::UserData(luau.create_userdata(EvalError::new(err))?)),
+        Err(err) => Ok(LuaValue::UserData(luau.create_seal_userdata(WrappedError::from_message(err.to_string()))?)),
     }
 }
 

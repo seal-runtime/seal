@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::userdata::SealLock;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -9,6 +10,7 @@ use std::thread::JoinHandle;
 use std::collections::VecDeque;
 
 use mluau::prelude::*;
+use mluau::FunctionMutExt;
 
 use crate::std_time::duration::TimeDuration;
 
@@ -18,8 +20,8 @@ fn parse_timeout_value(value: Option<LuaValue>, function_name: &'static str) -> 
     let seconds = match value {
         Some(LuaValue::Number(f)) => f,
         Some(LuaValue::Integer(i)) => i as f64,
-        Some(LuaValue::UserData(ud)) if let Ok(duration) = ud.borrow::<TimeDuration>() => {
-            let inner = duration.inner; // SignedDuration is Copy
+        Some(LuaValue::UserData(ref ud)) if let Some(duration) = ud.borrow::<SealLock<TimeDuration>>() => {
+            let inner = duration.borrow().inner; // SignedDuration is Copy
             if inner.is_negative() {
                 return wrap_err!("{}: timeout can't be negative! got: {:#?}", function_name, inner);
             }

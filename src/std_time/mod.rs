@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{prelude::*, userdata::SealLock};
 use mluau::prelude::*;
 use std::time::Duration;
 
@@ -28,8 +28,8 @@ fn time_wait(_luau: &Lua, value: LuaValue) -> LuaValueResult {
         LuaValue::Integer(i) => {
             Duration::from_secs(int_to_u64(i, function_name, "duration")?)
         },
-        LuaValue::UserData(ud) if let Ok(ud) = ud.borrow::<TimeDuration>() => {
-            let signed = (*ud).inner;
+        LuaValue::UserData(ref ud) if let Some(ud) = ud.borrow::<SealLock<TimeDuration>>() => {
+            let signed = (*ud).borrow().inner;
             if signed.is_negative() {
                 return wrap_err!("{}: cannot reverse time (got negative duration: {})", function_name, signed);
             }

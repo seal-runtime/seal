@@ -13,7 +13,7 @@ local function canparse()
     assert(dt.day == 2, "should be the second")
     assert(dt.hour == 6, "should be the 6th hour")
     assert(dt.minute == 10, "should be the 10th minute")
-    assert(dt.timezone == "US/Central", "IANA timezone should match what we put in")
+    assert(dt.timezone == "America/Chicago", "IANA timezone should always be modernized")
 end
 
 canparse()

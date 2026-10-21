@@ -1,7 +1,14 @@
 use mluau::prelude::*;
+use crate::userdata::SealLock;
 use crate::{prelude::*, std_archive::entry::EntryType};
+use crate::userdata::{
+    SealUserData as LuaUserDataMut,
+    SealUserDataFields as LuaUserDataFieldsMut,
+    SealUserDataMethods as LuaUserDataMethodsMut
+};
 
 use crate::std_io::format;
+use std::borrow::Cow;
 use std::fs;
 
 pub mod extract;
@@ -52,7 +59,7 @@ impl Archive {
         }
         None
     }
-    fn from_value(value: Option<LuaValue>, function_name: &'static str) -> LuaResult<LuaUserDataRef<Self>> {
+    fn from_value(value: Option<LuaValue>, function_name: &'static str) -> LuaResult<LuaUserDataRef<SealLock<Self>>> {
         match value {
             Some(LuaValue::UserData(ud)) => {
                 Archive::expect_borrowed(ud, "archive", function_name)
@@ -140,11 +147,7 @@ impl Archive {
         result
     }
 }
-impl Borrowable for Archive {
-    fn type_name() -> &'static str {
-        "Archive"
-    }
-}
+impl BorrowableMut for Archive {}
 
 // methods exposed to Luau
 impl Archive {
@@ -395,11 +398,14 @@ impl Archive {
     }
 }
 
-impl LuaUserData for Archive {
-    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
+impl LuaUserDataMut for Archive {
+    fn type_name<'a>() -> Cow<'a, str> {
+        Cow::Borrowed("Archive")
+    }
+    fn add_fields<F: LuaUserDataFieldsMut<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "Archive");
     }
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: LuaUserDataMethodsMut<Self>>(methods: &mut M) {
         methods.add_method("paths", Archive::paths);
         methods.add_method("get", Archive::get);
         methods.add_method("expect", Archive::expect);
@@ -545,7 +551,10 @@ pub fn archive_writefile(
     let archive = Archive::from_value(multivalue.pop_front(), function_name)?;
     // cloning the archive sucks but not completely because archive contains a Vec of Rc pointers, cloning it
     // doesn't mean we clone all the data inside each ArchiveEntry
-    let mut archive = archive.clone();
+    let mut archive = match archive.0.try_borrow_mut() {
+        Ok(a) => a.clone(),
+        Err(_) => return wrap_err!("cannot borrow Archive while its being mutated!")
+    };
 
     let options = multivalue.pop_front().unwrap_or(LuaNil);
     let options = ArchiveOptions::from_value(options, function_name)?;

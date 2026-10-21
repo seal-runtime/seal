@@ -152,7 +152,7 @@ pub fn read_file_into_buffer(luau: &Lua, entry_path: &str, mut multivalue: LuaMu
         target_buffer.write_bytes(buffer_offset as usize, &rust_buffer);
         Ok(LuaValue::Buffer(target_buffer))
     } else {
-        Ok(LuaValue::Buffer(luau.create_buffer(rust_buffer)?))
+        Ok(LuaValue::Buffer(luau.create_external_buffer_mut(rust_buffer)?))
     }
 }
 

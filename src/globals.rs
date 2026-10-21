@@ -46,14 +46,14 @@ pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
     let globals: LuaTable = luau.globals();
     // must use globals().get instead of globals().raw_get due to safeenv/sandbox (which requires newindex); raw_get incorrectly returns nil when safeenv enabled
     let luau_version: LuaString = globals.get("_VERSION")?;
-    globals.raw_set("require", luau.create_function(require::require)?)?;
-    globals.raw_set("error", luau.create_function(error)?)?;
-    globals.raw_set("p", luau.create_function(std_io::output::simple_print_and_return)?)?;
-    globals.raw_set("pp", luau.create_function(std_io::output::pretty_print_and_return)?)?;
-    globals.raw_set("dp", luau.create_function(std_io::output::debug_print)?)?;
-    globals.raw_set("print", luau.create_function(std_io::output::pretty_print)?)?;
-    globals.raw_set("ecall", luau.create_function(ecall)?)?;
-    globals.raw_set("warn", luau.create_function(warn)?)?;
+    globals.raw_set("require", luau.create_wrapped_function(require::require)?)?;
+    globals.raw_set("error", luau.create_wrapped_function(error)?)?;
+    globals.raw_set("p", luau.create_wrapped_function(std_io::output::simple_print_and_return)?)?;
+    globals.raw_set("pp", luau.create_wrapped_function(std_io::output::pretty_print_and_return)?)?;
+    globals.raw_set("dp", luau.create_wrapped_function(std_io::output::debug_print)?)?;
+    globals.raw_set("print", luau.create_wrapped_function(std_io::output::pretty_print)?)?;
+    globals.raw_set("ecall", luau.create_wrapped_function(ecall)?)?;
+    globals.raw_set("warn", luau.create_wrapped_function(warn)?)?;
     globals.raw_set("_SEAL_VERSION", SEAL_VERSION)?;
     globals.raw_set("_VERSION", format!("seal {}+{}", SEAL_VERSION, luau_version.to_string_lossy().strip_prefix("Luau ").expect("Luau version always has Luau prefix")))?;
     globals.raw_set("_G", TableBuilder::create(luau)?.build()?)?;
@@ -157,7 +157,7 @@ const SCRIPT_PATH_SRC: &str = r#"
 
 pub fn get_debug_name(luau: &Lua) -> LuaResult<String> {
     let chunk = Chunk::src(SCRIPT_PATH_SRC);
-    luau.load(chunk).eval::<String>()
+    luau.load(chunk).eval_wrapped()
 }
 
 pub fn get_script_path(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult {

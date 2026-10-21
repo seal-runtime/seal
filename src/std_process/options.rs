@@ -295,7 +295,10 @@ impl RunOptions {
         let cwd = match run_options.raw_get("cwd")? {
             LuaValue::String(cwd) => {
                 let cwd = cwd.as_bytes();
-                let cwd_str = str::from_utf8(&cwd)?;
+                let cwd_str = match str::from_utf8(&cwd) {
+                    Ok(s) => s,
+                    Err(err) => return wrap_err!("{}Options.cwd must be valid UTF-8, got err: {}", what, err),
+                };
                 let cwd_pathbuf = PathBuf::from(cwd_str);
                 let canonicalized_cwd = match cwd_pathbuf.canonicalize() {
                     Ok(pathbuf) => pathbuf,
@@ -353,7 +356,7 @@ impl SpawnOptions {
                     LuaValue::Integer(i) => int_to_usize(i, "SpawnOptions.capacity.stdout", "stdout")?,
                     LuaValue::UserData(ud) => {
                         match FileSize::borrowed(ud) {
-                            Ok(size) => size.as_bytes() as usize,
+                            Ok(size) => size.borrow().as_bytes() as usize,
                             Err(typ) => {
                                 return wrap_err!("expected stdout_capacity to be a number or FileSize, got userdata of type: {}", typ);
                             }
@@ -369,7 +372,7 @@ impl SpawnOptions {
                     LuaValue::Integer(i) => int_to_usize(i, "SpawnOptions.capacity.stderr", "stderr")?,
                     LuaValue::UserData(ud) => {
                         match FileSize::borrowed(ud) {
-                            Ok(size) => size.as_bytes() as usize,
+                            Ok(size) => size.borrow().as_bytes() as usize,
                             Err(typ) => {
                                 return wrap_err!("expected stderr_capacity to be a number or FileSize, got userdata of type: {}", typ);
                             }
