@@ -295,7 +295,10 @@ impl RunOptions {
         let cwd = match run_options.raw_get("cwd")? {
             LuaValue::String(cwd) => {
                 let cwd = cwd.as_bytes();
-                let cwd_str = str::from_utf8(&cwd)?;
+                let cwd_str = match str::from_utf8(&cwd) {
+                    Ok(s) => s,
+                    Err(err) => return wrap_err!("{}Options.cwd must be valid UTF-8, got err: {}", what, err),
+                };
                 let cwd_pathbuf = PathBuf::from(cwd_str);
                 let canonicalized_cwd = match cwd_pathbuf.canonicalize() {
                     Ok(pathbuf) => pathbuf,

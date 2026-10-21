@@ -29,7 +29,7 @@ fn standalone_extract(luau: &Lua, value: LuaValue) -> LuaValueResult {
         }
     };
     if let Some(bytecode) = compile::extract_bytecode(Some(path)) {
-        ok_buffy(&bytecode, luau)
+        ok_buffy(bytecode, luau)
     } else {
         wrap_err!("{}: bytecode could not be extracted :/ check your path?", function_name)
     }
@@ -67,7 +67,7 @@ fn standalone_eval(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult 
     // SAFETY: our compiler has just compiled this bytecode, we trust it to be safe.
     let bytecode = unsafe { Chunk::bytecode(bytecode) };
 
-    match luau.load(bytecode).set_name(&chunk_name).eval::<LuaValue>() {
+    match luau.load(bytecode).set_name(&chunk_name).eval_wrapped::<LuaValue>() {
         Ok(value) => Ok(value),
         Err(err) => {
             wrap_err!("{}: error evaluating bytecode: {}", function_name, err)

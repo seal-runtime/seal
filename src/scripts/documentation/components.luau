@@ -9,8 +9,8 @@ end
 type Component = HeadingComponent | TextComponent | CodeblockComponent | ListComponent
 
 export class HeadingComponent
-    public level: number
-    public text: string
+    level: number
+    text: string
     function markdown(self)
         return string.rep("#", self.level) .. " " .. self.text
     end
@@ -19,13 +19,13 @@ export class HeadingComponent
     end
 end
 export class TextComponent
-    public text: string
+    text: string
     function __tostring(self)
         return enclose_component("Text", self.text, vector.create(180, 180, 255))
     end
 end
 export class CodeblockComponent
-    public text: string
+    text: string
     function markdown(self)
         return "```luau\n" .. self.text .. "\n```"
     end
@@ -34,15 +34,15 @@ export class CodeblockComponent
     end
 end
 export class ListItem
-    public indent: number
-    public text: number
+    indent: number
+    text: string
     function __tostring(self)
         return enclose_component("ListItem", `i: {self.indent}: {self.text}`, vector.create(80, 80, 80))
     end
 end
 export class ListComponent
-    public type: "Ordered" | "Unordered"
-    public items: { ListItem }
+    type: "Ordered" | "Unordered"
+    items: { ListItem }
 
     function from(lines: { string }, type: "Ordered" | "Unordered")
         const items: { ListItem } = {}
@@ -76,8 +76,8 @@ export class ListComponent
 end
 
 export class Documentation
-    public components: { Component }
-    public location: number
+    components: { Component }
+    location: number
 
     function from(text: string, location: number)
         const lines = str.splitlines(text)
@@ -206,8 +206,8 @@ export class Documentation
 
             table.insert(last_lines, str.trimback(line))
         end
-        if in_list and list_type then
-            push_list(list_type :: any)
+        if in_list and list_type then -- LUAU FIXME: wtf
+            push_list(list_type :: "Ordered" | "Unordered")
         elseif in_codeblock then
             push_codeblock()
         else

@@ -26,6 +26,10 @@
 // runtime case, so we ban the method outright via clippy.toml's disallowed-methods.
 #![warn(clippy::disallowed_methods, reason = "see clippy.toml for banned methods and why")]
 
+// compiler doesn't mind and i dont want to have to go back and add & next time i end up using
+// this value again and need to borrow
+#![allow(clippy::needless_borrow)]
+
 use crate::{prelude::*, setup::SetupOptions};
 use mluau::prelude::*;
 
@@ -63,6 +67,7 @@ mod setup;
 mod compile;
 mod std_args;
 mod std_archive;
+mod userdata;
 
 use err::display_error_and_exit;
 use sealconfig::SealConfig;
@@ -80,7 +85,7 @@ type Args = VecDeque<OsString>;
 #[derive(Debug)]
 enum SealCommand {
     /**
-    Runs `seal` with a valid luau module path/filename (must be `*.luau` or directory w/ `init.luau`)
+    Runs `seal` with a valid luau module path/filename (must be `*.luau`/`*.luwu` or directory w/ `init.luau`/`init.luwu`)
 
     ## Examples:
     * `seal ./hi.luau`
@@ -171,7 +176,28 @@ fn main() -> LuaResult<()> {
 
     crate::std_io::input::EXPECT_OUTPUT_STREAMS.initialize_and_check();
 
-    set_fflags(["LuauExportValueSyntax"])?;
+    set_fflags([
+        "LuauExportValueSyntax",
+        "LuwuDefaultArguments",
+        "LuwuGenericNominals",
+        "LuwuExportedClassIsNilWorkaround",
+        "LuwuTableDrop",
+        "LuwuNoinlineAttribute",
+        "LuwuDestructuring",
+        "LuwuDeclareStatements",
+        "DebugLuwuCompilerTrustsTypeAnnotations",
+        "LuwuTraits",
+        "DebugLuwuUserDefinedRefinements",
+        "LuwuIfLocal",
+        "LuwuDoExpr",
+        "LuwuTableComprehensions",
+        "LuwuTableFunctionFields",
+        "DebugLuwuPoperators",
+        "DebugLuwuMatchExpressions",
+        "LuwuAttributesEverywhere",
+        "LuwuBufferIsFrozen",
+        "LuwuExternTypeGenericMethods"
+    ])?;
 
     let command = match SealCommand::parse(args) {
         Ok(command) => command,
@@ -209,8 +235,13 @@ fn main() -> LuaResult<()> {
         Err(err) => display_error_and_exit(err),
     };
 
-    match luau.load(code).set_name(chunk_name).exec() {
-        Ok(_) => Ok(()),
+    let func = match luau.load_from_chunk(code, &chunk_name).into_function() {
+        Ok(func) => func,
+        Err(err) => display_error_and_exit(err),
+    };
+
+    match func.call_wrapped(()) {
+        Ok(()) => Ok(()),
         Err(err) => display_error_and_exit(err),
     }
 }
@@ -234,10 +265,10 @@ fn set_jit(luau: &Lua) -> bool {
 
 fn resolve_file(requested_path: String, function_name: &'static str) -> LuauLoadResult {
     if requested_path.ends_with(".lua") {
-        return wrap_err!("{}: wrong language! seal only runs .luau files", function_name);
+        return wrap_err!("{}: wrong language! seal only runs .luau and .luwu files", function_name);
     }
     let Some(chunk_name) = require::get_chunk_name_for_module(&requested_path, function_name)? else {
-        return wrap_err!("'{}' not found; does it exist and is it either a .luau file or directory with an init.luau?", requested_path);
+        return wrap_err!("'{}' not found; does it exist and is it either a .luau/.luwu file or directory with an init.luau/init.luwu?", requested_path);
     };
 
     let luau = Lua::default();
@@ -436,7 +467,7 @@ impl SealCommand {
                 return wrap_err!("help not yet implemented for command {:#?}", other);
             },
         })?;
-        puts!("{}", help_function.call::<String>(LuaNil)?)?;
+        puts!("{}", help_function.call_wrapped::<String>(LuaNil)?)?;
         Ok(None)
     }
     fn next_is_help(&self, args: &Args) -> bool {

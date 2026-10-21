@@ -1,14 +1,42 @@
-use mluau::prelude::*;
+use mluau::{FunctionMutExt, prelude::*};
 pub use mluau::ChunkSource as Chunk;
 
 /// luau's actual limit: array/hash parts of a table can each hold at most `1 << MAXBITS` entries,
 /// where MAXBITS is 26 (see luau/VM/src/ltable.cpp); exceeding this aborts the process, so this
 /// constant must never be looser than luau's real MAXSIZE
 pub const MAX_TABLE_SIZE: usize = 1 << 26;
+
 pub use crate::{
-    std_io::colors as colors, wrap_err, table_helpers::TableBuilder,
-    put, puts, eput, eputs, signatures
+    userdata::WrappedFunction,  // TODO: Consider removing it
+    userdata::Wrapped,
+    userdata::WrappedUserData,
+    userdata::WrappedUserDataExt,
+    userdata::WrappedUserDataFields,
+    userdata::WrappedUserDataMethods,
+    userdata::CallWrapped,
+    userdata::CallWrappedChunk
 };
+
+pub use crate::{
+    std_io::colors, wrap_err, table_helpers::TableBuilder,
+    put, puts, eput, eputs, signatures, std_err::WrappedError
+};
+
+/// Loads code as a chunk named `chunk_name`, compiled as the language the name says: Luau for a `.luau` file, Luwu
+/// otherwise (see [`language_of`](crate::globals::language_of)).
+pub trait LoadChunk {
+    fn load_from_chunk<'a>(&self, chunk: impl mluau::AsChunk + 'a, chunk_name: impl AsRef<str>) -> mluau::Chunk<'a>;
+}
+
+impl LoadChunk for Lua {
+    fn load_from_chunk<'a>(&self, chunk: impl mluau::AsChunk + 'a, chunk_name: impl AsRef<str>) -> mluau::Chunk<'a> {
+        let chunk_name = chunk_name.as_ref();
+        let lang = mluau::Language::from_chunk_name(chunk_name).unwrap_or(mluau::Language::Luwu);
+        self.load(chunk)
+            .set_name(chunk_name)
+            .set_language(lang)
+    }
+}
 
 pub type LuaValueResult = LuaResult<LuaValue>;
 pub type LuaEmptyResult = LuaResult<()>;
@@ -20,16 +48,16 @@ pub fn ok_table(t: LuaResult<LuaTable>) -> LuaValueResult {
 }
 
 pub fn ok_function(f: fn(&Lua, LuaValue) -> LuaValueResult, luau: &Lua) -> LuaValueResult {
-    Ok(LuaValue::Function(luau.create_function(f)?))
+    Ok(LuaValue::Function(luau.create_wrapped_function(f)?))
 }
 
 // TODO: figure out how to get generics working for ok_function so we don't need multiple functions to do this
 pub fn ok_function_multi_returns_value(f: fn(&Lua, LuaMultiValue) -> LuaValueResult, luau: &Lua) -> LuaValueResult {
-    Ok(LuaValue::Function(luau.create_function(f)?))
+    Ok(LuaValue::Function(luau.create_wrapped_function(f)?))
 }
 
 pub fn ok_function_multi_returns_multi(f: fn(&Lua, LuaMultiValue) -> LuaMultiResult, luau: &Lua) -> LuaValueResult {
-    Ok(LuaValue::Function(luau.create_function(f)?))
+    Ok(LuaValue::Function(luau.create_wrapped_function(f)?))
 }
 
 pub fn ok_function_mut<F, I, Fn>(f: Fn, luau: &Lua) -> LuaValueResult
@@ -45,12 +73,13 @@ pub fn ok_string<S: AsRef<[u8]>>(s: S, luau: &Lua) -> LuaValueResult {
     Ok(LuaValue::String(luau.create_string(s)?))
 }
 
-pub fn ok_buffy<B: AsRef<[u8]>>(b: B, luau: &Lua) -> LuaValueResult {
-    Ok(LuaValue::Buffer(luau.create_buffer(b)?))
+pub fn ok_buffy(b: Vec<u8>, luau: &Lua) -> LuaValueResult {
+    let b = luau.create_external_buffer_mut(b)?;
+    Ok(LuaValue::Buffer(b))
 }
 
-pub fn ok_userdata<S: LuaUserData + 'static>(u: S, luau: &Lua) -> LuaValueResult {
-    Ok(LuaValue::UserData(luau.create_userdata(u)?))
+pub fn ok_userdata<S: WrappedUserData + 'static>(u: S, luau: &Lua) -> LuaValueResult {
+    Ok(LuaValue::UserData(luau.create_wrapped_userdata(u)?))
 }
 
 pub fn pop_self(multivalue: &mut LuaMultiValue, function_name: &'static str) -> LuaEmptyResult {
@@ -310,92 +339,101 @@ impl std::fmt::Display for UserDataTypeName {
         f.write_str(self.inner.as_deref().unwrap_or("<unknown userdata type>"))
     }
 }
-pub trait Borrowable {
-    fn type_name() -> &'static str;
 
-    /// Borrows of Self type or gives type name for error message if it can't
-    fn as_borrowed(ud: &LuaAnyUserData) -> Result<LuaUserDataRef<Self>, UserDataTypeName>
-        where Self: LuaUserData + 'static
-    {
-        if let Ok(got_it) = ud.borrow::<Self>() {
+/// Borrow helper trait for immutable userdata.
+///
+/// Borrowing immutable ud is just a tag check + pointer cast, so this isn't expensive
+pub trait Borrowable: WrappedUserData {
+    fn display_name() -> &'static str;
+
+    /// Borrows Self type from `ud` if it is one
+    fn borrow(ud: &LuaAnyUserData) -> Option<mluau::UnbackedTypedRef<'_, Wrapped<Self>>> {
+        ud.borrow::<Wrapped<Self>>()
+    }
+
+    /// Borrows Self type from `ud` or gives type name for error message if it can't
+    fn try_borrow(ud: &LuaAnyUserData) -> Result<mluau::UnbackedTypedRef<'_, Wrapped<Self>>, UserDataTypeName> {
+        if let Some(got_it) = Self::borrow(ud) {
             Ok(got_it)
         } else {
             Err(UserDataTypeName::from(ud))
         }
     }
 
-    /// Borrows of Self type or gives type name for error message if it can't
-    fn borrowed(ud: LuaAnyUserData) -> Result<LuaUserDataRef<Self>, UserDataTypeName>
-        where Self: LuaUserData + 'static
-    {
-        if let Ok(got_it) = ud.borrow::<Self>() {
+    /// Borrows Self type out of `ud` (keeping it alive) or gives type name for error message if it can't
+    fn borrowed(ud: LuaAnyUserData) -> Result<LuaUserDataRef<Wrapped<Self>>, UserDataTypeName> {
+        // cloning an AnyUserData is just a refcount bump
+        if let Some(got_it) = ud.clone().into::<Wrapped<Self>>() {
             Ok(got_it)
         } else {
             Err(UserDataTypeName::from(ud))
         }
     }
+
     /// Borrows and then clones Self type of ud; gives type name for error message if it can't
     fn cloned(ud: LuaAnyUserData) -> Result<Self, UserDataTypeName>
-        where Self: LuaUserData + Clone + 'static
+        where Self: Clone
     {
-        if let Ok(got_it) = ud.borrow::<Self>() {
-            Ok(got_it.clone())
-        } else {
-            Err(UserDataTypeName::from(ud))
+        match Self::try_borrow(&ud) {
+            Ok(got_it) => Ok(got_it.0.clone()),
+            Err(name) => Err(name),
         }
     }
+
     fn expect_borrowed(
         ud: LuaAnyUserData,
         parameter_name: &'static str,
         function_name: &'static str
-    ) -> LuaResult<LuaUserDataRef<Self>>
-        where Self: LuaUserData
-    {
-        if let Ok(got_it) = ud.borrow::<Self>() {
-            Ok(got_it)
-        } else {
-            let name = UserDataTypeName::from(ud);
-            let expected = Self::type_name();
-            wrap_err!("{}: expected {} to be a {}, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
+    ) -> LuaResult<LuaUserDataRef<Wrapped<Self>>> {
+        match Self::borrowed(ud) {
+            Ok(got_it) => Ok(got_it),
+            Err(name) => {
+                let expected = Self::display_name();
+                wrap_err!("{}: expected {} to be a {}, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
+            }
         }
     }
+
     fn expect_cloned(
         ud: LuaAnyUserData,
         parameter_name: &'static str,
         function_name: &'static str
     ) -> LuaResult<Self>
-        where Self: LuaUserData + Clone + 'static
+        where Self: Clone
     {
-        if let Ok(got_it) = ud.borrow::<Self>() {
-            Ok(got_it.clone())
-        } else {
-            let name = UserDataTypeName::from(ud);
-            let expected = Self::type_name();
-            wrap_err!("{}: expected {} to be a {}, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
+        match Self::cloned(ud) {
+            Ok(got_it) => Ok(got_it),
+            Err(name) => {
+                let expected = Self::display_name();
+                wrap_err!("{}: expected {} to be a {}, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
+            }
         }
     }
+
     fn expect_cloned_or_nil(
         ud: LuaAnyUserData,
         parameter_name: &'static str,
         function_name: &'static str
     ) -> LuaResult<Self>
-        where Self: LuaUserData + Clone + 'static
+        where Self: Clone
     {
-        if let Ok(got_it) = ud.borrow::<Self>() {
-            Ok(got_it.clone())
-        } else {
-            let name = UserDataTypeName::from(ud);
-            let expected = Self::type_name();
-            wrap_err!("{}: expected {} to be a {} or nil, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
+        match Self::cloned(ud) {
+            Ok(got_it) => Ok(got_it),
+            Err(name) => {
+                let expected = Self::display_name();
+                wrap_err!("{}: expected {} to be a {} or nil, but got the wrong type of userdata: {}", function_name, parameter_name, expected, name)
+            }
         }
     }
 
-    fn into_userdata(
-        self,
-        luau: &Lua
-    ) -> LuaValueResult
-        where Self: LuaUserData + 'static 
-    {
-        Ok(LuaValue::UserData(luau.create_userdata(self)?))
+    fn into_userdata(self, luau: &Lua) -> LuaValueResult {
+        Ok(LuaValue::UserData(luau.create_wrapped_userdata(self)?))
     }
+}
+
+#[macro_export]
+macro_rules! wrap_method {
+    ($method:expr) => {{
+        |lua, this, args| $method(lua, &this, args)
+    }};
 }

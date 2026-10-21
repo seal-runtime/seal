@@ -1,5 +1,7 @@
 use mluau::prelude::*;
+use crate::userdata::WrappedUserDataExt;
 use crate::{prelude::*};
+use std::borrow::Cow;
 use std::io::Write;
 
 use std::fmt::Display;
@@ -8,6 +10,11 @@ use super::cursor::{CursorStyle, MoveDirection};
 use super::{ScrollDirection, WhichScreen};
 use crossterm::execute;
 use crossterm::QueueableCommand;
+use crate::userdata::{
+    WrappedUserData,
+    WrappedUserDataFields,
+    WrappedUserDataMethods
+};
 
 pub(super) fn queue_and_execute(actions: Vec<TerminalAction>, function_name: &'static str) -> LuaResult<()> {
     let mut stdout = std::io::stdout();
@@ -44,12 +51,15 @@ pub enum TerminalAction {
     Hide,
     MoveCursor(MoveDirection)
 }
-impl LuaUserData for TerminalAction {
-    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
+impl WrappedUserData for TerminalAction {
+    fn type_name<'a>() -> Cow<'a, str> {
+        Cow::Borrowed("TerminalAction")
+    }
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "TerminalAction");
     }
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
-        methods.add_method_mut("execute", |_luau, this, _: LuaValue| -> LuaEmptyResult {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
+        methods.add_method("execute", |_luau, this, _: LuaValue| -> LuaEmptyResult {
             let function_name = "TerminalAction:execute()";
             let mut stdout = std::io::stdout();
 
@@ -88,14 +98,20 @@ impl LuaUserData for TerminalAction {
     }
 }
 
+impl Borrowable for TerminalAction {
+    fn display_name() -> &'static str {
+        "TerminalAction"
+    }
+}
+
 impl TerminalAction {
     pub fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        Ok(LuaValue::UserData(luau.create_userdata(self)?))
+        Ok(LuaValue::UserData(luau.create_wrapped_userdata(self)?))
     }
     pub fn from_value<S: Display>(value: &LuaValue, function_name: &'static str, what: S) -> LuaResult<Self> {
         match value {
-            LuaValue::UserData(ud) if let Ok(ud) = ud.borrow::<TerminalAction>() => {
-                Ok((*ud).clone())
+            LuaValue::UserData(ud) if let Some(ud) = TerminalAction::borrow(ud) => {
+                Ok(ud.0.clone())
             },
             other => {
                 wrap_err!("{}: {} is not a TerminalAction from @std/terminal; got: {:#?}", function_name, what, other)

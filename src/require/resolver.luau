@@ -22,6 +22,22 @@ const colors = require("@std/io/colors")
 
 type Result<T> = err.Result<T>
 
+const function find_module_file(path_without_extension: string): string?
+    const luau_path = path_without_extension .. ".luau"
+    if fs.is(luau_path) == "File" then
+        return luau_path
+    end
+    const luwu_path = path_without_extension .. ".luwu"
+    if fs.is(luwu_path) == "File" then
+        return luwu_path
+    end
+    return nil
+end
+
+const function find_init_file(directory: string): string?
+    return find_module_file(fs.path.join(directory, "init"))
+end
+
 type LuaurcConfig = {
     languageMode: LanguageMode?,
     lint: {
@@ -211,7 +227,7 @@ const function get_aliases_by_config_file(requiring_file_path: string): Result<{
     local current_path = fs.path.parent(
         requiring_file_path, 
         -- init.luaus should not be able to resolve aliases in sibling config files
-        if str.endswith(requiring_file_path, "init.luau") then 2 else 1
+        if str.ends(requiring_file_path, "init.luau", "init.luwu") then 2 else 1
     )
 
     while current_path ~= nil do
@@ -227,7 +243,7 @@ const function get_aliases_by_config_file(requiring_file_path: string): Result<{
         current_path = fs.path.parent(current_path)
     end
 
-    if str.endswith(requiring_file_path, "init.luau") then
+    if str.ends(requiring_file_path, "init.luau", "init.luwu") then
         -- @self should refer to the direct parent dir of an init.luau
         -- regardless of whichever meaning of ./relative we use in seal 
         const parent = fs.path.parent(requiring_file_path)
@@ -277,13 +293,13 @@ const function resolve_alias(requested_path: string, aliases_by_config_files: { 
         end
         
         -- check for file because specs allow directory to have the extension
-        if string.sub(alias_replacement, -5, -1) == ".luau" and fs.is(alias_replacement) == "File" then
-            return err.message(`seal no longer allows require alias replacement suffixes to contain \`.luau\` file extensions (got {alias_replacement}); please remove the file extension to stay in spec :3`)
+        if str.ends(alias_replacement, ".luau", ".luwu") and fs.is(alias_replacement) == "File" then
+            return err.message(`seal no longer allows require alias replacement suffixes to contain \`.luau\`/\`.luwu\` file extensions (got {alias_replacement}); please remove the file extension to stay in spec :3`)
         end
         
-        const alias_with_luau = alias_replacement .. ".luau"
-        if fs.is(alias_with_luau) == "File" then
-            return alias_with_luau
+        const alias_with_extension = find_module_file(alias_replacement)
+        if alias_with_extension then
+            return alias_with_extension
         end
         
         if not str.endswith(alias_replacement, "/") then
@@ -360,7 +376,7 @@ const function resolve(
     try_new_init_luau_semantics = 
         try_new_init_luau_semantics == nil or try_new_init_luau_semantics == true
     const use_new_init_luau_semantics =
-        try_new_init_luau_semantics and str.endswith(requiring_file_path, "init.luau")
+        try_new_init_luau_semantics and str.ends(requiring_file_path, "init.luau", "init.luwu")
 
     local current_path = requiring_file_path
     local trim_after_index = 0
@@ -417,31 +433,28 @@ const function resolve(
     local trying_to_require_directory = false
     local path_type = fs.is(current_path)
     if path_type == "Directory" then
-        const possible_init_path = fs.path.join(current_path, "init.luau")
-        const possible_concat_path = current_path .. ".luau"
+        const possible_init_path = find_init_file(current_path)
+        const possible_concat_path = find_module_file(current_path)
 
-        const init_path_is_file = fs.is(possible_init_path) == "File"
-        const concat_path_is_file = fs.is(possible_concat_path) == "File"
-
-        if init_path_is_file and concat_path_is_file then
+        if possible_init_path and possible_concat_path then
             -- both foo.luau and foo/init.luau exist (which one do we want??)
             return {
                 err = `the require path you requested ('{requested_path}') is ambiguous!! and can't be resolved.\nBoth '{possible_init_path}' and '{possible_concat_path}' exist; \z
                 rename either the directory '{fs.path.child(current_path)}/' or file '{fs.path.child(possible_concat_path)}' so we can figure out which one you meant`
             }
-        elseif init_path_is_file then
+        elseif possible_init_path then
             -- foo/init.luau exists
             current_path = possible_init_path
-        elseif concat_path_is_file then
+        elseif possible_concat_path then
             -- foo/ exists and foo/init.luau doesn't exist but foo.luau exists (we should resolve to foo.luau)
             warn(`require: both folder '{current_path}' and file '{possible_concat_path}' exist; consider renaming one or both. Require resolving to the file.`)
-            current_path ..= ".luau"
+            current_path = possible_concat_path
         else
             trying_to_require_directory = true
         end
     elseif path_type == "NotFound" then
         -- can't find path/to/foo so let's put a file extension on it and try again
-        current_path ..= ".luau"
+        current_path = find_module_file(current_path) or (current_path .. ".luau")
     elseif path_type == "PermissionDenied" then
         return {
             err = `requested path '{requested_path}' resolved to '{current_path}', \z
@@ -466,7 +479,7 @@ const function resolve(
             err = `'{requested_path}' can't be required: requested path resolved to '{fs.path.parent(current_path)}', \z
             which is a directory missing its init.luau (needed to treat filesystem directories as 'modules' in the Luau Require System)`
         }
-    elseif try_new_init_luau_semantics and str.endswith(requiring_file_path, "init.luau") then
+    elseif try_new_init_luau_semantics and str.ends(requiring_file_path, "init.luau", "init.luwu") then
         return resolve(requested_path, debug_name, false)
     elseif use_new_init_luau_semantics == false and string.match(requested_path, "%.%.?/") then
         return {

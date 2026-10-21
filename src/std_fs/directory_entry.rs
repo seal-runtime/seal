@@ -24,7 +24,7 @@ pub fn listdir(luau: &Lua, dir_path: String, mut multivalue: LuaMultiValue, func
         }
     };
     fn check_filter(luau: &Lua, filter_fn: &LuaFunction, list_path: &str, function_name: &str) -> LuaResult<bool> {
-        match filter_fn.call::<LuaValue>(list_path.into_lua(luau)?)? {
+        match filter_fn.call_wrapped::<LuaValue>(list_path.into_lua(luau)?)? {
             LuaValue::Boolean(b) => Ok(b),
             other => {
                 wrap_err!("{} expected filter function to return a boolean, got: {:?}", function_name, other)

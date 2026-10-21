@@ -35,8 +35,8 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
         Some(signatures::STD_ERR_EXTRACT),
     )?;
 
-    luau.set_named_registry_value("@std/err:wrap", err_wrap)?;
-    luau.set_named_registry_value("@std/err:extract", err_extract)?;
+    luau.registry().set("@std/err:wrap", err_wrap)?;
+    luau.registry().set("@std/err:extract", err_extract)?;
 
     let library_path = Path::new(&path);
 
@@ -100,9 +100,9 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
     // errored at runtime during initialization or panicked during initialization and
     // was caught by sealbindings::initialize
     if let LuaValue::UserData(ref ud) = returned_value
-        && let Ok(err) = ud.borrow::<crate::std_err::WrappedError>()
+        && let Some(err) = crate::std_err::WrappedError::borrow(ud)
     {
-        return wrap_err!("{}: dynamic library at '{}' errored during initialization:\n{}", function_name, &path, err.message());
+        return wrap_err!("{}: dynamic library at '{}' errored during initialization:\n{}", function_name, &path, err.format_message_dirty());
     }
 
     Ok(returned_value)

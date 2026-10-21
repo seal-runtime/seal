@@ -1,0 +1,60 @@
+const fs = require("@std/fs")
+const env = require("@std/env")
+local str = require("@std/str")
+
+const function mentions(line: string, word: string): boolean
+    return string.find(line, word, 1, true) ~= nil
+end
+
+const which: "patch" | "unpatch" = do
+    local got = env.args[1]
+    assert(got ~= nil, "Missing 'which': 'patch' ('p') or 'unpatch'")
+    got = str.trim(got)
+    if got == "patch" or got == "unpatch" then
+        give got
+    elseif got == "p" then
+        got = "patch"
+    elseif got == "u" then
+        got = "unpatch"
+    else
+        return error(`'which' should be one of 'patch', 'unpatch' or aliases 'p' or 'u', got '{got}'`)
+    end
+    give got
+
+type Line = {
+    ln: number,
+    line: string
+}
+const patch_lines: { Line } = {}
+local after_patch = false
+for ln, line in fs.readlines("./Cargo.toml") do
+    if mentions(line, `[patch."https://github.com/luwu-community/mluau.git"]`) then
+        after_patch = true
+    end
+    if after_patch and mentions(line, "mluau") then -- catches 3 lines
+        table.insert(patch_lines, .{ln, line})
+    end
+end
+for _, info.{ln, line} in patch_lines do
+    if which == "patch" then
+        if not string.find(line, "^%s*#") then
+            error(`line {ln} ({line}) is already uncommented out`)
+        end
+        info.line = string.gsub(line, "#%s*", "")
+    elseif which == "unpatch" then
+        const front = string.match(line, "^(%s+)[%w]") or ""
+        const trimmed = "# " .. str.trimfront(line)
+        info.line = front .. trimmed
+    end
+end
+print(if which == "patch" then "Uncommented patching; local patch available" else "Commented out the patch")
+
+const function update_lines(lines: { Line })
+    const existing_lines = str.splitlines(fs.readfile("./Cargo.toml"))
+    for _, .{ln, line} in lines do
+        existing_lines[ln] = line
+    end
+    fs.writefile("./Cargo.toml", table.concat(existing_lines, "\n"))
+end
+
+update_lines(patch_lines)

@@ -1,17 +1,24 @@
 [package]
 name = "seal"
 authors = ["Dev Chrysalis Dalal <dev@deviaze.com>"]
-version = "0.8.2"
+version = "0.9.0"
 edition = "2024"
 
 # mluau is our custom mlua fork with a greater focus on luau and luau ecosystem
 # support, maintained by Midnight Frost and myself (mostly him).
 [target.'cfg(not(target_os = "android"))'.dependencies]
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-jit", "serialize", "error-send", "luau-classes"], branch = "v0.11" }
+# mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "luau-jit", "serialize", "luau-classes"] }
+mluau = { git = "https://github.com/luwu-community/mluau.git", features = ["luau", "luau-jit", "serialize", "none-primitive", "luwu-classes"], branch = "luwu-classes" }
+
 
 [target.'cfg(target_os = "android")'.dependencies]
 # luau jit (ncg) compilation is not available on android
-mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "error-send", "luau-classes"], branch = "v0.11" }
+# mluau = { git = "https://github.com/mluau/mluau.git", features = ["luau", "serialize", "luau-classes"] }
+mluau = { git = "https://github.com/luwu-community/mluau.git", features = ["luau", "serialize", "none-primitive", "luwu-classes"], branch = "luwu-classes" }
+
+# [patch."https://github.com/luwu-community/mluau.git"]
+# mluau = { path = "/home/deviaze/Repositories/mluau" }
+# mlua-sys = { path = "/home/deviaze/Repositories/mluau/mlua-sys" }
 
 [dependencies]
 regex = "1.11.1"
@@ -44,7 +51,7 @@ flate2 = "1.0"
 urlencoding = "2.1.3"
 zstd = "0.13.3"
 copy_dir = "0.1.3"
-# we should switch to a more maintained alternative when possible, 
+# we should switch to a more maintained alternative when possible,
 # but as long as ring receives security updates it's not a huge priority
 ring = "0.17.14"
 rsa = "0.9.8"
