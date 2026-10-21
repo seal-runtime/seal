@@ -14,15 +14,15 @@ pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     };
 
     let level = match multivalue.pop_front() {
-        Some(LuaValue::Number(f)) => Some(float_to_usize(f, function_name, "level")?),
-        Some(LuaValue::Integer(i)) => Some(int_to_usize(i, function_name, "level")?),
-        Some(LuaNil) | None => None,
+        Some(LuaValue::Number(f)) => float_to_usize(f, function_name, "level")?,
+        Some(LuaValue::Integer(i)) => int_to_usize(i, function_name, "level")?,
+        Some(LuaNil) | None => 1,
         Some(other) => {
             return wrap_err!("{}: level expected to be number or nil/unspecified, got: {:?}", function_name, other);
         }
     };
 
-    if let Some(level) = level {
+    if level > 0 {
         let traceback = luau.traceback(Some(&message), level)?.to_string_lossy();
         Err(LuaError::runtime(traceback))
     } else {
