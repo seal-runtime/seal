@@ -16,12 +16,16 @@ use crate::std_fs::{
     entry::wrap_io_read_errors_empty
 };
 
+/// Fixes RUSTSEC-2026-0367; strips setuid/setgid so an untrusted archive can't plant a setuid executable.
+#[cfg(unix)]
+const EXTRACTED_MODE_MASK: u32 = 0o1777;
+
 // permission bits on unix system, noop on windows
 fn set_mode_raw(path: &Path, mode: Option<u32>) -> io::Result<()> {
     #[cfg(unix)]
     if let Some(mode) = mode {
         use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(path, fs::Permissions::from_mode(mode))?;
+        fs::set_permissions(path, fs::Permissions::from_mode(mode & EXTRACTED_MODE_MASK))?;
     }
     #[cfg(not(unix))]
     let _ = mode;

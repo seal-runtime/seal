@@ -105,6 +105,42 @@ assert(not pcall(function()
     return nil
 end), "ArchiveEntryFile:extract on a Directory entry should error, not panic")
 
+-- RUSTSEC-2026-0367: extraction must strip setuid/setgid bits from archive-supplied modes
+if env.os ~= "Windows" then
+    const uncompressed_tar = require("@std/archive/tar").uncompressed
+    const setuid_file = file("setuid.sh", "#!/bin/sh\n")
+    setuid_file:set_unix_mode(0x9ed --[[ 0o4755 ]])
+    const setuid_archive = archive.create()
+    setuid_archive:append(setuid_file)
+
+    -- tar keeps the full mode (zip's writer masks to 0o777), so the archive on disk really carries setuid
+    const setuid_tar_path = fs.path.join(extract_temp, "setuid.tar")
+    uncompressed_tar.writefile(setuid_tar_path, setuid_archive)
+    const reloaded_mode = uncompressed_tar.readfile(setuid_tar_path):expect("setuid.sh"):unix_mode()
+    assert(reloaded_mode == 0x9ed, `setuid.tar should store mode 0o4755, got: {string.format("%o", reloaded_mode or 0)}`)
+
+    const function assert_setuid_stripped(path: string, via: string)
+        const extracted = fs.file(path)
+        assert(extracted ~= nil, `{via}: didn't write {path}`)
+        const mode = extracted:metadata().permissions.unix_mode
+        assert(mode ~= nil, `{via}: extracted file's metadata should include unix_mode on this platform`)
+        const mode_bits = bit32.band(mode, 0xfff)
+        assert(mode_bits == 0x1ed --[[ 0o755 ]], `{via}: expected mode 0o755 with setuid stripped, got: {string.format("%o", mode_bits)}`)
+    end
+
+    const entry_dest = fs.path.join(extract_temp, "setuid_entry.sh")
+    setuid_file:extract(entry_dest)
+    assert_setuid_stripped(entry_dest, "ArchiveEntryFile:extract")
+
+    const from_archive_dest = fs.path.join(extract_temp, "setuid_from_archive")
+    uncompressed_tar.extract(setuid_archive, from_archive_dest)
+    assert_setuid_stripped(fs.path.join(from_archive_dest, "setuid.sh"), "tar.extract(Archive)")
+
+    const from_path_dest = fs.path.join(extract_temp, "setuid_from_path")
+    uncompressed_tar.extract(setuid_tar_path, from_path_dest)
+    assert_setuid_stripped(fs.path.join(from_path_dest, "setuid.sh"), "tar.extract(path)")
+end
+
 fs.dir.try_remove(extract_temp)
 
 -- Archive supports generalized iteration, yielding (index, entry) in the same order as :paths()
