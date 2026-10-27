@@ -19,9 +19,9 @@ listrec()
 
 local function listfilter()
     local src_files = fs.listdir(src_path, true, function(path: string)
-        return if string.match(path, "%.luau$") then true else false
+        return if string.match(path, "%.luwu$") then true else false
     end)
-    assert(table.find(src_files, fs.path.join(".", "src", "require", "resolver.luau")), "couldn't find resolver.luau with filter fn?")
+    assert(table.find(src_files, fs.path.join(".", "src", "require", "resolver.luwu")), "couldn't find resolver.luwu with filter fn?")
 end
 
 listfilter()

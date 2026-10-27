@@ -33,6 +33,7 @@
     "DebugLuauUserDefinedClasses": "true",
     "DebugLuwuPoperators": "true",
     "DebugLuwuMatchExpressions": "true",
+    "DebugLuwuCollections": "true",
   },
   "luau-lsp.inlayHints.functionReturnTypes": true,
   "luau-lsp.inlayHints.parameterNames": "all",

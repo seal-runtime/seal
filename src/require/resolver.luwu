@@ -13,7 +13,6 @@ type RequireResolveResult = {
 }
 
 const fs = require("@std/fs")
-const str = require("@std/str")
 const err = require("@std/err")
 const env = require("@std/env")
 const luau = require("@std/luau")
@@ -22,20 +21,24 @@ const colors = require("@std/io/colors")
 
 type Result<T> = err.Result<T>
 
+const function has_module_extension(path: string): boolean
+    return path:endswith(".luau", ".luwu")
+end
+
+const function existing_file(path: string): string?
+    return if fs.is(path) == "File" then path else nil
+end
+
 const function find_module_file(path_without_extension: string): string?
-    const luau_path = path_without_extension .. ".luau"
-    if fs.is(luau_path) == "File" then
-        return luau_path
-    end
-    const luwu_path = path_without_extension .. ".luwu"
-    if fs.is(luwu_path) == "File" then
-        return luwu_path
-    end
-    return nil
+    return existing_file(path_without_extension .. ".luau") or existing_file(path_without_extension .. ".luwu")
 end
 
 const function find_init_file(directory: string): string?
     return find_module_file(fs.path.join(directory, "init"))
+end
+
+const function is_init_file(path: string): boolean
+    return path:endswith("init.luau", "init.luwu")
 end
 
 type LuaurcConfig = {
@@ -200,16 +203,16 @@ const function try_config_file_for_current_path(current_path: string): Result<Co
         end
         const parent_path = fs.path.parent(current_path) or current_path
         const absolutized_replacement =
-            if str.startswith(replacement, "./") then
-                fs.path.join(current_path, string.sub(replacement, 3))
-            elseif str.startswith(replacement, "~/") then
-                fs.path.join(fs.path.home(), string.sub(replacement, 3))
-            elseif str.startswith(replacement, "../") then
-                fs.path.join(parent_path, string.sub(replacement, 4))
+            if replacement:startswith("./") then
+                fs.path.join(current_path, replacement:sub(3))
+            elseif replacement:startswith("~/") then
+                fs.path.join(fs.path.home(), replacement:sub(3))
+            elseif replacement:startswith("../") then
+                fs.path.join(parent_path, replacement:sub(4))
             elseif replacement == "." then
-                fs.path.join(current_path, string.sub(replacement, 2))
+                fs.path.join(current_path, replacement:sub(2))
             elseif replacement == ".." then
-                fs.path.join(current_path, string.sub(replacement, 3))
+                fs.path.join(current_path, replacement:sub(3))
             else
                 replacement
         aliases[key] = absolutized_replacement
@@ -227,7 +230,7 @@ const function get_aliases_by_config_file(requiring_file_path: string): Result<{
     local current_path = fs.path.parent(
         requiring_file_path, 
         -- init.luaus should not be able to resolve aliases in sibling config files
-        if str.ends(requiring_file_path, "init.luau", "init.luwu") then 2 else 1
+        if is_init_file(requiring_file_path) then 2 else 1
     )
 
     while current_path ~= nil do
@@ -243,7 +246,7 @@ const function get_aliases_by_config_file(requiring_file_path: string): Result<{
         current_path = fs.path.parent(current_path)
     end
 
-    if str.ends(requiring_file_path, "init.luau", "init.luwu") then
+    if is_init_file(requiring_file_path) then
         -- @self should refer to the direct parent dir of an init.luau
         -- regardless of whichever meaning of ./relative we use in seal 
         const parent = fs.path.parent(requiring_file_path)
@@ -287,13 +290,13 @@ const function resolve_alias(requested_path: string, aliases_by_config_files: { 
     if alias_replacement then
         local rest_of_path = requested_path
         -- strip @alias prefix
-        rest_of_path = string.sub(rest_of_path, #extracted_alias + 2, #rest_of_path)
-        if str.startswith(rest_of_path, "/") then
-            rest_of_path = string.sub(rest_of_path, 2, #rest_of_path)
+        rest_of_path = rest_of_path:sub(#extracted_alias + 2, #rest_of_path)
+        if rest_of_path:startswith("/") then
+            rest_of_path = rest_of_path:sub(2, #rest_of_path)
         end
         
         -- check for file because specs allow directory to have the extension
-        if str.ends(alias_replacement, ".luau", ".luwu") and fs.is(alias_replacement) == "File" then
+        if has_module_extension(alias_replacement) and fs.is(alias_replacement) == "File" then
             return err.message(`seal no longer allows require alias replacement suffixes to contain \`.luau\`/\`.luwu\` file extensions (got {alias_replacement}); please remove the file extension to stay in spec :3`)
         end
         
@@ -302,7 +305,7 @@ const function resolve_alias(requested_path: string, aliases_by_config_files: { 
             return alias_with_extension
         end
         
-        if not str.endswith(alias_replacement, "/") then
+        if not alias_replacement:endswith("/") then
             alias_replacement ..= "/"
         end
         return alias_replacement .. rest_of_path
@@ -367,8 +370,8 @@ const function resolve(
         this should give us the debug name (set by luau.load().set_name) for the chunk that called require()
     ]]
     const requiring_file_path = 
-        if str.startswith(debug_name, "[") then 
-            string.sub(debug_name, 10, -3) -- grabs the part between `[string "` and `"]`
+        if debug_name:startswith("[") then 
+            debug_name:sub(10, -3) -- grabs the part between `[string "` and `"]`
         else
             debug_name
 
@@ -376,11 +379,11 @@ const function resolve(
     try_new_init_luau_semantics = 
         try_new_init_luau_semantics == nil or try_new_init_luau_semantics == true
     const use_new_init_luau_semantics =
-        try_new_init_luau_semantics and str.ends(requiring_file_path, "init.luau", "init.luwu")
+        try_new_init_luau_semantics and is_init_file(requiring_file_path)
 
     local current_path = requiring_file_path
     local trim_after_index = 0
-    if string.sub(requested_path, 1, 1) == "@" then
+    if requested_path:startswith("@") then
         const aliases_by_config_files = get_aliases_by_config_file(requiring_file_path)
         if typeof(aliases_by_config_files) == "error" then
             return {
@@ -396,10 +399,10 @@ const function resolve(
         end
         
         current_path = expanded_path
-    elseif string.sub(requested_path, 1, 2) == "./" then
+    elseif requested_path:startswith("./") then
         current_path = fs.path.parent(current_path, if use_new_init_luau_semantics then 2 else 1)
         trim_after_index = 3
-    elseif string.sub(requested_path, 1, 3) == "../" then
+    elseif requested_path:startswith("../") then
         current_path = fs.path.parent(current_path, if use_new_init_luau_semantics then 3 else 2)
         trim_after_index = 4
     else
@@ -417,7 +420,7 @@ const function resolve(
 
     -- trim ./ and ../ from requested_path
     if trim_after_index > 0 then
-        current_path = fs.path.join(current_path, string.sub(requested_path, trim_after_index))
+        current_path = fs.path.join(current_path, requested_path:sub(trim_after_index))
     end
 
     assert(current_path ~= nil, "current_path should not be nil at this point 1")
@@ -479,7 +482,7 @@ const function resolve(
             err = `'{requested_path}' can't be required: requested path resolved to '{fs.path.parent(current_path)}', \z
             which is a directory missing its init.luau (needed to treat filesystem directories as 'modules' in the Luau Require System)`
         }
-    elseif try_new_init_luau_semantics and str.ends(requiring_file_path, "init.luau", "init.luwu") then
+    elseif try_new_init_luau_semantics and is_init_file(requiring_file_path) then
         return resolve(requested_path, debug_name, false)
     elseif use_new_init_luau_semantics == false and string.match(requested_path, "%.%.?/") then
         return {

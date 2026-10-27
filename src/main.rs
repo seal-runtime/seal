@@ -196,7 +196,9 @@ fn main() -> LuaResult<()> {
         "DebugLuwuMatchExpressions",
         "LuwuAttributesEverywhere",
         "LuwuBufferIsFrozen",
-        "LuwuExternTypeGenericMethods"
+        "LuwuExternTypeGenericMethods",
+        "LuwuStringExtensions",
+        "DebugLuwuCollections"
     ])?;
 
     let command = match SealCommand::parse(args) {
