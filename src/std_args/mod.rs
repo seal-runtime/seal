@@ -11,7 +11,8 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .build()?;
 
     let chunk = Chunk::src(ARGS_DOT_LUAU);
-    let prompt_table = match luau.load(chunk).eval::<LuaTable>() {
+
+    let prompt_table = match luau.load(chunk).eval_wrapped::<LuaTable>() {
         Ok(t) => t,
         Err(err) => {
             panic!("std/args' args.luau did a bad: {}", err);

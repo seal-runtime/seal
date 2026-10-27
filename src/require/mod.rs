@@ -44,7 +44,7 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
 
         let chunk = Chunk::src(src);
 
-        let value = luau.load(chunk).set_name(&resolved_path).eval::<LuaValue>()?;
+        let value = luau.load_from_chunk(chunk, &resolved_path).eval_wrapped()?;
         
         require_cache.raw_set(resolved_path.clone(), &value)?;
 
@@ -170,10 +170,10 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
 const STD_SEMVER_SRC: &str = include_str!("../std_semver.luau");
 fn load_std_semver(luau: &Lua) -> LuaResult<LuaTable> {
     let chunk = Chunk::src(STD_SEMVER_SRC);
-    luau.load(chunk).set_name("std/semver").eval::<LuaTable>() // <<>> HACK
+    luau.load(chunk).set_name("std/semver").eval_wrapped()
 }
 
-const RESOLVER_SRC: &str = include_str!("./resolver.luau");
+const RESOLVER_SRC: &str = include_str!("./resolver.luwu");
 pub fn get_resolver(luau: &Lua) -> LuaResult<LuaTable> {
     let chunk = Chunk::src(RESOLVER_SRC);
     let LuaValue::Table(resolver) = luau.load(chunk).eval()? else {
@@ -183,20 +183,20 @@ pub fn get_resolver(luau: &Lua) -> LuaResult<LuaTable> {
 }
 
 fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
-    let f = luau.named_registry_value::<Option<LuaFunction>>("require.resolver.resolve")?;
+    let f = luau.registry().get::<Option<LuaFunction>>("require.resolver.resolve")?;
     if let Some(resolve) = f {
         Ok(resolve)
     } else {
         let chunk = Chunk::src(RESOLVER_SRC);
-        // putting @@ makes mluau correctly display @seal/src/require/resolver.luau in stack traceback
-        let LuaValue::Table(resolver) = luau.load(chunk).set_name("@@seal/src/require/resolver.luau").eval()? else {
+        // putting @@ makes mluau correctly display @seal/src/require/resolver.luwu in stack traceback
+        let LuaValue::Table(resolver) = luau.load(chunk).set_name("@@seal/src/require/resolver.luwu").eval()? else {
             panic!("require resolver didnt return table??");
-        };
+        }; 
         let LuaValue::Function(resolve) = resolver.raw_get("resolve")? else {
             panic!("require resolver.resolve not a function??");
         };
 
-        luau.set_named_registry_value("require.resolver.resolve", &resolve)?;
+        luau.registry().set("require.resolver.resolve", &resolve)?;
 
         Ok(resolve)
     }
@@ -204,7 +204,7 @@ fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
 
 fn resolve_path(luau: &Lua, path: String) -> LuaResult<String> {
     let resolve = cached_resolver(luau)?;
-    match resolve.call::<LuaValue>(path.to_owned()) {
+    match resolve.call_wrapped(path.to_owned()) {
         Ok(LuaValue::Table(result_table)) => {
             if let LuaValue::String(path) = result_table.raw_get("path")? {
                 Ok(path.to_string_lossy())
@@ -248,12 +248,19 @@ pub fn get_chunk_name_for_module(path: &str, function_name: &'static str) -> Lua
     if path.is_file() && path.exists() && let Some(path) = path.to_str() {
         Ok(Some(normalize_path(path)))
     } else if path.is_dir() {
-        #[allow(clippy::disallowed_methods, reason = "child is a literal that doesn't start with an absolute path separator")]
-        let possible_init_path = path.join("init.luau");
-        if possible_init_path.exists() && let Some(init_path) = possible_init_path.to_str() {
-            Ok(Some(normalize_path(init_path)))
+        let found_init_path = ["init.luau", "init.luwu"].into_iter().find_map(|init_file| {
+            #[allow(clippy::disallowed_methods, reason = "child is a literal that doesn't start with an absolute path separator")]
+            let possible_init_path = path.join(init_file);
+            if possible_init_path.exists() {
+                possible_init_path.to_str().map(normalize_path)
+            } else {
+                None
+            }
+        });
+        if let Some(init_path) = found_init_path {
+            Ok(Some(init_path))
         } else {
-            wrap_err!("{}: directory at '{}' missing its init.luau, cannot assign it a chunk_name", function_name, path.display())
+            wrap_err!("{}: directory at '{}' missing its init.luau or init.luwu, cannot assign it a chunk_name", function_name, path.display())
         }
     } else {
         Ok(None)

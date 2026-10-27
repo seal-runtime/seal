@@ -191,7 +191,7 @@ function tt.select<K, V>(t: { [K]: V }, columns: { K }): { [K]: V }
 end
 
 --- type functions are cursed
-type function Select(t: type, indexer: type?)
+type function Select(t: type, indexer: type?): type
 	local function getvaluetype(value: any)
 		return
 			-- stylua: ignore
@@ -248,7 +248,7 @@ type function Select(t: type, indexer: type?)
 		end
 		return column_type
 	end
-	return types.unknown
+	return types.unknown :: type
 end
 
 --[=[

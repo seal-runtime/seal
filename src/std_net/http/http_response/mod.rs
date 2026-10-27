@@ -1,6 +1,5 @@
 use mluau::prelude::*;
 use crate::prelude::*;
-
 use crate::std_json;
 
 use super::ResponseWithBody;
@@ -216,11 +215,11 @@ impl HttpResponse {
 
     fn display(luau: &Lua, multivalue: LuaMultiValue) -> LuaValueResult {
         const DISPLAY_SRC: &str = include_str!("./display.luau");
-        if let Some(display_fn) = luau.named_registry_value::<Option<LuaFunction>>("HttpResponse:__display")? {
+        if let Some(display_fn) = luau.registry().get::<Option<LuaFunction>>("HttpResponse:__display")? {
             display_fn.call(multivalue)
         } else {
-            let display_fn = luau.load(Chunk::src(DISPLAY_SRC)).eval::<LuaFunction>()?;
-            luau.set_named_registry_value("HttpResponse:__display", &display_fn)?;
+            let display_fn = luau.load(Chunk::src(DISPLAY_SRC)).eval_wrapped::<LuaFunction>()?;
+            luau.registry().set("HttpResponse:__display", &display_fn)?;
             display_fn.call(multivalue)
         }
     }
