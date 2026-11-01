@@ -1,0 +1,32 @@
+{
+  "lsp": {
+    "luwu-lsp": {
+      "settings": {
+        "definitions": {
+          "@seal": "./.seal/typedefs/globals.d.luau"
+        },
+        "documentation": ["./.seal/typedefs/docs.json"],
+        "fflags": {
+          "enable_by_default": true,
+          "override": {
+            "LuauSolverV2": "true",
+            "DebugLuauUserDefinedClasses": "true",
+            "DebugLuwuPoperators": "true",
+            "DebugLuwuMatchExpressions": "true",
+            "DebugLuwuCollections": "true",
+            "DebugLuwuTryExpressions": "true"
+          }
+        },
+        "luau-lsp": {
+          "diagnostics": {
+            "workspace": true
+          },
+          "inlayHints": {
+            "parameterNames": "all",
+            "functionReturnTypes": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -34,6 +34,7 @@
     "DebugLuwuPoperators": "true",
     "DebugLuwuMatchExpressions": "true",
     "DebugLuwuCollections": "true",
+    "DebugLuwuTryExpressions": "true",
   },
   "luau-lsp.inlayHints.functionReturnTypes": true,
   "luau-lsp.inlayHints.parameterNames": "all",
