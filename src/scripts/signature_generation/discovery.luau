@@ -21,7 +21,9 @@ local function path_to_prefix(rel_path: string): string
         table.insert(parts, part)
     end
     local last = parts[#parts]
-    if last == "init" or last == "_types" then table.remove(parts) end
+    if last == "init" or last == "_types" then
+        table.remove(parts)
+    end
     return table.concat(parts, ".")
 end
 
@@ -38,8 +40,12 @@ local function typepack_to_string(tp: any): string
         local tail = tp.tailType
         if #types == 0 and not tail then return "()" end
         local parts = {}
-        for _, t in types do table.insert(parts, type_to_string(t)) end
-        if tail then table.insert(parts, typepack_to_string(tail)) end
+        for _, t in types do
+            table.insert(parts, type_to_string(t))
+        end
+        if tail then
+            table.insert(parts, typepack_to_string(tail))
+        end
         return "(" .. table.concat(parts, ", ") .. ")"
     elseif kind == "TypePackVariadic" then
         return "..." .. type_to_string(tp.variadicType)
@@ -76,7 +82,9 @@ type_to_string = function(node: any): string
         local gen_str = ""
         if generics and #generics > 0 then
             local gs = {}
-            for _, g in generics do table.insert(gs, g.name :: string) end
+            for _, g in generics do
+                table.insert(gs, g.name :: string)
+            end
             gen_str = "<" .. table.concat(gs, ", ") .. ">"
         end
         local arg_types = (node.argTypes :: any).types :: { any }
@@ -119,7 +127,9 @@ type_to_string = function(node: any): string
 
     elseif kind == "TypeIntersection" then
         local parts = {}
-        for _, t in (node.types :: { any }) do table.insert(parts, type_to_string(t)) end
+        for _, t in (node.types :: { any }) do
+            table.insert(parts, type_to_string(t))
+        end
         return table.concat(parts, " & ")
 
     elseif kind == "TypeOptional" then
@@ -155,8 +165,12 @@ format_return = function(tp: any): string
         if #types == 0 and not tail then return "" end
         if #types == 1 and not tail then return " -> " .. type_to_string(types[1]) end
         local parts = {}
-        for _, t in types do table.insert(parts, type_to_string(t)) end
-        if tail then table.insert(parts, typepack_to_string(tail)) end
+        for _, t in types do
+            table.insert(parts, type_to_string(t))
+        end
+        if tail then
+            table.insert(parts, typepack_to_string(tail))
+        end
         return " -> (" .. table.concat(parts, ", ") .. ")"
     elseif kind == "TypePackVariadic" then
         return " -> ..." .. type_to_string(tp.variadicType)
@@ -256,7 +270,10 @@ local function extract_fn_sigs(typedef_path: string, is_method: boolean, type_na
                         break
                     end
                 end
-                if not found then table_type = nil :: any; break end
+                if not found then
+                    table_type = nil :: any;
+                    break
+                end
                 table_type = found
             end
             if not table_type then continue end
@@ -292,7 +309,9 @@ local function extract_fn_sigs(typedef_path: string, is_method: boolean, type_na
             local generics = fn_node.generics :: { any }
             if generics and #generics > 0 then
                 local gs: { string } = {}
-                for _, g in generics do table.insert(gs, g.name :: string) end
+                for _, g in generics do
+                    table.insert(gs, g.name :: string)
+                end
                 gen_str = "<" .. table.concat(gs, ", ") .. ">"
             end
 
@@ -352,7 +371,9 @@ local function extract_fn_sigs(typedef_path: string, is_method: boolean, type_na
             local generics = func.generics :: { any }
             if generics and #generics > 0 then
                 local gs: { string } = {}
-                for _, g in generics do table.insert(gs, g.name :: string) end
+                for _, g in generics do
+                    table.insert(gs, g.name :: string)
+                end
                 gen_str = "<" .. table.concat(gs, ", ") .. ">"
             end
 

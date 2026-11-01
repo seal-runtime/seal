@@ -9,7 +9,7 @@ end
 const which: "patch" | "unpatch" = do
     local got = env.args[1]
     assert(got ~= nil, "Missing 'which': 'patch' ('p') or 'unpatch'")
-    got = str.trim(got)
+    got = got:trim()
     if got == "patch" or got == "unpatch" then
         give got
     elseif got == "p" then
@@ -43,7 +43,7 @@ for _, info.{ln, line} in patch_lines do
         info.line = string.gsub(line, "#%s*", "")
     elseif which == "unpatch" then
         const front = string.match(line, "^(%s+)[%w]") or ""
-        const trimmed = "# " .. str.trimfront(line)
+        const trimmed = "# " .. line:trimstart()
         info.line = front .. trimmed
     end
 end

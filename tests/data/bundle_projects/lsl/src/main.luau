@@ -193,14 +193,16 @@ for path, entry in all_entries do
 end
 
 local hit_timeout = false
-while #active_threads > 0 or #pending_paths > 0 do
+local next_pending = 1
+while #active_threads > 0 or next_pending <= #pending_paths do
     if os.clock() - t0 > timeout then
         hit_timeout = true
         break
     end
 
     local sleep = true
-    for index, info in active_threads do
+    for index = #active_threads, 1, -1 do
+        local info = active_threads[index]
         local msg = info.handle:read()
         if msg then
             local data = msg :: { size: number, partial: boolean }
@@ -226,8 +228,9 @@ while #active_threads > 0 or #pending_paths > 0 do
 
             table.remove(active_threads, index)
 
-            if #pending_paths > 0 then
-                local next_path = table.remove(pending_paths, 1) :: string
+            if next_pending <= #pending_paths then
+                local next_path = pending_paths[next_pending]
+                next_pending += 1
                 local next_last_modified_time = pending_last_modified_times[next_path]
                 pending_last_modified_times[next_path] = nil
                 local handle = thread.spawn {

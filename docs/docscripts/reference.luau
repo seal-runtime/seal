@@ -188,7 +188,8 @@ for _, filepath in typedefs_paths do
             local opener_idx = current_opener_indices[n]
             local is_map_only = current_is_map_only[n]
             if opener_idx > 0 and is_map_only then
-                -- fold closing inline: append " }?," etc.
+                -- fold closing inline: append " }?," etc. An opener closes once, so no defs string grows in a loop
+                --@[nolint(LoopConcat)]
                 apis_for_path[opener_idx].defs ..= " " .. found_close
             else
                 api_closings[full_name] = found_close
@@ -365,15 +366,13 @@ for _, library in libraries do
         end
     end
 
+    --- Every dotted name `name` is nested in, outermost first: "a.b.c" gives "a" and "a.b"
     local function get_ancestors(name: string): { string }
         local ancestors: { string } = {}
-        local prefix = ""
-        for segment in name:gmatch("([^%.]+)%.") do
-            if #prefix > 0 then
-                prefix ..= "."
-            end
-            prefix ..= segment
-            table.insert(ancestors, prefix)
+        local dot = string.find(name, ".", 1, true)
+        while dot do
+            table.insert(ancestors, string.sub(name, 1, dot - 1))
+            dot = string.find(name, ".", dot + 1, true)
         end
         return ancestors
     end
@@ -456,7 +455,7 @@ for _, library in libraries do
                 end
                 push("```luau", 0)
                 local indented_defs = if indent == "" then defs
-                    else defs:gsub("\n", "\n" .. indent)
+                    else (defs:gsub("\n", "\n" .. indent))
                 push(indent .. indented_defs, 0)
                 push("```", 2)
                 if api.is ~= "Enum" then

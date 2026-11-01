@@ -24,11 +24,11 @@ function tt.len<K, V>(t: { [K]: V }): number
 
 	local count = 0
 	if tt.caniteratenormally(t) then
-		for k, v in t do
+		for _ in t do
 			count += 1
 		end
 	else
-		for k, v in pairs(t) do
+		for _ in pairs(t) do
 			count += 1
 		end
 	end
