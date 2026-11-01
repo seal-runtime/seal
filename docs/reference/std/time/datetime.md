@@ -47,7 +47,7 @@ Constructs a `DateTime` from a Unix Timestamp and an `IanaTimezone`.
 <h4>
 
 ```luau
-function datetime.parse(source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
+function datetime.parse(source: string, format: (string | CommonFormats)?, timezone: IanaTimezone?) -> DateTime,
 ```
 
 </h4>
@@ -63,6 +63,15 @@ All seal `DateTime`s are timezone aware, which prevents annoying and complex bug
 - Specify `"AUTO"` as your `timezone` if your `format` string is timezone-aware by default (RFC 3339, has `%Q` or `%z/z/%Z` specifiers, etc.)
 - Specify `"UTC"` as your `timezone` if you want to treat `source` as UTC.
 
+Without a `format`, `source` is read as ISO 8601: RFC 3339 (`"2025-08-24T21:48:20Z"`,
+`"2025-08-24T21:48:20-05:00"`), RFC 9557 with a time zone (`"2025-08-24T21:48:20-05:00[America/Chicago]"`), a
+space in place of the `T`, or a plain date (`"2025-08-24"`, at midnight).
+
+The time zone has to come from somewhere: `source` (an offset or `[Zone]`), `format` (`%z` or `%Q`), or
+`timezone`. When none of them has one, `datetime.parse` raises instead of guessing, because a wrong guess
+shifts every time by hours without anyone noticing. Leaving `timezone` out means the same as `"AUTO"`. A
+`source` that has its own offset or zone keeps that instant, converted into `timezone` when you pass one.
+
 ## Usage
 
 ```luau
@@ -70,6 +79,40 @@ All seal `DateTime`s are timezone aware, which prevents annoying and complex bug
 local dt = datetime.parse("2025-01-02 05:00", "ISO_8601", "US/Central")
 -- Parse an RFC 3339 timestamp that already has timezone offset info in it.
 local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
+-- Parse an ISO 8601 date-time that has its offset in it.
+local deadline = datetime.parse("2025-08-24T21:48:20-05:00")
+-- Parse a plain ISO 8601 date that we know is Paris time.
+local paris_day = datetime.parse("2025-08-24", nil, "Europe/Paris")
+```
+
+</details>
+
+---
+
+### datetime.timespan
+
+<h4>
+
+```luau
+function datetime.timespan(source: string, format: SpanFormat?) -> TimeSpan,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Parses a `TimeSpan` written in ISO 8601 (`"P1Y6M"`, `"PT1H30M"`) or in words (`"1 year 6 months"`,
+`"1h 30m"`). `format` picks one of the two; without it either is accepted.
+
+Unlike a `Duration`, a `TimeSpan` keeps months and years, which have no fixed length (see `time.parse`).
+
+## Usage
+
+```luau
+local term = datetime.timespan("P1Y6M")
+local shift = datetime.timespan("8 hours 30 minutes", "FRIENDLY")
 ```
 
 </details>
@@ -361,6 +404,20 @@ export type CommonFormats = index<datetime, "common_formats">
 ```
 
 </h4>
+
+---
+
+## `export type` SpanFormat
+
+<h4>
+
+```luau
+export type SpanFormat = "ISO_8601" | "FRIENDLY"
+```
+
+</h4>
+
+ How a `TimeSpan` or `Duration` string is written: ISO 8601 (`"PT1H30M"`) or in words (`"1h 30m"`).
 
 ---
 

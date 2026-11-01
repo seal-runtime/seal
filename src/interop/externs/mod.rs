@@ -62,6 +62,28 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
         }
     };
 
+    // a plugin says which plugin API it was built for; calling one built for another layout would read the wrong
+    // functions out of the table, so check before calling anything in it
+    // SAFETY: sealbindings exports `seal_extern_api_version` as a `u32` static; we only read it
+    let plugin_version = unsafe {
+        library.get::<*const u32>(c"seal_extern_api_version").map(|symbol| **symbol)
+    };
+    match plugin_version {
+        Ok(version) if version == ffi_api::SEAL_API_VERSION => {}
+        Ok(version) => {
+            return wrap_err!(
+                "{}: the library at '{}' was built for seal's plugin API version {}, but this seal provides version {}; rebuild it against the sealbindings that matches this seal",
+                function_name, &path, version, ffi_api::SEAL_API_VERSION
+            );
+        }
+        Err(_) => {
+            return wrap_err!(
+                "{}: the library at '{}' predates seal's versioned plugin API (this seal provides version {}); rebuild it against sealbindings 0.9 or newer",
+                function_name, &path, ffi_api::SEAL_API_VERSION
+            );
+        }
+    }
+
     let mut error_message: Option<String> = None;
 
     // SAFETY:

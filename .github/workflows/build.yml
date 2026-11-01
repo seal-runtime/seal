@@ -159,6 +159,21 @@ jobs:
             exit 1
           fi
         shell: bash
+
+      - name: Check out sealbindings
+        # keeps seal extern.load plugin api from drifting from sealbindings
+        if: matrix.arch == 'x64'
+        uses: actions/checkout@v5
+        with:
+          repository: seal-runtime/sealbindings
+          # seal's luwu-classes branch pairs with sealbindings' luwu branch; main pairs with main
+          ref: ${{ github.event.pull_request.base.ref == 'main' && 'main' || 'luwu' }}
+          path: sealbindings
+
+      - name: Check the plugin API matches sealbindings
+        if: matrix.arch == 'x64'
+        run: ./target/release/seal src/scripts/check_plugin_api.luau sealbindings
+
       - name: Install test dependencies
         # need lsof to clean up leftover server in http tests
         run: dnf install -y lsof
