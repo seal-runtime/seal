@@ -17,21 +17,58 @@ export type datetime = {
     --[=[
         Constructs a `DateTime` from a strtime string or `common_format`.
 
-        All seal `DateTime`s are timezone aware, which prevents annoying and complex bugs down the line. 
-        
-        - Specify `"AUTO"` as your `timezone` if your `format` string is timezone-aware by default (RFC 3339, has `%Q` or `%z/z/%Z` specifiers, etc.)
-        - Specify `"UTC"` as your `timezone` if you want to treat `source` as UTC.
+        All seal `DateTime`s are timezone aware, which prevents annoying and complex bugs down the line.
+
+        In seal 0.9.x, we automatically parse:
+        - ISO 8601: RFC 3339 (`"2025-08-24T21:48:20Z"`, `"2025-08-24T21:48:20-05:00"`)
+        - RFC 9557 with a time zone (`"2025-08-24T21:48:20-05:00[America/Chicago]"`)
+        - the above formats with a space in place of the `T`
+        - a plain date (`"2025-08-24"`, which gets parsed as midnight).
+
+        You can pass `timezone: "AUTO"` to specify to parse from `source` automatically (for backwards compat. with
+        previous seal versions). Specify `"UTC"` as your `timezone` if you want to treat `source` as UTC.
+
+        ## Errors
+
+        - Throws an error if we can't determine a timezone from your strtime format string or from an explicit `timezone` argument.
+
+        This is not to annoy you, but rather to make sure you don't implicitly specify the wrong timezone
+        (or worse, have your script do different things on different machines based upon an inferred local timezone).
 
         ## Usage
 
         ```luau
         -- Parse a simple ISO 8601 timestamp that we're sure came from US/CST time.
         local dt = datetime.parse("2025-01-02 05:00", "ISO_8601", "US/Central")
-        -- Parse an RFC 3339 timestamp that already has timezone offset info in it.
+        -- Parse an RFC 3339 timestamp that already has timezone offset info.
         local brazilian_dt = datetime.parse("2025-08-24T21:48:20-00:00", "RFC_3339", "AUTO")
+        -- Parse an ISO 8601 datetime that has an offset included.
+        local deadline = datetime.parse("2025-08-24T21:48:20-05:00")
+        -- Parse a plain ISO 8601 date we know is Paris time.
+        local paris_day = datetime.parse("2025-08-24", nil, "Europe/Paris")
         ```
     ]=]
-    parse: (source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime,
+    parse: (source: string, format: (string | CommonFormats)?, timezone: IanaTimezone?) -> DateTime,
+    --[=[
+        Parses a `TimeSpan` written in ISO 8601 (`"P1Y6M"`, `"PT1H30M"`) or in words (`"1 year 6 months"`,
+        `"1h 30m"`).
+
+        The difference between a `Duration` and a `TimeSpan` is that `Durations` are mostly meant for smol
+        lengths of time (and don't properly handle non-fixed length units) whereas `TimeSpans` correctly 
+        keep track of months and years.
+
+        Unlike `Duration`, a `TimeSpan` keeps track of months and years. Keep in mind you must specify a
+        `relative_to: DateTime` if you want to use these `TimeSpans` for `DateTime` arithmetic.
+
+        ## Usage
+
+        ```luau
+        local term = datetime.timespan("P1Y6M")
+        local shift = datetime.timespan("8 hours 30 minutes")
+        local renewal = datetime.timespan("P1Y6M", datetime.now())
+        ```
+    ]=]
+    timespan: (source: string, relative_to: DateTime?) -> TimeSpan,
     --- Common DateTime format strings.
     common_formats: {
         ISO_8601: "%Y-%m-%d %H:%M",

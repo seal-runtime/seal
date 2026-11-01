@@ -118,9 +118,6 @@ impl TimeDuration {
         Ok(Self::new(signed))
     }
 
-    pub fn get_userdata(self, luau: &Lua) -> LuaValueResult {
-        ok_userdata(self, luau)
-    }
 }
 
 

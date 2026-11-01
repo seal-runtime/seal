@@ -188,7 +188,7 @@ function time.nanoseconds(n: number) -> Duration,
 <h4>
 
 ```luau
-function time.parse(source: string, format: ("ISO_8601" | "FRIENDLY")?) -> Duration,
+function time.parse(source: string) -> Duration,
 ```
 
 </h4>
@@ -197,18 +197,25 @@ function time.parse(source: string, format: ("ISO_8601" | "FRIENDLY")?) -> Durat
 
 <summary> See the docs </summary
 
-Parses a `Duration` written in ISO 8601 (`"PT1H30M"`, `"P2DT3H"`) or in words (`"1h 30m"`,
-`"2 days 3 hours"`). A day is 24 hours and a week 7 days. `format` picks one of the two ways of writing it;
-without it either is accepted.
+Parses a `Duration` written in ISO 8601 (`"PT1H30M"`, `"P2DT3H"`)
+or in words (`"1h 30m"`, `"2 days 3 hours"`).
 
-Months and years have no fixed length, so a `source` with them is an error: parse it with `datetime.timespan`.
+We treat a day as 24 hours and a week as 7 days; please file an issue if you need to handle
+timespans more specific than this.
+
+Words mode uses jiff's "friendly" format.
+
+Passing a `source` that contains months or years raises an error because months and years
+aren't fixed-length units. See `TimeSpan` instead ([datetime.timespan]) to properly handle months and years.
 
 ## Usage
 
 ```luau
 local timeout = time.parse("PT1M30S") -- 90 seconds
-local backoff = time.parse("1.5h", "FRIENDLY")
+local backoff = time.parse("1.5h")
 ```
+
+[datetime = require("@self/datetime")]
 
 </details>
 

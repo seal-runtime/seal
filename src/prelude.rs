@@ -22,8 +22,6 @@ pub use crate::{
     put, puts, eput, eputs, signatures, std_err::WrappedError
 };
 
-/// Loads code as a chunk named `chunk_name`, compiled as the language the name says: Luau for a `.luau` file, Luwu
-/// otherwise (see [`language_of`](crate::globals::language_of)).
 pub trait LoadChunk {
     fn load_from_chunk<'a>(&self, chunk: impl mluau::AsChunk + 'a, chunk_name: impl AsRef<str>) -> mluau::Chunk<'a>;
 }
@@ -39,6 +37,10 @@ impl LoadChunk for Lua {
 }
 
 pub type LuaValueResult = LuaResult<LuaValue>;
+/// This is a new replacement for LVR; main difference is these returns values
+/// without converting them into luarefs...improves performance considerably
+/// like by 40-60 ns...
+pub type WrappedResult<T> = LuaResult<Wrapped<T>>;
 pub type LuaEmptyResult = LuaResult<()>;
 pub type LuaMultiResult = LuaResult<LuaMultiValue>;
 

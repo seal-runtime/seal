@@ -151,7 +151,7 @@ impl WrappedUserData for TimeSpan {
             } {
                 Ok(span) => span,
                 Err(err) => {
-                    return wrap_err!("{} error subtracting timespans {} + {}; err: {}", function_name, this.inner, other_ref.inner, err);
+                    return wrap_err!("{} error adding timespans {} + {}; err: {}", function_name, this.inner, other_ref.inner, err);
                 }
             };
             if let Some(relative) = relative_to {
@@ -186,7 +186,7 @@ impl WrappedUserData for TimeSpan {
             } {
                 Ok(span) => span,
                 Err(err) => {
-                    return wrap_err!("{} error subtracting timespans {} + {}; err: {}", function_name, this.inner, other_ref.inner, err);
+                    return wrap_err!("{} error subtracting timespans {} - {}; err: {}", function_name, this.inner, other_ref.inner, err);
                 }
             };
             if let Some(relative) = relative_to {
@@ -195,5 +195,27 @@ impl WrappedUserData for TimeSpan {
                 TimeSpan::new(subbed).get_userdata(luau)
             }
         });
+    }
+}
+/// Parses a span written in ISO 8601 (`"P1Y6M"`, `"PT1H30M"`) or in words (`"1 year 6 months"`, `"1h 30m"`).
+pub fn parse_span(source: Option<LuaValue>, function_name: &'static str) -> LuaResult<jiff::Span> {
+    let source_string = match source {
+        Some(LuaValue::String(s)) => s,
+        Some(other) => {
+            return wrap_err!("{} expected source to be a string, got: {:?}", function_name, other);
+        }
+        None => {
+            return wrap_err!("{} expected source to be a string, got nothing", function_name);
+        }
+    };
+    let source = match source_string.to_str() {
+        Ok(source) => source,
+        Err(_) => {
+            return wrap_err!("{}: source string was unexpectedly invalid utf-8", function_name);
+        }
+    };
+    match source.parse::<jiff::Span>() {
+        Ok(span) => Ok(span),
+        Err(err) => wrap_err!("{}: '{}' isn't a span of time: {}", function_name, source, err),
     }
 }
