@@ -1,0 +1,82 @@
+name: Luwu Builds
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - luwu-classes
+
+concurrency:
+  group: luwu-builds
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and test all targets
+    uses: ./.github/workflows/build.yml
+
+  release:
+    needs: ["build"]
+    name: Publish luwu-latest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v5
+        with:
+          path: artifacts
+
+      - name: Package binaries
+        shell: bash
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          # Asset names leave out the version so links to the latest build stay the same between pushes
+          for dir in artifacts/seal-v"$VERSION"-*; do
+            name="seal-luwu-${dir#artifacts/seal-v"$VERSION"-}"
+            if [ -f "$dir/seal.exe" ]; then
+              (cd "$dir" && zip -q "../../release/$name.zip" seal.exe)
+            else
+              chmod 755 "$dir/seal"
+              tar -czf "release/$name.tar.gz" -C "$dir" seal
+            fi
+          done
+          ls -l release
+
+      - name: Republish luwu-latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          set -euo pipefail
+          base="https://github.com/${{ github.repository }}/releases/download/luwu-latest"
+          short_sha="${GITHUB_SHA::7}"
+          commit="[\`$short_sha\`](https://github.com/${{ github.repository }}/commit/$GITHUB_SHA)"
+          {
+            echo "Latest build of seal $VERSION from the \`luwu-classes\` branch at $commit, rebuilt on every push."
+            echo "seal 0.9 runs Luwu (\`.luwu\` files) as well as Luau."
+            echo
+            echo "| Platform | Download |"
+            echo "|---|---|"
+            for file in release/*; do
+              name=$(basename "$file")
+              platform="${name#seal-luwu-}"
+              platform="${platform%.tar.gz}"
+              platform="${platform%.zip}"
+              echo "| $platform | [\`$name\`]($base/$name) |"
+            done
+            echo
+            echo "The Linux builds need glibc 2.28 or newer (RHEL 8, Debian 10, Ubuntu 18.10 and later)."
+          } > release-notes.md
+          cat release-notes.md
+
+          gh release delete luwu-latest --cleanup-tag --yes || true
+          gh release create luwu-latest release/* \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "luwu-latest ($VERSION, $short_sha)" \
+            --notes-file release-notes.md

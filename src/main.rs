@@ -71,7 +71,7 @@ mod userdata;
 
 use err::display_error_and_exit;
 use sealconfig::SealConfig;
-use globals::SEAL_VERSION;
+use globals::display_version;
 
 type LuauLoadResult = LuaResult<Option<LuauLoadInfo>>;
 struct LuauLoadInfo {
@@ -219,7 +219,7 @@ fn main() -> LuaResult<()> {
         SealCommand::Regen => seal_regen(),
         SealCommand::Test => seal_test(),
         SealCommand::Version => {
-            puts!("{}", SEAL_VERSION)?;
+            puts!("{}", display_version())?;
             Ok(None)
         },
         SealCommand::CommandHelp(command) => command.help(),

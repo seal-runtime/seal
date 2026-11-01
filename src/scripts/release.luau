@@ -35,7 +35,7 @@ const _ = env.vars.get("GITHUB_TOKEN") or error("GITHUB_TOKEN not set")
 ]=]
 const artifacts_dir = fs.dir.from(env.vars.get("SEAL_ARTIFACTS_DIR") or error("SEAL_ARTIFACTS_DIR not set"))
 const seal_dir = fs.dir.cwd() -- cwd is known to be seal/ here in CI
-const version = _RUNTIME.version.display
+const version = _SEAL_VERSION
 
 const readme_entry = entry.read(seal_dir:join("README.md"))
 assert(typeof(readme_entry) == "ArchiveEntry", "solely README.md is ArchiveEntry not a directory")

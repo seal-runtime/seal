@@ -38,9 +38,20 @@ pub fn warn(luau: &Lua, warn_value: LuaValue) -> LuaValueResult {
 
 pub const SEAL_VERSION: &str = env!("CARGO_PKG_VERSION");
 const GIT_COMMIT: &str = env!("GIT_COMMIT_HASH");
+const GIT_COMMIT_SHORT: &str = env!("GIT_COMMIT_SHORT");
 const GIT_BRANCH: &str = env!("GIT_BRANCH");
 const SEAL_URL: &str = "https://github.com/seal-runtime/seal";
 const LUAU_URL: &str = "https://github.com/mluau/luau";
+
+/// The version `seal --version`, `_VERSION` and `_RUNTIME` show. A prerelease adds the commit it was built from as
+/// semver build metadata (`0.9.0-rc.1+46720d4`) so builds of the same prerelease can be told apart.
+pub fn display_version() -> String {
+    if SEAL_VERSION.contains('-') {
+        format!("{}+{}", SEAL_VERSION, GIT_COMMIT_SHORT)
+    } else {
+        SEAL_VERSION.to_string()
+    }
+}
 
 pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
     // everything loaded into this state is Luwu unless its chunk says otherwise (`seal eval`, `luau.eval`, ...)
@@ -58,7 +69,7 @@ pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
     globals.raw_set("ecall", luau.create_wrapped_function(ecall)?)?;
     globals.raw_set("warn", luau.create_wrapped_function(warn)?)?;
     globals.raw_set("_SEAL_VERSION", SEAL_VERSION)?;
-    globals.raw_set("_VERSION", format!("seal {}+{}", SEAL_VERSION, luau_version.to_string_lossy().strip_prefix("Luau ").expect("Luau version always has Luau prefix")))?;
+    globals.raw_set("_VERSION", format!("seal {} (Luwu {})", display_version(), mluau::LUWU_COMMIT))?;
     globals.raw_set("_G", TableBuilder::create(luau)?.build()?)?;
     globals.raw_set("_REQUIRE_CACHE", TableBuilder::create(luau)?.build()?)?;
     globals.raw_set("script", TableBuilder::create(luau)?
@@ -93,7 +104,8 @@ fn parse_semver(version: &str) -> (u64, u64, u64, Option<String>, Option<String>
 
 /// Create _RUNTIME global according to the spec at https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf
 fn create_runtime_global(luau: &Lua) -> LuaResult<LuaTable> {
-    let (major, minor, patch, prerelease, build) = parse_semver(SEAL_VERSION);
+    let display = display_version();
+    let (major, minor, patch, prerelease, build) = parse_semver(&display);
 
     let semantic = TableBuilder::create(luau)?
         .with_value("major", major)?
@@ -110,7 +122,7 @@ fn create_runtime_global(luau: &Lua) -> LuaResult<LuaTable> {
         .build_readonly()?;
 
     let version = TableBuilder::create(luau)?
-        .with_value("display", SEAL_VERSION)?
+        .with_value("display", display)?
         .with_value("semantic", semantic)?
         .with_value("git", git)?
         .build_readonly()?;

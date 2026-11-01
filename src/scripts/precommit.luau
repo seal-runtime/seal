@@ -24,7 +24,7 @@ for _, file in rust_files do
     end
 end
 
-local seal_version = _RUNTIME.version.display
+local seal_version = _SEAL_VERSION
 local luau_version = _LUAU.version.display
 
 print(`replacing seal version {seal_version}, luau version {luau_version}, counted {count} wrap_err!s`)
