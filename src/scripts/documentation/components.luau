@@ -44,14 +44,14 @@ export class ListComponent
     type: "Ordered" | "Unordered"
     items: { ListItem }
 
-    function from(lines: { string }, type: "Ordered" | "Unordered")
+    function from(lines: { string }, typee: "Ordered" | "Unordered")
         const items: { ListItem } = {}
         for _, line in lines do
             const trimmed = str.trimfront(line)
             const diff = #line - #trimmed
             table.insert(items, ListItem { indent = diff, text = trimmed })
         end
-        return ListComponent { items = items, type = type }
+        return ListComponent { items = items, type = typee }
     end
     function markdown(self)
         const lines: { string } = {}

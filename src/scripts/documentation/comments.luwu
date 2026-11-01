@@ -84,9 +84,9 @@ end
 
 export function build(
     parsed: parser.Result,
-    lines: { string },
+    _lines: { string },
     path_for_update: string,
-    content: string
+    _content: string
 ): { BlockComment | LineComment }
     update_path(path_for_update)
 

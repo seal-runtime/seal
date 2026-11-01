@@ -72,7 +72,7 @@ class Param
         if self.name ~= "" then
             return `{self.name}: {self.type}`
         else
-            return self.type
+            return self.type :: string
         end
     end
 end

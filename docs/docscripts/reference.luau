@@ -165,7 +165,9 @@ for _, filepath in typedefs_paths do
             local indent, found_property_name = string.match(line, "(%s*)([%w_]+): {%s*$")
             if indent and found_property_name then
                 local front_name = table.concat(current_names, ".")
-                if #front_name == 0 then front_name = library_name end
+                if #front_name == 0 then
+                    front_name = library_name
+                end
                 local new_api: Api = {
                     name = front_name .. "." .. found_property_name,
                     defs = found_property_name .. ": {",
@@ -226,7 +228,9 @@ for _, filepath in typedefs_paths do
                 current_is_map_only[#current_is_map_only] = false
             end
             local front_name = table.concat(current_names, ".")
-            if #front_name == 0 then front_name = library_name end
+            if #front_name == 0 then
+                front_name = library_name
+            end
             if str.startswith(trimmed_line, "local ") then
                 continue
             end
@@ -268,7 +272,9 @@ for _, filepath in typedefs_paths do
                 else
                     -- fallback: create a child API (e.g. map at Type level)
                     local front_name = table.concat(current_names, ".")
-                    if #front_name == 0 then front_name = library_name end
+                    if #front_name == 0 then
+                        front_name = library_name
+                    end
                     local new_api: Api = {
                         name = front_name .. ".[" .. key_type .. "]",
                         defs = "[" .. key_type .. "]: " .. value_type,
@@ -363,7 +369,9 @@ for _, library in libraries do
         local ancestors: { string } = {}
         local prefix = ""
         for segment in name:gmatch("([^%.]+)%.") do
-            if #prefix > 0 then prefix ..= "." end
+            if #prefix > 0 then
+                prefix ..= "."
+            end
             prefix ..= segment
             table.insert(ancestors, prefix)
         end
@@ -387,7 +395,9 @@ for _, library in libraries do
 
         local first_name_segment = api.name:match("^([^%.]+)")
         local dot_count = 0
-        for _ in api.name:gmatch("%.") do dot_count += 1 end
+        for _ in api.name:gmatch("%.") do
+            dot_count += 1
+        end
         local type_depth = if main_type_name ~= nil and first_name_segment == main_type_name
             then math.max(0, dot_count - 1)
             else dot_count
@@ -477,7 +487,9 @@ for _, library in libraries do
             local closing = library.api_closings[ancestor]
             if not next_ancestor_set[ancestor] and closing and ancestor ~= main_type_name then
                 local ancestor_depth = 0
-                for _ in ancestor:gmatch("%.") do ancestor_depth += 1 end
+                for _ in ancestor:gmatch("%.") do
+                    ancestor_depth += 1
+                end
                 local close_indent = string.rep("  ", ancestor_depth)
                 local short_name = ancestor:match("([^%.]+)$") or ancestor
                 push("---")
@@ -491,7 +503,9 @@ for _, library in libraries do
         local own_closing = library.api_closings[api.name]
         if own_closing and api.name ~= main_type_name and not next_ancestor_set[api.name] then
             local own_depth = 0
-            for _ in api.name:gmatch("%.") do own_depth += 1 end
+            for _ in api.name:gmatch("%.") do
+                own_depth += 1
+            end
             local close_indent = string.rep("  ", own_depth)
             local short_name = api.name:match("([^%.]+)$") or api.name
             push("---")
