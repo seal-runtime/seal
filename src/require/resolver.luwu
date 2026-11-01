@@ -22,7 +22,7 @@ const colors = require("@std/io/colors")
 type Result<T> = err.Result<T>
 
 const function has_module_extension(path: string): boolean
-    return path:endswith(".luau", ".luwu")
+    return path:endswith(".luau", ".luwu", ".luwon")
 end
 
 const function existing_file(path: string): string?
@@ -30,7 +30,9 @@ const function existing_file(path: string): string?
 end
 
 const function find_module_file(path_without_extension: string): string?
-    return existing_file(path_without_extension .. ".luau") or existing_file(path_without_extension .. ".luwu")
+    return existing_file(path_without_extension .. ".luau")
+        or existing_file(path_without_extension .. ".luwu")
+        or existing_file(path_without_extension .. ".luwon")
 end
 
 const function find_init_file(directory: string): string?
@@ -38,7 +40,7 @@ const function find_init_file(directory: string): string?
 end
 
 const function is_init_file(path: string): boolean
-    return path:endswith("init.luau", "init.luwu")
+    return path:endswith("init.luau", "init.luwu", "init.luwon")
 end
 
 type LuaurcConfig = {

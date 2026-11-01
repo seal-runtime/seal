@@ -42,13 +42,29 @@ pub fn require(luau: &Lua, path: LuaValue) -> LuaValueResult {
             }
         };
 
-        let chunk = Chunk::src(src);
-
-        let value = luau.load_from_chunk(chunk, &resolved_path).eval_wrapped()?;
+        // .luwon is luwu's config file format. we use luwu's luwon lib to parse it instead of
+        // loading it as regular src (faster and uh, more safe!) 
+        let value = if resolved_path.ends_with(".luwon") {
+            parse_data_file(luau, src, &resolved_path)?
+        } else {
+            let chunk = Chunk::src(src);
+            luau.load_from_chunk(chunk, &resolved_path).eval_wrapped()?
+        };
         
         require_cache.raw_set(resolved_path.clone(), &value)?;
 
         Ok(value)
+    }
+}
+
+fn parse_data_file(luau: &Lua, src: String, resolved_path: &str) -> LuaValueResult {
+    let Ok(LuaValue::Table(luwon)) = luau.globals().get("luwon") else {
+        return wrap_err!("require: can't read the data file at '{}' because the luwon library isn't open", resolved_path);
+    };
+    let decode: LuaFunction = luwon.get("decode")?;
+    match decode.call::<LuaValue>(src) {
+        Ok(value) => Ok(value),
+        Err(err) => wrap_err!("require: the data file at '{}' doesn't read: {}", resolved_path, err),
     }
 }
 
@@ -248,7 +264,7 @@ pub fn get_chunk_name_for_module(path: &str, function_name: &'static str) -> Lua
     if path.is_file() && path.exists() && let Some(path) = path.to_str() {
         Ok(Some(normalize_path(path)))
     } else if path.is_dir() {
-        let found_init_path = ["init.luau", "init.luwu"].into_iter().find_map(|init_file| {
+        let found_init_path = ["init.luau", "init.luwu", "init.luwon"].into_iter().find_map(|init_file| {
             #[allow(clippy::disallowed_methods, reason = "child is a literal that doesn't start with an absolute path separator")]
             let possible_init_path = path.join(init_file);
             if possible_init_path.exists() {
