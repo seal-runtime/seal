@@ -73,6 +73,14 @@ fn server_serve(luau: &Lua, serve_config: LuaValue) -> LuaValueResult {
     Ok(LuaValue::Nil)
 }
 
+/// Answers a request that can't be parsed with an empty `400 Bad Request` and closes the connection.
+fn respond_bad_request(stream: &mut TcpStream) -> LuaValueResult {
+    let response = "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+    // The client may already be gone, and there's nothing to do about a failed write then.
+    let _ = stream.write_all(response.as_bytes()).and_then(|_| stream.flush());
+    Ok(LuaValue::Nil)
+}
+
 fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lua) -> LuaValueResult {
     let mut invalid_request = false;
 
@@ -81,18 +89,26 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
         Err(err) => format!("Unknown ({})", err),
     };
 
-    let mut body: String = String::from("");
+    // The body's raw bytes. It goes to Luau as a byte string, so binary uploads arrive unchanged.
+    let mut body: Vec<u8> = Vec::new();
 
     let lines: Vec<String> = {
         let mut buf_reader = BufReader::new(&stream);
         let mut content_length: Option<usize> = None;
         let mut lines: Vec<String> = Vec::new();
 
-        // handle header and break upon hitting \r\n\r\n aka time to start body
-        for header in buf_reader.by_ref().lines() {
-            match header {
-                Ok(header_line) => {
-                    if header_line.to_lowercase().contains("content-length") {
+        // Headers are read as bytes and decoded leniently: they're ASCII in any valid request, and a stray
+        // non-UTF-8 byte shouldn't drop the connection without a response.
+        loop {
+            let mut raw_line: Vec<u8> = Vec::new();
+            match buf_reader.read_until(b'\n', &mut raw_line) {
+                Ok(0) => break,
+                Ok(_) => {
+                    while matches!(raw_line.last(), Some(b'\n' | b'\r')) {
+                        raw_line.pop();
+                    }
+                    let header_line = String::from_utf8_lossy(&raw_line).to_string();
+                    if header_line.to_lowercase().starts_with("content-length") {
                         if let Some(content_length_str) = header_line.split_once(':').map(|x| x.1) {
                             if let Ok(length) = content_length_str.trim().parse::<usize>() {
                                 content_length = Some(length);
@@ -103,16 +119,14 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
                             eputs!("Content-Length header is malformed")?;
                         }
                     }
-                    // handle body here by reading exact content length and append it to lines vec
+                    // A blank line ends the headers; the body is the next Content-Length bytes.
                     if header_line.is_empty() {
                         if let Some(length) = content_length {
                             let mut body_buff = vec![0; length];
-                            let body_string = match buf_reader.read_exact(&mut body_buff) {
-                                Ok(_) => String::from_utf8_lossy(&body_buff).to_string(),
-                                Err(err) => err.to_string(),
-                            };
-                            body = body_string.clone();
-                            lines.push(body_string);
+                            match buf_reader.read_exact(&mut body_buff) {
+                                Ok(_) => body = body_buff,
+                                Err(_) => invalid_request = true,
+                            }
                         }
                         break;
                     }
@@ -146,13 +160,19 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
         return Ok(LuaNil);
     }
 
+    // A connection that closes without sending anything, like a browser's preconnect, has no request to answer.
+    if lines.is_empty() {
+        return Ok(LuaNil);
+    }
+
     let request_text = lines.join("\n");
 
     #[allow(clippy::unwrap_used, reason = "this is a valid regex")]
     let first_line_re = Regex::new(r"^(?P<method>\w+)\s+(?P<path>\S+)\s+HTTP/1\.[01]$").unwrap();
     let captures = match first_line_re.captures(&lines[0]) {
         Some(captures) => captures,
-        None => return wrap_err!("server.serve: Failed to parse request line: {}", lines[0]),
+        // A request the server can't read gets a 400 instead of stopping the server.
+        None => return respond_bad_request(&mut stream),
     };
 
     let method = match captures.name("method") {
@@ -191,7 +211,7 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
         .with_value("method", method)?
         .with_value("path", path)?
         .with_value("headers", headers_table)?
-        .with_value("body", body)?
+        .with_value("body", luau.create_string(&body)?)?
         .with_value("raw_text", request_text.clone())?
         .build_readonly()?;
 
@@ -269,9 +289,10 @@ fn handle_client(mut stream: TcpStream, handler_function: LuaFunction, luau: &Lu
         additional_headers.push_str(&format!("Location: {}\r\n", url));
     }
 
-    // Respond with the specified content
+    // Respond with the specified content. A buffer body is written after the headers and its length is the buffer's.
+    let content_length = buffer_body.as_ref().map_or(body.len(), |bytes| bytes.len());
     let response = format!("{} {} {}\r\nContent-Type: {}\r\n{}Content-Length: {}\r\n\r\n{}",
-        http_version, status_code, reason_phrase, content_type, additional_headers, body.len(), body);
+        http_version, status_code, reason_phrase, content_type, additional_headers, content_length, body);
 
     // now we actually send and write to stream
     // if someone passed in body = somebuffer then we have to write the buffer to the stream separately
