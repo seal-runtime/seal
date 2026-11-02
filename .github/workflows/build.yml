@@ -167,7 +167,7 @@ jobs:
         with:
           repository: seal-runtime/sealbindings
           # seal's luwu-classes branch pairs with sealbindings' luwu branch; main pairs with main
-          ref: ${{ github.event.pull_request.base.ref == 'main' && 'main' || 'luwu' }}
+          ref: ${{ (github.head_ref || github.ref_name) == 'luwu-classes' && 'luwu' || 'main' }}
           path: sealbindings
 
       - name: Check the plugin API matches sealbindings
@@ -176,7 +176,14 @@ jobs:
 
       - name: Install test dependencies
         # need lsof to clean up leftover server in http tests
-        run: dnf install -y lsof
+        # retry with a fresh metadata cache when an AlmaLinux mirror serves an empty repomd.xml
+        run: |
+          for attempt in 1 2 3; do
+            dnf install -y lsof && exit 0
+            dnf clean all
+            sleep 10
+          done
+          exit 1
       - name: Run tests
         run: |
           # BIN_PATH="./target/release/seal"
@@ -247,9 +254,15 @@ jobs:
           # c++_static only provides the STL; the low-level Itanium C++ ABI runtime (RTTI, __cxa_*,
           # exception vtables) lives in a separate libc++abi.a that's bundled into libc++_shared.so
           # but must be linked explicitly here, hence the extra -lc++abi below.
+          # rustc links with -nodefaultlibs, which keeps clang from adding compiler-rt's builtins. The NDK's
+          # libc++abi.a and Luau's C++ call outline atomics (__aarch64_ldadd8_acq_rel and others) defined
+          # only in the builtins archive that the run step links after -lc++abi.
           CXXSTDLIB: "c++_static"
-          RUSTFLAGS: "-C link-arg=-lc++abi"
-        run: cargo ndk -t ${{ matrix.abi }} -P 24 build --release
+        run: |
+          clang="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+          builtins=$("$clang" --target=${{ matrix.target }}24 -print-libgcc-file-name)
+          export RUSTFLAGS="-C link-arg=-lc++abi -C link-arg=$builtins"
+          cargo ndk -t ${{ matrix.abi }} -P 24 build --release
 
       - name: Upload artifacts
         if: success()
