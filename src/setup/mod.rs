@@ -48,6 +48,12 @@ fn extract_extra(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
     }
 }
 
+/// Unpacks this seal's typedefs (`globals.d.luau`, `std/`, ...) into `path`, for `seal check` outside a seal project
+pub fn extract_typedefs_into(path: &std::path::Path) -> std::io::Result<()> {
+    std::fs::create_dir_all(path)?;
+    TYPEDEFS_DIR.extract(path)
+}
+
 pub fn create_internal(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function("extract_typedefs", extract_typedefs)?

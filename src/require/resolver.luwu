@@ -8,7 +8,9 @@
 
 type RequireResolveResult = {
     path: string,
+    err: nil,
 } | {
+    path: nil,
     err: string,
 }
 
@@ -101,6 +103,12 @@ type DotConfig = {
     luau: LanguageConfigSchema?
 }
 -- end partial copy paste from https://rfcs.luau.org/config-luauconfig.html
+
+--- How `seal check` resolves requires differently from running them
+type CheckOptions = {
+    --- seal's reserved aliases (`@std`, `@interop`), pointing at the typedefs seal checks against
+    reserved_aliases: { [string]: string },
+}
 
 export type ConfigFileAliases = {
     path: string,
@@ -266,12 +274,20 @@ const function get_aliases_by_config_file(requiring_file_path: string): Result<{
     return aliases_by_config_file
 end
 
+--- Whether `path` starts at a filesystem root (`/` or a Windows drive like `C:\`)
+const function is_absolute_path(path: string): boolean
+    return path:startswith("/") or string.match(path, "^%a:[/\\]") ~= nil
+end
+
 --[=[
     Resolves the requested_path into a path on the filesystem by replacing it with a require alias.
 
     Returns the actual path on the filesystem if successful, or returns an error describing why we can't.
+
+    With `strict` (`seal check`), an alias path that doesn't start with `./`, `../` or `~/` is an error: seal reads it
+    from the current directory, but the require spec reads it from the config file's directory.
 ]=]
-const function resolve_alias(requested_path: string, aliases_by_config_files: { ConfigFileAliases }): Result<string>
+const function resolve_alias(requested_path: string, aliases_by_config_files: { ConfigFileAliases }, strict: boolean?): Result<string>
     const extracted_alias = string.match(requested_path, "^@([%w_%-%.]+)/?")
     if not extracted_alias then
         return err.message(`couldn't extract require alias from requested path '{requested_path}'; is it a valid alias (like "@alias/path" or "@alias")?`)
@@ -279,16 +295,25 @@ const function resolve_alias(requested_path: string, aliases_by_config_files: { 
 
     local aliases_found, luaurcs_found = 0, 0
     local alias_replacement: string? = nil
+    local alias_config_path = ""
     for priority, luaurc in aliases_by_config_files do
         luaurcs_found += 1
         for key, replacement in luaurc.aliases do
             aliases_found += 1
             if key == extracted_alias then
                 alias_replacement = replacement
+                alias_config_path = luaurc.path
             end
         end
     end
-    
+
+    if alias_replacement and alias_replacement:startswith("@") then
+        return err.message(`seal can't resolve alias '@{extracted_alias}' yet: it refers to another alias, '{alias_replacement}' (in '{alias_config_path}')`)
+    elseif alias_replacement and strict and not is_absolute_path(alias_replacement) then
+        return err.message(`start alias '@{extracted_alias}' with './' in '{alias_config_path}' so seal check can resolve it: \z
+        seal reads '{alias_replacement}' from the current directory, where the require spec reads it from the config file's directory`)
+    end
+
     if alias_replacement then
         local rest_of_path = requested_path
         -- strip @alias prefix
@@ -362,7 +387,8 @@ const function resolve(
         - new semantics = ./meow is in the parent directory of the requiring init.luau
         but if the new semantics don't work (file not found) we try the old one by calling resolve again recursively
         note that seal supports @self in either case
-    ]]
+    ]],
+    check_options: CheckOptions?
 ): RequireResolveResult
     --[=[
         debug names come in the form `[string "./src/somewhere.luau"]` so we we strip them if needed to
@@ -393,7 +419,15 @@ const function resolve(
             }
         end
 
-        const expanded_path = resolve_alias(requested_path, aliases_by_config_files)
+        if check_options then
+            -- seal's reserved aliases win over a config file's, as they do at runtime
+            table.insert(aliases_by_config_files, {
+                path = "seal's typedefs",
+                aliases = check_options.reserved_aliases,
+            })
+        end
+
+        const expanded_path = resolve_alias(requested_path, aliases_by_config_files, check_options ~= nil)
         if typeof(expanded_path) == "error" then
             return {
                 err = tostring(expanded_path)
@@ -485,7 +519,7 @@ const function resolve(
             which is a directory missing its init.luau (needed to treat filesystem directories as 'modules' in the Luau Require System)`
         }
     elseif try_new_init_luau_semantics and is_init_file(requiring_file_path) then
-        return resolve(requested_path, debug_name, false)
+        return resolve(requested_path, debug_name, false, check_options)
     elseif use_new_init_luau_semantics == false and string.match(requested_path, "%.%.?/") then
         return {
             err = `module '{requested_path}' not found: relative require from the file at '{requiring_file_path}' resolved to '{current_path}', which wasn't found on the filesystem.\n`
@@ -502,8 +536,23 @@ const function resolve(
     end
 end
 
+--[=[
+    The resolver `seal check` hands the type checker. It resolves a require the way `resolve` does, with seal's reserved
+    aliases pointing at `reserved_aliases`, and returns the required file's path, or nil and why it can't be required.
+]=]
+const function check_resolver(reserved_aliases: { [string]: string }): (requiring_file: string, requested_path: string) -> (string?, string?)
+    const check_options: CheckOptions = {
+        reserved_aliases = reserved_aliases,
+    }
+    return function(requiring_file: string, requested_path: string): (string?, string?)
+        const result = resolve(requested_path, requiring_file, nil, check_options)
+        return result.path, result.err
+    end
+end
+
 return {
     resolve = resolve,
+    check_resolver = check_resolver,
     get_aliases = get_aliases_by_config_file,
     --- TODO: rename this to resolve_alias in seal 0.9.0; changing it rn would be breaking change to public api
     expand_aliases = resolve_alias,

@@ -65,6 +65,7 @@ mod std_err;
 mod sealconfig;
 mod setup;
 mod compile;
+mod check;
 mod std_args;
 mod std_archive;
 mod userdata;
@@ -128,6 +129,8 @@ enum SealCommand {
     /// seal compile [path.luau] -o filename.luau bundles the project's sourcecode into filename.luau without making a standalone executable
     Compile(Args),
     Bundle(Args),
+    /// Type checks and lints Luau and Luwu files: `seal check .`, `seal check ./src/main.luau`, `seal check --defs ./zune.d.luau .`
+    Check(Args),
 }
 
 impl SealCommand {
@@ -141,6 +144,7 @@ impl SealCommand {
             "custom" | "sc" => Self::Setup(SetupOptions::Custom),
             "compile" => Self::Compile(args),
             "bundle" => Self::Bundle(args),
+            "check" | "c" => Self::Check(args),
             "eval" | "e" => Self::Eval(args.clone()),
             "run" | "r" => Self::Run,
             "test" | "t" => Self::Test,
@@ -231,6 +235,7 @@ fn main() -> LuaResult<()> {
         },
         SealCommand::Compile(args) => compile::run(args, false),
         SealCommand::Bundle(args) => compile::run(args, true),
+        SealCommand::Check(args) => check::run(args),
         SealCommand::ExecStandalone(bytecode) => seal_standalone(bytecode),
     };
 
@@ -468,6 +473,7 @@ impl SealCommand {
             Self::SealConfigHelp => "config",
             Self::Compile(_) => "compile",
             Self::Bundle(_) => "bundle",
+            Self::Check(_) => "check",
             other => {
                 return wrap_err!("help not yet implemented for command {:#?}", other);
             },

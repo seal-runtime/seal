@@ -218,6 +218,17 @@ fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
     }
 }
 
+/// The require resolver `seal check` type checks with: `resolve(requiring_file, requested_path) -> (path?, err?)`, with
+/// seal's reserved aliases (`std`, `interop`) mapped to the directories in `reserved_aliases`
+pub fn check_resolver(luau: &Lua, reserved_aliases: LuaTable) -> LuaResult<LuaFunction> {
+    let chunk = Chunk::src(RESOLVER_SRC);
+    let LuaValue::Table(resolver) = luau.load(chunk).set_name("@@seal/src/require/resolver.luwu").eval()? else {
+        panic!("require resolver didnt return table??");
+    };
+    let check_resolver: LuaFunction = resolver.raw_get("check_resolver")?;
+    check_resolver.call(reserved_aliases)
+}
+
 fn resolve_path(luau: &Lua, path: String) -> LuaResult<String> {
     let resolve = cached_resolver(luau)?;
     match resolve.call_wrapped(path.to_owned()) {
