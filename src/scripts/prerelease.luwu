@@ -159,6 +159,8 @@ const intro = table.concat({
     `- seal: [\`{short_sha}\`](https://github.com/{repository}/commit/{head_sha})`,
     `- Luwu: [\`{luwu_commit}\`](https://github.com/luwu-community/luwu/commit/{luwu_commit})`,
     `- built: {date}`,
+    "",
+    "The Linux builds need glibc 2.28 or newer (RHEL 8, Debian 10, Ubuntu 18.10 and later).",
 }, "\n")
 
 const features = do
@@ -189,23 +191,6 @@ const features = do
         "See https://luwu.org for docs.",
     }, "\n")
 
-const downloads = do
-    const base = `https://github.com/{repository}/releases/download/{TAG}`
-    const rows = {
-        for _, asset in assets
-        when const name = fs.path.child(asset)
-        give `| [\`{name}\`]({base}/{name}) |`
-    }
-    give table.concat({
-        "## Downloads",
-        "",
-        "| Download |",
-        "|---|",
-        table.concat(rows, "\n"),
-        "",
-        "The Linux builds need glibc 2.28 or newer (RHEL 8, Debian 10, Ubuntu 18.10 and later).",
-    }, "\n")
-
 const bug_reports = table.concat({
     "## Reporting bugs",
     "",
@@ -217,7 +202,7 @@ const bug_reports = table.concat({
     "Not sure which one? Open it on seal.",
 }, "\n")
 
-const notes = table.concat({ intro, features, downloads, bug_reports }, "\n\n")
+const notes = table.concat({ intro, features, bug_reports }, "\n\n")
 const notes_path = seal_dir:join("prerelease-notes.md")
 fs.writefile(notes_path, notes)
 print(notes)

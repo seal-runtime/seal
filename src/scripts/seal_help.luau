@@ -158,7 +158,7 @@ function help.setup()
         `    {DIM_DASH} {colors.bold.red(".git")} {DIM_DASH} creates git repository for you if one doesn't exist.`,
         `  {colors.bold.blue("Scripts")}`,
         `    {dim ">"} Scripts are for when you want to use seal as an addendum to an existing project.`,
-        `    {dim ">"} For script codebases, seal links to a top-level ~/.seal directory instead of generating new typedefs.`,
+        `    {dim ">"} For script codebases, seal links to typedefs in ~/.seal/<seal version> instead of generating new ones.`,
         `    {DIM_DASH} {colors.bold.cyan(".luaurc")} {DIM_DASH} configuration for the luau language, including aliases, strict mode, etc.`,
         `    {DIM_DASH} {colors.bold.white(".vscode/settings.json")} {DIM_DASH} adds seal's globals.d.luau to definition files`,
         `    {DIM_DASH} {colors.bold.blue(".seal")} {DIM_DASH} a seal folder`,
@@ -168,7 +168,7 @@ function help.setup()
         `    {dim ">"} Mix and match settings as you need! Configurable options are:`,
         `    {DIM_DASH} --codebase (project or script)`,
         `    {DIM_DASH} --editor (vscode or code (same as vscode) or zed)`,
-        `    {DIM_DASH} --typedefs (gen or link) (do you want to generate new typedefs in this project or link to ~/.seal?)`,
+        `    {DIM_DASH} --typedefs (gen or link) (do you want to generate new typedefs in this project or link to ~/.seal/<seal version>?)`,
         `    {DIM_DASH} --git (true or false or y or n) (make this a new git repository?)`,
         END_LINE
     )
