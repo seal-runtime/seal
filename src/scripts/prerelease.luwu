@@ -1,0 +1,253 @@
+-- packages seal's builds against Luwu's integration branch and republishes them as the luwu-latest prerelease
+-- this runs in CI from the linux-x64 build, not locally
+
+const archive = require("@std/archive")
+const entry = require("@std/archive/entry")
+const datetime = require("@std/time/datetime")
+const fs = require("@std/fs")
+const env = require("@std/env")
+const process = require("@std/process")
+const semver = require("@std/semver")
+
+const repository = env.vars.get("GITHUB_REPOSITORY") or error("GITHUB_REPOSITORY not set")
+--- The commit being released. A pull_request run's GITHUB_SHA is a temporary merge commit instead.
+const head_sha = env.vars.get("HEAD_SHA") or error("HEAD_SHA not set")
+--- Artifact directories named `seal-v{version}-{platform}`, laid out as release.luau describes.
+const artifacts_dir = fs.dir.from(env.vars.get("SEAL_ARTIFACTS_DIR") or error("SEAL_ARTIFACTS_DIR not set"))
+const seal_dir = fs.dir.cwd() -- cwd is known to be seal/ here in CI
+
+--- The branch being released. A pull_request run sets GITHUB_HEAD_REF; a dispatched run only sets GITHUB_REF_NAME.
+const branch = do
+    if const head_ref = env.vars.get("GITHUB_HEAD_REF") when head_ref ~= "" then
+        give head_ref
+    end
+    give env.vars.get("GITHUB_REF_NAME") or error("GITHUB_REF_NAME not set")
+
+const TAG = "luwu-latest"
+-- 0o755 (rwxr-xr-x)
+const EXECUTABLE_MODE = 0x1ED
+
+--- Platforms every prerelease has to include. android-armv7 is best-effort and may be missing.
+const REQUIRED_PLATFORMS = {
+    "linux-x64",
+    "linux-arm64",
+    "macos-darwin-arm64",
+    "windows-x64",
+    "windows-arm64",
+    "android-arm64",
+}
+
+--- Each Luwu fast flag seal can enable and what it gives users, in the order the release notes list them.
+const FEATURES = {
+    .("LuwuTraits", "classes and traits"),
+    .("LuwuDestructuring", "destructuring with `.{ ... }` and `.( ... )`"),
+    .("LuwuIfLocal", "`if const` and `when` bindings"),
+    .("LuwuDoExpr", "`do ... give` expressions and guards like `x or return`"),
+    .("LuwuTableComprehensions", "table comprehensions"),
+    .("DebugLuwuMatchExpressions", "`match` expressions and `is` type tests"),
+    .("DebugLuwuTryExpressions", "`try` expressions"),
+    .("DebugLuwuCollections", "the `collections` library (`result`, `pair`, ...)"),
+    .("DebugLuwuPoperators", "push (`<+`) and pop operators"),
+    .("LuwuStringExtensions", "string methods like `s:trim()`, `s:startswith()` and `s:split(sep, count)`; method calls on strings are now as fast as `string.name(s, ...)` instead of deoptimizing"),
+    .("LuwuDefaultArguments", "default function arguments"),
+    .("LuauExportValueSyntax", "`export` values"),
+    .("LuwuDeclareStatements", "`declare` statements"),
+    .("LuwuTableDrop", "`table.drop`"),
+    .("LuwuAttributesEverywhere", "attributes on types, variables, fields and classes"),
+    .("LuwuNoinlineAttribute", "the `@[noinline]` attribute"),
+    .("LuwuTableFunctionFields", "function fields in table literals: `{ function foo() end }` is `{ foo = function() end }`"),
+    .("LuwuBufferBatched", "batched buffer reads and writes"),
+    .("LuwuBufferIsFrozen", "external buffers: `fs.readbytes` and seal's other APIs that return a buffer hand over the bytes they read without copying them into a new allocation"),
+}
+
+--- Enabled flags left out of the release notes: seal internals, and features that aren't ready to advertise.
+const HIDDEN_FLAGS: { [string]: true? } = {
+    LuwuExportedClassIsNilWorkaround = true,
+    DebugLuwuCompilerTrustsTypeAnnotations = true,
+    LuwuBufferMemcmp = true, -- its PR is being rewritten
+}
+
+const version = _SEAL_VERSION
+--- The build date in UTC, in ISO 8601 (`2026-11-02`).
+const date = datetime.now():in_timezone("UTC"):format("SHORT_DATE")
+
+-- `_VERSION` reads like `seal 0.9.0-rc.1+60b8898 (Luwu dff4ce26)`
+const .(seal_version, luwu_version) = _VERSION:split(" (Luwu ", 2)
+const seal_commit = semver.from(seal_version:trimstart("seal ")).metadata.build
+const luwu_commit = luwu_version:trimend(")")
+const short_sha = string.sub(head_sha, 1, 7)
+if seal_commit ~= short_sha then
+    error(`this seal was built from {seal_commit}, but the release is for {short_sha}`)
+end
+
+for _, platform in REQUIRED_PLATFORMS do
+    const directory = artifacts_dir:join(`seal-v{version}-{platform}`)
+    if not fs.path.exists(directory) then
+        error(`missing the {platform} build at {directory}`)
+    end
+end
+
+--- The set of fast flags `src/main.rs` turns on, which decide the Luwu features this build has.
+const enabled_flags: { [string]: true? } = do
+    const main_rs = fs.readfile(seal_dir:join("src/main.rs"))
+    const call_start = main_rs:find("set_fflags([", 1, true) or error("can't find the set_fflags([ call in src/main.rs")
+    const call_end = main_rs:find("])", call_start, true) or error("can't find the end of the set_fflags call in src/main.rs")
+    give {
+        for flag in string.gmatch(main_rs:sub(call_start, call_end), '"(%w+)"')
+        give [flag] = true
+    }
+
+const readme_entry = entry.read(seal_dir:join("README.md"))
+assert(typeof(readme_entry) == "ArchiveEntry", "solely README.md is ArchiveEntry not a directory")
+
+const license_entry = entry.read(seal_dir:join("LICENSE.txt"))
+assert(typeof(license_entry) == "ArchiveEntry", "solely LICENSE.txt is a single ArchiveEntry, not a directory")
+
+const docs_entries = entry.read(seal_dir:join("docs"))
+assert(typeof(docs_entries) == "table", "docs is obviously a directory")
+
+--- Android asset names spell out the Rust target, the way release.luau names them.
+const ANDROID_TARGETS: { [string]: string? } = {
+    ["android-arm64"] = "android-arm64-aarch64-linux-android",
+    ["android-armv7"] = "android-armv7-linux-androideabi",
+}
+
+--- The asset name for an artifact directory, following release.luau's names with the date after the version.
+const function asset_name(directory_name: string): string
+    const platform = directory_name:trimstart(`seal-v{version}-`)
+    return `seal-v{version}-{date}-{ANDROID_TARGETS[platform] or platform}`
+end
+
+const output_dir = fs.dir.ensure(seal_dir:join("prerelease"))
+
+for _, directory in artifacts_dir:list(false) do
+    const directory_name = fs.path.child(directory) or error(`can't get child (directory name) of {directory}`)
+    const is_unix = not directory_name:contains("windows")
+    const arc = archive.create()
+
+    for _, file in fs.listdir(directory, true) do
+        const executable_or_pdb = entry.read(file)
+        if
+            is_unix
+            and typeof(executable_or_pdb) == "ArchiveEntry"
+            and executable_or_pdb:path() == "seal"
+            when const seal_file = executable_or_pdb:try_file()
+        then
+            seal_file:set_unix_mode(EXECUTABLE_MODE)
+        end
+        arc:append(executable_or_pdb)
+    end
+    arc:append(readme_entry, license_entry, docs_entries)
+
+    if is_unix then
+        archive.tar.gz.writefile(output_dir:join(`{asset_name(directory_name)}.tar.gz`), arc)
+    else
+        archive.zip.writefile(output_dir:join(`{asset_name(directory_name)}.zip`), arc)
+    end
+end
+
+const assets = fs.listdir(output_dir.path)
+table.sort(assets)
+
+const intro = table.concat({
+    `Prerelease build of seal {version} from seal's \`{branch}\` branch, rebuilt on every push.`,
+    "It's built against Luwu's `integration` branch, which shows our intended vision for the language with all its features together by its 0.1.0 release.",
+    "",
+    "> [!WARNING]",
+    "> seal 0.9.x's standard library is being rewritten, so expect breaking changes between builds.",
+    "",
+    `- seal: [\`{short_sha}\`](https://github.com/{repository}/commit/{head_sha})`,
+    `- Luwu: [\`{luwu_commit}\`](https://github.com/luwu-community/luwu/commit/{luwu_commit})`,
+    `- built: {date}`,
+}, "\n")
+
+const features = do
+    const listed = {
+        for _, .(flag, description) in FEATURES
+        when enabled_flags[flag]
+        give `- {description}`
+    }
+    const described = {
+        for _, .(flag, _) in FEATURES
+        give [flag] = true
+    }
+    const unlisted = {
+        for flag in enabled_flags
+        when not described[flag]
+        when not HIDDEN_FLAGS[flag]
+        give `\`{flag}\``
+    }
+    table.sort(unlisted)
+    if #unlisted > 0 then
+        listed <+ `- also enabled: {table.concat(unlisted, ", ")}`
+    end
+    give table.concat({
+        "## Luwu features",
+        "",
+        table.concat(listed, "\n"),
+        "",
+        "See https://luwu.org for docs.",
+    }, "\n")
+
+const downloads = do
+    const base = `https://github.com/{repository}/releases/download/{TAG}`
+    const rows = {
+        for _, asset in assets
+        when const name = fs.path.child(asset)
+        give `| [\`{name}\`]({base}/{name}) |`
+    }
+    give table.concat({
+        "## Downloads",
+        "",
+        "| Download |",
+        "|---|",
+        table.concat(rows, "\n"),
+        "",
+        "The Linux builds need glibc 2.28 or newer (RHEL 8, Debian 10, Ubuntu 18.10 and later).",
+    }, "\n")
+
+const bug_reports = table.concat({
+    "## Reporting bugs",
+    "",
+    "Include the output of `seal --version`, which names the seal and Luwu commits of your build, and the smallest script that shows the bug.",
+    "",
+    `- seal's runtime, standard library or \`seal check\`: https://github.com/{repository}/issues`,
+    "- the Luwu language (parsing, type checking, a Luwu feature behaving wrong): https://github.com/luwu-community/luwu/issues",
+    "",
+    "Not sure which one? Open it on seal.",
+}, "\n")
+
+const notes = table.concat({ intro, features, downloads, bug_reports }, "\n\n")
+const notes_path = seal_dir:join("prerelease-notes.md")
+fs.writefile(notes_path, notes)
+print(notes)
+
+-- ignores the failure when there's no old prerelease to delete
+process.run({
+    program = "gh",
+    args = { "release", "delete", TAG, "--cleanup-tag", "--yes" },
+})
+
+const create_args = {
+    "release",
+    "create",
+    TAG,
+    "--prerelease",
+    "--target",
+    head_sha,
+    "--title",
+    `{TAG} ({version}, {date}, {short_sha})`,
+    "--notes-file",
+    notes_path,
+}
+for _, asset in assets do
+    create_args <+ asset
+end
+
+const create_result = process.run({
+    program = "gh",
+    args = create_args,
+})
+if not create_result.ok then
+    error(`creating the {TAG} prerelease failed with error {create_result.stderr}`)
+end

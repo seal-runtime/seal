@@ -11,6 +11,12 @@ on:
         description: "seal version read from Cargo.toml"
         value: ${{ jobs.version.outputs.version }}
 
+env:
+  # pull_request runs check out a temporary merge into main by default. luwu-classes builds the
+  # branch head instead because luwu-latest's version hash has to name a commit that exists.
+  # An empty ref keeps checkout's default.
+  SOURCE_REF: ${{ github.head_ref == 'luwu-classes' && github.event.pull_request.head.sha || '' }}
+
 jobs:
   version: # credit to lune
     name: Get version
@@ -20,6 +26,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          ref: ${{ env.SOURCE_REF }}
 
       - name: Get version from manifest
         id: get_version
@@ -31,6 +39,7 @@ jobs:
     needs: ["version"]
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         # linux is built separately in build-linux (old-glibc container)
         os: [macos-latest, windows-latest, windows-11-arm]
@@ -38,12 +47,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          ref: ${{ env.SOURCE_REF }}
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@nightly
 
       - name: Build project
         run: cargo build --release
+
+      - name: Upload artifacts
+        # uploaded before the tests so a failing test still leaves a binary to download
+        uses: actions/upload-artifact@v5
+        with:
+          name: seal-v${{ needs.version.outputs.version }}-${{ runner.os == 'macOS' && 'macos-darwin' || runner.os == 'Windows' && 'windows' }}-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' }}
+          path: ./target/release/seal*
 
       - name: Run tests (Linux/macOS)
         if: runner.os != 'Windows'
@@ -89,13 +107,6 @@ jobs:
           }
         shell: pwsh
 
-      - name: Upload artifacts
-        if: success()
-        uses: actions/upload-artifact@v5
-        with:
-          name: seal-v${{ needs.version.outputs.version }}-${{ runner.os == 'macOS' && 'macos-darwin' || runner.os == 'Windows' && 'windows' }}-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' }}
-          path: ./target/release/seal*
-
   build-linux:
     needs: ["version"]
     name: build (linux-${{ matrix.arch }})
@@ -125,6 +136,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          ref: ${{ env.SOURCE_REF }}
 
       - name: Mark workspace as safe for git
         # the container runs as a different uid than the checkout owner; without this build.rs
@@ -159,6 +172,13 @@ jobs:
             exit 1
           fi
         shell: bash
+
+      - name: Upload artifacts
+        # uploaded before the tests so a failing test still leaves a binary to download
+        uses: actions/upload-artifact@v5
+        with:
+          name: seal-v${{ needs.version.outputs.version }}-linux-${{ matrix.arch }}
+          path: ./target/release/seal*
 
       - name: Check out sealbindings
         # keeps seal extern.load plugin api from drifting from sealbindings
@@ -208,13 +228,6 @@ jobs:
           fi
         shell: bash
 
-      - name: Upload artifacts
-        if: success()
-        uses: actions/upload-artifact@v5
-        with:
-          name: seal-v${{ needs.version.outputs.version }}-linux-${{ matrix.arch }}
-          path: ./target/release/seal*
-
   build-android:
     needs: ["version"]
     name: build (android-${{ matrix.abi }})
@@ -236,6 +249,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          ref: ${{ env.SOURCE_REF }}
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@nightly
@@ -270,3 +285,52 @@ jobs:
         with:
           name: seal-v${{ needs.version.outputs.version }}-android-${{ matrix.arch }}
           path: ./target/${{ matrix.target }}/release/seal
+
+  prerelease:
+    name: Luwu Nightly Prerelease
+    needs: ["version", "build", "build-linux", "build-android"]
+    # !cancelled() makes this luwu-classes job run after a failed test so it can report the failure
+    if: >-
+      !cancelled()
+      && (
+        github.event_name == 'pull_request'
+        && github.head_ref == 'luwu-classes'
+        && github.event.pull_request.head.repo.full_name == github.repository
+        || github.event_name == 'workflow_dispatch'
+        && github.ref_name == 'luwu-classes'
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # needed for `gh release create`
+    steps:
+      - name: Require every build and test to pass
+        env:
+          RESULTS: ${{ needs.build.result }} ${{ needs.build-linux.result }} ${{ needs.build-android.result }}
+        run: |
+          for result in $RESULTS; do
+            if [ "$result" != "success" ]; then
+              echo "::error::not publishing luwu-latest because a build or test failed"
+              exit 1
+            fi
+          done
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ env.SOURCE_REF }}
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: artifacts
+
+      - name: Make the linux-x64 seal executable
+        run: chmod +x ./artifacts/seal-v${{ needs.version.outputs.version }}-linux-x64/seal
+
+      - name: Run prerelease script
+        env:
+          SEAL_ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
+          GITHUB_TOKEN: ${{ github.token }}
+          # the release points at the branch head instead of the merge commit a pull_request run checks out
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: ./artifacts/seal-v${{ needs.version.outputs.version }}-linux-x64/seal ./src/scripts/prerelease.luwu
