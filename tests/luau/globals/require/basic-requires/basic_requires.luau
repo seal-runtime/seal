@@ -120,6 +120,7 @@ local function filethaterrors()
 	end)
 
 	assert(s == false, "iwillbreak.luau did not actually break?")
+	assert(typeof(f) == "error", "error from require should be an error")
 	assert(
 		tostring(f):match("hi"), 
 		`iwillbreak broke with an unexpected error message {tostring(f)}`

@@ -131,7 +131,7 @@ end
 
 local typedefs_path = fs.path.join(path, "typedefs")
 if fs.is(typedefs_path) ~= "Directory" then
-    error(`typedefs path at '{dircolor(typedefs_path)}' is not a directory--you're probably in a script codebase. if so, go to your ~/.seal or SEAL_DIR folder and regen its typedefs instead`)
+    error(`typedefs path at '{dircolor(typedefs_path)}' is not a directory--you're probably in a script codebase. if so, rerun 'seal setup script' to relink it to this seal's typedefs instead`)
 end
 
 fs.removetree(typedefs_path)

@@ -35,8 +35,8 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
         Some(signatures::STD_ERR_EXTRACT),
     )?;
 
-    luau.set_named_registry_value("@std/err:wrap", err_wrap)?;
-    luau.set_named_registry_value("@std/err:extract", err_extract)?;
+    luau.registry().set("@std/err:wrap", err_wrap)?;
+    luau.registry().set("@std/err:extract", err_extract)?;
 
     let library_path = Path::new(&path);
 
@@ -61,6 +61,28 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
             }
         }
     };
+
+    // a plugin says which plugin API it was built for; calling one built for another layout would read the wrong
+    // functions out of the table, so check before calling anything in it
+    // SAFETY: sealbindings exports `seal_extern_api_version` as a `u32` static; we only read it
+    let plugin_version = unsafe {
+        library.get::<*const u32>(c"seal_extern_api_version").map(|symbol| **symbol)
+    };
+    match plugin_version {
+        Ok(version) if version == ffi_api::SEAL_API_VERSION => {}
+        Ok(version) => {
+            return wrap_err!(
+                "{}: the library at '{}' was built for seal's plugin API version {}, but this seal provides version {}; rebuild it against the sealbindings that matches this seal",
+                function_name, &path, version, ffi_api::SEAL_API_VERSION
+            );
+        }
+        Err(_) => {
+            return wrap_err!(
+                "{}: the library at '{}' predates seal's versioned plugin API (this seal provides version {}); rebuild it against sealbindings 0.9 or newer",
+                function_name, &path, ffi_api::SEAL_API_VERSION
+            );
+        }
+    }
 
     let mut error_message: Option<String> = None;
 
@@ -100,9 +122,9 @@ pub fn extern_load(luau: &Lua, path: String) -> LuaValueResult {
     // errored at runtime during initialization or panicked during initialization and
     // was caught by sealbindings::initialize
     if let LuaValue::UserData(ref ud) = returned_value
-        && let Ok(err) = ud.borrow::<crate::std_err::WrappedError>()
+        && let Some(err) = crate::std_err::WrappedError::borrow(ud)
     {
-        return wrap_err!("{}: dynamic library at '{}' errored during initialization:\n{}", function_name, &path, err.message());
+        return wrap_err!("{}: dynamic library at '{}' errored during initialization:\n{}", function_name, &path, err.format_message_dirty());
     }
 
     Ok(returned_value)

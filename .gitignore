@@ -5,3 +5,4 @@
 /PANIC_IN_THE_SEAL_INTERNALS*
 /tests/data/bundle_projects/lsl/_bundled_intermediate.luau
 /rustc-ice*
+*.ignore.*

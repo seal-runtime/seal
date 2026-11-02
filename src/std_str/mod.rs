@@ -4,7 +4,7 @@ use unicode_segmentation::UnicodeSegmentation;
 use std::io::Cursor;
 use unicode_reader::Graphemes;
 
-use mluau::prelude::*;
+use mluau::{FunctionMutExt, prelude::*};
 use crate::prelude::*;
 
 /// bytes-per-split divisor grows with sqrt(len) past `SPLIT_SCALE_THRESHOLD`, so the guess grows sublinearly
@@ -28,44 +28,45 @@ fn separator_split_prealloc_guess(len: usize, base_divisor: f64) -> usize {
     guess.min(SPLIT_PREALLOC_CAP)
 }
 
-/// converts a list of byte slices into a luau array table via `create_sequence_from` (one lock,
-/// one stack guard for the whole batch) instead of pushing one-by-one; `&str` gets the fastest path,
-/// `BString` (non-utf-8 fallback) still beats the old per-item raw_push+create_string loop
+/// converts a list of byte slices into a luau array table with `create_string_sequence`, which makes the table and
+/// every string in one protected call; luau strings are bytes, so the slices needn't be valid utf-8
 fn build_table_from_slices(luau: &Lua, slices: Vec<&[u8]>) -> LuaResult<LuaTable> {
-    let mut strs = Vec::with_capacity(slices.len());
-    for slice in &slices {
-        match std::str::from_utf8(slice) {
-            Ok(s) => strs.push(s),
-            Err(_) => {
-                let bstrings: Vec<mluau::BString> = slices.into_iter().map(mluau::BString::from).collect();
-                return luau.create_sequence_from(bstrings);
-            }
-        }
-    }
-    luau.create_sequence_from(strs)
+    luau.create_string_sequence(&slices)
 }
 
 fn split_graphemes(luau: &Lua, s_bytes: &[u8]) -> LuaResult<LuaTable> {
     // check if whole string is valid utf-8
     if let Ok(s_str) = std::str::from_utf8(s_bytes) {
-        // fast path: every grapheme is already a valid &str, so hand the whole vec straight to
-        // create_sequence_from instead of build_table_from_slices (which would just redundantly
-        // re-validate utf-8 we already know holds for every single grapheme)
+        // fast path: the whole string is valid utf-8, so graphemes can come straight from it
         let graphemes: Vec<&str> = s_str.graphemes(true).collect();
-        return luau.create_sequence_from(graphemes);
+        return luau.create_string_sequence(&graphemes);
     }
 
-    // uh oh we have a mix of graphemes and invalid utf8; this is rare/edge-case data, so we don't
-    // bother distinguishing valid/invalid chunks here - build_table_from_slices figures out that
-    // at least one chunk isn't valid utf-8 and falls back to the slow path on its own
+    // uh oh we have a mix of graphemes and invalid utf8: split each valid run into graphemes and keep
+    // each invalid region together as one piece. utf8_chunks reports a region of several invalid bytes
+    // as several chunks with nothing valid between them, so the region is gathered by offset
     let mut slices: Vec<&[u8]> = Vec::new();
+    let mut invalid_start: Option<usize> = None;
+    let mut offset = 0;
     for chunk in s_bytes.utf8_chunks() {
-        for grapheme in chunk.valid().graphemes(true) {
-            slices.push(grapheme.as_bytes());
+        let valid = chunk.valid();
+        if !valid.is_empty() {
+            if let Some(start) = invalid_start.take() {
+                slices.push(&s_bytes[start..offset]);
+            }
+            for grapheme in valid.graphemes(true) {
+                slices.push(grapheme.as_bytes());
+            }
+            offset += valid.len();
         }
-        if !chunk.invalid().is_empty() {
-            slices.push(chunk.invalid());
+        let invalid = chunk.invalid();
+        if !invalid.is_empty() {
+            invalid_start.get_or_insert(offset);
+            offset += invalid.len();
         }
+    }
+    if let Some(start) = invalid_start {
+        slices.push(&s_bytes[start..offset]);
     }
     build_table_from_slices(luau, slices)
 }
@@ -230,10 +231,8 @@ fn collect_slices_from_matches<'a>(
 /// by default, str.split splits the string by unicode characters (graphemes)
 fn str_split(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "str.split(s: string, chars/graphemes: ...string)";
-    let s_bytes = match multivalue.pop_front() {
-        Some(LuaValue::String(s)) => {
-            s.as_bytes().to_owned()
-        },
+    let s_string = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s,
         Some(other) => {
             return wrap_err!("{} expected s to be a string, got: {:?}", function_name, other);
         }
@@ -241,6 +240,9 @@ fn str_split(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
             return wrap_err!("{} expected a string s, but was incorrectly called with zero arguments", function_name);
         }
     };
+    // s_string keeps the string alive, so it's borrowed rather than copied
+    let s_borrowed = s_string.as_bytes();
+    let s_bytes: &[u8] = &s_borrowed;
 
     let result = if multivalue.is_empty() {
         split_graphemes(luau, &s_bytes)?
@@ -253,10 +255,8 @@ fn str_split(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 /// str.splitaround has the same semantics as str.split except it splits around the separator strings, keeping them in the final result
 fn str_splitaround(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "str.splitaround(s: string, separators: ...string)";
-    let s_bytes = match multivalue.pop_front() {
-        Some(LuaValue::String(s)) => {
-            s.as_bytes().to_owned()
-        },
+    let s_string = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s,
         Some(other) => {
             return wrap_err!("{} expected s to be a string, got: {:?}", function_name, other);
         }
@@ -264,6 +264,9 @@ fn str_splitaround(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult 
             return wrap_err!("{} expected a string s, but was incorrectly called with zero arguments", function_name);
         }
     };
+    // s_string keeps the string alive, so it's borrowed rather than copied
+    let s_borrowed = s_string.as_bytes();
+    let s_bytes: &[u8] = &s_borrowed;
 
     let result = if multivalue.is_empty() {
         split_graphemes(luau, &s_bytes)?
@@ -276,10 +279,8 @@ fn str_splitaround(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult 
 /// str.splitbefore
 fn str_splitbefore(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "str.splitbefore(s: string, separators: ...string)";
-    let s_bytes = match multivalue.pop_front() {
-        Some(LuaValue::String(s)) => {
-            s.as_bytes().to_owned()
-        },
+    let s_string = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s,
         Some(other) => {
             return wrap_err!("{} expected s to be a string, got: {:?}", function_name, other);
         }
@@ -287,6 +288,9 @@ fn str_splitbefore(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult 
             return wrap_err!("{} expected a string s, but was incorrectly called with zero arguments", function_name);
         }
     };
+    // s_string keeps the string alive, so it's borrowed rather than copied
+    let s_borrowed = s_string.as_bytes();
+    let s_bytes: &[u8] = &s_borrowed;
 
     let result = if multivalue.is_empty() {
         split_graphemes(luau, &s_bytes)?
@@ -299,10 +303,8 @@ fn str_splitbefore(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult 
 /// str.splitafter
 fn str_splitafter(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "str.splitafter(s: string, separators: ...string)";
-    let s_bytes = match multivalue.pop_front() {
-        Some(LuaValue::String(s)) => {
-            s.as_bytes().to_owned()
-        },
+    let s_string = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s,
         Some(other) => {
             return wrap_err!("{} expected s to be a string, got: {:?}", function_name, other);
         }
@@ -310,6 +312,9 @@ fn str_splitafter(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
             return wrap_err!("{} expected a string s, but was incorrectly called with zero arguments", function_name);
         }
     };
+    // s_string keeps the string alive, so it's borrowed rather than copied
+    let s_borrowed = s_string.as_bytes();
+    let s_bytes: &[u8] = &s_borrowed;
 
     let result = if multivalue.is_empty() {
         split_graphemes(luau, &s_bytes)?
@@ -477,10 +482,8 @@ fn splitlines_str(s: &str, trim_trailing_whitespace: bool, include_terminator: b
 
 fn str_splitlines(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "str.splitlines(s: string, trim_trailing_whitespace: boolean?, include_terminator: boolean?)";
-    let s_bytes = match multivalue.pop_front() {
-        Some(LuaValue::String(s)) => {
-            s.as_bytes().to_owned()
-        },
+    let s_string = match multivalue.pop_front() {
+        Some(LuaValue::String(s)) => s,
         Some(other) => {
             return wrap_err!("{} expected s to be a string, got: {:?}", function_name, other);
         }
@@ -488,6 +491,9 @@ fn str_splitlines(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
             return wrap_err!("{} expected a string s, but was incorrectly called with zero arguments", function_name);
         }
     };
+    // s_string keeps the string alive, so it's borrowed rather than copied
+    let s_borrowed = s_string.as_bytes();
+    let s_bytes: &[u8] = &s_borrowed;
 
     let trim_trailing_whitespace = match multivalue.pop_front() {
         Some(LuaValue::Boolean(b)) => b,
@@ -508,7 +514,7 @@ fn str_splitlines(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let result = match std::str::from_utf8(&s_bytes) {
         Ok(s_str) => {
             let lines = splitlines_str(s_str, trim_trailing_whitespace, include_terminator);
-            luau.create_sequence_from(lines)?
+            luau.create_string_sequence(&lines)?
         },
         Err(_) => {
             // rare/edge-case: not valid utf-8. fall back to the general (slower) byte-oriented
@@ -961,7 +967,7 @@ const STR_DOT_LUAU_SRC: &str = include_str!("./str.luau");
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     let chunk = Chunk::src(STR_DOT_LUAU_SRC);
-    match luau.load(chunk).set_name("std/str").eval::<LuaTable>() {
+    match luau.load(chunk).set_name("std/str").eval_wrapped::<LuaTable>() {
         Ok(str_table) => Ok(str_table),
         Err(err) => {
             panic!("std/str's str.luau did a bad: {}", err);

@@ -11,6 +11,12 @@ on:
         description: "seal version read from Cargo.toml"
         value: ${{ jobs.version.outputs.version }}
 
+env:
+  # pull_request runs check out a temporary merge into main by default. luwu-classes builds the
+  # branch head instead because luwu-latest's version hash has to name a commit that exists.
+  # An empty ref keeps checkout's default.
+  SOURCE_REF: ${{ github.head_ref == 'luwu-classes' && github.event.pull_request.head.sha || '' }}
+
 jobs:
   version: # credit to lune
     name: Get version
@@ -20,6 +26,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          ref: ${{ env.SOURCE_REF }}
 
       - name: Get version from manifest
         id: get_version
@@ -31,6 +39,7 @@ jobs:
     needs: ["version"]
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         # linux is built separately in build-linux (old-glibc container)
         os: [macos-latest, windows-latest, windows-11-arm]
@@ -38,12 +47,21 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          ref: ${{ env.SOURCE_REF }}
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@nightly
 
       - name: Build project
         run: cargo build --release
+
+      - name: Upload artifacts
+        # uploaded before the tests so a failing test still leaves a binary to download
+        uses: actions/upload-artifact@v5
+        with:
+          name: seal-v${{ needs.version.outputs.version }}-${{ runner.os == 'macOS' && 'macos-darwin' || runner.os == 'Windows' && 'windows' }}-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' }}
+          path: ./target/release/seal*
 
       - name: Run tests (Linux/macOS)
         if: runner.os != 'Windows'
@@ -89,13 +107,6 @@ jobs:
           }
         shell: pwsh
 
-      - name: Upload artifacts
-        if: success()
-        uses: actions/upload-artifact@v5
-        with:
-          name: seal-v${{ needs.version.outputs.version }}-${{ runner.os == 'macOS' && 'macos-darwin' || runner.os == 'Windows' && 'windows' }}-${{ runner.arch == 'X64' && 'x64' || runner.arch == 'ARM64' && 'arm64' }}
-          path: ./target/release/seal*
-
   build-linux:
     needs: ["version"]
     name: build (linux-${{ matrix.arch }})
@@ -125,6 +136,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          ref: ${{ env.SOURCE_REF }}
 
       - name: Mark workspace as safe for git
         # the container runs as a different uid than the checkout owner; without this build.rs
@@ -159,9 +172,38 @@ jobs:
             exit 1
           fi
         shell: bash
+
+      - name: Upload artifacts
+        # uploaded before the tests so a failing test still leaves a binary to download
+        uses: actions/upload-artifact@v5
+        with:
+          name: seal-v${{ needs.version.outputs.version }}-linux-${{ matrix.arch }}
+          path: ./target/release/seal*
+
+      - name: Check out sealbindings
+        # keeps seal extern.load plugin api from drifting from sealbindings
+        if: matrix.arch == 'x64'
+        uses: actions/checkout@v5
+        with:
+          repository: seal-runtime/sealbindings
+          # seal's luwu-classes branch pairs with sealbindings' luwu branch; main pairs with main
+          ref: ${{ (github.head_ref || github.ref_name) == 'luwu-classes' && 'luwu' || 'main' }}
+          path: sealbindings
+
+      - name: Check the plugin API matches sealbindings
+        if: matrix.arch == 'x64'
+        run: ./target/release/seal src/scripts/check_plugin_api.luau sealbindings
+
       - name: Install test dependencies
         # need lsof to clean up leftover server in http tests
-        run: dnf install -y lsof
+        # retry with a fresh metadata cache when an AlmaLinux mirror serves an empty repomd.xml
+        run: |
+          for attempt in 1 2 3; do
+            dnf install -y lsof && exit 0
+            dnf clean all
+            sleep 10
+          done
+          exit 1
       - name: Run tests
         run: |
           # BIN_PATH="./target/release/seal"
@@ -186,13 +228,6 @@ jobs:
           fi
         shell: bash
 
-      - name: Upload artifacts
-        if: success()
-        uses: actions/upload-artifact@v5
-        with:
-          name: seal-v${{ needs.version.outputs.version }}-linux-${{ matrix.arch }}
-          path: ./target/release/seal*
-
   build-android:
     needs: ["version"]
     name: build (android-${{ matrix.abi }})
@@ -214,6 +249,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          ref: ${{ env.SOURCE_REF }}
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@nightly
@@ -232,9 +269,15 @@ jobs:
           # c++_static only provides the STL; the low-level Itanium C++ ABI runtime (RTTI, __cxa_*,
           # exception vtables) lives in a separate libc++abi.a that's bundled into libc++_shared.so
           # but must be linked explicitly here, hence the extra -lc++abi below.
+          # rustc links with -nodefaultlibs, which keeps clang from adding compiler-rt's builtins. The NDK's
+          # libc++abi.a and Luau's C++ call outline atomics (__aarch64_ldadd8_acq_rel and others) defined
+          # only in the builtins archive that the run step links after -lc++abi.
           CXXSTDLIB: "c++_static"
-          RUSTFLAGS: "-C link-arg=-lc++abi"
-        run: cargo ndk -t ${{ matrix.abi }} -P 24 build --release
+        run: |
+          clang="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/clang"
+          builtins=$("$clang" --target=${{ matrix.target }}24 -print-libgcc-file-name)
+          export RUSTFLAGS="-C link-arg=-lc++abi -C link-arg=$builtins"
+          cargo ndk -t ${{ matrix.abi }} -P 24 build --release
 
       - name: Upload artifacts
         if: success()
@@ -242,3 +285,52 @@ jobs:
         with:
           name: seal-v${{ needs.version.outputs.version }}-android-${{ matrix.arch }}
           path: ./target/${{ matrix.target }}/release/seal
+
+  prerelease:
+    name: Luwu Nightly Prerelease
+    needs: ["version", "build", "build-linux", "build-android"]
+    # !cancelled() makes this luwu-classes job run after a failed test so it can report the failure
+    if: >-
+      !cancelled()
+      && (
+        github.event_name == 'pull_request'
+        && github.head_ref == 'luwu-classes'
+        && github.event.pull_request.head.repo.full_name == github.repository
+        || github.event_name == 'workflow_dispatch'
+        && github.ref_name == 'luwu-classes'
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # needed for `gh release create`
+    steps:
+      - name: Require every build and test to pass
+        env:
+          RESULTS: ${{ needs.build.result }} ${{ needs.build-linux.result }} ${{ needs.build-android.result }}
+        run: |
+          for result in $RESULTS; do
+            if [ "$result" != "success" ]; then
+              echo "::error::not publishing luwu-latest because a build or test failed"
+              exit 1
+            fi
+          done
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ env.SOURCE_REF }}
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: artifacts
+
+      - name: Make the linux-x64 seal executable
+        run: chmod +x ./artifacts/seal-v${{ needs.version.outputs.version }}-linux-x64/seal
+
+      - name: Run prerelease script
+        env:
+          SEAL_ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
+          GITHUB_TOKEN: ${{ github.token }}
+          # the release points at the branch head instead of the merge commit a pull_request run checks out
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: ./artifacts/seal-v${{ needs.version.outputs.version }}-linux-x64/seal ./src/scripts/prerelease.luwu

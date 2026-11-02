@@ -216,8 +216,8 @@ fn json_writefile_raw(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyRes
     }
 }
 
-fn json_null(luau: &Lua, _: LuaValue) -> LuaValueResult {
-    Ok(luau.null())
+fn json_null(_luau: &Lua, _: LuaValue) -> LuaValueResult {
+    Ok(LuaValue::None)
 }
 
 fn json_array(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {

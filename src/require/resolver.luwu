@@ -8,12 +8,13 @@
 
 type RequireResolveResult = {
     path: string,
+    err: nil,
 } | {
+    path: nil,
     err: string,
 }
 
 const fs = require("@std/fs")
-const str = require("@std/str")
 const err = require("@std/err")
 const env = require("@std/env")
 const luau = require("@std/luau")
@@ -21,6 +22,28 @@ const json = require("@std/serde/json")
 const colors = require("@std/io/colors")
 
 type Result<T> = err.Result<T>
+
+const function has_module_extension(path: string): boolean
+    return path:endswith(".luau", ".luwu", ".luwon")
+end
+
+const function existing_file(path: string): string?
+    return if fs.is(path) == "File" then path else nil
+end
+
+const function find_module_file(path_without_extension: string): string?
+    return existing_file(path_without_extension .. ".luau")
+        or existing_file(path_without_extension .. ".luwu")
+        or existing_file(path_without_extension .. ".luwon")
+end
+
+const function find_init_file(directory: string): string?
+    return find_module_file(fs.path.join(directory, "init"))
+end
+
+const function is_init_file(path: string): boolean
+    return path:endswith("init.luau", "init.luwu", "init.luwon")
+end
 
 type LuaurcConfig = {
     languageMode: LanguageMode?,
@@ -80,6 +103,12 @@ type DotConfig = {
     luau: LanguageConfigSchema?
 }
 -- end partial copy paste from https://rfcs.luau.org/config-luauconfig.html
+
+--- How `seal check` resolves requires differently from running them
+type CheckOptions = {
+    --- seal's reserved aliases (`@std`, `@interop`), pointing at the typedefs seal checks against
+    reserved_aliases: { [string]: string },
+}
 
 export type ConfigFileAliases = {
     path: string,
@@ -184,16 +213,16 @@ const function try_config_file_for_current_path(current_path: string): Result<Co
         end
         const parent_path = fs.path.parent(current_path) or current_path
         const absolutized_replacement =
-            if str.startswith(replacement, "./") then
-                fs.path.join(current_path, string.sub(replacement, 3))
-            elseif str.startswith(replacement, "~/") then
-                fs.path.join(fs.path.home(), string.sub(replacement, 3))
-            elseif str.startswith(replacement, "../") then
-                fs.path.join(parent_path, string.sub(replacement, 4))
+            if replacement:startswith("./") then
+                fs.path.join(current_path, replacement:sub(3))
+            elseif replacement:startswith("~/") then
+                fs.path.join(fs.path.home(), replacement:sub(3))
+            elseif replacement:startswith("../") then
+                fs.path.join(parent_path, replacement:sub(4))
             elseif replacement == "." then
-                fs.path.join(current_path, string.sub(replacement, 2))
+                fs.path.join(current_path, replacement:sub(2))
             elseif replacement == ".." then
-                fs.path.join(current_path, string.sub(replacement, 3))
+                fs.path.join(current_path, replacement:sub(3))
             else
                 replacement
         aliases[key] = absolutized_replacement
@@ -211,7 +240,7 @@ const function get_aliases_by_config_file(requiring_file_path: string): Result<{
     local current_path = fs.path.parent(
         requiring_file_path, 
         -- init.luaus should not be able to resolve aliases in sibling config files
-        if str.endswith(requiring_file_path, "init.luau") then 2 else 1
+        if is_init_file(requiring_file_path) then 2 else 1
     )
 
     while current_path ~= nil do
@@ -227,7 +256,7 @@ const function get_aliases_by_config_file(requiring_file_path: string): Result<{
         current_path = fs.path.parent(current_path)
     end
 
-    if str.endswith(requiring_file_path, "init.luau") then
+    if is_init_file(requiring_file_path) then
         -- @self should refer to the direct parent dir of an init.luau
         -- regardless of whichever meaning of ./relative we use in seal 
         const parent = fs.path.parent(requiring_file_path)
@@ -245,12 +274,20 @@ const function get_aliases_by_config_file(requiring_file_path: string): Result<{
     return aliases_by_config_file
 end
 
+--- Whether `path` starts at a filesystem root (`/` or a Windows drive like `C:\`)
+const function is_absolute_path(path: string): boolean
+    return path:startswith("/") or string.match(path, "^%a:[/\\]") ~= nil
+end
+
 --[=[
     Resolves the requested_path into a path on the filesystem by replacing it with a require alias.
 
     Returns the actual path on the filesystem if successful, or returns an error describing why we can't.
+
+    With `strict` (`seal check`), an alias path that doesn't start with `./`, `../` or `~/` is an error: seal reads it
+    from the current directory, but the require spec reads it from the config file's directory.
 ]=]
-const function resolve_alias(requested_path: string, aliases_by_config_files: { ConfigFileAliases }): Result<string>
+const function resolve_alias(requested_path: string, aliases_by_config_files: { ConfigFileAliases }, strict: boolean?): Result<string>
     const extracted_alias = string.match(requested_path, "^@([%w_%-%.]+)/?")
     if not extracted_alias then
         return err.message(`couldn't extract require alias from requested path '{requested_path}'; is it a valid alias (like "@alias/path" or "@alias")?`)
@@ -258,35 +295,44 @@ const function resolve_alias(requested_path: string, aliases_by_config_files: { 
 
     local aliases_found, luaurcs_found = 0, 0
     local alias_replacement: string? = nil
+    local alias_config_path = ""
     for priority, luaurc in aliases_by_config_files do
         luaurcs_found += 1
         for key, replacement in luaurc.aliases do
             aliases_found += 1
             if key == extracted_alias then
                 alias_replacement = replacement
+                alias_config_path = luaurc.path
             end
         end
     end
-    
+
+    if alias_replacement and alias_replacement:startswith("@") then
+        return err.message(`seal can't resolve alias '@{extracted_alias}' yet: it refers to another alias, '{alias_replacement}' (in '{alias_config_path}')`)
+    elseif alias_replacement and strict and not is_absolute_path(alias_replacement) then
+        return err.message(`start alias '@{extracted_alias}' with './' in '{alias_config_path}' so seal check can resolve it: \z
+        seal reads '{alias_replacement}' from the current directory, where the require spec reads it from the config file's directory`)
+    end
+
     if alias_replacement then
         local rest_of_path = requested_path
         -- strip @alias prefix
-        rest_of_path = string.sub(rest_of_path, #extracted_alias + 2, #rest_of_path)
-        if str.startswith(rest_of_path, "/") then
-            rest_of_path = string.sub(rest_of_path, 2, #rest_of_path)
+        rest_of_path = rest_of_path:sub(#extracted_alias + 2, #rest_of_path)
+        if rest_of_path:startswith("/") then
+            rest_of_path = rest_of_path:sub(2, #rest_of_path)
         end
         
         -- check for file because specs allow directory to have the extension
-        if string.sub(alias_replacement, -5, -1) == ".luau" and fs.is(alias_replacement) == "File" then
-            return err.message(`seal no longer allows require alias replacement suffixes to contain \`.luau\` file extensions (got {alias_replacement}); please remove the file extension to stay in spec :3`)
+        if has_module_extension(alias_replacement) and fs.is(alias_replacement) == "File" then
+            return err.message(`seal no longer allows require alias replacement suffixes to contain \`.luau\`/\`.luwu\` file extensions (got {alias_replacement}); please remove the file extension to stay in spec :3`)
         end
         
-        const alias_with_luau = alias_replacement .. ".luau"
-        if fs.is(alias_with_luau) == "File" then
-            return alias_with_luau
+        const alias_with_extension = find_module_file(alias_replacement)
+        if alias_with_extension then
+            return alias_with_extension
         end
         
-        if not str.endswith(alias_replacement, "/") then
+        if not alias_replacement:endswith("/") then
             alias_replacement ..= "/"
         end
         return alias_replacement .. rest_of_path
@@ -341,7 +387,8 @@ const function resolve(
         - new semantics = ./meow is in the parent directory of the requiring init.luau
         but if the new semantics don't work (file not found) we try the old one by calling resolve again recursively
         note that seal supports @self in either case
-    ]]
+    ]],
+    check_options: CheckOptions?
 ): RequireResolveResult
     --[=[
         debug names come in the form `[string "./src/somewhere.luau"]` so we we strip them if needed to
@@ -351,8 +398,8 @@ const function resolve(
         this should give us the debug name (set by luau.load().set_name) for the chunk that called require()
     ]]
     const requiring_file_path = 
-        if str.startswith(debug_name, "[") then 
-            string.sub(debug_name, 10, -3) -- grabs the part between `[string "` and `"]`
+        if debug_name:startswith("[") then 
+            debug_name:sub(10, -3) -- grabs the part between `[string "` and `"]`
         else
             debug_name
 
@@ -360,11 +407,11 @@ const function resolve(
     try_new_init_luau_semantics = 
         try_new_init_luau_semantics == nil or try_new_init_luau_semantics == true
     const use_new_init_luau_semantics =
-        try_new_init_luau_semantics and str.endswith(requiring_file_path, "init.luau")
+        try_new_init_luau_semantics and is_init_file(requiring_file_path)
 
     local current_path = requiring_file_path
     local trim_after_index = 0
-    if string.sub(requested_path, 1, 1) == "@" then
+    if requested_path:startswith("@") then
         const aliases_by_config_files = get_aliases_by_config_file(requiring_file_path)
         if typeof(aliases_by_config_files) == "error" then
             return {
@@ -372,7 +419,15 @@ const function resolve(
             }
         end
 
-        const expanded_path = resolve_alias(requested_path, aliases_by_config_files)
+        if check_options then
+            -- seal's reserved aliases win over a config file's, as they do at runtime
+            table.insert(aliases_by_config_files, {
+                path = "seal's typedefs",
+                aliases = check_options.reserved_aliases,
+            })
+        end
+
+        const expanded_path = resolve_alias(requested_path, aliases_by_config_files, check_options ~= nil)
         if typeof(expanded_path) == "error" then
             return {
                 err = tostring(expanded_path)
@@ -380,10 +435,10 @@ const function resolve(
         end
         
         current_path = expanded_path
-    elseif string.sub(requested_path, 1, 2) == "./" then
+    elseif requested_path:startswith("./") then
         current_path = fs.path.parent(current_path, if use_new_init_luau_semantics then 2 else 1)
         trim_after_index = 3
-    elseif string.sub(requested_path, 1, 3) == "../" then
+    elseif requested_path:startswith("../") then
         current_path = fs.path.parent(current_path, if use_new_init_luau_semantics then 3 else 2)
         trim_after_index = 4
     else
@@ -401,7 +456,7 @@ const function resolve(
 
     -- trim ./ and ../ from requested_path
     if trim_after_index > 0 then
-        current_path = fs.path.join(current_path, string.sub(requested_path, trim_after_index))
+        current_path = fs.path.join(current_path, requested_path:sub(trim_after_index))
     end
 
     assert(current_path ~= nil, "current_path should not be nil at this point 1")
@@ -417,31 +472,28 @@ const function resolve(
     local trying_to_require_directory = false
     local path_type = fs.is(current_path)
     if path_type == "Directory" then
-        const possible_init_path = fs.path.join(current_path, "init.luau")
-        const possible_concat_path = current_path .. ".luau"
+        const possible_init_path = find_init_file(current_path)
+        const possible_concat_path = find_module_file(current_path)
 
-        const init_path_is_file = fs.is(possible_init_path) == "File"
-        const concat_path_is_file = fs.is(possible_concat_path) == "File"
-
-        if init_path_is_file and concat_path_is_file then
+        if possible_init_path and possible_concat_path then
             -- both foo.luau and foo/init.luau exist (which one do we want??)
             return {
                 err = `the require path you requested ('{requested_path}') is ambiguous!! and can't be resolved.\nBoth '{possible_init_path}' and '{possible_concat_path}' exist; \z
                 rename either the directory '{fs.path.child(current_path)}/' or file '{fs.path.child(possible_concat_path)}' so we can figure out which one you meant`
             }
-        elseif init_path_is_file then
+        elseif possible_init_path then
             -- foo/init.luau exists
             current_path = possible_init_path
-        elseif concat_path_is_file then
+        elseif possible_concat_path then
             -- foo/ exists and foo/init.luau doesn't exist but foo.luau exists (we should resolve to foo.luau)
             warn(`require: both folder '{current_path}' and file '{possible_concat_path}' exist; consider renaming one or both. Require resolving to the file.`)
-            current_path ..= ".luau"
+            current_path = possible_concat_path
         else
             trying_to_require_directory = true
         end
     elseif path_type == "NotFound" then
         -- can't find path/to/foo so let's put a file extension on it and try again
-        current_path ..= ".luau"
+        current_path = find_module_file(current_path) or (current_path .. ".luau")
     elseif path_type == "PermissionDenied" then
         return {
             err = `requested path '{requested_path}' resolved to '{current_path}', \z
@@ -466,8 +518,8 @@ const function resolve(
             err = `'{requested_path}' can't be required: requested path resolved to '{fs.path.parent(current_path)}', \z
             which is a directory missing its init.luau (needed to treat filesystem directories as 'modules' in the Luau Require System)`
         }
-    elseif try_new_init_luau_semantics and str.endswith(requiring_file_path, "init.luau") then
-        return resolve(requested_path, debug_name, false)
+    elseif try_new_init_luau_semantics and is_init_file(requiring_file_path) then
+        return resolve(requested_path, debug_name, false, check_options)
     elseif use_new_init_luau_semantics == false and string.match(requested_path, "%.%.?/") then
         return {
             err = `module '{requested_path}' not found: relative require from the file at '{requiring_file_path}' resolved to '{current_path}', which wasn't found on the filesystem.\n`
@@ -484,8 +536,23 @@ const function resolve(
     end
 end
 
+--[=[
+    The resolver `seal check` hands the type checker. It resolves a require the way `resolve` does, with seal's reserved
+    aliases pointing at `reserved_aliases`, and returns the required file's path, or nil and why it can't be required.
+]=]
+const function check_resolver(reserved_aliases: { [string]: string }): (requiring_file: string, requested_path: string) -> (string?, string?)
+    const check_options: CheckOptions = {
+        reserved_aliases = reserved_aliases,
+    }
+    return function(requiring_file: string, requested_path: string): (string?, string?)
+        const result = resolve(requested_path, requiring_file, nil, check_options)
+        return result.path, result.err
+    end
+end
+
 return {
     resolve = resolve,
+    check_resolver = check_resolver,
     get_aliases = get_aliases_by_config_file,
     --- TODO: rename this to resolve_alias in seal 0.9.0; changing it rn would be breaking change to public api
     expand_aliases = resolve_alias,

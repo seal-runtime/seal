@@ -101,7 +101,7 @@ impl HttpRequest {
         };
 
         let max_body_size = match config.raw_get("max_body_size")? {
-            LuaValue::UserData(ud) if let Ok(file_size) = ud.borrow::<FileSize>() => {
+            LuaValue::UserData(ref ud) if let Some(file_size) = FileSize::borrow(ud) => {
                 Some(file_size.as_bytes())
             },
             LuaValue::UserData(other) => {

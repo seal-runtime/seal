@@ -2,7 +2,6 @@ use mluau::prelude::*;
 use crate::prelude::*;
 
 use crate::globals::warn;
-use crate::std_err::WrappedError;
 use crate::std_terminal::events::Interrupt;
 use rustyline::error::ReadlineError;
 
@@ -219,7 +218,7 @@ fn parse_bytes(value: LuaValue, function_name: &'static str) -> LuaResult<Option
         LuaNil => Ok(None),
         LuaValue::Integer(i) => Ok(Some(int_to_u64(i, function_name, "bytes")?)),
         LuaValue::Number(f) => Ok(Some(float_to_u64(f, function_name, "bytes")?)),
-        LuaValue::UserData(ud) if let Ok(file_size) = ud.borrow::<FileSize>() => {
+        LuaValue::UserData(ref ud) if let Some(file_size) = FileSize::borrow(ud) => {
             Ok(Some(file_size.as_bytes()))
         },
         LuaValue::UserData(ud) => {
@@ -236,8 +235,8 @@ fn parse_bytes(value: LuaValue, function_name: &'static str) -> LuaResult<Option
 fn parse_timeout(value: LuaValue, function_name: &'static str) -> LuaResult<Option<Duration>> {
     match value {
         LuaNil => Ok(None),
-        LuaValue::UserData(ud) if let Ok(duration) = ud.borrow::<TimeDuration>() => {
-            let timeout = (*duration).inner; // SignedDuration is Copy, no drop worries
+        LuaValue::UserData(ref ud) if let Some(duration) = TimeDuration::borrow(ud) => {
+            let timeout = duration.inner; // SignedDuration is Copy, no drop worries
             if !timeout.is_positive() {
                 return wrap_err!("{}: timeout must be a positive Duration, got: {:#?}", function_name, timeout);
             }

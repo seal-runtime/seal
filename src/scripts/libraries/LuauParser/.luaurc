@@ -1,0 +1,7 @@
+{
+    // vendored lib triggers bunch of Luwu lints
+    "lint": {
+        "OneLineStatement": false,
+        "LuaAndOr": false
+    }
+}

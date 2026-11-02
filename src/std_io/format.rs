@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{prelude::*, std_err::WrappedError};
 use mluau::prelude::*;
 
 use std::sync::{LazyLock, RwLock};
@@ -31,7 +31,7 @@ pub fn process_debug_values(result: &mut String, value: &LuaValue, depth: usize)
             result.push_str(&pretty_hex::config_hex(&buffy.to_vec(), hex_cfg));
         },
         LuaValue::UserData(data) => {
-            match data.call_method::<LuaString>("__dp", ()) {
+            match data.get::<LuaFunction>("__dp")?.call_with_err::<LuaString, WrappedError>(data) {
                 Ok(dp_output) => {
                     result.push_str(&dp_output.to_string_lossy());
                 },
@@ -68,7 +68,7 @@ fn debug(luau: &Lua, stuff: LuaMultiValue) -> LuaResult<LuaString> {
 const FORMATTER_SRC: &str = include_str!("./formatter.luau");
 
 pub fn cached_formatter(luau: &Lua) -> LuaResult<LuaTable> {
-    let f = luau.named_registry_value::<Option<LuaTable>>("format.formatter")?;
+    let f = luau.registry().get::<Option<LuaTable>>("format.formatter")?;
     if let Some(resolve) = f {
         Ok(resolve)
     } else {
@@ -77,7 +77,7 @@ pub fn cached_formatter(luau: &Lua) -> LuaResult<LuaTable> {
             panic!("formatter.luau didnt return table??");
         };
 
-        luau.set_named_registry_value("format.formatter", &formatter)?;
+        luau.registry().set("format.formatter", &formatter)?;
 
         Ok(formatter)
     }
@@ -86,7 +86,7 @@ pub fn cached_formatter(luau: &Lua) -> LuaResult<LuaTable> {
 pub fn simple(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let formatter = cached_formatter(luau)?;
     let format_simple: LuaFunction = formatter.raw_get("simple")?;
-    let result = match format_simple.call::<LuaString>(value) {
+    let result = match format_simple.call_with_err::<LuaString, WrappedError>(value) {
         Ok(text) => text.to_string_lossy(),
         Err(err) => {
             return wrap_err!("format.simple: error formatting: {}", err);
@@ -216,7 +216,7 @@ pub fn pretty(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaResult<String> {
         guidelines,
         show_array_length,
     } = options.unwrap_or_default();
-    let result = format_pretty.call::<LuaString>((
+    let result = format_pretty.call_with_err::<LuaString, WrappedError>((
         value,            // value
         LuaNil,           // seen_tables
         current_depth,    // depth

@@ -561,8 +561,9 @@ pub const STD_TIME_DATETIME_MILLISECONDS: &std::ffi::CStr = c"time.datetime.mill
 pub const STD_TIME_DATETIME_MINUTES: &std::ffi::CStr = c"time.datetime.minutes(number) -> TimeSpan";
 pub const STD_TIME_DATETIME_MONTHS: &std::ffi::CStr = c"time.datetime.months(number, relative_to: DateTime?) -> TimeSpan";
 pub const STD_TIME_DATETIME_NOW: &std::ffi::CStr = c"time.datetime.now() -> DateTime";
-pub const STD_TIME_DATETIME_PARSE: &std::ffi::CStr = c"time.datetime.parse(source: string, format: string | CommonFormats, timezone: IanaTimezone) -> DateTime";
+pub const STD_TIME_DATETIME_PARSE: &std::ffi::CStr = c"time.datetime.parse(source: string, format: string | CommonFormats?, timezone: IanaTimezone?) -> DateTime";
 pub const STD_TIME_DATETIME_SECONDS: &std::ffi::CStr = c"time.datetime.seconds(number) -> TimeSpan";
+pub const STD_TIME_DATETIME_TIMESPAN: &std::ffi::CStr = c"time.datetime.timespan(source: string, relative_to: DateTime?) -> TimeSpan";
 pub const STD_TIME_DATETIME_YEARS: &std::ffi::CStr = c"time.datetime.years(number, relative_to: DateTime?) -> TimeSpan";
 
 // time
@@ -573,6 +574,7 @@ pub const STD_TIME_MILLISECONDS: &std::ffi::CStr = c"time.milliseconds(ms: numbe
 pub const STD_TIME_MINUTES: &std::ffi::CStr = c"time.minutes(m: number) -> Duration";
 pub const STD_TIME_MONTHS: &std::ffi::CStr = c"time.months(months: number) -> Duration";
 pub const STD_TIME_NANOSECONDS: &std::ffi::CStr = c"time.nanoseconds(n: number) -> Duration";
+pub const STD_TIME_PARSE: &std::ffi::CStr = c"time.parse(source: string) -> Duration";
 pub const STD_TIME_SECONDS: &std::ffi::CStr = c"time.seconds(s: number) -> Duration";
 pub const STD_TIME_WAIT: &std::ffi::CStr = c"time.wait(duration: Duration | number) -> true";
 pub const STD_TIME_YEARS: &std::ffi::CStr = c"time.years(y: number) -> Duration";

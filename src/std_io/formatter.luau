@@ -440,6 +440,7 @@ const function stringify_simple_type(value: any, key_function_name: string?, dep
 end
 
 local function stringify_table_path(current_table_path: { any }, depth: number, options: FormatOptions): string
+    --@[nolint(LoopConcat)]
     local table_path = BOLD_YELLOW .. "self" .. RESET
     for _, level in current_table_path do
         if typeof(level) == "string" then
