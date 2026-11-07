@@ -109,19 +109,22 @@ pub fn json_raw_encode(_luau: &Lua, table: LuaValue) -> LuaResult<String> {
 /// have their json as a `&str`/`String`) rather than `json_decode`'s owned `String`, which only exists
 /// because that's what Luau calling `json.decode` gets bound to
 pub fn decode(luau: &Lua, json: &str) -> LuaValueResult {
-    let json_value: serde_json::Value = match serde_json::from_str(json) {
-        Ok(json) => json,
+    // tables are built while serde_json parses, without a serde_json::Value of the whole document first
+    let mut deserializer = serde_json::Deserializer::from_str(json);
+    let luau_value = match luau.deserialize_value(&mut deserializer) {
+        Ok(value) => value,
+        Err(LuaError::DeserializeError(message)) => {
+            return wrap_err!("json: unable to decode json. serde_json error: {}", message);
+        },
         Err(err) => {
-            return wrap_err!("json: unable to decode json. serde_json error: {}", err.to_string());
+            return wrap_err!("json.decode: unable to build the decoded value: {}", err);
         }
     };
 
-    let luau_value = match luau.to_value::<serde_json_lenient::Value>(&json_value) {
-        Ok(deserialized) => deserialized,
-        Err(err) => {
-            return wrap_err!("json.decode: unable to convert serde_json_lenient::Value into LuaValue due to err: {}", err);
-        }
-    };
+    // trailing characters after the value
+    if let Err(err) = deserializer.end() {
+        return wrap_err!("json: unable to decode json. serde_json error: {}", err.to_string());
+    }
 
     Ok(luau_value)
 }

@@ -234,7 +234,16 @@ const function checked_tostring(value): string | error
     return err.wrap(`someone bunged up a __tostring implementation ({result})`)
 end
 
-local GUIDE_COLORS: { string } = compute_guide_colors()
+--- Computed on first use: in a truecolor terminal it queries the terminal's background,
+--- which can block for up to 150 ms. Most prints never draw guides.
+local GUIDE_COLORS: { string }? = nil
+
+const function guide_colors(): { string }
+    if not GUIDE_COLORS then
+        GUIDE_COLORS = compute_guide_colors()
+    end
+    return GUIDE_COLORS :: { string }
+end
 
 local colors_enabled_state: boolean = is_tty and vars.get("NO_COLOR") == nil
 
@@ -254,7 +263,7 @@ local function apply_color_state(enabled: boolean)
         BOLD_YELLOW = colors.codes.BOLD_YELLOW
         BOLD = colors.codes.BOLD
         DIM = colors.codes.DIM
-        GUIDE_COLORS = compute_guide_colors()
+        GUIDE_COLORS = nil
         ORANGE = colors.rgb(vector.create(255, 165, 0))
     else
         RESET = ""
@@ -536,13 +545,14 @@ const function indents(guidelines: boolean, depth: number, indent_spaces: number
         local parts: { string } = {}
         -- truecolor colors already encode the desired muting; DIM would double-dim them
         local dim = if is_truecolor then "" else DIM
+        const colors_by_depth = guide_colors()
         for d = 0, depth - 1 do
-            local color = GUIDE_COLORS[(d % #GUIDE_COLORS) + 1]
+            local color = colors_by_depth[(d % #colors_by_depth) + 1]
             local bar = if d % 2 == 0 then "┆" else "╎"
             table.insert(parts, dim .. color .. bar .. RESET .. string.rep(" ", indent_spaces - 1))
         end
         current_indent = table.concat(parts)
-        local next_color = GUIDE_COLORS[(depth % #GUIDE_COLORS) + 1]
+        local next_color = colors_by_depth[(depth % #colors_by_depth) + 1]
         local next_bar = if depth % 2 == 0 then "┆" else "╎"
         element_indent = current_indent .. dim .. next_color .. next_bar .. RESET .. string.rep(" ", indent_spaces - 1)
     else

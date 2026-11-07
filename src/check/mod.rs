@@ -47,11 +47,29 @@ impl CheckOptions {
         }
 
         if paths.is_empty() {
+            if !in_seal_project() {
+                return wrap_err!(
+                    "{}: pass the files or directories to check (`seal check` checks '.' only inside a seal project)",
+                    function_name
+                );
+            }
             paths.push(String::from("."));
         }
 
         Ok(Self { paths, definitions })
     }
+}
+
+/// Whether the current directory is in a seal project. `~/.seal` holds seal's global setup, so the home directory
+/// doesn't count as a project.
+fn in_seal_project() -> bool {
+    let Ok(cwd) = std::env::current_dir() else {
+        return false;
+    };
+    let Some(project) = globals::find_project(&path_string(&cwd), 1) else {
+        return false;
+    };
+    std::env::home_dir().is_none_or(|home| project != home)
 }
 
 struct Diagnostic {

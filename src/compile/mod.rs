@@ -5,7 +5,7 @@ use crate::globals;
 use crate::{Args, LuauLoadResult};
 
 use std::fs::{self, OpenOptions};
-use std::io::{Read, Write};
+use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
 
 
@@ -135,63 +135,50 @@ pub fn bundle(project_path: &Path) -> LuaResult<String> {
     Ok(res)
 }
 
+/// The magic header a standalone executable ends with, right before the bytecode length
+const STANDALONE_MAGIC: &[u8] = b"ASEALB1N";
+
+/// Opens the executable at `bin` (this seal if `None`) and reads the trailer of
+/// <normal seal machine code><bytecode><magic><len>. Returns the open file and the bytecode's offset and length
+/// if it's a standalone executable. Only the trailer is read: a seal executable is tens of megabytes, and every
+/// seal run checks whether it's standalone.
+fn read_standalone_trailer(bin: Option<PathBuf>) -> Option<(fs::File, u64, usize)> {
+    const TRAILER_LEN: u64 = STANDALONE_MAGIC.len() as u64 + 4;
+
+    let executable_path = match bin {
+        Some(path) => path,
+        None => std::env::current_exe().ok()?,
+    };
+    let mut file = fs::File::open(&executable_path).ok()?;
+    let file_len = file.metadata().ok()?.len();
+    let trailer_start = file_len.checked_sub(TRAILER_LEN)?;
+
+    let mut trailer = [0u8; TRAILER_LEN as usize];
+    file.seek(SeekFrom::Start(trailer_start)).ok()?;
+    file.read_exact(&mut trailer).ok()?;
+
+    let (magic, len_bytes) = trailer.split_at(STANDALONE_MAGIC.len());
+    if magic != STANDALONE_MAGIC {
+        return None;
+    }
+
+    let bytecode_len = u32::from_le_bytes(len_bytes.try_into().ok()?) as usize;
+    let bytecode_start = trailer_start.checked_sub(bytecode_len as u64)?;
+    Some((file, bytecode_start, bytecode_len))
+}
+
 pub fn is_standalone(bin: Option<PathBuf>) -> bool {
-    const MAGIC: &[u8] = b"ASEALB1N";
-
-    let Some(executable_path) = bin.or(std::env::current_exe().ok()) else {
-        return false;
-    };
-    let Some(executable_bytes) = fs::read(&executable_path).ok() else {
-        return false;
-    };
-
-    let file_len = executable_bytes.len();
-    // check the back of the file (last 12 bytes) to see if we're a standalone exe
-    let magic_start = file_len - MAGIC.len() - 4;
-    let extracted_magic = &executable_bytes[magic_start..magic_start + MAGIC.len()];
-
-    extracted_magic == MAGIC
+    read_standalone_trailer(bin).is_some()
 }
 
 /// if this seal executable is standalone, returns its compiled bytecode;
 /// if it's not standalone, returns None
 pub fn extract_bytecode(bin: Option<PathBuf>) -> Option<Vec<u8>> {
-    const MAGIC: &[u8] = b"ASEALB1N";
-
-    let executable_path = bin.unwrap_or(std::env::current_exe().ok()?);
-    let executable_bytes = fs::read(&executable_path).ok()?;
-    let file_len = executable_bytes.len();
-
-    // check the back of the file (last 12 bytes) to see if we're a standalone exe
-    let magic_start = file_len - MAGIC.len() - 4;
-    let extracted_magic = &executable_bytes[magic_start..magic_start + MAGIC.len()];
-    if extracted_magic != MAGIC {
-        // we are not a standalone bin, early return None
-        return None;
-    }
-
-    // read bytecode length (exactly 4 bytes from end of magic header)
-    let bytecode_len = {
-        let len_start = magic_start + MAGIC.len();
-        let len_end = len_start + 4;
-
-        if len_end > executable_bytes.len() {
-            return None;
-        }
-
-        let len_bytes = &executable_bytes[len_start..len_end];
-        u32::from_le_bytes(len_bytes.try_into().ok()?) as usize
-    };
-
-    // extract bytecode
-    let bytecode_start = file_len.checked_sub(MAGIC.len() + 4 + bytecode_len)?;
-    let bytecode_end = bytecode_start + bytecode_len;
-
-    if bytecode_end > executable_bytes.len() {
-        return None;
-    }
-
-    Some(executable_bytes[bytecode_start..bytecode_end].to_vec())
+    let (mut file, bytecode_start, bytecode_len) = read_standalone_trailer(bin)?;
+    let mut bytecode = vec![0u8; bytecode_len];
+    file.seek(SeekFrom::Start(bytecode_start)).ok()?;
+    file.read_exact(&mut bytecode).ok()?;
+    Some(bytecode)
 }
 
 /// returns a compiled binary of <normal seal machine code><bytecode><magic><len>
@@ -224,10 +211,9 @@ pub fn standalone(src: &str) -> LuaResult<Vec<u8>> {
     };
 
     // append magic 8 byte header + length prefix + bytecode
-    const MAGIC: &[u8] = b"ASEALB1N";
     let bytecode_len = (bytecode.len() as u32).to_le_bytes();
     standalone_bytes.extend_from_slice(&bytecode);
-    standalone_bytes.extend_from_slice(MAGIC);
+    standalone_bytes.extend_from_slice(STANDALONE_MAGIC);
     standalone_bytes.extend_from_slice(&bytecode_len);
 
     Ok(standalone_bytes)

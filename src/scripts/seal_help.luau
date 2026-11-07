@@ -199,7 +199,7 @@ function help.check()
         TAGLINE,
         colors.bold.white("Usage:") .. dim(" <angled> = required, [square] = optional"),
         `  {colors.bold.blue("seal")} {colors.bold.magenta("check")} {opt "path"}`,
-        `    {DIM_DASH} type check and lint a file, or every .luau and .luwu file in a directory (defaults to {code "."}).`,
+        `    {DIM_DASH} type check and lint a file, or every .luau and .luwu file in a directory (defaults to {code "."} inside a seal project).`,
         `  {colors.bold.blue("seal")} {colors.bold.magenta("check")} {req "--defs"} path/to/globals.d.luau {opt "path"}`,
         `    {DIM_DASH} check against another runtime's definition files instead of seal's; repeat {code "--defs"} for several.`,
         colors.bold.white("Docs:"),
