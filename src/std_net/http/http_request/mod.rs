@@ -7,6 +7,7 @@ use ureq::http::Method;
 
 mod sender;
 use sender::Sender;
+pub use sender::new_agent;
 
 use super::TimeoutInfo;
 use super::HttpResponse;
@@ -42,6 +43,8 @@ pub struct HttpRequest {
 
 impl HttpRequest {
     pub fn from_config(method: Method, config: LuaTable, luau: &Lua, function_name: &'static str) -> LuaResult<Self> {
+        Sender::check_method(&method, function_name)?;
+
         let url = match config.raw_get("url")? {
             LuaValue::String(s) => {
                 let url = Self::check_valid_utf8(s, "RequestOptions.url", function_name)?;
@@ -140,7 +143,12 @@ impl HttpRequest {
     }
 
     /// Send the request without throwing errors in the common expected cases of io/network errors.
-    pub fn try_send(self, function_name: &'static str) -> LuaResult<HttpResponseResult>{
+    pub fn try_send(self) -> HttpResponseResult {
+        self.send_with(&new_agent(None))
+    }
+
+    /// Like `try_send`, but the request goes through `agent` and reuses its pooled connections.
+    pub fn send_with(self, agent: &ureq::Agent) -> HttpResponseResult {
         let Self { 
             method,
             url,
@@ -152,20 +160,14 @@ impl HttpRequest {
             max_redirects
         } = self;
 
-        let result = Sender::from_http_method(method, url, function_name)?
+        let result = Sender::from_http_method(agent, method, url)
             .configure(timeout.clone(), max_redirects)
             .send(headers, params, body);
 
         match result {
-            Ok(response) => {
-                Ok(HttpResponseResult::Ok(HttpResponse::new(response, max_body_size)))
-            },
-            Err(UreqError::Timeout(which)) => {
-                Ok(HttpResponseResult::Timeout(which, timeout))
-            },
-            Err(err) => {
-                Ok(HttpResponseResult::Err(err))
-            }
+            Ok(response) => HttpResponseResult::Ok(HttpResponse::new(response, max_body_size)),
+            Err(UreqError::Timeout(which)) => HttpResponseResult::Timeout(which, timeout),
+            Err(err) => HttpResponseResult::Err(err),
         }
     }
 
@@ -176,7 +178,7 @@ impl HttpRequest {
         // all the luau errors (api usage errors) should be propagated upwards
         // whereas all the ureq errors we can now match against
 
-        match self.try_send(function_name)? {
+        match self.try_send() {
             HttpResponseResult::Ok(mut response) => {
                 if let Err(err) = response.read_body_into_self() {
                     return wrap_err!("{}: cannot create response due to error reading response body: {}", function_name, err);

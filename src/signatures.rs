@@ -348,7 +348,14 @@ pub const STD_LUAU_REQUIRE_RESOLVER: &std::ffi::CStr = c"luau.require_resolver()
 // net.http
 pub const STD_NET_HTTP_GET: &std::ffi::CStr = c"net.http.get(options: HttpRequestWithoutBody) -> HttpResponse";
 pub const STD_NET_HTTP_POST: &std::ffi::CStr = c"net.http.post(options: HttpRequestWithBody) -> HttpResponse";
+pub const STD_NET_HTTP_QUEUE: &std::ffi::CStr = c"net.http.queue(workers: number?) -> HttpQueue";
 pub const STD_NET_HTTP_REQUEST: &std::ffi::CStr = c"net.http.request(method: HttpMethod, options: HttpRequestWithoutBody | HttpRequestWithBody) -> HttpResponseResult";
+
+// HttpQueue
+pub const STD_NET_HTTP_HTTP_QUEUE_CANCEL: &std::ffi::CStr = c"HttpQueue:cancel(key: K?)";
+pub const STD_NET_HTTP_HTTP_QUEUE_GET: &std::ffi::CStr = c"HttpQueue:get(options: HttpRequestWithoutBody | string, key: K?) -> K | number";
+pub const STD_NET_HTTP_HTTP_QUEUE_POST: &std::ffi::CStr = c"HttpQueue:post(options: HttpRequestWithBody, key: K?) -> K | number";
+pub const STD_NET_HTTP_HTTP_QUEUE_REQUEST: &std::ffi::CStr = c"HttpQueue:request(method: HttpMethod, options: HttpRequestWithoutBody | HttpRequestWithBody, key: K?) -> K | number";
 
 // HttpResponse
 pub const STD_NET_HTTP_HTTP_RESPONSE_EXPECT_JSON: &std::ffi::CStr = c"HttpResponse:expect_json() -> T";
