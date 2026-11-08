@@ -184,7 +184,7 @@ local function setup(config: SetupConfig?)
         local src_dir = fs.dir(cwd:join("src"))
         if not src_dir then
             fs.writetree(cwd:join("src"), fs.tree()
-                :with_file("main.luau", 'print("Hello world!")')
+                :with_file("main.luwu", 'print("Hello world!")')
             )
         end
         -- either way (gen or link) we still need a .seal dir at the cwd for config.luau
@@ -204,10 +204,10 @@ local function setup(config: SetupConfig?)
         }
         if not fs.path.exists(cwd:join(".seal", "config.luau")) then
             fs.dir.ensure(cwd:join(".seal"))
-                :add_file("script.luau", table.concat(script_starter_imports, "\n"))
+                :add_file("script.luwu", table.concat(script_starter_imports, "\n"))
                 :add_file(
                     "config.luau",
-                    'return {\n    entry_path = "./.seal/script.luau"\n}'
+                    'return {\n    entry_path = "./.seal/script.luwu"\n}'
                 )
         end
     end

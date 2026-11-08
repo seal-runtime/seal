@@ -150,11 +150,14 @@ const assets = fs.listdir(output_dir.path)
 table.sort(assets)
 
 const intro = table.concat({
-    `Prerelease build of seal {version} from seal's \`{branch}\` branch, rebuilt on every push.`,
+    `Prerelease build of seal {version} from seal's \`{branch}\` branch (0.9.0 + luwu version!).`,
     "It's built against Luwu's `integration` branch, which shows our intended vision for the language with all its features together by its 0.1.0 release.",
     "",
     "> [!WARNING]",
     "> seal 0.9.x's standard library is being rewritten, so expect breaking changes between builds.",
+    "## New seal features",
+    "- `http.queue` api for sending multiple requests in parallel.",
+    "## Tracking info",
     "",
     `- seal: [\`{short_sha}\`](https://github.com/{repository}/commit/{head_sha})`,
     `- Luwu: [\`{luwu_commit}\`](https://github.com/luwu-community/luwu/commit/{luwu_commit})`,

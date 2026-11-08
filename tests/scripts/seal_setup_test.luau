@@ -46,7 +46,7 @@ local function sealsetup()
 	end
 
 	assert(projectpathexists("src"), "sealproject/src dir not exists?")
-	assert(projectpathexists("src", "main.luau"), "sealproject/src/main.luau not exists?")
+	assert(projectpathexists("src", "main.luwu"), "sealproject/src/main.luwu not exists?")
 	assert(projectpathexists(".seal"), "sealproject/.seal not exists?")
 	assert(projectpathexists(".seal", "config.luau"), "sealproject/.seal/config.luau not exists?")
 	assert(projectpathexists(".luaurc"), "sealproject/.luaurc not exists?")
@@ -150,7 +150,7 @@ local function scriptsetup()
 	assert(projectpathexists(".seal"), "scriptproject/.seal not exists?")
 	assert(projectpathexists(".seal", "config.luau"), "scriptproject/.seal/config.luau not exists?")
 	assert(projectpathexists(".luaurc"), "scriptproject/.luaurc not exists?")
-	assert(projectpathexists(".seal", "script.luau"), "scriptproject/.seal/script.luau not exists?")
+	assert(projectpathexists(".seal", "script.luwu"), "scriptproject/.seal/script.luau not exists?")
 	assert(projectpathexists(".vscode", "settings.json"), "scriptproject/.vscode/settings.json not exists?")
 end
 
@@ -170,10 +170,10 @@ local function scriptsetuprequires()
 	]]
 	scriptproject
 		:expect_dir(".seal")
-		:expect_file("script.luau")
+		:expect_file("script.luwu")
 		:append(script_src)
 	
-	local result = run_file(scriptproject:join(".seal", "script.luau"))
+	local result = run_file(scriptproject:join(".seal", "script.luwu"))
 	assert(result:match("yay"), "script result should say yay somewhere in stdout")
 end
 
