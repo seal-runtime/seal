@@ -24,7 +24,7 @@ for _, file in rust_files do
     end
 end
 
-local seal_version = _RUNTIME.version.display
+local seal_version = _SEAL_VERSION
 local luau_version = _LUAU.version.display
 
 print(`replacing seal version {seal_version}, luau version {luau_version}, counted {count} wrap_err!s`)
@@ -84,7 +84,10 @@ else
     exit 0
 fi
 SEAL="$($BOOTSTRAP src/scripts/newest_seal.luau)"
-$SEAL src/scripts/precommit.luau
+if [ -f src/scripts/check_local_patch.luau ]; then
+    $SEAL src/scripts/check_local_patch.luau || exit 1
+fi
+$SEAL src/scripts/precommit.luau || exit 1
 $SEAL docs/docscripts/reference.luau
 git add README.md
 git add docs/reference/*

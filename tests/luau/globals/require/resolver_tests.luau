@@ -1,7 +1,7 @@
 local fs = require("@std/fs")
 
 local resolver_src: string = "" do
-	local resolver_dot_luau_path = fs.path.join(".", "src", "require", "resolver.luau")
+	local resolver_dot_luau_path = fs.path.join(".", "src", "require", "resolver.luwu")
 	resolver_src = fs.readfile(resolver_dot_luau_path)
 end
 

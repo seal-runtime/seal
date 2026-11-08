@@ -19,6 +19,8 @@ jobs:
     name: Build all targets
     needs: ["check-branch"]
     uses: ./.github/workflows/build.yml
+    permissions:
+      contents: write  # GitHub checks the permissions build.yml's prerelease job requests before skipping it on main
 
   release:
     name: Package and draft release

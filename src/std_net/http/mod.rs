@@ -13,6 +13,8 @@ use http_response::HttpResponse;
 mod http_error;
 use http_error::HttpError;
 
+mod queue;
+
 use ureq::Error as UreqError;
 use ureq::http::Method;
 
@@ -94,7 +96,7 @@ pub fn http_request(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult
 
     let request = HttpRequest::from_config(http_method, config, luau, function_name)?;
     // we want to throw Luau errors but match on Ureq/Timeout errors and return them instead of throwing
-    let result = request.try_send(function_name)?; 
+    let result = request.try_send();
 
     match result {
         HttpResponseResult::Ok(mut response) => {
@@ -118,5 +120,6 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function_and_signature("get", http_get, signatures::STD_NET_HTTP_GET)?
         .with_function_and_signature("post", http_post, signatures::STD_NET_HTTP_POST)?
         .with_function_and_signature("request", http_request, signatures::STD_NET_HTTP_REQUEST)?
+        .with_function_and_signature("queue", queue::http_queue, signatures::STD_NET_HTTP_QUEUE)?
         .build_readonly()
 }

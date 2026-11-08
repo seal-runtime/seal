@@ -55,3 +55,15 @@ local function mul_div_errors()
 end
 
 mul_div_errors()
+
+local function parsesdurations()
+    local time = require("@std/time")
+    assert(time.parse("PT1M30S").seconds == 90, "PT1M30S should be 90 seconds")
+    assert(time.parse("1.5h").seconds == 5400, "1.5h should be 5400 seconds")
+    assert(time.parse("P1W").seconds == 604800, "a week should be 7 days")
+    local ok, err = pcall(time.parse, "P1Y")
+    assert(not ok and string.find(tostring(err), "datetime.timespan", 1, true), `months and years should point at datetime.timespan: {err}`)
+    assert(not pcall(time.parse, "soon"), "soon isn't a duration")
+end
+
+parsesdurations()

@@ -163,8 +163,8 @@ impl TimeoutInfo {
         keep_going: bool,
     ) -> LuaResult<MaybeDuration> {
         Ok(match t.raw_get(key)? {
-            LuaValue::UserData(ud) if let Ok(duration) = ud.borrow::<TimeDuration>() => {
-                let timeout = (*duration).inner; // SignedDuration is clone on copy, we don't have to worry about dropping it here
+            LuaValue::UserData(ref ud) if let Some(duration) = TimeDuration::borrow(ud) => {
+                let timeout = duration.inner; // SignedDuration is clone on copy, we don't have to worry about dropping it here
                 if !timeout.is_positive() {
                     return wrap_err!("{}: {}: Duration must be positive, got: {:#?}", function_name, field_name, timeout);
                 }

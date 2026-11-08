@@ -340,7 +340,7 @@ fn fs_readtree(luau: &Lua, value: LuaValue) -> LuaValueResult {
     };
     let chunk = Chunk::src(READ_TREE_SRC);
     let read_tree_fn: LuaFunction = luau.load(chunk).eval()?;
-    let result = match read_tree_fn.call::<LuaValue>(path) {
+    let result = match read_tree_fn.call_with_err::<LuaValue, WrappedError>(path) {
         Ok(LuaValue::Table(t)) => t,
         Ok(other) => {
             return wrap_err!("{} [INTERNAL]: read_tree_fn returned something that isn't a table: {:?}", function_name, other);

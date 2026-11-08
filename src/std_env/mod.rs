@@ -1,7 +1,7 @@
 use std::env;
 use std::io;
 use std::path::PathBuf;
-use std::process::Command;
+use std::sync::OnceLock;
 
 use mluau::prelude::*;
 use crate::compile;
@@ -9,68 +9,44 @@ use crate::prelude::*;
 
 pub mod vars;
 
+/// The shell `process.shell` and `shell = true` use: `$SHELL` when it's set, otherwise the system's default shell.
+/// `$SHELL` is read on every call so a script can change it; the default is looked up once per process.
 pub fn get_current_shell() -> String {
-    #[cfg(target_family = "unix")]
-    {
-        // On Unix-like systems, check the SHELL environment variable
-        if let Ok(shell_path) = env::var("SHELL") {
-            return shell_path;
-        }
+    if let Ok(shell_path) = env::var("SHELL") {
+        return shell_path;
     }
+    static DEFAULT_SHELL: OnceLock<String> = OnceLock::new();
+    DEFAULT_SHELL.get_or_init(find_default_shell).clone()
+}
 
-    #[cfg(target_os = "windows")]
-    {
-        // first check the SHELL environment variable (if set) if user install custom shell
-        if let Ok(shell_path) = env::var("SHELL") {
-            return shell_path;
-        }
+/// Finds `executable` in the directories on `$PATH` with filesystem checks only. Running `where` instead started a
+/// process on every `require("@std/env")` and cost up to a second on Windows.
+#[cfg(target_os = "windows")]
+fn find_on_path(executable: &str) -> Option<String> {
+    let path = env::var_os("PATH")?;
+    env::split_paths(&path)
+        .map(|directory| directory.join(executable))
+        .find(|candidate| candidate.is_file())
+        .map(|found| found.to_string_lossy().into_owned())
+}
 
-        // Check specifically for PowerShell executables
-        let pwsh_cmd = "pwsh";
-        let powershell_cmd = "powershell";
-
-        // check if regular powershell installed bc pwsh 7 blows up
-        if let Ok(output) = Command::new("where").arg(powershell_cmd).output()
-            && output.status.success() {
-                let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
-                return path;
-            }
-
-        // check if new/oss/powershell 7 installed; it might blow up with threading error tho
-        if let Ok(output) = Command::new("where").arg(pwsh_cmd).output()
-            && output.status.success() {
-                let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
-                return path;
-            }
-        // fallback to cmd
-        if let Ok(shell_path) = env::var("ComSpec") {
-            use std::io::Write;
-            let mut stderr = std::io::stderr().lock();
-            let _ = writeln!(stderr, "get_current_shell falling back to cmd.exe; please set $SHELL");
-            return shell_path;
-        }
+#[cfg(target_os = "windows")]
+fn find_default_shell() -> String {
+    // Windows PowerShell before pwsh: pwsh 7 can blow up with a threading error
+    if let Some(powershell) = find_on_path("powershell.exe") {
+        return powershell;
     }
-
-    // As a fallback, try to find a shell using `which` or `where` command
-    let which_cmd = if cfg!(target_family = "unix") {
-        "which"
-    } else if cfg!(target_os = "windows") {
-        "where"
-    } else {
-        ""
-    };
-
-    if !which_cmd.is_empty()
-        && let Ok(output) = Command::new(which_cmd)
-            .arg("sh")
-            .output()
-        && output.status.success()
-    {
-        let path = String::from_utf8_lossy(&output.stdout).trim().to_string();
-        return path;
+    if let Some(pwsh) = find_on_path("pwsh.exe") {
+        return pwsh;
     }
+    use std::io::Write;
+    let _ = writeln!(std::io::stderr().lock(), "get_current_shell falling back to cmd.exe; please set $SHELL");
+    env::var("ComSpec").unwrap_or_else(|_| String::from("cmd.exe"))
+}
 
-    String::from("")
+#[cfg(not(target_os = "windows"))]
+fn find_default_shell() -> String {
+    String::from("/bin/sh")
 }
 
 pub fn get_cwd(function_name: &str) -> LuaResult<PathBuf> {

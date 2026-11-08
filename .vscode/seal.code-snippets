@@ -64,7 +64,7 @@
     "body": "function_name: &'static str"
   },
   "Add documentation block": {
-    "scope": "luau",
+    "scope": "luau,luwu",
     "prefix": "doc",
     "body": "--[=[\n\t$0\n]=]"
   },
