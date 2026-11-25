@@ -150,8 +150,8 @@ unsafe fn eval(luau: &Lua, src: Vec<u8>, eval_options: EvalOptions) -> LuaValueR
         }
     };
 
-    let chunk = luau.load(code)
-        .set_name(name)
+    let chunk = luau
+        .load_from_chunk(code, name)
         .set_environment(globals);
 
     // NOTE: We use eval_with_err directly here to directly capture the err

@@ -1316,7 +1316,6 @@ dependencies = [
 [[package]]
 name = "mlua-sys"
 version = "0.9.0"
-source = "git+https://github.com/luwu-community/mluau.git?branch=luwu-classes#3803cc280a733bb477a125b4313b5a26160fbf21"
 dependencies = [
  "cc",
  "cfg-if",
@@ -1326,7 +1325,6 @@ dependencies = [
 [[package]]
 name = "mluau"
 version = "0.11.5"
-source = "git+https://github.com/luwu-community/mluau.git?branch=luwu-classes#3803cc280a733bb477a125b4313b5a26160fbf21"
 dependencies = [
  "bstr",
  "bytes",
@@ -2021,7 +2019,7 @@ checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
 name = "seal"
-version = "0.9.0-rc.2"
+version = "0.9.0-rc.3"
 dependencies = [
  "aho-corasick",
  "archive",

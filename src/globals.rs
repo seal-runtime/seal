@@ -4,6 +4,7 @@ use mluau::prelude::*;
 use crate::prelude::*;
 use crate::std_err::ecall;
 use crate::{require, std_io};
+use crate::prelude::LoadChunk;
 
 pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "error(message: string | unknown, level: number?)";
@@ -172,7 +173,7 @@ const SCRIPT_PATH_SRC: &str = r#"
 
 pub fn get_debug_name(luau: &Lua) -> LuaResult<String> {
     let chunk = Chunk::src(SCRIPT_PATH_SRC);
-    luau.load(chunk).eval_wrapped()
+    luau.load_from_chunk(chunk, "get requiring file").eval_wrapped()
 }
 
 pub fn get_script_path(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult {
@@ -184,7 +185,7 @@ pub fn get_script_path(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult
 pub fn get_script_parent(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult {
     let requiring_parent = {
         let chunk = Chunk::src(SCRIPT_PATH_SRC);
-        let result: LuaString = luau.load(chunk).eval()?;
+        let result: LuaString = luau.load_from_chunk(chunk, "get requiring file").eval()?;
         let script_path = result.to_string_lossy();
         match std::path::PathBuf::from(script_path).parent() {
             Some(parent) => parent.to_string_lossy().to_string(),

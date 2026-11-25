@@ -67,7 +67,7 @@ impl SealConfig {
         let chunk = Chunk::src(sealconfig_src);
 
         // NOTE: We use eval_with_err directly here to better control the err
-        let sealconfig = match luau.load(chunk).eval_wrapped::<LuaValue>() {
+        let sealconfig = match luau.load_from_chunk(chunk, current_path.display().to_string()).eval_wrapped::<LuaValue>() {
             Ok(LuaValue::Table(config)) => config,
             Ok(other) => {
                 return wrap_err!("{}: config.luau at '{}' returned something that isn't a table: {:?}", function_name, current_path.display(), other);

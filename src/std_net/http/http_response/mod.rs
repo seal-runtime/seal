@@ -218,7 +218,8 @@ impl HttpResponse {
         if let Some(display_fn) = luau.registry().get::<Option<LuaFunction>>("HttpResponse:__display")? {
             display_fn.call(multivalue)
         } else {
-            let display_fn = luau.load(Chunk::src(DISPLAY_SRC)).eval_wrapped::<LuaFunction>()?;
+            let chunk = Chunk::src(DISPLAY_SRC);
+            let display_fn = luau.load_from_chunk(chunk, "seal/std_net/http/http_response/display.luau").eval_wrapped::<LuaFunction>()?;
             luau.registry().set("HttpResponse:__display", &display_fn)?;
             display_fn.call(multivalue)
         }

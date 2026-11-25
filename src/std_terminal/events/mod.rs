@@ -335,7 +335,8 @@ fn interrupt_check(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function = if let Some(function) = luau.registry().get::<Option<LuaFunction>>("terminal/interrupt_check")? {
         function
     } else {
-        let function = luau.load(INTERRUPT_CHECK_SRC).eval_wrapped::<LuaFunction>()?;
+        let res = luau.load_from_chunk(INTERRUPT_CHECK_SRC, "seal/std_terminal/events/interrupt_check.luau");
+        let function = res.eval_wrapped::<LuaFunction>()?;
         luau.registry().set("terminal/interrupt_check", &function)?;
         function
     };

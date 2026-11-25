@@ -967,7 +967,7 @@ const STR_DOT_LUAU_SRC: &str = include_str!("./str.luau");
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     let chunk = Chunk::src(STR_DOT_LUAU_SRC);
-    match luau.load(chunk).set_name("std/str").eval_wrapped::<LuaTable>() {
+    match luau.load_from_chunk(chunk, "std/std_str/str.luau").eval_wrapped::<LuaTable>() {
         Ok(str_table) => Ok(str_table),
         Err(err) => {
             panic!("std/str's str.luau did a bad: {}", err);

@@ -185,7 +185,7 @@ fn main() -> LuaResult<()> {
         "LuwuDefaultArguments",
         "LuwuGenericNominals",
         "LuwuExportedClassIsNilWorkaround",
-        "LuwuTableDrop",
+        "LuwuTableDiscard",
         "LuwuNoinlineAttribute",
         "LuwuDestructuring",
         "LuwuDeclareStatements",
@@ -201,11 +201,15 @@ fn main() -> LuaResult<()> {
         "LuwuAttributesEverywhere",
         "LuwuBufferIsFrozen",
         "LuwuBufferBatched",
-        "LuwuBufferMemcmp",
+        "DebugLuwuBufferComparison",
         "LuwuExternTypeGenericMethods",
         "LuwuStringExtensions",
-        "DebugLuwuCollections",
-        "DebugLuwuTryExpressions"
+        "LuwuStringFormatFastcall",
+        "DebugLuwuEncourageInline",
+        "DebugLuwuBuiltinClasses",
+        "DebugLuwuTryExpressions",
+        "DebugLuwuIntegers",
+        "DebugLuwuBundles"
     ])?;
 
     let command = match SealCommand::parse(args) {
@@ -331,12 +335,26 @@ fn seal_eval(mut args: Args) -> LuauLoadResult {
 
     let luau = Lua::default();
     let globals = luau.globals();
-    globals::set_globals(&luau, String::from("eval"))?;
+    // try to give chunk a debug name so cwd relative requires work
+    let cwd = match std::env::current_dir() {
+        Ok(mut cwd) => {
+            cwd.push("eval!.luwu");
+            cwd
+        },
+        Err(_) => {
+            std::path::PathBuf::from("eval!.luwu")
+        }
+    };
+
+    globals::set_globals(&luau, cwd.to_str().unwrap_or("eval!.luwu"))?;
 
     // eval comes with a few libs builtin
     globals.raw_set("fs", ok_table(std_fs::create(&luau))?)?;
     globals.raw_set("process", ok_table(std_process::create(&luau))?)?;
     globals.raw_set("http", ok_table(std_net::http::create(&luau))?)?;
+    globals.raw_set("tar", ok_table(std_archive::libraries::Tar::create(&luau))?)?;
+    globals.raw_set("zip", ok_table(std_archive::libraries::Zip::create(&luau))?)?;
+    globals.raw_set("json", ok_table(std_json::create(&luau))?)?;
 
     Ok(Some(LuauLoadInfo {
         luau,
@@ -413,6 +431,8 @@ fn seal_standalone(bytecode: Vec<u8>) -> LuauLoadResult {
     }))
 }
 
+const HELP_SRC: &str = include_str!("./scripts/seal_help.luau");
+
 impl SealCommand {
     fn parse(mut args: Args) -> LuaResult<SealCommand> {
         if let Some(bytecode) = compile::extract_bytecode(None) {
@@ -451,9 +471,9 @@ impl SealCommand {
     }
     fn help(&self) -> LuauLoadResult {
         let luau_to_run_help = Lua::default();
-        globals::set_globals(&luau_to_run_help, String::from("seal help"))?;
-        let help_src = include_str!("./scripts/seal_help.luau");
-        let help_table = match luau_to_run_help.load(help_src).eval() {
+        let name = "seal/scripts/seal_help.luau";
+        globals::set_globals(&luau_to_run_help, name)?;
+        let help_table = match luau_to_run_help.load_from_chunk(HELP_SRC, name).eval() {
             Ok(LuaValue::Table(t)) => t,
             Ok(other) => {
                 panic!("what did seal help return other than the help table?? (got {:?})", other);

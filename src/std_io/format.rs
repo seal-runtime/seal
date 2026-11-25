@@ -73,7 +73,7 @@ pub fn cached_formatter(luau: &Lua) -> LuaResult<LuaTable> {
         Ok(resolve)
     } else {
         let chunk = Chunk::src(FORMATTER_SRC);
-        let LuaValue::Table(formatter) = luau.load(chunk).set_name("@std/io/formatter.luau").eval()? else {
+        let LuaValue::Table(formatter) = luau.load_from_chunk(chunk, "@@std/io/formatter.luau").eval()? else {
             panic!("formatter.luau didnt return table??");
         };
 

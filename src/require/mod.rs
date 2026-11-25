@@ -186,12 +186,13 @@ fn get_standard_library(luau: &Lua, path: String) -> LuaValueResult {
 const STD_SEMVER_SRC: &str = include_str!("../std_semver.luau");
 fn load_std_semver(luau: &Lua) -> LuaResult<LuaTable> {
     let chunk = Chunk::src(STD_SEMVER_SRC);
-    luau.load(chunk).set_name("std/semver").eval_wrapped()
+    luau.load_from_chunk(chunk, "seal/std/std_semver.luau").eval_wrapped()
 }
 
 const RESOLVER_SRC: &str = include_str!("./resolver.luwu");
 pub fn get_resolver(luau: &Lua) -> LuaResult<LuaTable> {
     let chunk = Chunk::src(RESOLVER_SRC);
+    #[allow(clippy::disallowed_methods, reason = "performance")]
     let LuaValue::Table(resolver) = luau.load(chunk).eval()? else {
         panic!("require resolver didnt return table??");
     };
@@ -205,7 +206,7 @@ fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
     } else {
         let chunk = Chunk::src(RESOLVER_SRC);
         // putting @@ makes mluau correctly display @seal/src/require/resolver.luwu in stack traceback
-        let LuaValue::Table(resolver) = luau.load(chunk).set_name("@@seal/src/require/resolver.luwu").eval()? else {
+        let LuaValue::Table(resolver) = luau.load_from_chunk(chunk, "@@seal/src/require/resolver.luwu").eval()? else {
             panic!("require resolver didnt return table??");
         }; 
         let LuaValue::Function(resolve) = resolver.raw_get("resolve")? else {
@@ -222,7 +223,7 @@ fn cached_resolver(luau: &Lua) -> LuaResult<LuaFunction> {
 /// seal's reserved aliases (`std`, `interop`) mapped to the directories in `reserved_aliases`
 pub fn check_resolver(luau: &Lua, reserved_aliases: LuaTable) -> LuaResult<LuaFunction> {
     let chunk = Chunk::src(RESOLVER_SRC);
-    let LuaValue::Table(resolver) = luau.load(chunk).set_name("@@seal/src/require/resolver.luwu").eval()? else {
+    let LuaValue::Table(resolver) = luau.load_from_chunk(chunk, "@@seal/src/require/resolver.luwu").eval()? else {
         panic!("require resolver didnt return table??");
     };
     let check_resolver: LuaFunction = resolver.raw_get("check_resolver")?;

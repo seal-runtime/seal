@@ -57,6 +57,7 @@ pub fn validate_path_without_checking_fs(path: &LuaString, function_name: &str) 
 /// or replacing with utf8 replacement character
 ///
 /// this is because Luau allows strings to be of arbitrary encoding unlike Rust, where they have to be utf8
+#[deprecated = "Will be replaced with fs.file.read(path: Pathlike) -> string ! structured errors"]
 pub fn fs_readfile(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let file_path = match value {
         LuaValue::String(file_path) => {
@@ -76,6 +77,7 @@ pub fn fs_readfile(luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 /// fs.readbytes(path: string, target_buffer: buffer, buffer_offset: number?, file_offset: number?, count: number)
+#[deprecated = "Will be replaced by fs.file.readbytes"]
 pub fn fs_readbytes(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name_and_args = "fs.readbytes(path: string, target_buffer: buffer, buffer_offset: number?, file_offset: number?, count: number)";
     let entry_path: String = match multivalue.pop_front() {
@@ -106,6 +108,7 @@ fn fs_readlines(luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 // fs.writefile(path: string, content: string | buffer): ()
+#[deprecated = "Will be replaced by fs.file.write"]
 pub fn fs_writefile(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
     let file_path = match multivalue.pop_front() {
         Some(LuaValue::String(path)) => {
@@ -154,6 +157,7 @@ pub fn fs_writefile(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResul
 
 /// fs.removefile(path: string): ()
 /// cannot remove directories
+#[deprecated = "Will be replaced with fs.file.remove"]
 pub fn fs_removefile(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
     let victim_path = match value {
         LuaValue::String(path) => {
@@ -181,6 +185,7 @@ pub fn fs_removefile(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
     }
 }
 
+#[deprecated = "Will be replaced with fs.path.type(path: Pathlike) -> same variants as this or fs.path(path: Pathlike):type()"]
 pub fn fs_is(luau: &Lua, path: String) -> LuaValueResult {
     let function_name = "fs.is(path: string)";
     let response = match fs::symlink_metadata(&path) {
@@ -328,6 +333,7 @@ const READ_TREE_SRC: &str = include_str!("./read_tree.luau");
 /// fs.readtree(path: string): DirectoryTree
 /// not called readdir because it's uglier + we want dir/tree stuff to autocomplete after file
 /// so we want fs.readfile to autocomplete first and i'm assuming it's alphabetical
+#[deprecated = "Will be replaced with fs.filter and fs.glob"]
 fn fs_readtree(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "fs.readtree(path: string)";
     let path = match value {
@@ -339,6 +345,7 @@ fn fs_readtree(luau: &Lua, value: LuaValue) -> LuaValueResult {
         }
     };
     let chunk = Chunk::src(READ_TREE_SRC);
+    #[allow(clippy::disallowed_methods, reason = "this function will be removed anyway")]
     let read_tree_fn: LuaFunction = luau.load(chunk).eval()?;
     let result = match read_tree_fn.call_with_err::<LuaValue, WrappedError>(path) {
         Ok(LuaValue::Table(t)) => t,
@@ -360,6 +367,7 @@ fn fs_readtree(luau: &Lua, value: LuaValue) -> LuaValueResult {
 }
 
 /// fs.writetree(path: string, tree: TreeBuilder | DirectoryTree): ()
+#[deprecated = "Will be replaced with fs.dir.write"]
 fn fs_writetree(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEmptyResult {
     let function_name = "fs.writetree(path: string, tree: TreeBuilder | DirectoryTree)";
     let path = match multivalue.pop_front() {
@@ -619,6 +627,7 @@ fn fs_tree(luau: &Lua, _value: LuaValue) -> LuaValueResult {
 
 /// fs.removetree(path: string)
 /// does NOT follow symlinks
+#[deprecated = "Being replaced with fs.dir.remove(path: Pathlike) -> ! { Path }"]
 pub fn fs_removetree(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
     let function_name = "fs.removetree(path: string)";
     let victim_path = match value {
@@ -637,6 +646,7 @@ pub fn fs_removetree(_luau: &Lua, value: LuaValue) -> LuaEmptyResult {
 }
 
 /// fs.listdir(path: string, options: { recursive: boolean?, relative_to: ("cwd" | "root" | "self")? }?): { string }
+#[deprecated = "Being replaced with fs.dir.list(path: Pathlike); Path:list(), and fs.filter/Path:filter for recursion with globs"]
 fn fs_listdir(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "fs.listdir(path: string, recursive: boolean?)";
     let dir_path = match multivalue.pop_front() {
@@ -653,6 +663,7 @@ fn fs_listdir(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     directory_entry::listdir(luau, dir_path, multivalue, function_name)
 }
 
+#[deprecated = "Replace with fs.dir.create for error_if_exists = true or fs.dir.ensure for error_if_exists = false; will create_missing by default"]
 fn fs_makedir(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "fs.makedir(path: string, options: { create_missing: boolean?, error_if_exists: boolean? }?)";
     let new_path = match multivalue.pop_front() {
@@ -731,6 +742,7 @@ fn fs_makedir(_luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
     }
 }
 
+/// will be replaced with an iterator version: fs.entries(path: Pathlike) -> iterator<Path>
 fn fs_entries(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "fs.entries(directory: string)";
     entries(luau, value, function_name)
@@ -775,30 +787,6 @@ pub fn entries(luau: &Lua, value: LuaValue, function_name: &str) -> LuaValueResu
 fn fs_find(luau: &Lua, multivalue: LuaMultiValue) -> LuaValueResult {
     let function_name = "fs.find(path: string, follow_symlinks: boolean?)";
     find::find(luau, multivalue, function_name)
-}
-
-pub fn fs_exists(_luau: &Lua, path: LuaValue) -> LuaValueResult {
-    let path = match path {
-        LuaValue::String(path) => path.to_string_lossy(),
-        other => {
-            return wrap_err!("fs.exists(path) expected path to be a string, got: {:#?}", other);
-        }
-    };
-
-    match fs::exists(&path) {
-        Ok(true) => Ok(LuaValue::Boolean(true)),
-        Ok(false) => Ok(LuaValue::Boolean(false)),
-        Err(err) => {
-            match err.kind() {
-                io::ErrorKind::PermissionDenied => {
-                    wrap_err!("fs.exists: attempt to check if path '{}' exists but permission denied", path)
-                },
-                other => {
-                    wrap_err!("fs.exists: encountered an error checking if '{}' exists: {}", path, other)
-                }
-            }
-        }
-    }
 }
 
 #[cfg(unix)]
@@ -1007,7 +995,7 @@ fn fs_readlink(luau: &Lua, value: LuaValue) -> LuaValueResult {
                 return wrap_err!("{}: path '{}' not found", function_name, &link);
             },
             io::ErrorKind::PermissionDenied => {
-                return wrap_err!("{}: can't remove symlink at '{}' because permission denied", function_name, &link);
+                return wrap_err!("{}: can't read symlink at '{}' because permission denied", function_name, &link);
             },
             _ => {
                 return wrap_err!("{}: error getting symlink metadata: {}", function_name, err);
@@ -1070,7 +1058,6 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .with_function_and_signature("removetree", fs_removetree, signatures::STD_FS_REMOVETREE)?
         .with_function_and_signature("entries", fs_entries, signatures::STD_FS_ENTRIES)?
         .with_function_and_signature("find", fs_find, signatures::STD_FS_FIND)?
-        .with_function_and_signature("exists", fs_exists, c"fs.exists(path: string) -> boolean")?
         .with_function_and_signature("watch", fs_watch, signatures::STD_FS_WATCH)?
         .with_function_and_signature("is", fs_is, signatures::STD_FS_IS)?
         .with_function_and_signature("symlink", fs_symlink, signatures::STD_FS_SYMLINK)?

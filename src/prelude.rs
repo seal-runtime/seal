@@ -30,6 +30,7 @@ impl LoadChunk for Lua {
     fn load_from_chunk<'a>(&self, chunk: impl mluau::AsChunk + 'a, chunk_name: impl AsRef<str>) -> mluau::Chunk<'a> {
         let chunk_name = chunk_name.as_ref();
         let lang = mluau::Language::from_chunk_name(chunk_name).unwrap_or(mluau::Language::Luwu);
+        #[allow(clippy::disallowed_methods, reason = "this is the only place we call luau.load directly")]
         self.load(chunk)
             .set_name(chunk_name)
             .set_language(lang)
@@ -123,7 +124,7 @@ impl DebugInfo {
             }
         "#;
         let chunk = Chunk::src(SLN_SRC);
-        let LuaValue::Table(info) = luau.load(chunk).set_name("gettin da debug info").eval()? else { // <<>> HACK
+        let LuaValue::Table(info) = luau.load_from_chunk(chunk, "getting da debug info").eval()? else {
             return wrap_err!("{}: can't get debug info", function_name);
         };
         let source = match info.raw_get("source")? {

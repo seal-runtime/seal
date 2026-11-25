@@ -42,20 +42,22 @@ const FEATURES = {
     .("LuwuTraits", "classes and traits"),
     .("LuwuDestructuring", "destructuring with `.{ ... }` and `.( ... )`"),
     .("LuwuIfLocal", "`if const` and `when` bindings"),
-    .("LuwuDoExpr", "`do ... give` expressions and guards like `x or return`"),
-    .("LuwuTableComprehensions", "table comprehensions"),
-    .("DebugLuwuMatchExpressions", "`match` expressions and `is` type tests"),
-    .("DebugLuwuTryExpressions", "`try` expressions"),
-    .("DebugLuwuCollections", "the `collections` library (`result`, `pair`, ...)"),
+    .("LuwuDoExpr", "`do ... give` expressions and guards like `return v if <expr>` and `x or return;`"),
+    .("LuwuTableComprehensions", "table comprehensions: `{ for index, value in t <when expr> give value }`, `{ for _, v in t <when expr> do <statements> give answer }`, `{ for _, v in t give [v] = computed(v) }`"),
+    .("DebugLuwuMatchExpressions", "`is` pattern matching syntax (`s is string; x is Foo { name is string, age is number }`) as well as `match` expressions and statements"),
+    .("DebugLuwuTryExpressions", "`try` protected expressions (faster than pcall) and ! error hints"),
+    .("DebugLuwuIntegers", "integers: dynamic `7int` that grows into a bigint, sized `255u8` to `i64` that wrap, the `integer` library and `Error` variants"),
+    .("DebugLuwuBuiltinClasses", "the `collections` library (`Vec`, `VecDeque`, `OrderedMap`)"),
     .("DebugLuwuPoperators", "push (`<+`) and pop operators"),
+    .("DebugLuwuBundles", "immutable fixed-size positional objects with 1 to 1024 values that are hashed by value; construct with `.(x, y)` syntax and use the `bundle` library to manipulate"),
     .("LuwuStringExtensions", "string methods like `s:trim()`, `s:startswith()` and `s:split(sep, count)`; method calls on strings are now as fast as `string.name(s, ...)` instead of deoptimizing"),
-    .("LuwuDefaultArguments", "default function arguments"),
-    .("LuauExportValueSyntax", "`export` values"),
+    .("LuwuDefaultArguments", "default function and class arguments"),
+    .("LuauExportValueSyntax", "`export` values; note that unlike Luau, `export` in Luwu is always `const`"),
     .("LuwuDeclareStatements", "`declare` statements"),
-    .("LuwuTableDrop", "`table.drop`"),
+    .("LuwuTableDiscard", "`table.discard`, which removes array items by value (renamed from `table.drop`)"),
     .("LuwuAttributesEverywhere", "attributes on types, variables, fields and classes"),
     .("LuwuNoinlineAttribute", "the `@[noinline]` attribute"),
-    .("LuwuTableFunctionFields", "function fields in table literals: `{ function foo() end }` is `{ foo = function() end }`"),
+    .("LuwuTableFunctionFields", "function sugar in table literals: `{ function foo() end }` is `{ foo = function() end }`"),
     .("LuwuBufferBatched", "batched buffer reads and writes"),
     .("LuwuBufferIsFrozen", "external buffers: `fs.readbytes` and seal's other APIs that return a buffer hand over the bytes they read without copying them into a new allocation"),
 }
@@ -64,7 +66,7 @@ const FEATURES = {
 const HIDDEN_FLAGS: { [string]: true? } = {
     LuwuExportedClassIsNilWorkaround = true,
     DebugLuwuCompilerTrustsTypeAnnotations = true,
-    LuwuBufferMemcmp = true, -- its PR is being rewritten
+    DebugLuwuBufferComparison = true, -- waits on native code before its PR merges
 }
 
 const version = _SEAL_VERSION
@@ -72,7 +74,7 @@ const version = _SEAL_VERSION
 const date = datetime.now():in_timezone("UTC"):format("SHORT_DATE")
 
 -- `_VERSION` reads like `seal 0.9.0-rc.1+60b8898 (Luwu dff4ce26)`
-const .(seal_version, luwu_version) = _VERSION:split(" (Luwu ", 2)
+const .[seal_version, luwu_version] = _VERSION:split(" (Luwu ", 2)
 const seal_commit = semver.from(seal_version:trimstart("seal ")).metadata.build
 const luwu_commit = luwu_version:trimend(")")
 const short_sha = string.sub(head_sha, 1, 7)
@@ -151,12 +153,13 @@ table.sort(assets)
 
 const intro = table.concat({
     `Prerelease build of seal {version} from seal's \`{branch}\` branch (0.9.0 + luwu version!).`,
-    "It's built against Luwu's `integration` branch, which shows our intended vision for the language with all its features together by its 0.1.0 release.",
+    "Built against Luwu's `integration` branch to show our intended vision for the language with all its features together by its 0.1.0 release.",
     "",
     "> [!WARNING]",
     "> seal 0.9.x's standard library is being rewritten, so expect breaking changes between builds.",
     "## New seal features",
     "- `http.queue` api for sending multiple requests in parallel.",
+    "- `seal check` typechecks luwu or luau code from the cli (defaults to full project checking, pass in a file to check a module).",
     "## Tracking info",
     "",
     `- seal: [\`{short_sha}\`](https://github.com/{repository}/commit/{head_sha})`,
@@ -197,12 +200,12 @@ const features = do
 const bug_reports = table.concat({
     "## Reporting bugs",
     "",
-    "Include the output of `seal --version`, which names the seal and Luwu commits of your build, and the smallest script that shows the bug.",
+    "Include the output of `seal --version` (includes seal version and Luwu commit hash) a minimal reproduction (smallest script that shows the bug).",
     "",
     `- seal's runtime, standard library or \`seal check\`: https://github.com/{repository}/issues`,
     "- the Luwu language (parsing, type checking, a Luwu feature behaving wrong): https://github.com/luwu-community/luwu/issues",
     "",
-    "Not sure which one? Open it on seal.",
+    "Not sure if seal or Luwu bug? Ask on HNF discord or open an issue in seal.",
 }, "\n")
 
 const notes = table.concat({ intro, features, bug_reports }, "\n\n")

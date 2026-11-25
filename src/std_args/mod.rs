@@ -7,12 +7,10 @@ const ARGS_DOT_LUAU: &str = include_str!("./args.luau");
 
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     let t = TableBuilder::create(luau)?
-        // .with_value("raw", std::env::args_os().collect::<Vec<u8>>())?
         .build()?;
 
     let chunk = Chunk::src(ARGS_DOT_LUAU);
-
-    let prompt_table = match luau.load(chunk).eval_wrapped::<LuaTable>() {
+    let prompt_table = match luau.load_from_chunk(chunk, "std/std_args/args.luau").eval_wrapped::<LuaTable>() {
         Ok(t) => t,
         Err(err) => {
             panic!("std/args' args.luau did a bad: {}", err);

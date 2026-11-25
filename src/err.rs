@@ -41,7 +41,7 @@ pub fn parse_traceback<T: IntoLua>(raw_traceback: T) -> String {
     if let Err(err) = globals::set_globals(&luau_for_traceback, String::default()) {
         unreachable!("setting globals for parse_traceback.luau shouldn't fail; err: {}", err);
     }
-    match luau_for_traceback.load(parse_traceback).set_name("seal/src/err/parse_traceback.luau").eval() {
+    match luau_for_traceback.load_from_chunk(parse_traceback, "seal/src/err/parse_traceback.luau").eval() {
         Ok(LuaValue::Function(parse_traceback)) => {
             // intentionally uses call_with_err directly to better control error
             match parse_traceback.call_with_err::<LuaValue, WrappedError>(raw_traceback) {

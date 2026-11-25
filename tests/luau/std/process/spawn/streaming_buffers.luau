@@ -63,7 +63,7 @@ local function intobuffer()
     end
     local tostringed = buffer.tostring(buffy)
     assert(str.startswith(tostringed, "Starting..."), "buffer.tostring(buffy) should start with Starting...")
-    assert(str.endswith(tostringed, "\0\0\0\0", "buffer.tostring(buffy) should have a bunch of \\0 bytes behind it because of buffer.tostring reasons"))
+    assert(str.endswith(tostringed, "\0\0\0\0"), "buffer.tostring(buffy) should have a bunch of \\0 bytes behind it because of buffer.tostring reasons")
     assert(string.match(tostringed, "\nStopping\n"), "buffer.tostring(buffy) should contain \\nStopping\\n but not at the end")
 end
 
