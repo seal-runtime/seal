@@ -8,6 +8,7 @@ const fs = require("@std/fs")
 const env = require("@std/env")
 const process = require("@std/process")
 const semver = require("@std/semver")
+const json = require("@std/json")
 
 const repository = env.vars.get("GITHUB_REPOSITORY") or error("GITHUB_REPOSITORY not set")
 --- The commit being released. A pull_request run's GITHUB_SHA is a temporary merge commit instead.
@@ -58,7 +59,8 @@ const FEATURES = {
     .("LuwuAttributesEverywhere", "attributes on types, variables, fields and classes"),
     .("LuwuNoinlineAttribute", "the `@[noinline]` attribute"),
     .("LuwuTableFunctionFields", "function sugar in table literals: `{ function foo() end }` is `{ foo = function() end }`"),
-    .("LuwuBufferBatched", "batched buffer reads and writes"),
+    .("LuwuOctalLiterals", "octal number literals like `0o755`"),
+    .("DebugLuwuBufferBatched", "batched buffer reads and writes"),
     .("LuwuBufferIsFrozen", "external buffers: `fs.readbytes` and seal's other APIs that return a buffer hand over the bytes they read without copying them into a new allocation"),
 }
 
@@ -67,6 +69,15 @@ const HIDDEN_FLAGS: { [string]: true? } = {
     LuwuExportedClassIsNilWorkaround = true,
     DebugLuwuCompilerTrustsTypeAnnotations = true,
     DebugLuwuBufferComparison = true, -- waits on native code before its PR merges
+    -- mluau turns these on for its embedding: they aren't language features
+    LuwuExternallyManagedBuffers = true,
+    LuwuExternalString = true,
+    LuwuFatCClosure = true,
+    LuwuManagedReferences2 = true,
+    -- LuwuTraits describes classes and traits together
+    LuwuClasses = true,
+    -- upstream's integer type, kept until Luwu's integers replace it
+    LuauIntegerType2 = true,
 }
 
 const version = _SEAL_VERSION
@@ -89,13 +100,43 @@ for _, platform in REQUIRED_PLATFORMS do
     end
 end
 
---- The set of fast flags `src/main.rs` turns on, which decide the Luwu features this build has.
+--- The names of the fast flags in `source` between `start_marker` and the first `end_marker` after it
+const function flags_between(source: string, file: string, start_marker: string, end_marker: string): { string }
+    const call_start = source:find(start_marker, 1, true) or error(`can't find {start_marker} in {file}`)
+    const call_end = source:find(end_marker, call_start, true) or error(`can't find the {end_marker} after {start_marker} in {file}`)
+    return {
+        for flag in string.gmatch(source:sub(call_start, call_end), '"(%w+)"')
+        give flag
+    }
+end
+
+--- A package in `cargo metadata`'s output
+type CargoPackage = {
+    name: string,
+    manifest_path: string,
+}
+
+--- The flags mluau turns on for every Lua state (its `ENABLED_FFLAGS`), read from the mluau source this build used
+const function read_mluau_flags(): { string }
+    const metadata = process.run({ program = "cargo", args = { "metadata", "--format-version", "1" } }):unwrap()
+    const packages = (json.decode(metadata) :: { packages: { CargoPackage } }).packages
+    for _, package in packages when package.name == "mluau" do
+        const mluau_dir = fs.path.parent(package.manifest_path) or error(`no directory in {package.manifest_path}`)
+        const mod_rs_path = fs.path.join(mluau_dir, "src", "luau", "mod.rs")
+        return flags_between(fs.readfile(mod_rs_path), mod_rs_path, "ENABLED_FFLAGS", "];")
+    end
+    error("cargo metadata doesn't list mluau")
+end
+
+--[=[
+    The fast flags this build turns on, which decide the Luwu features it has: the ones `src/main.rs` passes to
+    `set_fflags` and the ones mluau turns on.
+]=]
 const enabled_flags: { [string]: true? } = do
-    const main_rs = fs.readfile(seal_dir:join("src/main.rs"))
-    const call_start = main_rs:find("set_fflags([", 1, true) or error("can't find the set_fflags([ call in src/main.rs")
-    const call_end = main_rs:find("])", call_start, true) or error("can't find the end of the set_fflags call in src/main.rs")
+    const main_rs_flags = flags_between(fs.readfile(seal_dir:join("src/main.rs")), "src/main.rs", "set_fflags([", "])")
     give {
-        for flag in string.gmatch(main_rs:sub(call_start, call_end), '"(%w+)"')
+        for _, list in { main_rs_flags, read_mluau_flags() }
+        for _, flag in list
         give [flag] = true
     }
 

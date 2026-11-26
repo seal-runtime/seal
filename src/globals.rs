@@ -6,14 +6,22 @@ use crate::std_err::ecall;
 use crate::{require, std_io};
 use crate::prelude::LoadChunk;
 
-pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
-    let function_name = "error(message: string | unknown, level: number?)";
+/// pre 0.9.x seal always returns an "error" userdata but because Luwu's added support for structured
+/// errors, we want to raise them instead of our custom userdata while still retaining as much compat
+/// for the highly common seal `if typeof(res) == "error"` idiom, at least for now.
+pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEither<WrappedError, LuaCustomError<LuaValue>> {
     let message = match multivalue.pop_front() {
         Some(LuaValue::String(s)) => s.to_string_lossy(),
         Some(LuaNil) | None => String::default(),
-        Some(other) => std_io::format::pretty(luau, other.into_lua_multi(luau)?)?,
+        // user called with a non-string value so likely smth along the lines of `error(FileNotFound(path))`
+        Some(value) => return LuaEither::Right(LuaCustomError(value)),
     };
+    let Err(raised) = error_with_message(luau, message, multivalue);
+    LuaEither::Left(WrappedError::from_message(raised.to_string()))
+}
 
+fn error_with_message(luau: &Lua, message: String, mut multivalue: LuaMultiValue) -> LuaResult<std::convert::Infallible> {
+    let function_name = "error(message: string | unknown, level: number?)";
     let level = match multivalue.pop_front() {
         Some(LuaValue::Number(f)) => float_to_usize(f, function_name, "level")?,
         Some(LuaValue::Integer(i)) => int_to_usize(i, function_name, "level")?,
@@ -44,8 +52,8 @@ const GIT_BRANCH: &str = env!("GIT_BRANCH");
 const SEAL_URL: &str = "https://github.com/seal-runtime/seal";
 const LUAU_URL: &str = "https://github.com/mluau/luau";
 
-/// The version `seal --version`, `_VERSION` and `_RUNTIME` show. A prerelease adds the commit it was built from as
-/// semver build metadata (`0.9.0-rc.1+46720d4`) so builds of the same prerelease can be told apart.
+/// The version for `seal --version`, `_VERSION` and `_RUNTIME`;
+/// if this is a prerelease, adds the commit seal was built from as semver build metadata (`0.9.0-rc.1+46720d4`)
 pub fn display_version() -> String {
     if SEAL_VERSION.contains('-') {
         format!("{}+{}", SEAL_VERSION, GIT_COMMIT_SHORT)
@@ -62,7 +70,7 @@ pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
     // must use globals().get instead of globals().raw_get due to safeenv/sandbox (which requires newindex); raw_get incorrectly returns nil when safeenv enabled
     let luau_version: LuaString = globals.get("_VERSION")?;
     globals.raw_set("require", luau.create_wrapped_function(require::require)?)?;
-    globals.raw_set("error", luau.create_wrapped_function(error)?)?;
+    globals.raw_set("error", luau.create_function(error)?)?;
     globals.raw_set("p", luau.create_wrapped_function(std_io::output::simple_print_and_return)?)?;
     globals.raw_set("pp", luau.create_wrapped_function(std_io::output::pretty_print_and_return)?)?;
     globals.raw_set("dp", luau.create_wrapped_function(std_io::output::debug_print)?)?;

@@ -15,6 +15,7 @@ const err = require("@std/err")
 
 const VECTOR_FOUR_WIDE_MODE = (function()
     local s, _ = pcall(function()
+        -- the `vector` type has no 4-component constructor to probe with
         local testvec = (vector.create :: any)(1, 2, 3, 4)
         return testvec.w
     end)
@@ -34,7 +35,7 @@ end
 const IDENTIFIER_PATTERN = "^[%a_][%w_]*$"
 
 const function process_raw_values(
-    value: any,
+    value: unknown,
     seen_tables: { [string]: string }?,
     depth: number?
 ): string
@@ -144,7 +145,7 @@ const function process_raw_values(
         local errsplit = string.split(stringified_error, "\n")
         local errmsglist: { string } = {}
         for _, m in errsplit do
-            if string.find(m, "stack traceback") then
+            if m:contains("stack traceback") then
                 break
             else
                 table.insert(errmsglist, m)
@@ -319,6 +320,7 @@ type FormatOptions = {
 const function call_failable_display(self: unknown, depth: number, options): string?
     -- objects and userdata may or may not have a function named display
     const success, display_fn = pcall(function()
+        -- `self` is an object or userdata whose type doesn't declare `display`
         return (self :: any).display :: DisplayFunction
     end)
     if not success or typeof(display_fn) == "error" then
@@ -328,7 +330,64 @@ const function call_failable_display(self: unknown, depth: number, options): str
     return if success and typeof(displayed) == "string" then displayed else nil
 end
 
-const function stringify_simple_type(value: any, key_function_name: string?, depth: number, options: FormatOptions): string
+--- The fields `show_variant` puts in the parentheses for each `Error` variant. Showing these fields instead of the
+--- message avoids repeating what the variant's name says: `Error.NotFound("a.txt")` instead of
+--- `Error.NotFound("a.txt was not found")`. Variants missing from this table show their message.
+const NAMED_VARIANT_FIELDS: { [string]: { string } } = {
+    ["Error.DivisionByZero"] = {},
+    ["Error.NotYieldable"] = {},
+    ["Error.StackOverflow"] = {},
+    ["Error.AssertionFailed"] = { "message" },
+    ["Error.Unreachable"] = { "message", "invariants" },
+    ["Error.Unimplemented"] = { "message" },
+    ["Error.Unsupported"] = { "message" },
+    ["Error.InvalidState"] = { "message" },
+    ["Error.TimedOut"] = { "message" },
+    ["Error.NotFound"] = { "what", "message" },
+    ["Error.AlreadyExists"] = { "what", "message" },
+    ["Error.PermissionDenied"] = { "what", "message" },
+    ["Error.CannotBeParsed"] = { "text", "message" },
+}
+
+--- Formats an `Error` variant as `Error.NotFound("a.txt")`. Printing only its message would look like a plain string.
+const function show_variant(value: unknown, show_payload: (unknown) -> string): string?
+    -- `typeof` returns a variant's class name like `Error.NotFound`
+    const variant_name = typeof(value)
+    const is_variant = type(value) == "object" and variant_name:startswith("Error.")
+    if not is_variant then
+        return nil
+    end
+
+    const named_fields = NAMED_VARIANT_FIELDS[variant_name]
+    const shown: { string } = {}
+    if named_fields then
+        -- NAMED_VARIANT_FIELDS names each variant's fields as strings
+        const variant = value :: { [string]: unknown }
+        for _, field in named_fields do
+            const field_value = variant[field]
+            if field_value ~= nil then
+                table.insert(shown, show_payload(field_value))
+            end
+        end
+    else
+        const message = checked_tostring(value)
+        table.insert(shown, if typeof(message) == "string" then message else tostring(message))
+    end
+    const fields = table.concat(shown, `{BOLD_RED}, {RESET}`)
+    return `{BOLD_RED}{variant_name}({RESET}{fields}{BOLD_RED}){RESET}`
+end
+
+--- Formats an `Err` from `try` as `Err(Error.NotFound("a.txt"))`. Its `__tostring` adds a position and traceback that
+--- don't belong in a printed value.
+const function show_err(value: unknown, show_payload: (unknown) -> string): string?
+    if value is Err(payload) then
+        const shown_payload = show_variant(payload, show_payload) or show_payload(payload)
+        return `{BOLD_RED}Err({RESET}{shown_payload}{BOLD_RED}){RESET}`
+    end
+    return nil
+end
+
+const function stringify_simple_type(value: unknown, key_function_name: string?, depth: number, options: FormatOptions): string
     if type(value) == "number" then
         -- mlua Numbers are BOLD_BLUE and Integers are regular BLUE
         if mlua.isint(value) then
@@ -346,7 +405,8 @@ const function stringify_simple_type(value: any, key_function_name: string?, dep
             .. BOLD_BLUE .. value.y .. CYAN .. ", "
             .. BOLD_BLUE .. value.z .. CYAN ..
             (if VECTOR_FOUR_WIDE_MODE then ", " ..
-                BOLD_BLUE .. value.w
+                -- `w` is missing from the `vector` type and only exists in 4-wide mode
+                BOLD_BLUE .. (value :: any).w
             else "") 
             .. RED .. RIGHT_ANGLED .. RESET
     elseif type(value) == "function" then
@@ -360,7 +420,7 @@ const function stringify_simple_type(value: any, key_function_name: string?, dep
         local is_seal_fn_with_signature = false
         if key_function_name and key_function_name == function_name then
             function_name = ""
-        elseif string.find(function_name, ".", 1, true) or string.find(function_name, ":", 1, true) then
+        elseif function_name:contains(".") or function_name:contains(":") then
             -- it's probably a seal standard library function with a full signature, let's format it differently
             is_seal_fn_with_signature = true
         end
@@ -386,13 +446,14 @@ const function stringify_simple_type(value: any, key_function_name: string?, dep
         local errsplit = string.split(stringified_error, "\n")
         local errmsglist = {}
         for _, m in errsplit do
-            if string.find(m, "stack traceback") then
+            if m:contains("stack traceback") then
                 break
             else
                 table.insert(errmsglist, m)
             end
         end
-        return BOLD_RED .. "error" .. RESET .. RED .. LEFT_ANGLED .. table.concat(errmsglist) .. RIGHT_ANGLED
+        const message = format.uncolor(table.concat(errmsglist))
+        return BOLD_RED .. "error" .. RESET .. LEFT_ANGLED .. GREEN .. '"' .. message .. '"' .. RESET .. RIGHT_ANGLED
     elseif type(value) == "thread" then
         local thread_id = string.match(tostring(value), ID_CATCHER_PATTERN)
         return "corothread" .. LEFT_ANGLED .. "0x" .. thread_id .. RIGHT_ANGLED
@@ -468,8 +529,10 @@ local function stringify_table_path(current_table_path: { any }, depth: number, 
     return table_path
 end
 
-type TablePair = {
-    key: any,
+--- A table entry being formatted. Sorting narrows `K` to `number` or `string` for the comparators.
+--@[nolint(AnyAnnotation)] `val` goes back to process_pretty_values, which takes any value
+type TablePair<K = unknown> = {
+    read key: K,
     val: any,
 }
 
@@ -477,14 +540,14 @@ const function sort_table_pairs(unsorted_pairs: { TablePair }): { TablePair }
     local sorted_pairs: { TablePair } = table.create(#unsorted_pairs) :: { TablePair }
     local seen_indices: { [number]: boolean } = {} -- indices seen/visited in unsorted_pairs
 
-    local numerical_pairs: { TablePair } = {} do
+    local numerical_pairs: { TablePair<number> } = {} do
         for index, pair in unsorted_pairs do
             if type(pair.key) == "number" then
                 seen_indices[index] = true
                 table.insert(numerical_pairs, pair)
             end
         end
-        table.sort(numerical_pairs, function(a: TablePair, b: TablePair)
+        table.sort(numerical_pairs, function(a: TablePair<number>, b: TablePair<number>)
             local isint_a = mlua.isint(a.key)
             local isint_b = mlua.isint(b.key)
             if isint_a and isint_b then
@@ -503,14 +566,14 @@ const function sort_table_pairs(unsorted_pairs: { TablePair }): { TablePair }
         table.insert(sorted_pairs, v)
     end
 
-    local string_pairs: { TablePair } = {} do
+    local string_pairs: { TablePair<string> } = {} do
         for index, pair in unsorted_pairs do
             if type(pair.key) == "string" then
                 seen_indices[index] = true
                 table.insert(string_pairs, pair)
             end
         end
-        table.sort(string_pairs, function(a: TablePair, b: TablePair)
+        table.sort(string_pairs, function(a: TablePair<string>, b: TablePair<string>)
             local a_byte, b_byte = string.byte(a.key), string.byte(b.key)
             -- string.byte can return 0 values, which isn't documented in hover docs or return type
             if a_byte and b_byte then
@@ -563,6 +626,7 @@ const function indents(guidelines: boolean, depth: number, indent_spaces: number
     return current_indent, element_indent
 end
 
+--@[nolint(AnyAnnotation)] the body narrows `value` with runtime type checks
 const function process_pretty_values(
     value: any,
     --- seen_tables' keys are tables since they get uniquely hashed, value is stringified path
@@ -611,7 +675,7 @@ const function process_pretty_values(
     local current_table_path: { any } = current_table_path or {}
     if type(value) == "table" then
         local value = value :: { [any]: any }
-        local value_meta = getmetatable(value :: any) :: { [any]: any }?
+        local value_meta = getmetatable(value) :: { [any]: any }?
 
         -- if we have a metatable and the metatable has custom working __display implementation
         -- we want to call it and return whatever string it returns.
@@ -685,8 +749,7 @@ const function process_pretty_values(
             push(element_indent)
 
             -- stringify keys
-            local key_type = type(key)
-            if key_type == "number" then
+            if type(key) == "number" then
                 array_elements_seen += 1
                 if array_elements_seen > max_elements_in_array then
                     local omitted = #sorted_pairs - max_elements_in_array
@@ -725,13 +788,14 @@ const function process_pretty_values(
                         RIGHT_BRACKET
                     )
                 end
-            elseif key_type == "string" then
+            elseif type(key) == "string" then
                 if string.match(key, IDENTIFIER_PATTERN) then
                     push(key)
                 else
                     push(LEFT_BRACKET .. GREEN .. '"' .. key .. '"' .. RESET .. RIGHT_BRACKET)
                 end
-            elseif key_type == "table" then
+            elseif type(key) == "table" then
+                local key = key :: { [any]: any }
                 local seen_name: string? = seen_tables[key]
                 if seen_name then
                     push(LEFT_BRACKET .. seen_name .. RIGHT_BRACKET)
@@ -750,7 +814,7 @@ const function process_pretty_values(
                 )
             end
 
-            if key_type ~= "number" or show_array_indices ~= false then
+            if type(key) ~= "number" or show_array_indices ~= false then
                 push(" = ")
             end
 
@@ -775,9 +839,9 @@ const function process_pretty_values(
                     table.remove(current_table_path, #current_table_path)
                 end
             elseif type(val) == "string" then -- don't recurse in extremely common case
-                if string.find(val, "\n") then
+                if val:contains("\n") then
                     if #val < 42 then
-                        push(GREEN .. '"' .. string.gsub(val, "\n", "\\n") .. '"' .. RESET)
+                        push(GREEN .. '"' .. val:replace("\n", "\\n") .. '"' .. RESET)
                     else
                         push("(newlined string starts on next line) " ..  GREEN .. "\n" .. val .. RESET .. "\n(end newlined string)")
                     end
@@ -786,7 +850,7 @@ const function process_pretty_values(
                 end
             elseif type(val) == "number" or type(val) == "boolean" then
                 push(stringify_simple_type(val, nil, depth, options))
-            elseif type(val) == "function" and key_type == "string" then
+            elseif type(val) == "function" and type(key) == "string" then
                 -- pass table key in so we can skip displaying the function_name twice if key == debug.info(val)
                 push(stringify_simple_type(val, key, depth, options))
             else
@@ -813,11 +877,30 @@ const function process_pretty_values(
     elseif type(value) == "string" and depth == 0 then -- calling print("hello world") shouldn't colorize
         return value
     else
-        return stringify_simple_type(value, nil, depth, options)
+        const function show_payload(payload: unknown): string
+            if type(payload) == "table" then
+                return process_pretty_values(
+                    payload,
+                    seen_tables,
+                    depth,
+                    current_table_path,
+                    indent_spaces,
+                    max_depth,
+                    max_elements_in_array,
+                    show_array_indices,
+                    show_metatables,
+                    guidelines,
+                    show_array_length
+                )
+            end
+            return stringify_simple_type(payload, nil, depth or 0, options)
+        end
+        const shown_result = show_err(value, show_payload) or show_variant(value, show_payload)
+        return shown_result or stringify_simple_type(value, nil, depth, options)
     end
 end
 
-const function pretty(value: any, ...: any): string
+const function pretty(value: unknown, ...: any): string
     local now_enabled = colors.enabled()
     if now_enabled ~= colors_enabled_state then
         colors_enabled_state = now_enabled

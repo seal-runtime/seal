@@ -59,7 +59,7 @@ local function new_test_queue(): { string }
     }
     local file_list = fs.listdir(fs.path.join(".", "tests", "luau"), true, function(path: string)
         return 
-            str.endswith(path, ".luau") 
+            (str.endswith(path, ".luau") or str.endswith(path, ".luwu"))
             and not table.find(ignore_files, path)
             and not str.startswith(path, "./tests/luau/std/io/prompts") -- all of these require rawmode or smth
     end)

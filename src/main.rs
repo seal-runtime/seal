@@ -196,11 +196,12 @@ fn main() -> LuaResult<()> {
         "LuwuDoExpr",
         "LuwuTableComprehensions",
         "LuwuTableFunctionFields",
+        "LuwuOctalLiterals",
         "DebugLuwuPoperators",
         "DebugLuwuMatchExpressions",
         "LuwuAttributesEverywhere",
         "LuwuBufferIsFrozen",
-        "LuwuBufferBatched",
+        "DebugLuwuBufferBatched",
         "DebugLuwuBufferComparison",
         "LuwuExternTypeGenericMethods",
         "LuwuStringExtensions",
@@ -254,9 +255,9 @@ fn main() -> LuaResult<()> {
         Err(err) => display_error_and_exit(err),
     };
 
-    match func.call_wrapped(()) {
+    match func.call_with_err::<(), WrappedError>(()) {
         Ok(()) => Ok(()),
-        Err(err) => display_error_and_exit(err),
+        Err(err) => err::display_raised_error_and_exit(&luau, err),
     }
 }
 

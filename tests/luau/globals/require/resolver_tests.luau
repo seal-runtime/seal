@@ -163,7 +163,7 @@ local function aliases()
 		bibdebugname
 	) :: any
 	assert(
-		opv_result.path == fs.path.join(fs.path.cwd(), "src", "std_io", "formatter.luau"),
+		opv_result.path == fs.path.join(fs.path.cwd(), "src", "std_io", "formatter.luwu"),
 		"requiring aliases defined upwards (not closest .luaurc) should also resolve"
 	)
 end

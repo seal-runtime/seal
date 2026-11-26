@@ -39,6 +39,7 @@
     "DebugLuwuTryExpressions": "true",
     "DebugLuwuIntegers": "true",
     "DebugLuwuBufferComparison": "true",
+    "DebugLuwuBufferBatched": "true",
   },
   "luau-lsp.inlayHints.functionReturnTypes": true,
   "luau-lsp.inlayHints.parameterNames": "all",

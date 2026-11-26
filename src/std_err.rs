@@ -55,13 +55,11 @@ impl WrappedError {
             return val.clone()
         }
 
-        let traceback = self.traceback.clone().unwrap_or_default();
-        let tb = if traceback.is_empty() {
-            // format!("{}[ERR]{} {}", colors::BOLD_RED, colors::RESET, self.message)
-            self.format_message(luau)
-        } else {
-            format!("{}{}{}\n{}\n", colors::RED, self.format_message(luau), colors::RESET, err::parse_traceback(traceback.as_ref())).into()
-            // format!("{}[ERR]{} {}\n{}", colors::BOLD_RED, colors::RESET, self.message, traceback)
+        let tb = match self.traceback {
+            Some(ref traceback) if !traceback.is_empty() => {
+                format!("{}\n", err::parse_traceback(&self.format_message(luau), Some(traceback))).into()
+            },
+            _ => self.format_message(luau),
         };
 
         *self.formatted_tb.borrow_mut() = Some(tb.clone());
@@ -92,6 +90,18 @@ impl WrappedError {
 
         *self.formatted_message.borrow_mut() = Some(msg.clone());
         msg
+    }
+
+    /// The message and traceback to report for an error nobody caught. An error raised again by `error(err)` reports
+    /// the message it was first raised with, and the traceback closest to that raise.
+    pub fn report_parts(&self, luau: &Lua) -> (Arc<str>, Option<Arc<str>>) {
+        if let ErrorMessage::Value(LuaValue::UserData(ref ud)) = self.message
+            && let Some(inner) = Self::borrow(ud)
+        {
+            let (message, traceback) = inner.report_parts(luau);
+            return (message, traceback.or_else(|| self.traceback.clone()));
+        }
+        (self.format_message(luau), self.traceback.clone())
     }
 
     pub fn format_message_dirty(&self) -> Arc<str> {
@@ -266,8 +276,12 @@ fn err_traceback(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
 fn err_throw(luau: &Lua, value: LuaValue) -> LuaValueResult {
     let function_name = "err.throw(err: error)";
     let err = WrappedError::from_value(value, function_name)?;
-    let formatted = err.format(luau);
-    Err(LuaError::external(formatted.to_string()))
+    // the raw traceback, so an uncaught throw is formatted once, like the error it rethrows
+    let (message, traceback) = err.report_parts(luau);
+    match traceback {
+        Some(traceback) => Err(LuaError::external(format!("{}\n{}", message, traceback))),
+        None => Err(LuaError::external(message.to_string())),
+    }
 }
 
 pub fn err_extract(luau: &Lua, value: LuaValue) -> LuaValueResult {

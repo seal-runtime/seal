@@ -18,7 +18,8 @@
             "DebugLuwuEncourageInline": "true",
             "DebugLuwuTryExpressions": "true",
             "DebugLuwuIntegers": "true",
-            "DebugLuwuBufferComparison": "true"
+            "DebugLuwuBufferComparison": "true",
+            "DebugLuwuBufferBatched": "true"
           }
         },
         "luau-lsp": {
