@@ -172,10 +172,24 @@ function semver.satisfies(self: Semver, semver_range: string): boolean
         return "AND UP", part
     end
 
+    -- Like Cargo and npm, a prerelease only satisfies a range that names a prerelease of the same version.
+    -- Otherwise `0.9.0-rc.1` would satisfy `^0.8.1`: it sorts below `0.9.0`, the upper bound of `^0.8.1`.
+    local is_prerelease = self.metadata.release_candidate ~= nil
+    local range_names_this_prerelease = false
+
     local parts = string.split(semver_range, " ")
     for _, part in parts do
         local op, version_str = get_specific_range(part)
         local other = semver.from(version_str)
+
+        if
+            other.metadata.release_candidate ~= nil
+            and other.major == self.major
+            and other.minor == self.minor
+            and other.patch == self.patch
+        then
+            range_names_this_prerelease = true
+        end
 
         local satisfies = false
 
@@ -203,6 +217,9 @@ function semver.satisfies(self: Semver, semver_range: string): boolean
         end
     end
 
+    if is_prerelease and not range_names_this_prerelease then
+        return false
+    end
     return true
 end
 

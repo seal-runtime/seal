@@ -122,3 +122,31 @@ local function lyricsendinwithtrailingnewline()
 end
 
 lyricsendinwithtrailingnewline()
+
+-- str.split with no separators splits by grapheme, and a region of invalid utf-8 bytes stays together as one piece
+local function graphemesinvalidregions()
+    local function check(label: string, s: string, expected: { string })
+        local result = str.split(s)
+        local ok = #result == #expected
+        for i = 1, #expected do
+            if result[i] ~= expected[i] then
+                ok = false
+            end
+        end
+        if not ok then
+            print(`FAIL: {label}`)
+            print("  expected:", expected)
+            print("  got:", result)
+            error(`str.split grapheme test failed: {label}`)
+        end
+    end
+
+    check("only invalid bytes", "\255\254", { "\255\254" })
+    check("invalid region between ascii", "a\255\254\253b", { "a", "\255\254\253", "b" })
+    check("two invalid regions", "\255x\254\253", { "\255", "x", "\254\253" })
+    check("truncated sequence at the end", "ok\xC3", { "o", "k", "\xC3" })
+    check("truncated multibyte runs together", "\xE2\x82\xF0\x9F\x98", { "\xE2\x82\xF0\x9F\x98" })
+    check("combining mark after an invalid byte", "e\u{301}\255\u{301}z", { "e\u{301}", "\255", "\u{301}", "z" })
+end
+
+graphemesinvalidregions()

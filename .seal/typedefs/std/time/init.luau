@@ -54,6 +54,29 @@ export type time = {
 
     --- Constructs a `Duration` representing `n` nanoseconds. This is accurate only up to ~285 years (expressed in nanoseconds).
     nanoseconds: (n: number) -> Duration,
+
+    --[=[
+        Parses a `Duration` written in ISO 8601 (`"PT1H30M"`, `"P2DT3H"`)
+        or in words (`"1h 30m"`, `"2 days 3 hours"`).
+
+        We treat a day as 24 hours and a week as 7 days; please file an issue if you need to handle
+        timespans more specific than this.
+
+        Words mode uses jiff's "friendly" format.
+
+        Passing a `source` that contains months or years raises an error because months and years
+        aren't fixed-length units. See `TimeSpan` instead ([datetime.timespan]) to properly handle months and years.
+
+        ## Usage
+
+        ```luau
+        local timeout = time.parse("PT1M30S") -- 90 seconds
+        local backoff = time.parse("1.5h")
+        ```
+
+        [datetime = require("@self/datetime")]
+    ]=]
+    parse: (source: string) -> Duration,
 }
 
 return {} :: time

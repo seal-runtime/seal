@@ -13,7 +13,7 @@ local function canparse()
     assert(dt.day == 2, "should be the second")
     assert(dt.hour == 6, "should be the 6th hour")
     assert(dt.minute == 10, "should be the 10th minute")
-    assert(dt.timezone == "US/Central", "IANA timezone should match what we put in")
+    assert(dt.timezone == "America/Chicago", "IANA timezone should always be modernized")
 end
 
 canparse()
@@ -140,3 +140,48 @@ local function braziltimeroundtrip()
 end
 
 braziltimeroundtrip()
+
+local function parsesiso()
+    local utc = datetime.parse("2025-08-24T21:48:20Z")
+    assert(utc.hour == 21 and utc.timezone == "UTC", "Z should be UTC")
+    local zoned = datetime.parse("2025-08-24T21:48:20-05:00[America/Chicago]")
+    assert(zoned.timezone == "America/Chicago", "a [Zone] should be kept")
+    local day = datetime.parse("2025-08-24", nil, "Europe/Paris")
+    assert(day.hour == 0 and day.timezone == "Europe/Paris", "a plain date should be midnight in the given timezone")
+    local converted = datetime.parse("2025-08-24T21:48:20Z", nil, "America/Chicago")
+    assert(converted.hour == 16 and converted.timezone == "America/Chicago", "a given timezone should convert an offset")
+end
+
+parsesiso()
+
+local function neverguessestimezone()
+    local cases = {
+        { "2025-08-24 21:48" },
+        { "2025-08-24 21:48", nil, "AUTO" },
+        { "2025-01-02 05:00", "ISO_8601" },
+    }
+    for _, case in cases do
+        local ok, err = pcall(datetime.parse, case[1], case[2], case[3])
+        assert(not ok, `{case[1]} should need a timezone`)
+        assert(string.find(tostring(err), "assume UTC", 1, true), `the error should say why: {err}`)
+    end
+end
+
+neverguessestimezone()
+
+local function parsestimespans()
+    local term = datetime.timespan("P1Y6M")
+    assert(tostring(term) == "TimeSpan<1y 6mo>", `got {term}`)
+    local shift = datetime.timespan("8 hours 30 minutes")
+    assert(tostring(shift) == "TimeSpan<8h 30m>", `got {shift}`)
+    assert(term.relative_to == nil, "a timespan without relative_to shouldn't have one")
+
+    local start = datetime.parse("2025-01-31T00:00:00Z")
+    local relative_term = datetime.timespan("P1Y1M", start)
+    assert(relative_term.relative_to ~= nil, "timespan should keep its relative_to")
+    local later = relative_term + datetime.seconds(10)
+    assert(later.relative_to ~= nil, "arithmetic should carry relative_to over")
+    assert(not pcall(datetime.timespan, "P1Y", "tomorrow"), "relative_to should have to be a DateTime")
+end
+
+parsestimespans()

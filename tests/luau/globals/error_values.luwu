@@ -1,0 +1,61 @@
+--- `error(message)` raises an `error` userdata, and `error(value)` raises any other value as it is.
+
+const function raise_not_found()
+    error(Error.NotFound("./missing.txt"))
+    return nil
+end
+
+const function raise_message()
+    error("plain message")
+    return nil
+end
+
+local function try_gives_the_raised_value()
+    const result = try raise_not_found()
+    const matched = match result
+        case is Err(_ is Error.NotFound) then true
+        else false
+    assert(matched, `try should give Err(Error.NotFound), got: {result}`)
+end
+
+local function pcall_gives_the_raised_value()
+    -- seal's `pcall` declares its error as `error`, which only holds for `error("message")`
+    const ok, raised: unknown = pcall(raise_not_found)
+    assert(not ok, "raise_not_found should raise")
+    assert(raised is Error.NotFound, `pcall should give the Error.NotFound, got: {typeof(raised)}`)
+
+    const table_ok, table_raised = pcall(function()
+        error({ code = 3 })
+        return nil
+    end)
+    assert(not table_ok, "error({ code = 3 }) should raise")
+    assert(typeof(table_raised) == "table" and (table_raised :: { code: number }).code == 3, "pcall should give the table")
+end
+
+local function messages_stay_error_userdata()
+    const ok, raised = pcall(raise_message)
+    assert(not ok, "raise_message should raise")
+    assert(typeof(raised) == "error", `pcall of error("...") should give an error userdata, got: {typeof(raised)}`)
+    assert(string.find(tostring(raised), "plain message", 1, true), "the error should keep its message")
+
+    const again_ok, again = pcall(function()
+        error(raised)
+        return nil
+    end)
+    assert(not again_ok, "error(raised) should raise")
+    assert(rawequal(again, raised), "raising an error userdata again should raise the same one")
+end
+
+local function unreachable_and_todo_give_variants()
+    const unreachable_result = try unreachable("should not get here")
+    const todo_result = try todo()
+    const variants =
+        unreachable_result:err() is Error.Unreachable
+        and todo_result:err() is Error.Unimplemented
+    assert(variants, `got {unreachable_result} and {todo_result}`)
+end
+
+try_gives_the_raised_value()
+pcall_gives_the_raised_value()
+messages_stay_error_userdata()
+unreachable_and_todo_give_variants()

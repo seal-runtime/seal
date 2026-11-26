@@ -17,18 +17,16 @@ local function runsealwithprompt(prompt: string)
     local dir = fs.dir.ensure(fs.path.join(fs.path.home(), "Downloads"))
     local path = dir:join("promptsrc.luau")
     fs.writefile(path, src)
-    time.wait(0.25)
     local child = process.spawn {
         program = env.executable_path,
         args = { path }
     }
-    time.wait(0.25)
-    fs.file.try_remove(path)
-    return child
+    return child, path
 end
 
 local function rawlinefallback()
-    local child = runsealwithprompt("how are you?: ")
+    -- remove the script only after the child exits: on a slow machine the child may not have opened it yet
+    local child, path = runsealwithprompt("how are you?: ")
     assert(child.stdout ~= nil and child.stderr ~= nil and child.stdin ~= nil, "everything is piped")
 
     local poll = time.milliseconds(120)
@@ -37,6 +35,7 @@ local function rawlinefallback()
         if res and res == "how are you?: " then
             child.stdin:write("good!!\n")
         elseif res and res == "good!!" then
+            fs.file.try_remove(path)
             return
         end
         local err = child.stderr:read(nil, 0)
@@ -45,6 +44,7 @@ local function rawlinefallback()
         end
     end
 
+    fs.file.try_remove(path)
     print("child died")
     local good = child.stdout:read()
     assert(good and good:match("good!!"), `should be good here? got: {good}`)

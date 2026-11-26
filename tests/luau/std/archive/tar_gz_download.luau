@@ -31,11 +31,13 @@ const cache_path = fs.path.join(temp_path, "cache.json")
 const tar_path = fs.path.join(temp_path, "seal_release.tar.gz")
 const temp_seal_path = fs.path.join(temp_path, "seal")
 
-type ReleaseInfo = {
-    {
-        assets: { Asset },
-    }
+type Release = {
+    prerelease: boolean,
+    assets: { Asset },
 }
+
+--- The releases GitHub lists, newest first.
+type ReleaseInfo = { Release }
 
 type Asset = {
     browser_download_url: string,
@@ -64,7 +66,14 @@ if fs.path.exists(tar_path) then
     bytes = fs.readbytes(tar_path)
 else
     -- print(data[1].assets[1].browser_download_url)
-    const latest_release = data[1]
+    -- skip the luwu-latest prerelease: this test checks the newest stable release
+    local latest_release: Release? = nil
+    for _, release in data do
+        if not release.prerelease then
+            latest_release = release
+            break
+        end
+    end
     assert(latest_release, "can't find latest release")
     
     const arch_str = if env.arch == "x86_64" then "x64" elseif env.arch == "aarch64" then "arm64" else nil

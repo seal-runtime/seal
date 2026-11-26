@@ -633,6 +633,7 @@ local function traverse(
         local top = hoist(context)
         for i = #top, 1, -1 do
             local line = top[i]
+            --@[nolint(InefficientTableInsert)]
             table.insert(transformed, 1, line)
         end
         if context.top and context.shebang then

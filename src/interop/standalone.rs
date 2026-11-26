@@ -29,7 +29,7 @@ fn standalone_extract(luau: &Lua, value: LuaValue) -> LuaValueResult {
         }
     };
     if let Some(bytecode) = compile::extract_bytecode(Some(path)) {
-        ok_buffy(&bytecode, luau)
+        ok_buffy(bytecode, luau)
     } else {
         wrap_err!("{}: bytecode could not be extracted :/ check your path?", function_name)
     }
@@ -64,10 +64,12 @@ fn standalone_eval(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult 
         return wrap_err!("{}: unable to extract bytecode", function_name);
     };
 
-    // SAFETY: our compiler has just compiled this bytecode, we trust it to be safe.
+    // SAFETY: user in Luwu is responsible for passing path to a standalone seal bin
+    // that is of compatible version to this Luwu compiler. Passing incompatible or modified
+    // bytecode to standalone.eval is UB.
     let bytecode = unsafe { Chunk::bytecode(bytecode) };
 
-    match luau.load(bytecode).set_name(&chunk_name).eval::<LuaValue>() {
+    match luau.load_from_chunk(bytecode, &chunk_name).eval_wrapped::<LuaValue>() {
         Ok(value) => Ok(value),
         Err(err) => {
             wrap_err!("{}: error evaluating bytecode: {}", function_name, err)
@@ -79,6 +81,6 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function("check", standalone_check)?
         .with_function("extract", standalone_extract)?
-        .with_function("eval", standalone_eval)?
+        .with_function_and_signature("eval", standalone_eval, c"unsafe function standalone.eval(path: string, chunk_name: string) -> unknown")?
         .build_readonly()
 }

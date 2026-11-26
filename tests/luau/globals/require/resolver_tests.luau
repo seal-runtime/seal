@@ -1,7 +1,7 @@
 local fs = require("@std/fs")
 
 local resolver_src: string = "" do
-	local resolver_dot_luau_path = fs.path.join(".", "src", "require", "resolver.luau")
+	local resolver_dot_luau_path = fs.path.join(".", "src", "require", "resolver.luwu")
 	resolver_src = fs.readfile(resolver_dot_luau_path)
 end
 
@@ -163,7 +163,7 @@ local function aliases()
 		bibdebugname
 	) :: any
 	assert(
-		opv_result.path == fs.path.join(fs.path.cwd(), "src", "std_io", "formatter.luau"),
+		opv_result.path == fs.path.join(fs.path.cwd(), "src", "std_io", "formatter.luwu"),
 		"requiring aliases defined upwards (not closest .luaurc) should also resolve"
 	)
 end

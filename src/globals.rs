@@ -4,15 +4,24 @@ use mluau::prelude::*;
 use crate::prelude::*;
 use crate::std_err::ecall;
 use crate::{require, std_io};
+use crate::prelude::LoadChunk;
 
-pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult {
-    let function_name = "error(message: string | unknown, level: number?)";
+/// pre 0.9.x seal always returns an "error" userdata but because Luwu's added support for structured
+/// errors, we want to raise them instead of our custom userdata while still retaining as much compat
+/// for the highly common seal `if typeof(res) == "error"` idiom, at least for now.
+pub fn error(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaEither<WrappedError, LuaCustomError<LuaValue>> {
     let message = match multivalue.pop_front() {
         Some(LuaValue::String(s)) => s.to_string_lossy(),
         Some(LuaNil) | None => String::default(),
-        Some(other) => std_io::format::pretty(luau, other.into_lua_multi(luau)?)?,
+        // user called with a non-string value so likely smth along the lines of `error(FileNotFound(path))`
+        Some(value) => return LuaEither::Right(LuaCustomError(value)),
     };
+    let Err(raised) = error_with_message(luau, message, multivalue);
+    LuaEither::Left(WrappedError::from_message(raised.to_string()))
+}
 
+fn error_with_message(luau: &Lua, message: String, mut multivalue: LuaMultiValue) -> LuaResult<std::convert::Infallible> {
+    let function_name = "error(message: string | unknown, level: number?)";
     let level = match multivalue.pop_front() {
         Some(LuaValue::Number(f)) => float_to_usize(f, function_name, "level")?,
         Some(LuaValue::Integer(i)) => int_to_usize(i, function_name, "level")?,
@@ -38,24 +47,38 @@ pub fn warn(luau: &Lua, warn_value: LuaValue) -> LuaValueResult {
 
 pub const SEAL_VERSION: &str = env!("CARGO_PKG_VERSION");
 const GIT_COMMIT: &str = env!("GIT_COMMIT_HASH");
+const GIT_COMMIT_SHORT: &str = env!("GIT_COMMIT_SHORT");
 const GIT_BRANCH: &str = env!("GIT_BRANCH");
 const SEAL_URL: &str = "https://github.com/seal-runtime/seal";
 const LUAU_URL: &str = "https://github.com/mluau/luau";
 
+/// The version for `seal --version`, `_VERSION` and `_RUNTIME`;
+/// if this is a prerelease, adds the commit seal was built from as semver build metadata (`0.9.0-rc.1+46720d4`)
+pub fn display_version() -> String {
+    if SEAL_VERSION.contains('-') {
+        format!("{}+{}", SEAL_VERSION, GIT_COMMIT_SHORT)
+    } else {
+        SEAL_VERSION.to_string()
+    }
+}
+
 pub fn set_globals<S: AsRef<str>>(luau: &Lua, entry_path: S) -> LuaValueResult {
+    // everything loaded into this state is Luwu unless its chunk says otherwise (`seal eval`, `luau.eval`, ...)
+    luau.set_compiler(mluau::Compiler::luwu());
+
     let globals: LuaTable = luau.globals();
     // must use globals().get instead of globals().raw_get due to safeenv/sandbox (which requires newindex); raw_get incorrectly returns nil when safeenv enabled
     let luau_version: LuaString = globals.get("_VERSION")?;
-    globals.raw_set("require", luau.create_function(require::require)?)?;
+    globals.raw_set("require", luau.create_wrapped_function(require::require)?)?;
     globals.raw_set("error", luau.create_function(error)?)?;
-    globals.raw_set("p", luau.create_function(std_io::output::simple_print_and_return)?)?;
-    globals.raw_set("pp", luau.create_function(std_io::output::pretty_print_and_return)?)?;
-    globals.raw_set("dp", luau.create_function(std_io::output::debug_print)?)?;
-    globals.raw_set("print", luau.create_function(std_io::output::pretty_print)?)?;
-    globals.raw_set("ecall", luau.create_function(ecall)?)?;
-    globals.raw_set("warn", luau.create_function(warn)?)?;
+    globals.raw_set("p", luau.create_wrapped_function(std_io::output::simple_print_and_return)?)?;
+    globals.raw_set("pp", luau.create_wrapped_function(std_io::output::pretty_print_and_return)?)?;
+    globals.raw_set("dp", luau.create_wrapped_function(std_io::output::debug_print)?)?;
+    globals.raw_set("print", luau.create_wrapped_function(std_io::output::pretty_print)?)?;
+    globals.raw_set("ecall", luau.create_wrapped_function(ecall)?)?;
+    globals.raw_set("warn", luau.create_wrapped_function(warn)?)?;
     globals.raw_set("_SEAL_VERSION", SEAL_VERSION)?;
-    globals.raw_set("_VERSION", format!("seal {}+{}", SEAL_VERSION, luau_version.to_string_lossy().strip_prefix("Luau ").expect("Luau version always has Luau prefix")))?;
+    globals.raw_set("_VERSION", format!("seal {} (Luwu {})", display_version(), mluau::LUWU_COMMIT))?;
     globals.raw_set("_G", TableBuilder::create(luau)?.build()?)?;
     globals.raw_set("_REQUIRE_CACHE", TableBuilder::create(luau)?.build()?)?;
     globals.raw_set("script", TableBuilder::create(luau)?
@@ -90,7 +113,8 @@ fn parse_semver(version: &str) -> (u64, u64, u64, Option<String>, Option<String>
 
 /// Create _RUNTIME global according to the spec at https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf
 fn create_runtime_global(luau: &Lua) -> LuaResult<LuaTable> {
-    let (major, minor, patch, prerelease, build) = parse_semver(SEAL_VERSION);
+    let display = display_version();
+    let (major, minor, patch, prerelease, build) = parse_semver(&display);
 
     let semantic = TableBuilder::create(luau)?
         .with_value("major", major)?
@@ -107,7 +131,7 @@ fn create_runtime_global(luau: &Lua) -> LuaResult<LuaTable> {
         .build_readonly()?;
 
     let version = TableBuilder::create(luau)?
-        .with_value("display", SEAL_VERSION)?
+        .with_value("display", display)?
         .with_value("semantic", semantic)?
         .with_value("git", git)?
         .build_readonly()?;
@@ -157,7 +181,7 @@ const SCRIPT_PATH_SRC: &str = r#"
 
 pub fn get_debug_name(luau: &Lua) -> LuaResult<String> {
     let chunk = Chunk::src(SCRIPT_PATH_SRC);
-    luau.load(chunk).eval::<String>()
+    luau.load_from_chunk(chunk, "get requiring file").eval_wrapped()
 }
 
 pub fn get_script_path(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult {
@@ -169,7 +193,7 @@ pub fn get_script_path(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult
 pub fn get_script_parent(luau: &Lua, _multivalue: LuaMultiValue) -> LuaValueResult {
     let requiring_parent = {
         let chunk = Chunk::src(SCRIPT_PATH_SRC);
-        let result: LuaString = luau.load(chunk).eval()?;
+        let result: LuaString = luau.load_from_chunk(chunk, "get requiring file").eval()?;
         let script_path = result.to_string_lossy();
         match std::path::PathBuf::from(script_path).parent() {
             Some(parent) => parent.to_string_lossy().to_string(),

@@ -454,7 +454,9 @@ local function parse_args(program_name: string, raw_args: { string }, ...: Arg):
             local found_value: string?
             local indices_to_remove: { number } = {}
             local function push_indices_to_remove(...: number) 
-                for _, index in {...} do table.insert(indices_to_remove, index) end 
+                for _, index in {...} do
+                    table.insert(indices_to_remove, index)
+                end 
             end
             for index, arg in raw_args do
                 if str.startswith(arg, current_expected.name) then

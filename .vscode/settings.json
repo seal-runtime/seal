@@ -30,7 +30,16 @@
   "luau-lsp.fflags.enableNewSolver": true,
   "luau-lsp.fflags.enableByDefault": true,
   "luau-lsp.fflags.override": {
-    "DebugLuauUserDefinedClasses": "true"
+    "DebugLuauUserDefinedClasses": "true",
+    "DebugLuwuPoperators": "true",
+    "DebugLuwuMatchExpressions": "true",
+    "DebugLuwuBuiltinClasses": "true",
+    "DebugLuwuBundles": "true",
+    "DebugLuwuEncourageInline": "true",
+    "DebugLuwuTryExpressions": "true",
+    "DebugLuwuIntegers": "true",
+    "DebugLuwuBufferComparison": "true",
+    "DebugLuwuBufferBatched": "true",
   },
   "luau-lsp.inlayHints.functionReturnTypes": true,
   "luau-lsp.inlayHints.parameterNames": "all",

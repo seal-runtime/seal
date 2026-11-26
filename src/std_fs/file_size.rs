@@ -1,4 +1,6 @@
-use crate::prelude::*;
+use std::borrow::Cow;
+
+use crate::{prelude::*, userdata::{WrappedUserData, WrappedUserDataFields, WrappedUserDataMethods}};
 use mluau::prelude::*;
 
 pub const KILOBYTE: u64 = 1_024;
@@ -41,15 +43,15 @@ impl FileSize {
     }
 }
 
-impl LuaUserData for FileSize {
-    fn add_fields<F: LuaUserDataFields<Self>>(fields: &mut F) {
+impl WrappedUserData for FileSize {
+    fn add_fields<F: WrappedUserDataFields<Self>>(fields: &mut F) {
         fields.add_meta_field("__type", "FileSize");
     }
-    fn add_methods<M: LuaUserDataMethods<Self>>(methods: &mut M) {
+    fn add_methods<M: WrappedUserDataMethods<Self>>(methods: &mut M) {
         methods.add_meta_method(LuaMetaMethod::Add, |luau, this, other: LuaValue| {
             let function_name = "FileSize.__add";
             match other {
-                LuaValue::UserData(ud) if let Ok(other) = ud.borrow::<FileSize>() => {
+                LuaValue::UserData(ref ud) if let Some(other) = FileSize::borrow(ud) => {
                     FileSize::from_bytes(this.inner_bytes + other.inner_bytes).into_userdata(luau)
                 }
                 LuaValue::UserData(ud) => {
@@ -63,7 +65,7 @@ impl LuaUserData for FileSize {
         methods.add_meta_method(LuaMetaMethod::Sub, |luau, this, other: LuaValue| {
             let function_name = "FileSize.__sub";
             match other {
-                LuaValue::UserData(ud) if let Ok(other) = ud.borrow::<FileSize>() => {
+                LuaValue::UserData(ref ud) if let Some(other) = FileSize::borrow(ud) => {
                     if other.inner_bytes > this.inner_bytes {
                         return wrap_err!("{}: subtraction would underflow (result would be negative)", function_name);
                     }
@@ -80,7 +82,7 @@ impl LuaUserData for FileSize {
         methods.add_meta_method(LuaMetaMethod::Mul, |luau, this, other: LuaValue| {
             let function_name = "FileSize.__mul";
             match other {
-                LuaValue::UserData(ud) if let Ok(other) = ud.borrow::<FileSize>() => {
+                LuaValue::UserData(ref ud) if let Some(other) = FileSize::borrow(ud) => {
                     match this.inner_bytes.checked_mul(other.inner_bytes) {
                         Some(bytes) => FileSize::from_bytes(bytes).into_userdata(luau),
                         None => wrap_err!("{}: multiplication would overflow", function_name),
@@ -108,7 +110,7 @@ impl LuaUserData for FileSize {
         methods.add_meta_method(LuaMetaMethod::Div, |luau, this, other: LuaValue| {
             let function_name = "FileSize.__div";
             match other {
-                LuaValue::UserData(ud) if let Ok(other) = ud.borrow::<FileSize>() => {
+                LuaValue::UserData(ref ud) if let Some(other) = FileSize::borrow(ud) => {
                     if other.inner_bytes == 0 {
                         return wrap_err!("{}: cannot divide by a zero-byte FileSize", function_name);
                     }
@@ -148,7 +150,7 @@ impl LuaUserData for FileSize {
         methods.add_meta_method(LuaMetaMethod::Lt, |_luau, this, other: LuaValue| {
             let function_name = "FileSize.__lt";
             match other {
-                LuaValue::UserData(ud) if let Ok(other) = ud.borrow::<FileSize>() => {
+                LuaValue::UserData(ref ud) if let Some(other) = FileSize::borrow(ud) => {
                     Ok(LuaValue::Boolean(this.inner_bytes < other.inner_bytes))
                 }
                 LuaValue::UserData(ud) => {
@@ -162,7 +164,7 @@ impl LuaUserData for FileSize {
         methods.add_meta_method(LuaMetaMethod::Le, |_luau, this, other: LuaValue| {
             let function_name = "FileSize.__le";
             match other {
-                LuaValue::UserData(ud) if let Ok(other) = ud.borrow::<FileSize>() => {
+                LuaValue::UserData(ref ud) if let Some(other) = FileSize::borrow(ud) => {
                     Ok(LuaValue::Boolean(this.inner_bytes <= other.inner_bytes))
                 }
                 LuaValue::UserData(ud) => {
@@ -176,7 +178,7 @@ impl LuaUserData for FileSize {
         methods.add_meta_method(LuaMetaMethod::Eq, |_luau, this, other: LuaValue| {
             let function_name = "FileSize.__eq";
             match other {
-                LuaValue::UserData(ud) if let Ok(other) = ud.borrow::<FileSize>() => {
+                LuaValue::UserData(ref ud) if let Some(other) = FileSize::borrow(ud) => {
                     Ok(LuaValue::Boolean(this.inner_bytes == other.inner_bytes))
                 }
                 LuaValue::UserData(_) => {
@@ -230,10 +232,14 @@ impl LuaUserData for FileSize {
             Ok(LuaValue::Number(this.inner_bytes as f64 / TERABYTE as f64))
         });
     }
+
+    fn type_name<'a>() -> Cow<'a, str> {
+        Cow::Borrowed("FileSize")
+    }
 }
 
 impl Borrowable for FileSize {
-    fn type_name() -> &'static str {
+    fn display_name() -> &'static str {
         "FileSize"
     }
 }

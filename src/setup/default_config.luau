@@ -1,12 +1,12 @@
 local config = {
-    entry_path = "./src/main.luau",
+    entry_path = "./src/main.luwu",
     test_path = "./tests/run.luau",
     seal_version = "<SEAL_VERSION_REPLACE>"
 }
 
 export type SealConfig = {
     --- Script that `seal run` runs; usually the entrypoint to your codebase.
-    --- Defaults to `./src/main.luau`.
+    --- Defaults to `./src/main.luwu`.
     entry_path: string?,
     --- Script that `seal test` runs; usually a test runner.
     test_path: string?,

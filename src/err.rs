@@ -2,7 +2,6 @@ use std::panic;
 use mluau::prelude::*;
 use crate::globals;
 use crate::prelude::*;
-use crate::std_err::WrappedError;
 
 use std::io::Write;
 use std::env::VarError;
@@ -36,20 +35,23 @@ pub fn setup_sigabrt_handler() {
     }
 }
 
-pub fn parse_traceback(raw_traceback: String) -> String {
+/// Formats an error for a person: the message, the line that raised it and the stack. A `traceback` of `None` means the
+/// message carries its traceback after a "stack traceback:" line, if it has one.
+pub fn parse_traceback(message: &str, traceback: Option<&str>) -> String {
     let parse_traceback = include_str!("./scripts/parse_traceback.luau");
     let luau_for_traceback = Lua::new();
     if let Err(err) = globals::set_globals(&luau_for_traceback, String::default()) {
         unreachable!("setting globals for parse_traceback.luau shouldn't fail; err: {}", err);
     }
-    match luau_for_traceback.load(parse_traceback).set_name("seal/src/err/parse_traceback.luau").eval() {
+    match luau_for_traceback.load_from_chunk(parse_traceback, "seal/src/err/parse_traceback.luau").eval() {
         Ok(LuaValue::Function(parse_traceback)) => {
-            match parse_traceback.call::<LuaValue>(raw_traceback) {
+            // intentionally uses call_with_err directly to better control error
+            match parse_traceback.call_with_err::<LuaValue, WrappedError>((message, traceback)) {
                 Ok(LuaValue::String(s)) => s.to_string_lossy(),
-                Ok(LuaValue::UserData(ud)) => {
-                    match WrappedError::borrowed(ud) {
+                Ok(LuaValue::UserData(ref ud)) => {
+                    match WrappedError::try_borrow(ud) {
                         Ok(err) => {
-                            panic!("parse_traceback.luau (error formatter) errored at runtime:\n\n{}", err.message());
+                            panic!("parse_traceback.luau (error formatter) errored at runtime:\n\n{}", err.0);
                         },
                         Err(name) => {
                             panic!("parse_traceback.luau should return string or return an error, got userdata of type: {}", name);
@@ -152,10 +154,20 @@ pub fn setup_panic_hook() {
 }
 
 pub fn display_error_and_exit(err: LuaError) -> ! {
+    report_and_exit(parse_traceback(&err.to_string(), None))
+}
+
+/// Reports an error the main chunk raised and nobody caught. It reports the value that was raised, not its text, so
+/// the formatter gets the message and the traceback separately.
+pub fn display_raised_error_and_exit(luau: &Lua, err: WrappedError) -> ! {
+    let (message, traceback) = err.report_parts(luau);
+    report_and_exit(parse_traceback(&message, traceback.as_deref()))
+}
+
+fn report_and_exit(formatted: String) -> ! {
     let nc = colors::are_disabled();
     let (bold_red, bold_yellow, reset) = if nc { ("", "", "") } else { (colors::BOLD_RED, colors::BOLD_YELLOW, colors::RESET) };
-    let err = parse_traceback(err.to_string());
-    let error_message = format!("{}[ERR]{} {}", bold_red, reset, err);
+    let error_message = format!("{}[ERR]{} {}", bold_red, reset, formatted);
 
     let mut stderr = std::io::stderr().lock();
 
@@ -207,8 +219,10 @@ pub fn display_error_and_exit(err: LuaError) -> ! {
 #[macro_export]
 macro_rules! wrap_err {
     ($msg:expr) => {{
+        use mluau::Error as Error;
+        use $crate::colors;
         let msg = $msg.to_string();
-        Err(LuaError::external(if colors::are_disabled() { msg } else { format!("{}{}{}", colors::RED, msg, colors::RESET) }))
+        Err(Error::external(if colors::are_disabled() { msg } else { format!("{}{}{}", colors::RED, msg, colors::RESET) }))
     }};
     ($msg:expr, $($arg:tt)*) => {{
         let msg = format!($msg, $($arg)*);

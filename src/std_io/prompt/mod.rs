@@ -326,13 +326,15 @@ pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
         .build()?;
 
     let chunk = Chunk::src(PROMPT_DOT_LUAU_SRC);
-    let prompt_table = match luau.load(chunk).eval::<LuaTable>() {
+    let chunk = luau.load_from_chunk(chunk, "seal/std_io/prompt/prompt.luau");
+    let prompt_table = match chunk.eval_wrapped::<LuaTable>() {
         Ok(t) => t,
         Err(err) => {
             panic!("std/io/prompt's prompt.luau did a bad: {}", err);
         }
     };
 
+    // TODO: fix this
     for pair in prompt_table.pairs() {
         let (key, value): (String, LuaFunction) = pair?;
         t.raw_set(key, ecall(luau, value)?)?;

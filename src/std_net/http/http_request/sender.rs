@@ -17,17 +17,8 @@ use super::UreqError;
 macro_rules! configure_config_builder {
     ($builder:expr, $timeout:expr, $max_redirects:expr) => {
         {
-            let mut configuring = $builder
-                .config()
-                .http_status_as_error(false)
-                .tls_config(
-                    ureq::tls::TlsConfig::builder()
-                        .provider(ureq::tls::TlsProvider::Rustls)
-                        // combines the OS trust store and/or a custom CA bundle depending on
-                        // SEAL_SYSTEM_CERTS/SSL_CERT_FILE; see std_net::tls_config
-                        .root_certs(crate::std_net::tls_config::ureq_root_certs())
-                        .build()
-                );
+            // tls and http_status_as_error are set on the agent by `new_agent`
+            let mut configuring = $builder.config();
 
             if let Some(max_redirects) = $max_redirects {
                 configuring = configuring.max_redirects(max_redirects);
@@ -76,37 +67,65 @@ macro_rules! apply_headers_and_params {
     }
 }
 
+/// Creates a ureq agent that trusts the certs from `std_net::tls_config` and returns 4xx/5xx
+/// statuses as responses instead of errors. Requests sent through the same agent (or its clones)
+/// reuse each other's connections to the same host.
+pub fn new_agent(max_idle_connections_per_host: Option<usize>) -> ureq::Agent {
+    let mut config = ureq::Agent::config_builder()
+        .http_status_as_error(false)
+        .tls_config(
+            ureq::tls::TlsConfig::builder()
+                .provider(ureq::tls::TlsProvider::Rustls)
+                // combines the OS trust store and/or a custom CA bundle depending on
+                // SEAL_SYSTEM_CERTS/SSL_CERT_FILE; see std_net::tls_config
+                .root_certs(crate::std_net::tls_config::ureq_root_certs())
+                .build()
+        );
+
+    if let Some(per_host) = max_idle_connections_per_host {
+        config = config
+            .max_idle_connections_per_host(per_host)
+            .max_idle_connections(per_host.max(10));
+    }
+
+    config.build().new_agent()
+}
+
 pub enum Sender {
     WithoutBody(ureq::RequestBuilder<ureq::typestate::WithoutBody>),
     WithBody(ureq::RequestBuilder<ureq::typestate::WithBody>),
 }
 impl Sender {
-    pub(super) fn from_http_method(
-        m: Method, 
-        uri: String, 
-        function_name: &'static str
-    ) -> LuaResult<Self> {
-        let builder = match m {
+    /// Errors if we can't send requests with method `m`.
+    pub(super) fn check_method(m: &Method, function_name: &'static str) -> LuaResult<()> {
+        match *m {
+            Method::GET | Method::TRACE | Method::DELETE | Method::CONNECT | Method::HEAD | Method::OPTIONS
+            | Method::POST | Method::PATCH | Method::PUT => Ok(()),
+            // idk what to do with these
+            ref other => {
+                wrap_err!("{}: new or extension HTTP method {} not supported", function_name, other)
+            }
+        }
+    }
+
+    /// `m` must have passed `Sender::check_method`.
+    pub(super) fn from_http_method(agent: &ureq::Agent, m: Method, uri: String) -> Self {
+        match m {
             // should be without body
-            Method::GET => Self::WithoutBody(ureq::get(uri)),
-            Method::TRACE => Self::WithoutBody(ureq::trace(uri)),
-            Method::DELETE => Self::WithoutBody(ureq::delete(uri)),
-            Method::CONNECT => Self::WithoutBody(ureq::connect(uri)),
-            Method::HEAD => Self::WithoutBody(ureq::head(uri)),
-            Method::OPTIONS => Self::WithoutBody(ureq::options(uri)),
+            Method::GET => Self::WithoutBody(agent.get(uri)),
+            Method::TRACE => Self::WithoutBody(agent.trace(uri)),
+            Method::DELETE => Self::WithoutBody(agent.delete(uri)),
+            Method::CONNECT => Self::WithoutBody(agent.connect(uri)),
+            Method::HEAD => Self::WithoutBody(agent.head(uri)),
+            Method::OPTIONS => Self::WithoutBody(agent.options(uri)),
 
             // should have body
-            Method::POST => Self::WithBody(ureq::post(uri)),
-            Method::PATCH => Self::WithBody(ureq::patch(uri)),
-            Method::PUT => Self::WithBody(ureq::put(uri)),
+            Method::POST => Self::WithBody(agent.post(uri)),
+            Method::PATCH => Self::WithBody(agent.patch(uri)),
+            Method::PUT => Self::WithBody(agent.put(uri)),
 
-            // idk what to do with these
-            other => {
-                return wrap_err!("{}: new or extension HTTP method {} not supported", function_name, other);
-            }
-        };
-
-        Ok(builder)
+            other => unreachable!("Sender::check_method rejects {}", other),
+        }
     }
 
     pub(super) fn configure(

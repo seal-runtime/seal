@@ -107,8 +107,10 @@ print({ a=  "we", "are", "seal"})
 
 print(vector.create(1, 2, 3))
 
-local array_with_many_values = {}; for i = 1, 1001 do table.insert(array_with_many_values, i) end
--- print(array_with_many_values)
+local array_with_many_values = {}
+for i = 1, 1001 do
+    table.insert(array_with_many_values, i)
+end
 
 local env = require("@std/env")
 local fs = require("@std/fs")

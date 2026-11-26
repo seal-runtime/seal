@@ -360,10 +360,34 @@ fn fs_path_project(luau: &Lua, mut multivalue: LuaMultiValue) -> LuaValueResult 
     }
 }
 
+pub fn fs_path_exists(_luau: &Lua, path: LuaValue) -> LuaResult<bool> {
+    let path = match path {
+        LuaValue::String(path) => path.to_string_lossy(),
+        other => {
+            return wrap_err!("fs.path.exists(path) expected path to be a string, got: {:#?}", other);
+        }
+    };
+
+    match fs::exists(&path) {
+        Ok(true) => Ok(true),
+        Ok(false) => Ok(false),
+        Err(err) => {
+            match err.kind() {
+                io::ErrorKind::PermissionDenied => {
+                    wrap_err!("fs.path.exists: attempt to check if path '{}' exists but permission denied", path)
+                },
+                other => {
+                    wrap_err!("fs.path.exists: encountered an error checking if '{}' exists: {}", path, other)
+                }
+            }
+        }
+    }
+}
+
 pub fn create(luau: &Lua) -> LuaResult<LuaTable> {
     TableBuilder::create(luau)?
         .with_function_and_signature("join", fs_path_join, signatures::STD_FS_PATH_JOIN)?
-        .with_function_and_signature("exists", super::fs_exists, signatures::STD_FS_PATH_EXISTS)?
+        .with_function_and_signature("exists", fs_path_exists, signatures::STD_FS_PATH_EXISTS)?
         .with_function_and_signature("normalize", fs_path_normalize, signatures::STD_FS_PATH_NORMALIZE)?
         .with_function_and_signature("canonicalize", fs_path_canonicalize, signatures::STD_FS_PATH_CANONICALIZE)?
         .with_function_and_signature("absolutize", fs_path_absolutize, signatures::STD_FS_PATH_ABSOLUTIZE)?

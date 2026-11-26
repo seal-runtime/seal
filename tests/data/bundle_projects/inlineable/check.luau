@@ -7,7 +7,7 @@ local function check_url(location: string): string
     return url
 end
 
-local function check_compat(url: string)
+local function check_compat(_url: string)
     return true
 end
 

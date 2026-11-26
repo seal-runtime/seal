@@ -58,8 +58,7 @@ Optional fields:
 - `body`: `GET` requests are not *supposed* to have a body but some APIs require it.
 See `http.post` for `body` options.
 
-This function blocks the Luau VM - if you want to send multiple HTTP requests at the same time,
-wrap it with `@std/thread`.
+This function blocks the Luau VM. To send several HTTP requests at the same time, use `http.queue`.
 
 ## Usage
 
@@ -140,8 +139,7 @@ Depending on the type sent, *seal* performs additional serialization and applies
 
 Explicitly set `headers["content-type"]` to override these default `content-type` headers.
 
-This function blocks the Luau VM - if you want to send multiple HTTP requests at the same time,
-wrap it with `@std/thread`.
+This function blocks the Luau VM. To send several HTTP requests at the same time, use `http.queue`.
 
 ## Errors
 
@@ -163,7 +161,7 @@ Throws an error when:
 <h4>
 
 ```luau
-function http.request(method: HttpMethod, options: HttpRequestWithoutBody | HttpRequestWithBody) -> HttpResponseResult
+function http.request(method: HttpMethod, options: HttpRequestWithoutBody | HttpRequestWithBody) -> HttpResponseResult,
 ```
 
 </h4>
@@ -198,8 +196,7 @@ Depending on the type sent, *seal* performs additional serialization and applies
 
 Explicitly set `headers["content-type"]` to override these default `content-type` headers.
 
-This function blocks the Luau VM - if you want to send multiple HTTP requests at the same time,
-wrap it with `@std/thread`.
+This function blocks the Luau VM. To send several HTTP requests at the same time, use `http.queue`.
 
 ## Usage
 
@@ -281,6 +278,183 @@ end
 ```
 
 </details>
+
+---
+
+### http.queue
+
+<h4>
+
+```luau
+function http.queue(workers: number?) -> HttpQueue,
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Creates an `HttpQueue` that sends up to `workers` requests at the same time; defaults to 256 workers.
+
+Add requests with `HttpQueue:get`, `HttpQueue:post` or `HttpQueue:request`, then iterate the queue to get
+each request's key and result as soon as the request finishes. Requests to the same host reuse
+connections. A queue with 1 worker is faster than calling `http.get` in a loop.
+
+Requests are sent on Rust threads that only send requests and read responses. To run your own Luau code
+in parallel, use `@std/thread` instead.
+
+Keep in mind ratelimits if you're sending hundreds+ or an unbounded number of requests.
+This function defaults to 256 workers; be sure to lower it if your API limits parallel requests and
+add delays to avoid hitting rate limits.
+
+## Usage
+
+```luau
+local queue = http.queue(16)
+for _, id in user_ids do
+    queue:get(`https://api.example.com/users/{id}`, id)
+end
+
+for id, result in queue do
+    if result.ok then
+        print(`user {id}: {result.body}`)
+    elseif result.kind == "Timeout" then
+        queue:get(`https://api.example.com/users/{id}`, id) -- retry it; the loop picks it up
+    end
+end
+```
+
+## Errors
+
+Throws an error if `workers` isn't a whole number of at least 1.
+
+</details>
+
+---
+
+## `export type` HttpQueue
+
+<h4>
+
+```luau
+export type HttpQueue = setmetatable<{
+```
+
+</h4>
+
+<details>
+
+<summary> See the docs </summary
+
+Sends HTTP requests on a pool of worker threads that reuse connections; create one with `http.queue`.
+
+Use methods `get`, `post`, and `request` to add more requests to the queue. Use generalized iteration
+to read responses. Iterating the queue ***blocks*** until at least one request finishes or times out;
+providing the request's (ideally unique) `key` and its `HttpResponseResult`. Note that results arrive
+in the order requests finish, not in the order they were added to the queue.
+
+The loop automatically terminates when no requests are left in the queue.
+
+Breaking out of the loop leaves the remaining requests in the queue. Iterate it again to get their results,
+or call `HttpQueue:cancel` to drop them.
+
+`#queue` is the number of requests that haven't been iterated yet.
+
+</details>
+
+---
+
+### HttpQueue.get
+
+<h4>
+
+```luau
+  get: <K>(self: HttpQueue, options: HttpRequestWithoutBody | string, key: K?) -> K | number,
+```
+
+</h4>
+
+Adds a `GET` request to the queue and returns its key.
+
+A `key` is an identifier for this queued request; it is provided when iterating over the queue and can also
+be used to cancel pending requests. If left unspecified, `key` defaults to the request's number in the queue.
+
+---
+
+### HttpQueue.post
+
+<h4>
+
+```luau
+  post: <K>(self: HttpQueue, options: HttpRequestWithBody, key: K?) -> K | number,
+```
+
+</h4>
+
+Adds a `POST` request to the queue and returns its key.
+
+A `key` is an identifier for this queued request; it is provided when iterating over the queue and can also
+be used to cancel pending requests. If left unspecified, `key` defaults to the request's number in the queue.
+
+---
+
+### HttpQueue.request
+
+<h4>
+
+```luau
+  request: <K>(self: HttpQueue, method: HttpMethod, options: HttpRequestWithoutBody | HttpRequestWithBody, key: K?) -> K | number,
+```
+
+</h4>
+
+Adds a request with any `HttpMethod` to the queue and returns its key.
+
+A `key` is an identifier for this queued request; it is provided when iterating over the queue and can also
+be used to cancel pending requests. If left unspecified, `key` defaults to the request's number in the queue.
+
+---
+
+### HttpQueue.cancel
+
+<h4>
+
+```luau
+  cancel: <K>(self: HttpQueue, key: K?) -> (),
+```
+
+</h4>
+
+Drops queued requests that haven't been sent yet. Pass a `key` to cancel only requests whose keys are equal
+to the passed key (otherwise this cancels all queued requests).
+
+Note that this only can drop queued requests; requests a worker is already processing will finish and will simply not be reported
+in iteration.
+
+---
+
+### HttpQueue.__iter
+
+<h4>
+
+```luau
+function HttpQueue.__iter(self: HttpQueue) -> (() -> (unknown, HttpResponseResult)),
+```
+
+</h4>
+
+---
+
+### HttpQueue.__len
+
+<h4>
+
+```luau
+function HttpQueue.__len(self: HttpQueue) -> number,
+```
+
+</h4>
 
 ---
 

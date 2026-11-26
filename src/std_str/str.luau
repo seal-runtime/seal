@@ -135,7 +135,7 @@ end
 
 -- inlined equivalent of format.uncolor's ansi-stripping regex (\x1b\[[0-9;]*m). str.width is a hot
 -- path for TUI code, so this avoids requiring @std/io/format (which would also risk a circular
--- import, since formatter.luau pulls in @std/terminal) just to make one cross-module namecall.
+-- import, since formatter.luwu pulls in @std/terminal) just to make one cross-module namecall.
 -- this local function itself gets inlined by the luau compiler, so there's no call overhead either
 local function strip_ansi_colors(s: string): string
     return (string.gsub(s, "\27%[[%d;]*m", ""))

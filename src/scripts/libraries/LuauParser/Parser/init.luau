@@ -569,7 +569,7 @@ local function deprecatedArgsValidator(attrLoc: Syntax.Location, args: { Syntax.
 	local arg = args[1]
 	if arg.kind ~= "ExprTable" then
 		table.insert(errors, {
-			location = arg.location,
+			location = (arg :: any).location, -- arg should be unreachable, this code fires if it somehow got reached
 			message = "Unknown argument type for @deprecated",
 		})
 		return errors

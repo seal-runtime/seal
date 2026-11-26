@@ -79,6 +79,7 @@ function help.default()
         `  { command("run    ", "r", "BOLD_GREEN")}  {opt "...args"}  {DIM_DASH} run the {colors.bold.white("current project")} at its entrypoint; similar to { code "cargo run"} in Rust.`,
         `  { command("bundle ", " ", "BOLD_YELLOW")}  {opt "...args"}  {DIM_DASH} bundle a codebase into a single Luau file.`,
         `  { command("compile", " ", "BOLD_YELLOW")}  {opt "...args"}  {DIM_DASH} bundle and compile a project into a standalone executable (or Luau file).`,
+        `  { command("check  ", "c", "BOLD_MAGENTA")}  {opt "...paths"} {DIM_DASH} type check and lint files, or every file in a directory.`,
         `  { command("test   ", "t", "BRIGHT_GREEN")}  {opt "...args"}  {DIM_DASH} runs 'test_path' from your { code ".seal/config.luau"}.`,
         `  { command("help   ", "h", "BOLD_WHITE")}  {opt "command"}  {DIM_DASH} display help, of a specific command if specified.`,
         "",
@@ -157,7 +158,7 @@ function help.setup()
         `    {DIM_DASH} {colors.bold.red(".git")} {DIM_DASH} creates git repository for you if one doesn't exist.`,
         `  {colors.bold.blue("Scripts")}`,
         `    {dim ">"} Scripts are for when you want to use seal as an addendum to an existing project.`,
-        `    {dim ">"} For script codebases, seal links to a top-level ~/.seal directory instead of generating new typedefs.`,
+        `    {dim ">"} For script codebases, seal links to typedefs in ~/.seal/<seal version> instead of generating new ones.`,
         `    {DIM_DASH} {colors.bold.cyan(".luaurc")} {DIM_DASH} configuration for the luau language, including aliases, strict mode, etc.`,
         `    {DIM_DASH} {colors.bold.white(".vscode/settings.json")} {DIM_DASH} adds seal's globals.d.luau to definition files`,
         `    {DIM_DASH} {colors.bold.blue(".seal")} {DIM_DASH} a seal folder`,
@@ -167,7 +168,7 @@ function help.setup()
         `    {dim ">"} Mix and match settings as you need! Configurable options are:`,
         `    {DIM_DASH} --codebase (project or script)`,
         `    {DIM_DASH} --editor (vscode or code (same as vscode) or zed)`,
-        `    {DIM_DASH} --typedefs (gen or link) (do you want to generate new typedefs in this project or link to ~/.seal?)`,
+        `    {DIM_DASH} --typedefs (gen or link) (do you want to generate new typedefs in this project or link to ~/.seal/<seal version>?)`,
         `    {DIM_DASH} --git (true or false or y or n) (make this a new git repository?)`,
         END_LINE
     )
@@ -189,6 +190,26 @@ function help.config()
         colors.bold.white("Info:"),
         ` {DIM_DASH} found at {code "./.seal/config.luau"}`,
         ` {DIM_DASH} valid fields are located in the SealConfig typedef`,
+        END_LINE
+    )
+end
+
+function help.check()
+    return format_lines(
+        TAGLINE,
+        colors.bold.white("Usage:") .. dim(" <angled> = required, [square] = optional"),
+        `  {colors.bold.blue("seal")} {colors.bold.magenta("check")} {opt "path"}`,
+        `    {DIM_DASH} type check and lint a file, or every .luau and .luwu file in a directory (defaults to {code "."} inside a seal project).`,
+        `  {colors.bold.blue("seal")} {colors.bold.magenta("check")} {req "--defs"} path/to/globals.d.luau {opt "path"}`,
+        `    {DIM_DASH} check against another runtime's definition files instead of seal's; repeat {code "--defs"} for several.`,
+        colors.bold.white("Docs:"),
+        "  Checks with Luwu's type checker, the one luwu-lsp runs in your editor.",
+        `  By default, files see seal's globals and {code "@std"} libraries, and requires resolve the way seal resolves them`,
+        "  when it runs your code, so whatever checks is what runs.",
+        `  With {code "--defs"}, requires follow the Luau require-by-string rules instead.`,
+        "  seal can't check requires through aliases that refer to other aliases yet.",
+        `  Directories skip hidden folders ({code ".seal"}, {code ".git"}), {code "target"} and {code "node_modules"}.`,
+        "  Exits with 1 when it finds an error.",
         END_LINE
     )
 end

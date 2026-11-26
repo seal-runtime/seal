@@ -1,4 +1,4 @@
-declare function pcall<T, Args...>(protected_callback: (any) -> T, ...: Args...): (boolean, T | error)
+declare function pcall<T, Args...>(protected_callback: ((...any) -> ...T), ...: Args...): (boolean, T | error)
 
 declare function ecall<T, A...>(f: (A...) -> T | error): (A...) -> T
 
